@@ -20,7 +20,7 @@ function App({ cli }) {
 			<Text color="yellow">Choose an option:</Text>
 			<Newline />
 			<Text>
-				<Text color="magenta">JSON</Text>)
+				<Text color="magenta">JSON</Text>
 			</Text>
 			<Text>
 				Retrieve NOODL objects (<Text color="magenta">YML</Text>)
