@@ -9,9 +9,11 @@
 	"scripts": {
 		"app": "npx nodemon dist/cli.js",
 		"build": "tsc",
-		"start": "cross-env DEV=true CI=false TSC_COMPILE_ON_ERROR=true tsc --watch",
+		"prestart": "rm -rf dist",
+		"start": "cross-env DEV=true CI=false TSC_COMPILE_ON_ERROR=true babel src --out-dir dist --watch",
 		"pretest": "npm run build",
-		"test": "xo && ava"
+		"test": "xo && ava",
+		"tsc": "tsc --watch"
 	},
 	"files": [
 		"dist/cli.js"
