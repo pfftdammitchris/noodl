@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import React from 'react'
 import { render } from 'ink'
+import fs from 'fs'
 import meow from 'meow'
 import App from './ui'
 
