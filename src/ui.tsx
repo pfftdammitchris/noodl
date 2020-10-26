@@ -16,9 +16,15 @@ function App({ cli }) {
 	const { write } = useStdout()
 
 	return (
-		<Box padding={3}>
-			<Text>Choose an option:</Text>
-			<Text>Retrieve NOODL objects</Text>
+		<Box padding={3} flexDirection="column">
+			<Text color="yellow">Choose an option:</Text>
+			<Newline />
+			<Text>
+				<Text color="magenta">JSON</Text>)
+			</Text>
+			<Text>
+				Retrieve NOODL objects (<Text color="magenta">YML</Text>)
+			</Text>
 		</Box>
 	)
 }

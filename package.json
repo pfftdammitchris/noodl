@@ -8,10 +8,9 @@
 	},
 	"scripts": {
 		"app": "npx nodemon dist/cli.js",
-		"build": "tsc",
 		"prestart": "rm -rf dist",
-		"start": "cross-env DEV=true CI=false TSC_COMPILE_ON_ERROR=true babel src --out-dir dist --watch",
 		"pretest": "npm run build",
+		"start": "cross-env DEV=true CI=false tsc --watch",
 		"test": "xo && ava",
 		"tsc": "tsc --watch"
 	},
@@ -20,6 +19,14 @@
 	],
 	"dependencies": {
 		"ink": "^3.0.8",
+		"ink-big-text": "^1.2.0",
+		"ink-confirm-input": "^2.0.0",
+		"ink-divider": "^3.0.0",
+		"ink-progress-bar": "^3.0.0",
+		"ink-select-input": "^4.2.0",
+		"ink-spinner": "^4.0.1",
+		"ink-table": "^2.0.1",
+		"ink-text-input": "^4.0.1",
 		"meow": "^7.1.1",
 		"react": "^17.0.1"
 	},
