@@ -4,7 +4,7 @@ import { Box, Newline, Spacer, Static, Text, Transform, useInput } from 'ink'
 function App() {
 	return (
 		<Box padding={3}>
-			<Text>Hello</Text>
+			<Text>sadaseawew</Text>
 		</Box>
 	)
 }
