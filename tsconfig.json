@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "src",
+		"esModuleInterop": true,
+		"jsx": "react",
+		"outDir": "dist",
+		"sourceMap": true
+	},
+	"extends": "@sindresorhus/tsconfig",
+	"include": ["src"]
+}
