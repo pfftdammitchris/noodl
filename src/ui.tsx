@@ -28,7 +28,10 @@ const initialState = {
 
 function App() {
 	const [state, setState] = React.useState(initialState)
-	const { write } = useStdout()
+
+	useInput((input, key) => {
+		// write({ input, key })
+	})
 
 	const scriptsList: { value: T.ScriptId; label: React.ReactNode }[] = [
 		{
@@ -49,15 +52,17 @@ function App() {
 		},
 	] as const
 
+	React.useEffect(() => {
+		// setInterval(() => write('safasfas'), 100)
+	}, [])
+
 	return (
 		<Box padding={3} flexDirection="column">
 			<Text color="yellow">
 				Choose an option:
 				<Newline />
 			</Text>
-			<Box flexDirection="column">
-				<SelectInput items={scriptsList} />
-			</Box>
+			<Box flexDirection="column"></Box>
 		</Box>
 	)
 }

@@ -42,4 +42,4 @@ import App from './ui'
 // 	},
 // )
 
-render(<App />)
+render(<App />, {})
