@@ -20,26 +20,17 @@ import {
 import * as C from './constants'
 import * as T from './types'
 
-const iniitalState = {
+const initialState = {
 	script: {
-		id: '',
+		selected: '',
 	},
 }
 
-const F = () => {
-	const [value, setValue] = React.useState('')
-	useInput((input, key) => {
-		console.log(input)
-		setValue(input)
-	})
-	return value
-}
-
-function App({ cli }) {
-	const [state, setState] = React.useState()
+function App() {
+	const [state, setState] = React.useState(initialState)
 	const { write } = useStdout()
 
-	const scriptOptions: { value: T.ScriptId; label: React.ReactNode }[] = [
+	const scriptsList: { value: T.ScriptId; label: React.ReactNode }[] = [
 		{
 			label: 'Retrieve NOODL objects (JSON)',
 			value: C.RETRIEVE_NOODL_OBJECTS_JSON,
@@ -65,7 +56,7 @@ function App({ cli }) {
 				<Newline />
 			</Text>
 			<Box flexDirection="column">
-				<SelectInput items={scriptOptions} />
+				<SelectInput items={scriptsList} />
 			</Box>
 		</Box>
 	)
