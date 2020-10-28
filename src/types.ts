@@ -1,5 +1,23 @@
 import * as C from './constants'
 
+export interface IBaseObjects {
+	baseUrl: string
+	appEndpoint: string
+	appBaseUrl: string
+	version: string
+	rootConfig: RootConfig | null
+	appConfig: AppConfig | null
+	onRootConfig?(config: { json: RootConfig; yml?: string }): void
+	onAppConfig?<Config extends {} = any>(config: {
+		json: Config
+		yml?: string
+	}): void
+	onVersion?(version: string): void
+	onBaseUrl?(baseUrl: string): void
+	onAppEndpoint?(endpoint: string): void
+	onAppBaseUrl?(baseUrl: string): void
+}
+
 type ConsoleLog = typeof console.log
 
 export interface Log extends ConsoleLog {
@@ -18,7 +36,7 @@ export interface AppConfig {
 	languageSuffix: string
 	fileSuffix: string
 	startPage: string
-	prelaod: string[]
+	preload: string[]
 	page: string[]
 }
 

@@ -1,6 +1,7 @@
 import yaml from 'yaml'
 import axios from 'axios'
 import { prettifyErr } from '../utils/common'
+import { AppConfig, RootConfig } from '../types'
 
 export interface JsonYmlBoolean {
 	json: boolean
@@ -11,7 +12,7 @@ class NOODLObjects {
 	name: string
 	objects: {
 		[name: string]: {
-			json: { [key: string]: any }
+			json: any
 			yml?: string
 		}
 	} = {}
@@ -39,10 +40,10 @@ class NOODLObjects {
 		}
 	}
 
-	async load(
+	async load<T extends {} = any>(
 		name: string,
 		url: string,
-	): Promise<{ json: any; yml?: string } | void> {
+	): Promise<{ json: T; yml?: string }> {
 		try {
 			const { data: yml } = await axios.get(url)
 			this.objects[name] = { json: yaml.parse(yml) }
@@ -50,6 +51,7 @@ class NOODLObjects {
 			return this.objects[name]
 		} catch (error) {
 			prettifyErr(error)
+			return { json: {} as T }
 		}
 	}
 }
