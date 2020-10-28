@@ -1,7 +1,6 @@
 import yaml from 'yaml'
 import axios from 'axios'
 import { prettifyErr } from '../utils/common'
-import { AppConfig, RootConfig } from '../types'
 
 export interface JsonYmlBoolean {
 	json: boolean

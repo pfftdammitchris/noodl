@@ -7,16 +7,48 @@ export interface IBaseObjects {
 	version: string
 	rootConfig: RootConfig | null
 	appConfig: AppConfig | null
-	onRootConfig?(config: { json: RootConfig; yml?: string }): void
-	onAppConfig?<Config extends {} = any>(config: {
-		json: Config
-		yml?: string
-	}): void
+	init(): Promise<{ [name: string]: any }>
+	onRootConfig?(config: ObjectResult<RootConfig>): void
+	onAppConfig?<Config extends {} = any>(config: ObjectResult<Config>): void
 	onVersion?(version: string): void
 	onBaseUrl?(baseUrl: string): void
 	onAppEndpoint?(endpoint: string): void
 	onAppBaseUrl?(baseUrl: string): void
+	on(
+		eventName: 'root.config',
+		cb: (config: ObjectResult<RootConfig>) => any,
+	): this
+	on(
+		eventName: 'app.config',
+		cb: (config: ObjectResult<AppConfig>) => any,
+	): this
+	on(eventName: 'version', cb: (version: string) => any): this
+	on(eventName: 'base.url', cb: (baseUrl: string) => any): this
+	on(eventName: 'app.endpoint', cb: (appEndpoint: string) => any): this
+	on(eventName: 'app.base.url', cb: (appBaseUrl: string) => any): this
+	on(eventName: IBaseObjectsEvent, cb: (...args: any[]) => any): this
+	off(eventName: IBaseObjectsEvent, cb: Function): this
+	emit(eventName: IBaseObjectsEvent, ...args: any[]): this
 }
+
+export interface IAppObjects {
+	assetsUrl: string
+	baseUrl: string
+	config: AppConfig
+	locale: string
+	init(): Promise<{ [pageName: string]: any }>
+	onStart?(): void
+	onObject?<Obj = any>(obj: ObjectResult<Obj>): void
+	onEnd?(): void
+}
+
+export type IBaseObjectsEvent =
+	| 'root.config'
+	| 'app.config'
+	| 'version'
+	| 'base.url'
+	| 'app.endpoint'
+	| 'app.base.url'
 
 type ConsoleLog = typeof console.log
 
@@ -33,7 +65,7 @@ export interface AppConfig {}
 export interface AppConfig {
 	baseUrl: string
 	assetsUrl: string
-	languageSuffix: string
+	languageSuffix: string | { [lang: string]: string }
 	fileSuffix: string
 	startPage: string
 	preload: string[]
@@ -61,6 +93,11 @@ export interface RootConfig {
 	cadlBaseUrl: string
 	cadlMain: string
 	timestamp: number
+}
+
+export interface ObjectResult<T = any> {
+	json: T
+	yml?: string
 }
 
 export type ScriptId =

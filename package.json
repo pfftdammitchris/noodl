@@ -54,6 +54,10 @@
 		"update-notifier": "^5.0.0",
 		"xo": "^0.34.1"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pfftdammitchris/noodl-cli"
+	},
 	"ava": {
 		"typescript": {
 			"extensions": [

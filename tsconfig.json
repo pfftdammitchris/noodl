@@ -5,6 +5,7 @@
 		"esModuleInterop": true,
 		"jsx": "react",
 		"noEmitOnError": false,
+		"outDir": "dist",
 		"sourceMap": true
 	},
 	"extends": "@sindresorhus/tsconfig",
