@@ -5,3 +5,5 @@
 // 	export const onChange: Function
 // 	export const onSubmit: Function
 // }
+
+declare module 'update-notifier'

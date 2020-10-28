@@ -1,4 +1,5 @@
 import React from 'react'
+import updateNotifier from 'update-notifier'
 // import meow from 'meow'
 import {
 	Box,
@@ -20,6 +21,10 @@ import ProgressBar from 'ink-progress-bar'
 import SelectInput from 'ink-select-input'
 import TextInput from 'ink-text-input'
 import App from './ui'
+import pkg from '../package.json'
+
+// Check if update is available
+updateNotifier({ pkg }).notify({ isGlobal: true })
 
 // const cli = meow(
 // 	`
