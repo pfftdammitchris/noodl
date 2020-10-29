@@ -94,6 +94,10 @@ class BaseObjects extends Objects implements IBaseObjects {
 			)),
 		)
 
+		console.log(appConfig.baseUrl)
+		console.log(appConfig.baseUrl)
+		console.log(appConfig.baseUrl)
+
 		const preloadPages = appConfig.preload || []
 		const numPages = preloadPages.length
 

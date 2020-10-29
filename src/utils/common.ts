@@ -11,7 +11,7 @@ export const createConfigURL = (function () {
 })()
 
 export function createPlaceholderReplacer(placeholder: string) {
-	return (str: string, value: string | number) => {
+	return (str: string = '', value: string | number) => {
 		return str.replace(placeholder, String(value))
 	}
 }

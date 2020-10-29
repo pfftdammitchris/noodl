@@ -13,6 +13,9 @@ class AppObjects extends Objects implements IAppObjects {
 		super('AppObjects')
 		this.#config = config
 		this.locale = options?.locale || 'en'
+		console.log(this.baseUrl)
+		console.log(this.baseUrl)
+		console.log(this.baseUrl)
 	}
 
 	async init() {
@@ -21,11 +24,6 @@ class AppObjects extends Objects implements IAppObjects {
 
 		console.log(pageNames)
 		console.log(`pageCount: ${pageCount}`)
-		console.log(this.#config)
-		console.log(this.#config)
-		console.log(this.#config)
-		console.log(this.#config)
-		console.log(this.#config)
 		console.log(this.#config)
 
 		if (pageNames.length) {
