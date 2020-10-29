@@ -78,7 +78,7 @@ function App() {
 		})
 
 		base.on('app.config', (config) => {
-			console.log(`Received ${chalk.magenta('app config')}`, config)
+			console.log(`Received ${chalk.magenta('app config')}`)
 		})
 
 		base.on('base.url', (baseUrl) => {
@@ -92,7 +92,7 @@ function App() {
 		aggregator
 			.init()
 			.then(({ base, pages }) => {
-				console.log(base)
+				// console.log(base)
 				console.log('start')
 				console.log(pages)
 				console.log('end')

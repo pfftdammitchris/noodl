@@ -86,8 +86,6 @@ class BaseObjects extends Objects implements IBaseObjects {
 			)),
 		)
 
-		console.log(appConfig)
-
 		this.emit(
 			'app.base.url',
 			(this['appBaseUrl'] = replaceBaseUrlPlaceholder(

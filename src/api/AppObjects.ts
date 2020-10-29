@@ -19,8 +19,8 @@ class AppObjects extends Objects implements IAppObjects {
 		const pageNames = this.#config?.page || []
 		const pageCount = pageNames.length
 
-		console.log(this.#config)
-		console.log(this.#config)
+		console.log(pageNames)
+		console.log(`pageCount: ${pageCount}`)
 		console.log(this.#config)
 		console.log(this.#config)
 		console.log(this.#config)
