@@ -8,11 +8,12 @@
 	},
 	"scripts": {
 		"app": "node dist/cli.js",
-		"build": "tsc",
+		"build": "babel src --extensions \".ts,.tsx\" --out-dir dist",
 		"prestart": "rm -rf dist",
 		"pretest": "npm run build",
 		"start": "cross-env DEV=true CI=false tsc --watch",
-		"test": "xo && ava"
+		"babel": "cross-env DEV=true CI=false babel src --extensions \".ts,.tsx\" --watch --out-dir dist",
+		"test": "cross-env NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src src/**/*.test.ts"
 	},
 	"files": [
 		"dist/cli.js"
@@ -28,21 +29,30 @@
 		"ink-spinner": "^4.0.1",
 		"ink-table": "^2.0.1",
 		"ink-text-input": "^4.0.1",
-		"lodash-es": "^4.17.15",
+		"lodash": "^4.17.20",
 		"meow": "^7.1.1",
 		"react": "^17.0.1",
 		"yaml": "^1.10.0"
 	},
 	"devDependencies": {
-		"@ava/typescript": "^1.1.1",
+		"@babel/cli": "^7.12.1",
+		"@babel/core": "^7.12.3",
+		"@babel/plugin-proposal-class-properties": "^7.12.1",
+		"@babel/plugin-proposal-private-methods": "^7.12.1",
+		"@babel/plugin-transform-runtime": "^7.12.1",
+		"@babel/preset-env": "^7.12.1",
+		"@babel/preset-react": "^7.12.1",
+		"@babel/preset-typescript": "^7.12.1",
 		"@sindresorhus/tsconfig": "^0.7.0",
+		"@types/chai": "^4.2.14",
 		"@types/ink-big-text": "^1.2.0",
 		"@types/ink-divider": "^2.0.1",
-		"@types/lodash-es": "^4.17.3",
+		"@types/lodash": "^4.14.163",
+		"@types/mocha": "^8.0.3",
 		"@types/node": "^14.14.5",
 		"@types/react": "^16.9.53",
-		"ava": "^3.13.0",
 		"axios-mock-adapter": "^1.19.0",
+		"chai": "^4.2.0",
 		"chalk": "^4.1.0",
 		"cross-env": "^7.0.2",
 		"eslint-config-xo-react": "^0.23.0",
@@ -50,9 +60,10 @@
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"fs-extra": "^9.0.1",
 		"ink-testing-library": "^2.1.0",
+		"mocha": "^8.2.0",
+		"ts-mocha": "^8.0.0",
 		"typescript": "^4.0.3",
-		"update-notifier": "^5.0.0",
-		"xo": "^0.34.1"
+		"update-notifier": "^5.0.0"
 	},
 	"repository": {
 		"type": "git",

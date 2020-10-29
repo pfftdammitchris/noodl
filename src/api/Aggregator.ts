@@ -6,7 +6,6 @@ import Objects from './Objects'
 export interface AggregateObjectsOptions {
 	env: BasesOptions['env']
 	endpoint: BasesOptions['endpoint']
-	base?: IBaseObjects
 }
 
 class AggregateObjects extends Objects {
@@ -19,7 +18,6 @@ class AggregateObjects extends Objects {
 		super('AggregateObjects')
 		this.#env = opts.env
 		this.#endpoint = opts.endpoint
-		this.base = opts.base || new BaseObjects(opts)
 	}
 
 	async init(): Promise<{
