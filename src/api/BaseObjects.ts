@@ -18,6 +18,8 @@ export interface BasesOptions {
 }
 
 class BaseObjects extends Objects implements IBaseObjects {
+	#appConfig: AppConfig | null
+	#rootConfig: RootConfig | null
 	#callbacks: { [eventName: string]: Function[] } = {}
 	#endpoint: string = ''
 	#onRootConfig?: (config: { json: RootConfig; yml?: string }) => void
@@ -45,36 +47,33 @@ class BaseObjects extends Objects implements IBaseObjects {
 		// Load/save root config in memory
 		let rootConfigResult: ObjectResult<RootConfig>
 		let appConfigResult: ObjectResult<AppConfig>
-		let rootConfig: RootConfig
 		let appConfig: AppConfig
 
 		rootConfigResult = await this.load<RootConfig>('rootConfig', this.endpoint)
 
-		this['version'] = this.getLatestVersion(rootConfigResult.json)
-
-		rootConfigResult['json'] = replaceVersionPlaceholder<RootConfig>(
+		this['rootConfig'] = replaceVersionPlaceholder<RootConfig>(
 			rootConfigResult.json,
-			this.version,
+			(this['version'] = this.getLatestVersion(rootConfigResult.json)),
 		)
 
-		rootConfig = rootConfigResult.json
-
-		this['appEndpoint'] = `${rootConfig.cadlBaseUrl}${rootConfig.cadlMain}`
+		this[
+			'appEndpoint'
+		] = `${this.rootConfig.cadlBaseUrl}${this.rootConfig.cadlMain}`
 
 		this.emit('version', this.version)
 		this.emit('app.endpoint', this.appEndpoint)
 
 		appConfigResult = await this.load<AppConfig>('appConfig', this.appEndpoint)
 
-		appConfig = appConfigResult['json'] = replaceBaseUrlPlaceholder(
+		this['appConfig'] = replaceBaseUrlPlaceholder(
 			appConfigResult.json,
-			rootConfig.cadlBaseUrl,
+			this.rootConfig.cadlBaseUrl,
 		)
 
 		this['baseUrl'] = rootConfig.cadlBaseUrl
 
 		this['appBaseUrl'] = replaceBaseUrlPlaceholder(
-			appConfig.baseUrl,
+			this.appConfig.baseUrl,
 			this.baseUrl,
 		)
 
@@ -100,11 +99,19 @@ class BaseObjects extends Objects implements IBaseObjects {
 	}
 
 	get rootConfig() {
-		return this.objects.rootConfig?.json || null
+		return this.#rootConfig
+	}
+
+	set rootConfig(rootConfig: RootConfig) {
+		this.#rootConfig = rootConfig
 	}
 
 	get appConfig() {
-		return this.objects.appConfig?.json || null
+		return this.#appConfig
+	}
+
+	set appConfig(appConfig: ObjectResult<AppConfig>) {
+		this.#appConfig = appConfig
 	}
 
 	get endpoint() {
@@ -147,7 +154,7 @@ class BaseObjects extends Objects implements IBaseObjects {
 		return this.#onAppBaseUrl
 	}
 
-	getLatestVersion(rootConfig = this.rootConfig.json) {
+	getLatestVersion(rootConfig = this.rootConfig) {
 		const knownPaths = [`web.cadlVersion.${this.env}`, 'versionNumber']
 		for (let index = 0; index < knownPaths.length; index++) {
 			const result = get(rootConfig, knownPaths[index])
