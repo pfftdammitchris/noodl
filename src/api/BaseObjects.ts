@@ -48,55 +48,39 @@ class BaseObjects extends Objects implements IBaseObjects {
 		let rootConfig: RootConfig
 		let appConfig: AppConfig
 
-		this.emit(
-			'root.config',
-			(rootConfigResult = await this.load<RootConfig>(
-				'rootConfig',
-				this.endpoint,
-			)),
+		rootConfigResult = await this.load<RootConfig>('rootConfig', this.endpoint)
+
+		this['version'] = this.getLatestVersion(rootConfigResult.json)
+
+		rootConfigResult['json'] = replaceVersionPlaceholder<RootConfig>(
+			rootConfigResult.json,
+			this.version,
 		)
-		this.emit(
-			'version',
-			(this['version'] = this.getLatestVersion(rootConfigResult.json)),
-		)
-		this.emit(
-			'app.endpoint',
-			(this['appEndpoint'] = replaceVersionPlaceholder(
-				rootConfigResult.json?.cadlBaseUrl + rootConfigResult.json?.cadlMain ||
-					'',
-				this.version,
-			)),
-		)
+
 		rootConfig = rootConfigResult.json
-		this.emit(
-			'app.config',
-			(appConfigResult = await this.load<AppConfig>(
-				'appConfig',
-				this.appEndpoint,
-			)),
+
+		this['appEndpoint'] = `${rootConfig.cadlBaseUrl}${rootConfig.cadlMain}`
+
+		this.emit('version', this.version)
+		this.emit('app.endpoint', this.appEndpoint)
+
+		appConfigResult = await this.load<AppConfig>('appConfig', this.appEndpoint)
+
+		appConfig = appConfigResult['json'] = replaceBaseUrlPlaceholder(
+			appConfigResult.json,
+			rootConfig.cadlBaseUrl,
 		)
 
-		appConfig = appConfigResult.json
+		this['baseUrl'] = rootConfig.cadlBaseUrl
 
-		this.emit(
-			'base.url',
-			(this['baseUrl'] = replaceVersionPlaceholder(
-				rootConfig.cadlBaseUrl,
-				this.version,
-			)),
+		this['appBaseUrl'] = replaceBaseUrlPlaceholder(
+			appConfig.baseUrl,
+			this.baseUrl,
 		)
 
-		this.emit(
-			'app.base.url',
-			(this['appBaseUrl'] = replaceBaseUrlPlaceholder(
-				appConfig.baseUrl,
-				this.baseUrl,
-			)),
-		)
-
-		console.log(appConfig.baseUrl)
-		console.log(appConfig.baseUrl)
-		console.log(appConfig.baseUrl)
+		this.emit('app.config', appConfig)
+		this.emit('base.url', this.baseUrl)
+		this.emit('app.base.url', this.appBaseUrl)
 
 		const preloadPages = appConfig.preload || []
 		const numPages = preloadPages.length

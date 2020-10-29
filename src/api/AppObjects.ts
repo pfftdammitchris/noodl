@@ -13,9 +13,6 @@ class AppObjects extends Objects implements IAppObjects {
 		super('AppObjects')
 		this.#config = config
 		this.locale = options?.locale || 'en'
-		console.log(this.baseUrl)
-		console.log(this.baseUrl)
-		console.log(this.baseUrl)
 	}
 
 	async init() {

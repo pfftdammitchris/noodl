@@ -50,8 +50,11 @@ describe('AppObjects', () => {
 			  `,
 			)
 			await base.init()
+			console.log(base)
+			const app = new AppObjects(base.appConfig)
+			console.log(base)
 			console.log(base.appConfig)
-			// const app = new AppObjects(base.appConfig)
+			console.log(base.appConfig)
 			// expect(app.createUrl('SignIn')).to.equal('')
 		})
 	})

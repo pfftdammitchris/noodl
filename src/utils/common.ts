@@ -10,18 +10,42 @@ export const createConfigURL = (function () {
 	}
 })()
 
-export function createPlaceholderReplacer(placeholder: string) {
-	return (str: string = '', value: string | number) => {
-		return str.replace(placeholder, String(value))
+export function createPlaceholderReplacer(
+	placeholders: string | string[],
+	flags?: string,
+) {
+	const regexp = new RegExp(
+		(Array.isArray(placeholders) ? placeholders : [placeholders]).reduce(
+			(str, placeholder) => str + (!str ? placeholder : `|${placeholder}`),
+			'',
+		),
+		flags,
+	)
+	function replace(str: string, value: string | number): string
+	function replace<Obj extends {} = any>(obj: Obj, value: string | number): Obj
+	function replace<Obj extends {} = any>(
+		str: string | Obj,
+		value: string | number,
+	) {
+		if (typeof str === 'string') {
+			return str.replace(regexp, String(value))
+		} else if (str && typeof str === 'object') {
+			const stringified = JSON.stringify(str).replace(regexp, String(value))
+			return JSON.parse(stringified)
+		}
+		return ''
 	}
+	return replace
 }
 
 export const replaceBaseUrlPlaceholder = createPlaceholderReplacer(
-	'${cadlBaseUrl}',
+	'\\${cadlBaseUrl}',
+	'g',
 )
 
 export const replaceVersionPlaceholder = createPlaceholderReplacer(
-	'${cadlVersion}',
+	'\\${cadlVersion}',
+	'g',
 )
 
 export function replacePlaceholders(obj: any, placeholder: string, value: any) {
