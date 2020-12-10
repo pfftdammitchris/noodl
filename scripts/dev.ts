@@ -1,8 +1,10 @@
 import createAggregator from './createAggregator'
 
-const aggregator = createAggregator({
-	config: 'meet2d',
-	env: 'test',
-})
+const aggregator = createAggregator({ config: 'message' })
 
-console.log(aggregator)
+aggregator
+	.init()
+	.then(([rootConfig, appConfig]) => {
+		console.log([rootConfig, appConfig])
+	})
+	.catch(console.error)

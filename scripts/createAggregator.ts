@@ -1,50 +1,36 @@
 import axios from 'axios'
 import yaml from 'yaml'
+import RootConfig from '../src/builders/RootConfig'
+import AppConfig from '../src/builders/AppConfig'
 
 export interface ConfigOptions {
-	env: 'stable' | 'test'
-	config: string
-	baseUrl: string
+	config?: string
+	host?: string
+	version?: string | number
 }
 
 const createAggregator = function (opts: ConfigOptions) {
-	const
+	let config = opts.config || 'aitmed'
+	let host = opts.host || 'public.aitmed.com'
+
 	const objects = {
 		json: {},
 		yml: {},
 	}
-	const configOptions = {
-		env: opts.env || 'test',
-		name: opts.name || 'aitmed.yml',
-		baseUrl: opts.baseUrl || 'https://public.aitmed.com/config',
-	}
 
 	const o = {
-		async init(url?: string) {
-			const [] = await Promise.all([_loadRootConfig(), _loadAppConfig()])
-			return (await axios.get(url || this.getBaseUrl())).data
+		async init() {
+			objects.json[config] = await new RootConfig()
+				.setConfig(config)
+				.setHost(host)
+				.setVersion(opts.version || 'latest')
+				.build()
+			objects.yml[config] = objects.json[config].yml
+			objects.json['cadlEndpoint'] = await new AppConfig()
+				.setRootConfig(objects.json[config])
+				.build()
+			return [objects.json[config], objects.json['cadlEndpoint']]
 		},
-		getBaseUrl() {
-			return `${configOptions.baseUrl}/${configOptions.name}.yml`
-		},
-	}
-
-	async function _loadRootConfig() {
-		const { data: yml } = await axios.get(o.getBaseUrl())
-		const json = yaml.parse(yml)
-		objects.json[configOptions.name] = json
-		objects.yml[configOptions.name] = yml
-		return json
-	}
-
-	async function _loadAppConfig(
-		baseUrl: string = objects.json[configOptions.name].baseUrl,
-	) {
-		const { data: yml } = await axios.get(baseUrl)
-		const json = yaml.parse(yml)
-		objects.json[app] = json
-		objects.yml[app] = yml
-		return json
 	}
 
 	return o
