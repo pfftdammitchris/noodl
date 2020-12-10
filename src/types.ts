@@ -105,3 +105,15 @@ export type ScriptId =
 	| typeof C.RETRIEVE_NOODL_OBJECTS_YML
 	| typeof C.RETRIEVE_NOODL_OBJECTS_WITH_KEYS
 	| typeof C.RETRIEVE_NOODL_PROPERTIES
+
+export type PanelType = 'input' | 'select' | 'select-multiple'
+export interface PanelConfig {
+	label: string
+	value: string
+	type: PanelType
+}
+
+export interface PanelOption {
+	name: string
+	onSelect(item: any): void
+}
