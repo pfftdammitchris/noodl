@@ -14,45 +14,43 @@ import * as C from './constants'
 import * as T from './types'
 import AggregateObjects from './api/Aggregator'
 import { prettifyErr } from './utils/common'
+import * as panel from './panels'
 
 const initialState = {
-	script: {
-		selected: '',
-	},
+	panels: Object.values(panel).reduce(
+		(acc, panel) => acc.concat(panel as T.PanelConfig),
+		[] as T.PanelConfig[],
+	),
+	selected: panel.init,
 }
 
 function App() {
 	const [state, setState] = React.useState(initialState)
-	const { write } = useStdout()
 
-	const scriptsList = [
-		{
-			label: 'Retrieve NOODL objects (JSON)',
-			value: C.RETRIEVE_NOODL_OBJECTS_JSON,
+	const internalSetState = React.useCallback(
+		(s: ((s: typeof state) => typeof state | void) | typeof state) => {
+			if (typeof s === 'function') {
+				setState((prevState) => {
+					const newState = s(prevState)
+					if (!newState || newState === prevState) return prevState
+					return { ...prevState, ...newState }
+				})
+			} else {
+				setState((prevState) => ({ ...prevState, ...s }))
+			}
 		},
-		{
-			label: 'Retrieve NOODL objects (YML)',
-			value: C.RETRIEVE_NOODL_OBJECTS_YML,
-		},
-		{
-			label: 'Retrieve NOODL properties',
-			value: C.RETRIEVE_NOODL_PROPERTIES,
-		},
-		{
-			label: 'Retrieve NOODL objects with key(s)',
-			value: C.RETRIEVE_NOODL_OBJECTS_WITH_KEYS,
-		},
-	]
+		[],
+	)
 
 	const onHighlightScript = React.useCallback(
-		(item: typeof scriptsList[number]) => {
+		(item: typeof state.panels[number]) => {
 			// console.log(item)
 		},
 		[],
 	)
 
 	const onSelectScript = React.useCallback(
-		(item: typeof scriptsList[number]) => {
+		(item: typeof state.panels[number]) => {
 			// console.log(item)
 		},
 		[],
@@ -106,12 +104,12 @@ function App() {
 	return (
 		<Box padding={3} flexDirection="column">
 			<Text color="yellow">
-				Choose an option:
+				{state.selected.label}
 				<Newline />
 			</Text>
 			<Box flexDirection="column">
 				<SelectInput
-					items={scriptsList}
+					items={state.panels}
 					indicatorComponent={({ isSelected }) =>
 						isSelected ? <Text color="magenta">{'> '}</Text> : null
 					}
