@@ -10,6 +10,10 @@ export interface ConfigOptions {
 }
 
 const createAggregator = function (opts: ConfigOptions) {
+	const api = {
+		rootConfig: null,
+		appConfig: null,
+	}
 	let config = opts.config || 'aitmed'
 	let host = opts.host || 'public.aitmed.com'
 
@@ -20,6 +24,7 @@ const createAggregator = function (opts: ConfigOptions) {
 
 	const o = {
 		async init() {
+			api.rootConfig = await new RootConfig()
 			objects.json[config] = await new RootConfig()
 				.setConfig(config)
 				.setHost(host)
