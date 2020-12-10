@@ -1,7 +1,7 @@
 import axios from 'axios'
 import yaml from 'yaml'
-import RootConfig from '../src/builders/RootConfig'
-import AppConfig from '../src/builders/AppConfig'
+import RootConfig from '../builders/RootConfig'
+import AppConfig from '../builders/AppConfig'
 
 export interface ConfigOptions {
 	config?: string

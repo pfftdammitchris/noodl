@@ -10,11 +10,14 @@ import SelectInput, {
 } from 'ink-select-input'
 import TextInput from 'ink-text-input'
 import { Box, Newline, Spacer, Static, Text, useInput, useStdout } from 'ink'
-import * as C from './constants'
+import * as c from './constants'
 import * as T from './types'
-import AggregateObjects from './api/Aggregator'
+import createAggregator from './api/createAggregator'
 import { prettifyErr } from './utils/common'
 import * as panel from './panels'
+
+let aggregator: ReturnType<typeof createAggregator>
+// const panelMap =
 
 const initialState = {
 	panels: Object.values(panel).reduce(
@@ -51,54 +54,17 @@ function App() {
 
 	const onSelectScript = React.useCallback(
 		(item: typeof state.panels[number]) => {
-			// console.log(item)
+			if (item.value === c.panel.RETRIEVE_OBJECTS) {
+				internalSetState({ selected: state.panels })
+			}
 		},
 		[],
 	)
 
 	React.useEffect(() => {
-		const aggregator = new AggregateObjects({
-			env: 'test',
-			endpoint: 'https://public.aitmed.com/config/meet2d.yml',
+		aggregator = createAggregator({
+			config: 'message',
 		})
-		const { base, app } = aggregator
-
-		base.on('root.config', () => {
-			console.log(`Received ${chalk.magenta('root config')}`)
-		})
-
-		base.on('version', (version) => {
-			console.log(`Version set to: ${chalk.magenta(version)}`)
-		})
-
-		base.on('app.endpoint', (endpoint) => {
-			console.log(`App endpoint: ${chalk.magenta(endpoint)}`)
-		})
-
-		base.on('app.config', (config) => {
-			console.log(`Received ${chalk.magenta('app config')}`)
-		})
-
-		base.on('base.url', (baseUrl) => {
-			console.log(`Base url: ${chalk.magenta(baseUrl)}`)
-		})
-
-		base.on('app.base.url', (appBaseUrl) => {
-			console.log(`App base url: ${chalk.magenta(appBaseUrl)}`)
-		})
-
-		aggregator
-			.init()
-			.then(({ base, pages }) => {
-				// console.log(base)
-				console.log('start')
-				console.log(pages)
-				console.log('end')
-			})
-			.catch((err) => {
-				console.log(err)
-				console.log(prettifyErr(err))
-			})
 	}, [])
 
 	return (
