@@ -46,9 +46,10 @@ export interface ObjectResult<T = any> {
 	yml?: string
 }
 
-export type PanelType = 'input' | 'select' | 'select-multiple'
+export type PanelType = 'check' | 'input' | 'select' | 'select-multiple'
 
 export type PanelConfig =
+	| PanelCheckConfig
 	| PanelInputConfig
 	| PanelSelectConfig
 	| PanelSelectMultipleConfig
@@ -57,6 +58,10 @@ export interface PanelBaseConfig<S extends string = any> {
 	value: string
 	label: string
 	type: S
+}
+
+export interface PanelCheckConfig extends PanelBaseConfig {
+	type: 'check'
 }
 
 export interface PanelInputConfig extends PanelBaseConfig {
@@ -71,4 +76,8 @@ export interface PanelSelectConfig extends PanelBaseConfig {
 
 export interface PanelSelectMultipleConfig extends PanelBaseConfig {
 	type: 'select-multiple'
+	panel: {
+		label: string
+		options: string[]
+	}
 }

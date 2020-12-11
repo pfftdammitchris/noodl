@@ -9,7 +9,7 @@ function getPanel(value: string): PanelConfig {
 				label: 'Choose an option: ',
 				type: 'select',
 				items: [
-					getPanel(c.panel.RETRIEVED_OBJECTS),
+					getPanel(c.panel.RETRIEVE_OBJECTS),
 					getPanel(c.panel.RETRIEVE_KEYWORDS),
 				],
 			}
@@ -18,6 +18,10 @@ function getPanel(value: string): PanelConfig {
 				value: c.panel.RETRIEVE_OBJECTS,
 				label: 'Retrieve objects',
 				type: 'select-multiple',
+				panel: {
+					label: 'Select file extensions to keep:',
+					options: ['json', 'yml'],
+				},
 			}
 		case c.panel.RETRIEVE_KEYWORDS:
 			return {

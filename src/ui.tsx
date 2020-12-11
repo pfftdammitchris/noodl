@@ -1,4 +1,5 @@
 import React from 'react'
+import chalk from 'chalk'
 import { Box, Newline, Text } from 'ink'
 import Select from 'ink-select-input'
 import SelectMultiple from './components/SelectMultiple'
@@ -17,6 +18,15 @@ const initialState: { panel: T.PanelConfig } = {
 function App() {
 	const [state, setState] = React.useState(initialState)
 
+	const setPanel = React.useCallback((panel: T.PanelConfig | string) => {
+		console.log(
+			`\nSelected panel: ${chalk.yellow(JSON.stringify(panel, null, 2))}`,
+		)
+		internalSetState({
+			panel: typeof panel === 'string' ? getPanel(panel) : panel,
+		})
+	}, [])
+
 	const internalSetState = React.useCallback(
 		(s: ((s: typeof state) => typeof state | void) | typeof state) => {
 			if (typeof s === 'function') {
@@ -32,12 +42,8 @@ function App() {
 		[],
 	)
 
-	const onSelectPanel = React.useCallback((panel: T.PanelConfig) => {
-		internalSetState({ panel })
-	}, [])
-
 	const onSelectMultipleSubmit = React.useCallback((items) => {
-		console.log(items)
+		console.log(`Selecting multiple options: ${JSON.stringify(items, null, 2)}`)
 	}, [])
 
 	React.useEffect(() => {
@@ -49,7 +55,7 @@ function App() {
 	return (
 		<Box padding={3} flexDirection="column">
 			<Text color="yellow">
-				{state.panel?.label}
+				{state.panel?.label || state.panel?.panel?.label}
 				<Newline />
 			</Text>
 			<Box flexDirection="column">
@@ -57,10 +63,13 @@ function App() {
 					<Select
 						initialIndex={0}
 						items={state.panel.items}
-						onSelect={onSelectPanel}
+						onSelect={setPanel as any}
 					/>
 				) : state.panel.type === 'select-multiple' ? (
-					<SelectMultiple />
+					<SelectMultiple
+						options={state.panel.panel.options}
+						onSubmit={onSelectMultipleSubmit}
+					/>
 				) : state.panel.type === 'input' ? (
 					<Input />
 				) : null}
