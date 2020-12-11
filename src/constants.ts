@@ -13,8 +13,14 @@ export const RETRIEVE_NOODL_PROPERTIES = 'RETRIEVE_NOODL_PROPERTIES'
 export const RETRIEVE_NOODL_OBJECTS_WITH_KEYS =
 	'RETRIEVE_NOODL_OBJECTS_WITH_KEYS'
 
+export const retrieveObjectsPanels = {
+	RETRIEVE_OBJECTS: 'retrieve-objects',
+	RETRIEVED_OBJECTS: 'retrieved-objects',
+	SAVE_RETRIEVED_OBJECTS: 'save-retrieved-objects',
+}
+
 export const panel = {
 	INIT: 'init',
-	RETRIEVE_OBJECTS: 'retrieve-objects',
 	RETRIEVE_KEYWORDS: 'retrieve-keywords',
+	...retrieveObjectsPanels,
 }
