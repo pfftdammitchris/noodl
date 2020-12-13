@@ -11,7 +11,8 @@
 		"build": "babel src --extensions \".ts,.tsx\" --out-dir dist",
 		"prestart": "rm -rf dist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
-		"babel": "cross-env DEV=true CI=false babel src --extensions \".ts,.tsx\" --watch --out-dir dist",
+		"babel:start": "babel babel/babel-plugin-noodl.js --out-dir babel/output --source-maps inline --watch babel/babel-plugin-noodl.js",
+		"babel:dev": "npx ts-node-dev --respawn --transpile-only scripts/dev.ts",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src src/**/*.test.ts"
 	},
 	"files": [
@@ -30,6 +31,7 @@
 		"ink-spinner": "^4.0.1",
 		"ink-table": "^3.0.0",
 		"ink-text-input": "^4.0.1",
+		"json-schema-to-typescript": "^10.0.0",
 		"lodash": "^4.17.20",
 		"meow": "^8.0.0",
 		"react": "^17.0.1",
@@ -38,14 +40,20 @@
 	"devDependencies": {
 		"@babel/cli": "^7.12.10",
 		"@babel/core": "^7.12.10",
+		"@babel/generator": "^7.12.10",
+		"@babel/parser": "^7.12.10",
 		"@babel/plugin-proposal-class-properties": "^7.12.1",
 		"@babel/plugin-proposal-private-methods": "^7.12.1",
 		"@babel/plugin-transform-runtime": "^7.12.10",
 		"@babel/preset-env": "^7.12.10",
 		"@babel/preset-react": "^7.12.10",
 		"@babel/preset-typescript": "^7.12.7",
+		"@babel/template": "^7.12.7",
+		"@babel/traverse": "^7.12.10",
+		"@babel/types": "^7.12.10",
 		"@sindresorhus/tsconfig": "^0.8.0",
 		"@types/chai": "^4.2.14",
+		"@types/fs-extra": "^9.0.5",
 		"@types/ink-big-text": "^1.2.0",
 		"@types/ink-divider": "^2.0.1",
 		"@types/lodash": "^4.14.165",
@@ -62,6 +70,7 @@
 		"fs-extra": "^9.0.1",
 		"ink-testing-library": "^2.1.0",
 		"mocha": "^8.2.1",
+		"nodemon": "^2.0.6",
 		"ts-mocha": "^8.0.0",
 		"ts-node-dev": "^1.1.1",
 		"typescript": "^4.1.2",
@@ -95,5 +104,15 @@
 		"singleQuote": true,
 		"tabWidth": 2,
 		"trailingComma": "all"
+	},
+	"nodemonConfig": {
+		"watch": [
+			"dist/output/dev.js"
+		],
+		"ignore": [
+			"babel",
+			"src"
+		],
+		"verbose": true
 	}
 }

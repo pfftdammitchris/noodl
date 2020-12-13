@@ -12,7 +12,6 @@ class AppConfigBuilder extends NOODLObject {
 	async build() {
 		let appBaseUrl = this.rootConfig.cadlBaseUrl
 		appBaseUrl += this.rootConfig.cadlMain
-		console.log(this.rootConfig)
 		const { data: yml } = await axios.get(appBaseUrl)
 		this.yml = yml
 		this.json = yaml.parse(yml)
