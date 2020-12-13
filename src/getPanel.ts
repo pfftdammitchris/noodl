@@ -21,6 +21,7 @@ function getPanel(value: string): PanelConfig {
 				panel: {
 					label: 'Select file extensions to keep:',
 					options: ['json', 'yml'],
+					selectedOptions: [],
 				},
 			}
 		case c.panel.RETRIEVE_KEYWORDS:

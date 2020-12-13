@@ -2,6 +2,7 @@ import React from 'react'
 import chalk from 'chalk'
 import { Box, Newline, Text } from 'ink'
 import Select from 'ink-select-input'
+import { ListedItem } from 'ink-multi-select'
 import SelectMultiple from './components/SelectMultiple'
 import Input from './components/Input'
 import createAggregator from './api/createAggregator'
@@ -42,8 +43,12 @@ function App() {
 		[],
 	)
 
-	const onSelectMultipleSubmit = React.useCallback((items) => {
+	const onSelectMultipleSubmit = React.useCallback((items: ListedItem[]) => {
 		console.log(`Selecting multiple options: ${JSON.stringify(items, null, 2)}`)
+	}, [])
+
+	const onSelectMultipleItemSelect = React.useCallback((item: ListedItem) => {
+		console.log(`Selected option: ${JSON.stringify(item, null, 2)}`)
 	}, [])
 
 	React.useEffect(() => {
@@ -67,8 +72,19 @@ function App() {
 					/>
 				) : state.panel.type === 'select-multiple' ? (
 					<SelectMultiple
+						defaultSelected={
+							typeof state.panel.options === 'string'
+								? {
+										label: state.panel.options,
+										key: state.panel.options,
+										value: state.panel.options,
+								  }
+								: state.panel.options?.[0]
+						}
 						options={state.panel.panel.options}
+						selectedOptions={state.panel.panel.selectedOptions}
 						onSubmit={onSelectMultipleSubmit}
+						onSelect={onSelectMultipleItemSelect}
 					/>
 				) : state.panel.type === 'input' ? (
 					<Input />

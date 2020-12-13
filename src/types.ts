@@ -1,3 +1,5 @@
+import { ListedItem } from 'ink-multi-select'
+
 export type ConsoleLog = typeof console.log
 
 export interface Log extends ConsoleLog {
@@ -77,7 +79,8 @@ export interface PanelSelectConfig extends PanelBaseConfig {
 export interface PanelSelectMultipleConfig extends PanelBaseConfig {
 	type: 'select-multiple'
 	panel: {
-		label: string
-		options: string[]
+		label?: string
+		selectedOptions?: ListedItem[]
+		options: (string | ListedItem)[]
 	}
 }
