@@ -56,7 +56,7 @@ function App() {
 	return (
 		<Box padding={3} flexDirection="column">
 			<Text color="yellow">
-				{state.panel?.label || state.panel??.label}
+				{state.panel?.label || state.panel?.label}
 				<Newline />
 			</Text>
 			<Box flexDirection="column">

@@ -1,5 +1,20 @@
+import React from 'react'
 import { PanelConfig } from './types'
 import * as c from './constants'
+
+const initialPanel = {
+	value: c.panel.INIT,
+	label: 'Choose an option: ',
+	type: 'select',
+	items: [
+		createPanel('Retrieve objects', c.panel.RETRIEVE_OBJECTS),
+		createPanel('Retrieve keywords', c.panel.RETRIEVE_KEYWORDS),
+	],
+}
+
+function usePanels() {
+	const [panel, setPanel] = React.useState(initialPanel)
+}
 
 function getPanel(value: string): PanelConfig {
 	switch (value) {
@@ -34,6 +49,10 @@ function getPanel(value: string): PanelConfig {
 		default:
 			throw new Error(`Invalid value for panel: ${value}`)
 	}
+}
+
+function createPanel(label: string, value: string, opts?: any) {
+	return { label, value, ...opts }
 }
 
 export default getPanel
