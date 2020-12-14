@@ -11,6 +11,7 @@ function SelectMultiple({
 		<InkSelectMultiple
 			selected={selectedOptions}
 			items={options?.map((option) => ({
+				key: typeof option === 'string' ? option : option.value,
 				value: typeof option === 'string' ? option : option.value,
 				label: typeof option === 'string' ? option : option.label,
 			}))}
