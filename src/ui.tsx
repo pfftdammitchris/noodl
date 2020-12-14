@@ -44,11 +44,7 @@ function App() {
 	)
 
 	const onSelectMultipleSubmit = React.useCallback((items: ListedItem[]) => {
-		console.log(`Selecting multiple options: ${items.length}`)
-	}, [])
-
-	const onSelectMultipleItemSelect = React.useCallback((item: ListedItem) => {
-		console.log(`Selected option: ${item}`)
+		console.log(`Selecting multiple options: ${JSON.stringify(items, null, 2)}`)
 	}, [])
 
 	React.useEffect(() => {
@@ -57,12 +53,10 @@ function App() {
 		})
 	}, [])
 
-	console.log(state.panel)
-
 	return (
 		<Box padding={3} flexDirection="column">
 			<Text color="yellow">
-				{state.panel?.label || state.panel?.panel?.label}
+				{state.panel?.label || state.panel??.label}
 				<Newline />
 			</Text>
 			<Box flexDirection="column">
@@ -74,10 +68,9 @@ function App() {
 					/>
 				) : state.panel.type === 'select-multiple' ? (
 					<SelectMultiple
-						options={state.panel.panel.options}
-						selectedOptions={state.panel.selectedOptions}
+						options={state.panel.options}
+						selected={state.panel.selected}
 						onSubmit={onSelectMultipleSubmit}
-						onSelect={onSelectMultipleItemSelect}
 					/>
 				) : state.panel.type === 'input' ? (
 					<Input />

@@ -4,12 +4,12 @@ import { PanelSelectMultipleConfig } from '../types'
 
 function SelectMultiple({
 	options,
-	selectedOptions,
+	selected,
 	...rest
 }: MultiSelectProps & PanelSelectMultipleConfig['panel']) {
 	return (
 		<InkSelectMultiple
-			selected={selectedOptions}
+			selected={selected}
 			items={options?.map((option) => ({
 				key: typeof option === 'string' ? option : option.value,
 				value: typeof option === 'string' ? option : option.value,

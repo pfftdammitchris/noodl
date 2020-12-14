@@ -78,9 +78,7 @@ export interface PanelSelectConfig extends PanelBaseConfig {
 
 export interface PanelSelectMultipleConfig extends PanelBaseConfig {
 	type: 'select-multiple'
-	panel: {
-		label?: string
-		selectedOptions?: ListedItem[]
-		options: (string | ListedItem)[]
-	}
+	label?: string
+	selected: ListedItem[]
+	options: (string | ListedItem)[]
 }
