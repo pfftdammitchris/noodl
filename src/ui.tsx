@@ -13,20 +13,12 @@ import * as T from './types'
 let aggregator: ReturnType<typeof createAggregator>
 
 const initialState: { panel: T.PanelConfig } = {
+	cache: {},
 	panel: getPanel(c.panel.INIT),
 }
 
 function App() {
 	const [state, setState] = React.useState(initialState)
-
-	const setPanel = React.useCallback((panel: T.PanelConfig | string) => {
-		console.log(
-			`\nSelected panel: ${chalk.yellow(JSON.stringify(panel, null, 2))}`,
-		)
-		internalSetState({
-			panel: typeof panel === 'string' ? getPanel(panel) : panel,
-		})
-	}, [])
 
 	const internalSetState = React.useCallback(
 		(s: ((s: typeof state) => typeof state | void) | typeof state) => {
@@ -42,6 +34,22 @@ function App() {
 		},
 		[],
 	)
+
+	const setPanel = React.useCallback((panel: T.PanelConfig | string) => {
+		let panel: T.PanelConfig
+		// Initialize a new entry
+		if (!(panel.value in state.cache)) {
+			internalSetState({})
+		} else {
+			internalSetState((prev) => ({ ...prev, cache: { ...prev.state, panel } }))
+		}
+		console.log(
+			`\nSelected panel: ${chalk.yellow(JSON.stringify(panel, null, 2))}`,
+		)
+		internalSetState({
+			panel: typeof panel === 'string' ? getPanel(panel) : panel,
+		})
+	}, [])
 
 	const onSelectMultipleSubmit = React.useCallback((items: ListedItem[]) => {
 		console.log(`Selecting multiple options: ${JSON.stringify(items, null, 2)}`)

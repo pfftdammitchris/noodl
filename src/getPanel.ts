@@ -1,58 +1,73 @@
-import React from 'react'
-import { PanelConfig } from './types'
+import startCase from 'lodash/startCase'
 import * as c from './constants'
 
-const initialPanel = {
-	value: c.panel.INIT,
-	label: 'Choose an option: ',
-	type: 'select',
-	items: [
-		createPanel('Retrieve objects', c.panel.RETRIEVE_OBJECTS),
-		createPanel('Retrieve keywords', c.panel.RETRIEVE_KEYWORDS),
-	],
-}
+class Panel {
+	#placeholder: string = ''
+	value: any
+	label: string
+	type: string
 
-function usePanels() {
-	const [panel, setPanel] = React.useState(initialPanel)
-}
+	constructor(value: any, label: string = '') {
+		this.value = value
+		this.label = label
+	}
 
-function getPanel(value: string): PanelConfig {
-	switch (value) {
-		case c.panel.INIT:
-			return {
-				value: c.panel.INIT,
-				label: 'Choose an option: ',
-				type: 'select',
-				items: [
-					getPanel(c.panel.RETRIEVE_OBJECTS),
-					getPanel(c.panel.RETRIEVE_KEYWORDS),
-				],
-			}
-		case c.panel.RETRIEVE_OBJECTS:
-			return {
-				value: c.panel.RETRIEVE_OBJECTS,
-				label: 'Retrieve objects',
-				type: 'select-multiple',
-				panel: {
-					label: 'Select file extensions to keep:',
-					options: ['json', 'yml'],
-					selected: [],
-				},
-			}
-		case c.panel.RETRIEVE_KEYWORDS:
-			return {
-				value: c.panel.RETRIEVE_KEYWORDS,
-				label: 'Retrieve keywords',
-				type: 'input',
-				placeholder: 'Enter a search keyword',
-			}
-		default:
-			throw new Error(`Invalid value for panel: ${value}`)
+	placeholder(placeholder: string) {
+		this.#placeholder = placeholder
+	}
+
+	toJS() {
+		return {
+			value: this.value,
+			label: startCase(this.label),
+			placeholder: this.#placeholder,
+		}
 	}
 }
 
-function createPanel(label: string, value: string, opts?: any) {
-	return { label, value, ...opts }
+class SelectPanel extends Panel {
+	type = 'select'
+	options: { label: string; value: any }[] = []
+	constructor(...args) {
+		super(...args)
+	}
+	addOption(option: string | SelectPanel['options'][number]) {
+		if (typeof option === 'string') {
+			this.options.push(this.createOption(option))
+		} else {
+			this.options.push(option)
+		}
+		return this
+	}
+	createOption(option: string) {
+		return { label: option, value: option }
+	}
+	toJS() {
+		return { ...super.toJS(), items: this.options }
+	}
+}
+
+const init = new SelectPanel(c.panel.INIT, 'Choose an option')
+	.addOption({
+		label: 'Retrieve objects in json',
+		value: c.panel.RETRIEVE_OBJECTS,
+	})
+	.addOption({
+		label: 'Retrieve objects in yml',
+		value: c.panel.RETRIEVE_OBJECTS,
+	})
+	.addOption({
+		label: 'Retrieve keywords',
+		value: c.panel.RETRIEVE_KEYWORDS,
+	})
+
+function getPanel(name: string) {
+	switch (name) {
+		case 'init':
+			return init
+		default:
+			return null
+	}
 }
 
 export default getPanel
