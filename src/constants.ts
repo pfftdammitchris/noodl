@@ -1,3 +1,6 @@
+export const DEFAULT_BASE_URL = 'https://public.aitmed.com'
+export const DEFAULT_CONFIG = 'aitmed'
+
 export const eventId = {
 	RETRIEVED_ROOT_CONFIG: 'retrieved.root.config',
 	RETRIEVED_APP_CONFIG: 'retrieved.app.config',

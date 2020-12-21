@@ -1,5 +1,7 @@
-import { AxiosError } from 'axios'
+import axios, { AxiosError } from 'axios'
+import yaml from 'yaml'
 import chalk from 'chalk'
+import { PlainObject } from 'scripts/keywords'
 
 export const createConfigURL = (function () {
 	const _root = 'https://public.aitmed.com'
@@ -36,6 +38,22 @@ export function createPlaceholderReplacer(
 		return ''
 	}
 	return replace
+}
+
+export async function getNoodlObject(
+	url: string,
+	opts?: { includeYml?: boolean },
+): Promise<[PlainObject, string | undefined]> {
+	const result = [{}, undefined] as [PlainObject, string | undefined]
+	try {
+		const { data: yml } = axios.get(url)
+		if (opts?.includeYml) result[1] = yml
+		result[0] = yaml.parse(yml)
+		return result
+	} catch (error) {
+		console.error(error)
+		return result
+	}
 }
 
 export const replaceBaseUrlPlaceholder = createPlaceholderReplacer(
