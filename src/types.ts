@@ -1,8 +1,12 @@
 import { ListedItem } from 'ink-multi-select'
+import createAggregator from './api/createAggregator'
+
+export type Aggregator = ReturnType<typeof createAggregator>
 
 export type PanelId = 'select-route' | 'fetch-objects'
 
 export interface Context extends State {
+	aggregator: Aggregator
 	mergeToPanel(item: { label: string; value: any }): void
 }
 
@@ -11,8 +15,6 @@ export type Action = {
 	panel: {
 		id?: PanelId
 		label?: string
-		selectedId?: string
-		highlightedId?: string
 		[key: string]: any
 	}
 }

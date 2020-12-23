@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Newline, Text } from 'ink'
-import Select from 'ink-select-input'
+import Select from '../components/Select'
 import useCtx from '../useCtx'
 
 function SelectRoute({ label = 'Select an option' }: any) {
@@ -26,12 +26,6 @@ function SelectRoute({ label = 'Select an option' }: any) {
 			<Text color="yellow">{label}</Text>
 			<Newline />
 			<Select
-				indicatorComponent={({ children, isSelected }) => (
-					<Text color={isSelected ? 'magentaBright' : undefined}>
-						{isSelected ? '>' : null} {children}
-					</Text>
-				)}
-				initialIndex={0}
 				items={items}
 				onHighlight={onHighlightPanel}
 				onSelect={onSelectPanel}

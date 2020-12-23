@@ -2,11 +2,11 @@ import React from 'react'
 import produce from 'immer'
 import { WritableDraft } from 'immer/dist/internal'
 import { Provider } from './useCtx'
-import { Action, State } from './types'
+import { Action, Context, State } from './types'
 import createAggregator from './api/createAggregator'
 import PanelRenderer from './PanelRenderer'
 
-let aggregator: ReturnType<typeof createAggregator>
+let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
 const initialState: State = {
 	panel: {
@@ -39,12 +39,13 @@ const reducer = produce(
 function App() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
 
-	const ctx = {
+	const ctx: Context = {
 		...state,
+		aggregator,
 		mergeToPanel: React.useCallback((panel: any) => {
 			dispatch({ type: 'merge-to-panel', panel })
 		}, []),
-	}
+	} as Context
 
 	return (
 		<Provider value={ctx}>
