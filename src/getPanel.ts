@@ -1,6 +1,9 @@
 import React from 'react'
-import { PanelConfig } from './types'
+import chalk from 'chalk'
+import { ListedItem } from 'ink-multi-select'
+import createAggregator from './api/createAggregator'
 import * as c from './constants'
+import * as T from './types'
 
 const initialPanel = {
 	value: c.panel.INIT,
@@ -12,11 +15,29 @@ const initialPanel = {
 	],
 }
 
-function usePanels() {
+function usePanels({ aggregator }: { aggregator: ReturnType<typeof createAggregator>}) {
 	const [panel, setPanel] = React.useState(initialPanel)
+
+
+
+	const onSelectMultipleSubmit = React.useCallback((items: ListedItem[]) => {
+		console.log(`Selecting multiple options: ${JSON.stringify(items, null, 2)}`)
+	}, [])
+
+	React.useEffect(() => {
+		aggregator = createAggregator({
+			config: 'message',
+		})
+	}, [])
+
+return {
+	panel,
+	setPanel,
+	onSelectMultipleSubmit,
+}
 }
 
-function getPanel(value: string): PanelConfig {
+function getPanel(value: string): T.PanelConfig {
 	switch (value) {
 		case c.panel.INIT:
 			return {
