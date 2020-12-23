@@ -1,5 +1,40 @@
 import { ListedItem } from 'ink-multi-select'
 
+export type PanelId = 'select-route' | 'fetch-objects'
+
+export interface Context extends State {
+	mergeToPanel(item: { label: string; value: any }): void
+}
+
+export type Action = {
+	type: 'merge-to-panel'
+	panel: {
+		id?: PanelId
+		label?: string
+		selectedId?: string
+		highlightedId?: string
+		[key: string]: any
+	}
+}
+
+export interface State {
+	panel: {
+		id: PanelId
+		label: string
+		[key: string]: any
+	}
+	panels: {
+		'select-route': {
+			selected: PanelId
+			[key: string]: any
+		}
+		'fetch-objects': {
+			exts: ('json' | 'yml')[]
+			[key: string]: any
+		}
+	}
+}
+
 export type ConsoleLog = typeof console.log
 
 export interface Log extends ConsoleLog {

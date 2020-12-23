@@ -1,19 +1,20 @@
 import React from 'react'
 import chalk from 'chalk'
 import { ListedItem } from 'ink-multi-select'
-import createAggregator from './api/createAggregator'
-import * as c from './constants'
-import * as T from './types'
+import createAggregator from '../src/api/createAggregator'
+import * as c from '../src/constants'
+import * as T from '../src/types'
 
-const initialPanel = {
-	value: c.panel.INIT,
-	label: 'Choose an option: ',
-	type: 'select',
-	items: [
-		createPanel('Retrieve objects', c.panel.RETRIEVE_OBJECTS),
-		createPanel('Retrieve keywords', c.panel.RETRIEVE_KEYWORDS),
-	],
-}
+class Panel {
+	#placeholder: string = ''
+	value: any
+	label: string
+	type: string
+
+	constructor(value: any, label: string = '') {
+		this.value = value
+		this.label = label
+	}
 
 function usePanels({ aggregator }: { aggregator: ReturnType<typeof createAggregator>}) {
 	const [panel, setPanel] = React.useState(initialPanel)
@@ -72,8 +73,27 @@ function getPanel(value: string): T.PanelConfig {
 	}
 }
 
-function createPanel(label: string, value: string, opts?: any) {
-	return { label, value, ...opts }
+const init = new SelectPanel(c.panel.INIT, 'Choose an option')
+	.addOption({
+		label: 'Retrieve objects in json',
+		value: c.panel.RETRIEVE_OBJECTS,
+	})
+	.addOption({
+		label: 'Retrieve objects in yml',
+		value: c.panel.RETRIEVE_OBJECTS,
+	})
+	.addOption({
+		label: 'Retrieve keywords',
+		value: c.panel.RETRIEVE_KEYWORDS,
+	})
+
+function getPanel(name: string) {
+	switch (name) {
+		case 'init':
+			return init
+		default:
+			return null
+	}
 }
 
 export default getPanel

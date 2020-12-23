@@ -1,45 +1,55 @@
 import React from 'react'
-import { Box, Newline, Text } from 'ink'
-import Select from 'ink-select-input'
-import usePanels from './getPanel'
-import SelectMultiple from './components/SelectMultiple'
-import Input from './components/Input'
+import produce from 'immer'
+import { WritableDraft } from 'immer/dist/internal'
+import { Provider } from './useCtx'
+import { Action, State } from './types'
 import createAggregator from './api/createAggregator'
+import PanelRenderer from './PanelRenderer'
 
 let aggregator: ReturnType<typeof createAggregator>
 
+const initialState: State = {
+	panel: {
+		id: 'select-route',
+		label: 'Select a route',
+		options: ['select-route', 'fetch-objects'],
+	},
+	panels: {
+		'select-route': {
+			selectedId: 'fetch-objects',
+			highlightedId: 'fetch-objects',
+		},
+		'fetch-objects': {
+			exts: [],
+		},
+	},
+}
+
+const reducer = produce(
+	(draft: WritableDraft<State> = initialState, action: Action): void => {
+		switch (action.type) {
+			case 'merge-to-panel':
+				return void Object.keys(action.panel).forEach(
+					(key) => (draft.panel[key] = action.panel[key]),
+				)
+		}
+	},
+)
 
 function App() {
-	const {
-		panel,
-		setPanel,
-		onSelectMultipleSubmit,
-	} = usePanels({ aggregator })
+	const [state, dispatch] = React.useReducer(reducer, initialState)
+
+	const ctx = {
+		...state,
+		mergeToPanel: React.useCallback((panel: any) => {
+			dispatch({ type: 'merge-to-panel', panel })
+		}, []),
+	}
 
 	return (
-		<Box padding={3} flexDirection="column">
-			<Text color="yellow">
-				{panel?.label || panel?.label}
-				<Newline />
-			</Text>
-			<Box flexDirection="column">
-				{panel.type === 'select' ? (
-					<Select
-						initialIndex={0}
-						items={panel.items}
-						onSelect={setPanel}
-					/>
-				) : panel.type === 'select-multiple' ? (
-					<SelectMultiple
-						options={panel.options}
-						selected={panel.selected}
-						onSubmit={onSelectMultipleSubmit}
-					/>
-				) : panel.type === 'input' ? (
-					<Input />
-				) : null}
-			</Box>
-		</Box>
+		<Provider value={ctx}>
+			<PanelRenderer id={state?.panel.id} />
+		</Provider>
 	)
 }
 
