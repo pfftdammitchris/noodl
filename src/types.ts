@@ -11,16 +11,29 @@ export interface Context extends State {
 	mergeToPanel(item: { label: string; value: any }): void
 }
 
-export type Action = {
-	type: 'merge-to-panel'
-	panel: {
-		id?: PanelId
-		label?: string
-		[key: string]: any
-	}
-}
+export type Action =
+	| { type: 'set-cli-config'; config: State['cliConfig'] }
+	| {
+			type: 'merge-to-panel'
+			panel: {
+				id?: PanelId
+				label?: string
+				[key: string]: any
+			}
+	  }
 
 export interface State {
+	cliConfig: {
+		server?: {
+			path?: string
+		}
+		json?: {
+			path?: string
+		}
+		yml?: {
+			path?: string
+		}
+	}
 	panel: {
 		id: PanelId
 		label: string

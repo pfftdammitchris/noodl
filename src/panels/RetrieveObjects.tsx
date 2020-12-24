@@ -3,17 +3,17 @@ import { Box, Newline, Text } from 'ink'
 import fs from 'fs-extra'
 import chalk from 'chalk'
 import produce, { Draft } from 'immer'
-import mkdirp from 'mkdirp'
 import TextInput from 'ink-text-input'
 import useCtx from '../useCtx'
 import Select from '../components/Select'
-import { getFilePath } from '../utils/common'
+import { withJsonExt, withYmlExt } from '../utils/common'
 
 type Ext = 'json' | 'yml' | 'json-yml'
 
 export type Action =
 	| { type: 'set-config'; config: string }
 	| { type: 'set-ext'; ext: Ext }
+	| { type: 'set-status-message'; statusMessage: string }
 	| {
 			type: 'add-object'
 			json?: { [key: string]: { [key: string]: any } }
@@ -28,7 +28,7 @@ export interface State {
 		json: { [name: string]: { [key: string]: any } }
 		yml: { [name: string]: string }
 	}
-	status: null | 'fetching-root-config' | 'fetching-app-config'
+	statusMessage: string
 	step: {
 		current: 'set-ext' | 'set-config' | 'fetch-objects'
 		items: State['step']['current'][]
@@ -42,7 +42,7 @@ const initialState: State = {
 		json: {},
 		yml: {},
 	},
-	status: null,
+	statusMessage: '',
 	step: {
 		current: 'set-ext',
 		items: ['set-ext', 'set-config', 'fetch-objects'],
@@ -63,13 +63,18 @@ const reducer = produce((draft: Draft<State>, action: Action) => {
 				draft.step.current = 'fetch-objects'
 			}
 			break
+		case 'set-status-message':
+			if (draft.statusMessage !== action.statusMessage) {
+				draft.statusMessage = action.statusMessage
+			}
+			break
 	}
 })
 
 function RetrieveObjectsPanel() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
 	const [configInput, setConfigInput] = React.useState('')
-	const { aggregator } = useCtx()
+	const { aggregator, cliConfig } = useCtx()
 
 	const items = [
 		{ label: 'JSON + YML', value: 'json-yml' },
@@ -94,32 +99,54 @@ function RetrieveObjectsPanel() {
 
 	React.useEffect(() => {
 		if (state.config) {
+			const exts = state.ext.split('-')
+
+			fs.mkdirpSync(cliConfig.json?.path as string)
+			fs.mkdirpSync(cliConfig.yml?.path as string)
+
 			console.log(`Config set to ${chalk.magentaBright(state.config)}`)
+
+			let savedPageCount = 0
+
 			aggregator
-				.init({ loadPreloadPages: true, loadPages: true, version: 'latest' })
-				.then(async ([rootConfig, appConfig]) => {
-					console.log('Retrieved root config')
-					console.log('Retrieved app config [cadlEndpoint]')
-					const writeOpts = { spaces: 2 }
-					const pathToJsonFolder = getFilePath('./data/objects/json')
-					const pathToYmlFolder = getFilePath('./data/objects/yml')
-					await mkdirp(pathToJsonFolder)
-					await mkdirp(pathToYmlFolder)
-					const exts = state.ext.split('-')
-					for (let index = 0; index < exts.length; index++) {
-						const ext = exts[index] as 'json' | 'yml'
-						console.log(ext)
-						console.log(aggregator.get(ext))
-						fs.writeJsonSync(
-							ext === 'json' ? pathToJsonFolder : pathToYmlFolder,
-							aggregator.get(ext),
-							writeOpts,
-						)
-					}
+				.init({
+					version: 'latest',
+					loadPages: {
+						includePreloadPages: true,
+						async onPage(args) {
+							if (typeof args === 'object') {
+								const { name, json, yml } = args
+								try {
+									for (let index = 0; index < exts.length; index++) {
+										const ext = exts[index] as 'json' | 'yml'
+										let filepath = ''
+										if (ext === 'json') {
+											filepath = withJsonExt(`${cliConfig.json?.path}/${name}`)
+											await fs.writeJson(filepath, json, { spaces: 2 })
+										} else if (ext === 'yml') {
+											filepath = withYmlExt(`${cliConfig.yml?.path}/${name}`)
+											await fs.writeFile(filepath, yml, { encoding: 'utf8' })
+										}
+									}
+									savedPageCount++
+								} catch (err) {
+									console.error(
+										`[${chalk.red(`${name} - [${err.name}]`)}]: ${err.message}`,
+									)
+								}
+								console.log(`Saved page ${chalk.yellow(name)}`)
+							}
+						},
+					},
+				})
+				.then(() => {
+					dispatch({
+						type: 'set-status-message',
+						statusMessage: `Saved ${chalk.yellow(savedPageCount)} pages`,
+					})
 				})
 				.catch((err) => {
-					// console.error(`[${chalk.red(err.name)}]: ${err.message}`)
-					console.error(err)
+					console.error(`[${chalk.red(err.name)}]: ${err.message}`)
 				})
 		}
 	}, [state.config])
@@ -146,7 +173,7 @@ function RetrieveObjectsPanel() {
 					/>
 				) : state.config && state.ext ? (
 					<Box padding={1} flexDirection="column">
-						<Text>Fetching...</Text>
+						<Text>{state.statusMessage}</Text>
 					</Box>
 				) : null}
 			</Box>

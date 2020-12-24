@@ -1,8 +1,11 @@
 {
+	"server": {
+		"path": "server"
+	},
 	"json": {
-		"dir": ""
+		"path": "data/objects/json"
 	},
 	"yml": {
-		"dir": ""
+		"path": "data/objects/yml"
 	}
 }

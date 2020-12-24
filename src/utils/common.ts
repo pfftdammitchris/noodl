@@ -104,3 +104,8 @@ export function prettifyErr(err: AxiosError | Error) {
 export function withSuffix(suffix: string) {
 	return (str: string) => `${str}${suffix}`
 }
+
+export const withJsonExt = withSuffix('.json')
+export const withYmlExt = withSuffix('.yml')
+
+export const withEngLocale = withSuffix('_en')

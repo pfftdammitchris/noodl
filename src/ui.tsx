@@ -1,9 +1,12 @@
 import React from 'react'
+import merge from 'lodash/merge'
 import produce from 'immer'
+import fs from 'fs-extra'
 import { WritableDraft } from 'immer/dist/internal'
 import { Provider } from './useCtx'
 import { panelId } from './constants'
 import { Action, Context, PanelId, State } from './types'
+import { getFilePath } from './utils/common'
 import createAggregator from './api/createAggregator'
 import RetrieveObjects from './panels/RetrieveObjects'
 import SelectRoute from './panels/SelectRoute'
@@ -19,6 +22,11 @@ const panels = {
 let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
 const initialState: State = {
+	cliConfig: {
+		server: {},
+		json: {},
+		yml: {},
+	},
 	panel: {
 		id: panelId.INIT,
 		label: 'Select a route',
@@ -48,6 +56,33 @@ function App() {
 	} as Context
 
 	const Panel = panels[state?.panel.id as PanelId]
+
+	React.useEffect(() => {
+		const getDefaultCliConfig = () => ({
+			server: {
+				path: getFilePath('./server'),
+			},
+			json: {
+				path: getFilePath('./data/objects/json'),
+			},
+			yml: {
+				path: getFilePath('./data/objects/yml'),
+			},
+		})
+		if (fs.existsSync(getFilePath('./noodlrc.json'))) {
+			const cliConfig = fs.readJsonSync('./noodlrc.json') as State['cliConfig']
+			dispatch({
+				type: 'set-cli-config',
+				config: merge(getDefaultCliConfig(), cliConfig),
+			})
+		} else {
+			// Set default CLI config
+			dispatch({
+				type: 'set-cli-config',
+				config: getDefaultCliConfig(),
+			})
+		}
+	}, [])
 
 	return (
 		<Provider value={ctx}>

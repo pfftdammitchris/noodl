@@ -13,6 +13,10 @@ export interface ConfigOptions {
 	version?: string | number
 }
 
+export interface OnPage {
+	(opts?: { name: string; json: any; yml: string }): Promise<void> | void
+}
+
 const createAggregator = function (opts?: ConfigOptions) {
 	const api = {
 		rootConfig: null as any,
@@ -29,6 +33,31 @@ const createAggregator = function (opts?: ConfigOptions) {
 
 	const withLocale = withSuffix('_en')
 	const withExt = withSuffix('.yml')
+
+	async function _loadPage(name: string, suffix: string = '') {
+		try {
+			const url = api.appConfig.getPageUrl(name + suffix)
+			objects.yml[name] = (await axios.get(url)).data
+			objects.json[name] = yaml.parse(objects.yml[name] as string)
+
+			return { json: objects.json[name], yml: objects.yml[name] }
+		} catch (error) {
+			if (error.response?.status === 404) {
+				console.log(
+					`[${chalk.red(error.name)}] on page ${chalk.red(
+						name,
+					)}: Could not find page or page not found`,
+				)
+			} else {
+				console.log(
+					`[${chalk.yellow(error.name)}] on page ${chalk.red(name)}: ${
+						error.message
+					}`,
+				)
+			}
+			return { json: {}, yml: '' }
+		}
+	}
 
 	const o = {
 		get(ext?: 'json' | 'yml') {
@@ -47,8 +76,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 			return o
 		},
 		async init(opts?: {
-			loadPreloadPages?: boolean
-			loadPages?: boolean
+			loadPages?: boolean | { includePreloadPages?: boolean; onPage?: OnPage }
 			version?: string | number | 'latest'
 		}) {
 			api.rootConfig = new RootConfig()
@@ -64,101 +92,49 @@ const createAggregator = function (opts?: ConfigOptions) {
 				.build()
 			objects.yml['cadlEndpoint'] = objects.json.cadlEndpoint.yml
 			if (opts?.loadPages) {
-				await o.loadPages({ includePreloadPages: !!opts?.loadPreloadPages })
-			} else if (opts?.loadPreloadPages) await o.loadPreloadPages()
+				await o.loadPages({
+					includePreloadPages: true,
+					...(typeof opts.loadPages === 'object' ? opts.loadPages : undefined),
+				})
+			}
 			return [objects.json[config], objects.json['cadlEndpoint']]
 		},
-		async loadPage(name: string, suffix: string = '') {
-			try {
-				const url = api.appConfig.getPageUrl(name + suffix)
-				objects.yml[name] = (await axios.get(url)).data
-				objects.json[name] = yaml.parse(objects.yml[name] as string)
-				return { json: objects.json[name], yml: objects.yml[name] }
-			} catch (error) {
-				const errorResponse = error.response
-				const errorName = errorResponse?.statusText || error.name
-				if (errorResponse?.status === 404) {
-					console.log(
-						`[${chalk.red(errorName)}]: Could not find page ${chalk.yellow(
-							name,
-						)}`,
-					)
-				} else {
-					console.log(`[${errorName}]: ${error.message}`)
-				}
-				return { json: {}, yml: '' }
-			}
-		},
 		async loadStartPage() {
-			return o.loadPage(api.appConfig.startPage, withExt(withLocale('')))
+			return _loadPage(api.appConfig.startPage, withExt(withLocale('')))
 		},
-		async loadPreloadPages() {
-			const numPages = api.appConfig.preload.length
-			for (let index = 0; index < numPages; index++) {
-				try {
-					const name = api.appConfig.preload[index] as string
-					const { json, yml } = await o.loadPage(
-						api.appConfig.preload[index] as string,
-						withExt(withLocale('')),
-					)
-					objects.json[name] = json
-					objects.yml[name] = yml
-				} catch (error) {
-					console.error(`[${error.name}]: ${error.message}`)
-				}
-			}
+		async loadPreloadPages({ onPage }: { onPage?: OnPage } = {}) {
+			await Promise.all(
+				api.appConfig.preload.map(async (page) => {
+					const result = await _loadPage(page, withExt(withLocale('')))
+					await onPage?.({ name: page, ...result } as any)
+				}),
+			)
 		},
-		async loadPages(opts?: { includePreloadPages?: boolean }) {
-			const loadChunk = async (chunk) => {
-				try {
-					const numItems = chunk.length
-					for (let index = 0; index < numItems; index++) {
-						const name = api.appConfig.pages[index] as string
-						const promise = chunk[index]
-						const { json, yml } = await promise
-						console.log(`Loaded page ${chalk.yellow(name)}`)
-						objects.json[name] = json
-						objects.yml[name] = yml
-					}
-				} catch (error) {
-					console.error(`[${error.name}]: ${error.message}`)
-				}
-			}
-
-			if (opts?.includePreloadPages) await o.loadPreloadPages()
-
-			const pageReqs = api.appConfig.json.page.map((page, index) => ({
-				name: page,
-				req: o.loadPage(
-					api.appConfig.json.page[index] as string,
-					withExt(withLocale('')),
+		async loadPages({
+			chunks = 4,
+			includePreloadPages,
+			onPage,
+		}: {
+			chunks?: number
+			includePreloadPages?: boolean
+			onPage?: OnPage
+		} = {}) {
+			if (includePreloadPages) await o.loadPreloadPages({ onPage })
+			const chunkedPageReqs = chunk(
+				(api.appConfig.json.page as string[]).map(
+					async (page: string): Promise<void> => {
+						const result = await _loadPage(
+							page as string,
+							withExt(withLocale('')),
+						)
+						return onPage?.({ name: page, ...result } as any)
+					},
 				),
-			}))
-
-			const chunkedPageReqs = chunk(pageReqs, 3).map(loadChunk)
-			const numPageReqChunks = chunkedPageReqs.length
-
-			await Promise.all(chunkedPageReqs)
+				chunks,
+			)
+			// Flatten out the promises for parallel reqs
+			await Promise.all(chunkedPageReqs.map((o) => Promise.all(o)))
 		},
-		// async loadPages(opts?: { includePreloadPages?: boolean }) {
-		// 	const promises = []
-		// 	const numPages = api.appConfig.json.page.length
-		// 	if (opts?.includePreloadPages) await o.loadPreloadPages()
-		// 	for (let index = 0; index < numPages; index++) {
-		// 		try {
-		// 			const name = api.appConfig.pages[index] as string
-		// 			const { json, yml } = await o.loadPage(
-		// 				api.appConfig.json.page[index] as string,
-		// 				withExt(withLocale('')),
-		// 			)
-		// 			console.log(`Loaded page ${chalk.yellow(name)}`)
-		// 			objects.json[name] = json
-		// 			objects.yml[name] = yml
-		// 		} catch (error) {
-		// 			console.error(`[${error.name}]: ${error.message}`)
-		// 		}
-		// 	}
-		// },
 	}
 
 	return o
