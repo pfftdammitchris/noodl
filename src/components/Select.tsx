@@ -11,13 +11,13 @@ function Select({
 }: {
 	isSelected?: boolean
 } & SelectInputProps) {
-	const [highlightedItem, setHighlightedItem] = React.useState(
-		items[0]?.value || '',
-	)
+	// const [highlightedItem, setHighlightedItem] = React.useState(
+	// 	items[0]?.value || '',
+	// )
 
-	const onHighlight = React.useCallback((item) => {
-		setHighlightedItem(item.value)
-	}, [])
+	// const onHighlight = React.useCallback((item) => {
+	// 	setHighlightedItem(item.value)
+	// }, [])
 
 	return (
 		<SelectInput
@@ -26,7 +26,7 @@ function Select({
 					{isSelected ? '>' : ' '} {children}
 				</Text>
 			)}
-			onHighlight={onHighlight}
+			// onHighlight={onHighlight}
 			initialIndex={0}
 			items={items}
 			{...rest}

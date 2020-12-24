@@ -2,16 +2,19 @@
 	"name": "noodl-cli",
 	"version": "0.0.1",
 	"license": "MIT",
-	"bin": "dist/cli.js",
 	"engines": {
 		"node": ">=10"
 	},
 	"scripts": {
 		"app": "node dist/cli.js",
-		"build": "babel src --extensions \".ts,.tsx\" --out-dir dist",
+		"prebuild": "rm -rf dist",
+		"build": "tsc",
 		"prestart": "rm -rf dist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
 		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts"
+	},
+	"bin": {
+		"noodl-cli": "dist/cli.js"
 	},
 	"files": [
 		"dist/cli.js"

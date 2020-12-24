@@ -1,4 +1,3 @@
-import { ListedItem } from 'ink-multi-select'
 import { panelId } from './constants'
 import createAggregator from './api/createAggregator'
 
@@ -8,7 +7,12 @@ export type PanelId = typeof panelId[keyof typeof panelId]
 
 export interface Context extends State {
 	aggregator: Aggregator
-	mergeToPanel(item: { label: string; value: any }): void
+	mergeToPanel(item: {
+		id?: string
+		label?: string
+		value?: string
+		highlightedId?: string
+	}): void
 }
 
 export type Action =
@@ -48,9 +52,6 @@ export interface Log extends ConsoleLog {
 	blank(): Log
 }
 
-export type ParseModeModifier = 'default' | 'ui'
-export type ParseMode = 'json' | 'yml'
-
 export interface AppConfig {
 	baseUrl: string
 	assetsUrl: string
@@ -70,56 +71,21 @@ export interface RootConfig {
 	loadingLevel: number
 	versionNumber: number
 	debug: string
-	web: {
+	web?: {
 		cadlVersion: { stable: number; test: number }
 	}
-	ios: {
+	ios?: {
 		cadlVersion: { stable: number; test: number }
 	}
-	android: {
+	android?: {
 		cadlVersion: { stable: number; test: number }
 	}
 	cadlBaseUrl: string
-	cadlMain: string
-	timestamp: number
+	cadlMain?: string
+	timestamp?: number
 }
 
 export interface ObjectResult<T extends { [key: string]: any } = any> {
 	json: T
 	yml: { [key: string]: string }
-}
-
-export type PanelType = 'check' | 'input' | 'select' | 'select-multiple'
-
-export type PanelConfig =
-	| PanelCheckConfig
-	| PanelInputConfig
-	| PanelSelectConfig
-	| PanelSelectMultipleConfig
-
-export interface PanelBaseConfig<S extends string = any> {
-	value: string
-	label: string
-	type: S
-}
-
-export interface PanelCheckConfig extends PanelBaseConfig {
-	type: 'check'
-}
-
-export interface PanelInputConfig extends PanelBaseConfig {
-	type: 'input'
-	placeholder?: string
-}
-
-export interface PanelSelectConfig extends PanelBaseConfig {
-	type: 'select'
-	items: PanelConfig[]
-}
-
-export interface PanelSelectMultipleConfig extends PanelBaseConfig {
-	type: 'select-multiple'
-	label?: string
-	selected: ListedItem[]
-	options: (string | ListedItem)[]
 }

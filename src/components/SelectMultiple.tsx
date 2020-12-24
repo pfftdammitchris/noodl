@@ -1,16 +1,12 @@
 import React from 'react'
 import InkSelectMultiple, { MultiSelectProps } from 'ink-multi-select'
-import { PanelSelectMultipleConfig } from '../types'
 
-function SelectMultiple({
-	options,
-	selected,
-	...rest
-}: MultiSelectProps & PanelSelectMultipleConfig['panel']) {
+// @ts-expect-error
+function SelectMultiple({ options, selected, ...rest }: MultiSelectProps) {
 	return (
 		<InkSelectMultiple
 			selected={selected}
-			items={options?.map((option) => ({
+			items={options?.map((option: any) => ({
 				key: typeof option === 'string' ? option : option.value,
 				value: typeof option === 'string' ? option : option.value,
 				label: typeof option === 'string' ? option : option.label,

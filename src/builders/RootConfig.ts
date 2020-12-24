@@ -1,14 +1,25 @@
 import axios from 'axios'
 import yaml from 'yaml'
-import NOODLObject from '../api/NOODLObject'
+import { RootConfig } from '../types'
+import NOODLObject from '../api/Object'
 import { withSuffix } from '../utils/common'
 
-class RootConfigBuilder extends NOODLObject {
+class RootConfigBuilder extends NOODLObject implements RootConfig {
 	#defaultConfig = 'aitmed'
 	#protocol = 'https'
 	#hostname: string = 'public.aitmed.com'
+	apiHost = ''
+	apiPort = ''
+	webApiHost: string = ''
+	appApiHost: string = ''
+	cadlBaseUrl = ''
+	connectiontimeout: string = ''
+	loadingLevel: number = 0
+	cadlMain = ''
 	config = ''
+	debug: string = ''
 	version: string | number = ''
+	versionNumber: number = 0
 
 	constructor(arg?: any) {
 		super(arg)

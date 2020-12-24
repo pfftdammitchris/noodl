@@ -1,3 +1,4 @@
+// @ts-nocheck
 import axios from 'axios'
 import isPlainObject from 'lodash/isPlainObject'
 import chalk from 'chalk'

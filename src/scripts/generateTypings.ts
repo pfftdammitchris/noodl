@@ -1,3 +1,4 @@
+// @ts-nocheck
 import path from 'path'
 import fs from 'fs-extra'
 import yaml, { createNode, Document } from 'yaml'

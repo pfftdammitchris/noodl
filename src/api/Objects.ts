@@ -31,7 +31,7 @@ class NOODLObjects {
 				const results = {} as any
 				const keys = Object.keys(this.objects)
 				for (let index = 0; index < keys.length; index++) {
-					const k = keys[index]
+					const k = keys[index] as string
 					if (key.test(k)) results[k] = this.objects[k]
 				}
 				return results
@@ -45,12 +45,11 @@ class NOODLObjects {
 	): Promise<{ json: T; yml?: string }> {
 		try {
 			const { data: yml } = await axios.get(url)
-			this.objects[name] = { json: yaml.parse(yml) }
-			this.objects[name]['yml'] = this.options.keepYml ? yml : ''
-			return this.objects[name]
+			this.objects[name] = { json: yaml.parse(yml), yml }
+			return { json: this.objects[name]?.json, yml }
 		} catch (error) {
 			prettifyErr(error)
-			return { json: {} as T }
+			return { json: {} as T, yml: '' }
 		}
 	}
 }

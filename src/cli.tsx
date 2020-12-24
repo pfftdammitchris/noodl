@@ -1,50 +1,30 @@
+#!/usr/bin/env node
 import React from 'react'
-// import updateNotifier from 'update-notifier'
-// import meow from 'meow'
-import {
-	Box,
-	Newline,
-	render,
-	Spacer,
-	Static,
-	Text,
-	Transform,
-	useInput,
-	useStdin,
-	useStdout,
-} from 'ink'
-import BigText from 'ink-big-text'
-import ConfirmInput from 'ink-confirm-input'
-import Divider from 'ink-divider'
-import Spinner from 'ink-spinner'
-import ProgressBar from 'ink-progress-bar'
-import SelectInput from 'ink-select-input'
-import TextInput from 'ink-text-input'
+import meow from 'meow'
+import { render } from 'ink'
 import App from './ui'
 // import pkg from '../package.json'
 
-// Check if update is available
-// updateNotifier({ pkg }).notify({ isGlobal: true })
+// @ts-expect-error
+const cli = meow(
+	`
+	Usage
+	  $ noodl-cli
 
-// const cli = meow(
-// 	`
-// 	Usage
-// 	  $ noodl-cli
+	Options
+		--c <directory>
 
-// 	Options
-// 		--name  Your name
+	Examples
+	  $ noodl-cli --c=noodlrc.json
+	  Using noodlrc.json as the main config
+`,
+	{
+		flags: {
+			name: {
+				type: 'string',
+			},
+		},
+	},
+)
 
-// 	Examples
-// 	  $ noodl-cli --name=Jane
-// 	  Hello, Jane
-// `,
-// 	{
-// 		flags: {
-// 			name: {
-// 				type: 'string',
-// 			},
-// 		},
-// 	},
-// )
-
-render(<App />, {})
+render(<App />)
