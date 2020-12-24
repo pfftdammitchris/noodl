@@ -1,5 +1,7 @@
 import axios from 'axios'
+import chalk from 'chalk'
 import yaml from 'yaml'
+import chunk from 'lodash/chunk'
 import { withSuffix } from '../utils/common'
 import { ObjectResult } from '../types'
 import RootConfig from '../builders/RootConfig'
@@ -61,8 +63,9 @@ const createAggregator = function (opts?: ConfigOptions) {
 				.setRootConfig(objects.json[config] as any)
 				.build()
 			objects.yml['cadlEndpoint'] = objects.json.cadlEndpoint.yml
-			if (opts?.loadPreloadPages) await o.loadPreloadPages()
-			if (opts?.loadPages) await o.loadPages()
+			if (opts?.loadPages) {
+				await o.loadPages({ includePreloadPages: !!opts?.loadPreloadPages })
+			} else if (opts?.loadPreloadPages) await o.loadPreloadPages()
 			return [objects.json[config], objects.json['cadlEndpoint']]
 		},
 		async loadPage(name: string, suffix: string = '') {
@@ -72,7 +75,17 @@ const createAggregator = function (opts?: ConfigOptions) {
 				objects.json[name] = yaml.parse(objects.yml[name] as string)
 				return { json: objects.json[name], yml: objects.yml[name] }
 			} catch (error) {
-				console.error(error)
+				const errorResponse = error.response
+				const errorName = errorResponse?.statusText || error.name
+				if (errorResponse?.status === 404) {
+					console.log(
+						`[${chalk.red(errorName)}]: Could not find page ${chalk.yellow(
+							name,
+						)}`,
+					)
+				} else {
+					console.log(`[${errorName}]: ${error.message}`)
+				}
 				return { json: {}, yml: '' }
 			}
 		},
@@ -96,26 +109,56 @@ const createAggregator = function (opts?: ConfigOptions) {
 			}
 		},
 		async loadPages(opts?: { includePreloadPages?: boolean }) {
-			const numPages = api.appConfig.json.page.length
-			console.info(numPages)
-			console.info(numPages)
-			console.info(numPages)
-			console.info(numPages)
-			if (opts?.includePreloadPages) await o.loadPreloadPages()
-			for (let index = 0; index < numPages; index++) {
+			const loadChunk = async (chunk) => {
 				try {
-					const name = api.appConfig.pages[index] as string
-					const { json, yml } = await o.loadPage(
-						api.appConfig.json.page[index] as string,
-						withExt(withLocale('')),
-					)
-					objects.json[name] = json
-					objects.yml[name] = yml
+					const numItems = chunk.length
+					for (let index = 0; index < numItems; index++) {
+						const name = api.appConfig.pages[index] as string
+						const promise = chunk[index]
+						const { json, yml } = await promise
+						console.log(`Loaded page ${chalk.yellow(name)}`)
+						objects.json[name] = json
+						objects.yml[name] = yml
+					}
 				} catch (error) {
 					console.error(`[${error.name}]: ${error.message}`)
 				}
 			}
+
+			if (opts?.includePreloadPages) await o.loadPreloadPages()
+
+			const pageReqs = api.appConfig.json.page.map((page, index) => ({
+				name: page,
+				req: o.loadPage(
+					api.appConfig.json.page[index] as string,
+					withExt(withLocale('')),
+				),
+			}))
+
+			const chunkedPageReqs = chunk(pageReqs, 3).map(loadChunk)
+			const numPageReqChunks = chunkedPageReqs.length
+
+			await Promise.all(chunkedPageReqs)
 		},
+		// async loadPages(opts?: { includePreloadPages?: boolean }) {
+		// 	const promises = []
+		// 	const numPages = api.appConfig.json.page.length
+		// 	if (opts?.includePreloadPages) await o.loadPreloadPages()
+		// 	for (let index = 0; index < numPages; index++) {
+		// 		try {
+		// 			const name = api.appConfig.pages[index] as string
+		// 			const { json, yml } = await o.loadPage(
+		// 				api.appConfig.json.page[index] as string,
+		// 				withExt(withLocale('')),
+		// 			)
+		// 			console.log(`Loaded page ${chalk.yellow(name)}`)
+		// 			objects.json[name] = json
+		// 			objects.yml[name] = yml
+		// 		} catch (error) {
+		// 			console.error(`[${error.name}]: ${error.message}`)
+		// 		}
+		// 	}
+		// },
 	}
 
 	return o

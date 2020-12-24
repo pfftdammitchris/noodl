@@ -44,7 +44,7 @@ class AppConfigBuilder extends NOODLObject {
 	}
 
 	getPageUrl(pagePath: string) {
-		return `${this.json.baseUrl}/${pagePath}`
+		return `${this.json.baseUrl}${pagePath}`
 	}
 }
 
