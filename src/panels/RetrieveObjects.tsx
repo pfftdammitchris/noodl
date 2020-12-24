@@ -1,10 +1,12 @@
 import React from 'react'
+import { Box, Newline, Text } from 'ink'
+import fs from 'fs-extra'
 import chalk from 'chalk'
 import produce, { Draft } from 'immer'
-import { Box, Newline, Text } from 'ink'
 import TextInput from 'ink-text-input'
 import useCtx from '../useCtx'
 import Select from '../components/Select'
+import { getFilePath } from '../utils/common'
 
 type Ext = 'json' | 'yml' | 'json-yml'
 
@@ -60,42 +62,18 @@ const reducer = produce((draft: Draft<State>, action: Action) => {
 				draft.step.current = 'fetch-objects'
 			}
 			break
-		case 'add-object': {
-			if (action.json || action.yml) {
-				if (action.json) Object.assign(draft.objects.json, action.json)
-				if (action.yml) Object.assign(draft.objects.yml, action.yml)
-			}
-			break
-		}
-		case 'remove-object': {
-			if (action.json) {
-				;(Array.isArray(action.json) ? action.json : [action.json]).forEach(
-					(key) => delete draft.objects.json[key],
-				)
-			}
-			if (action.yml) {
-				;(Array.isArray(action.yml) ? action.yml : [action.yml]).forEach(
-					(key) => delete draft.objects.yml[key],
-				)
-			}
-			break
-		}
 	}
 })
 
 function RetrieveObjectsPanel() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { aggregator } = useCtx()
 	const [configInput, setConfigInput] = React.useState('')
-
-	const addObj = React.useCallback((opts: { json?: any; yml?: any }) => {
-		dispatch({ type: 'add-object', ...opts })
-	}, [])
+	const { aggregator } = useCtx()
 
 	const items = [
+		{ label: 'JSON + YML', value: 'json-yml' },
 		{ label: 'JSON', value: 'json' },
 		{ label: 'YML', value: 'yml' },
-		{ label: 'JSON + YML', value: 'json-yml' },
 	]
 
 	const onSelectExt = React.useCallback(
@@ -109,7 +87,7 @@ function RetrieveObjectsPanel() {
 	)
 
 	const onSubmitConfig = React.useCallback((config) => {
-		aggregator.setConfig(state.config)
+		aggregator.setConfig(config)
 		dispatch({ type: 'set-config', config })
 	}, [])
 
@@ -117,13 +95,28 @@ function RetrieveObjectsPanel() {
 		if (state.config) {
 			console.log(`Config set to ${chalk.magentaBright(state.config)}`)
 			aggregator
-				.init()
-				.then(([rootConfig, appConfig]) => {
+				.init({ loadPreloadPages: true; loadPages: true, version: 'latest' })
+				.then(async ([rootConfig, appConfig]) => {
 					console.log('Retrieved root config')
 					console.log('Retrieved app config [cadlEndpoint]')
+					const writeOpts = { spaces: 2 }
+					const pathToJsonFolder = getFilePath('./data/objects/json/')
+					const pathToYmlFolder = getFilePath('./data/objects/yml/')
+					const exts = state.ext.split('-')
+					for (let index = 0; index < exts.length; index++) {
+						const ext = exts[index] as 'json' | 'yml'
+						console.log(ext)
+						console.log(aggregator.get(ext))
+						fs.writeJsonSync(
+							ext === 'json' ? pathToJsonFolder : pathToYmlFolder,
+							aggregator.get(ext),
+							writeOpts,
+						)
+					}
 				})
 				.catch((err) => {
-					console.error(`[${chalk.red(err.name)}]: ${err.message}`)
+					// console.error(`[${chalk.red(err.name)}]: ${err.message}`)
+					console.error(err)
 				})
 		}
 	}, [state.config])

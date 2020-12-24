@@ -1,9 +1,14 @@
 import axios from 'axios'
 import yaml from 'yaml'
 import NOODLObject from '../api/NOODLObject'
+import { replaceBaseUrlPlaceholder } from '../utils/common'
 
 class AppConfigBuilder extends NOODLObject {
 	rootConfig: any = null
+	assetsUrl = ''
+	baseUrl = ''
+	startPage = ''
+	preload: string[] = []
 
 	constructor(arg?: any) {
 		super(arg)
@@ -19,11 +24,9 @@ class AppConfigBuilder extends NOODLObject {
 			(acc, [key, value]: [string, any]) => {
 				acc[key] =
 					typeof value === 'string'
-						? this.#replaceBaseUrlPlaceholder(
-								value,
-								this.rootConfig.cadlBaseUrl,
-						  )
+						? replaceBaseUrlPlaceholder(value, this.rootConfig.cadlBaseUrl)
 						: value
+
 				return acc
 			},
 			{} as any,
@@ -31,13 +34,18 @@ class AppConfigBuilder extends NOODLObject {
 		return this.json
 	}
 
+	get pages() {
+		return this.json.page
+	}
+
 	setRootConfig(rootConfig: { [key: string]: any }) {
 		this.rootConfig = rootConfig
 		return this
 	}
 
-	#replaceBaseUrlPlaceholder = (str: string, value: any) =>
-		str.replace(/\${cadlBaseUrl}/gi, String(value))
+	getPageUrl(pagePath: string) {
+		return `${this.json.baseUrl}/${pagePath}`
+	}
 }
 
 export default AppConfigBuilder

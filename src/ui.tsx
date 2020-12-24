@@ -2,26 +2,26 @@ import React from 'react'
 import produce from 'immer'
 import { WritableDraft } from 'immer/dist/internal'
 import { Provider } from './useCtx'
-import { Action, Context, State } from './types'
+import { panelId } from './constants'
+import { Action, Context, PanelId, State } from './types'
 import createAggregator from './api/createAggregator'
-import PanelRenderer from './PanelRenderer'
+import RetrieveObjects from './panels/RetrieveObjects'
+import SelectRoute from './panels/SelectRoute'
+import StartServer from './panels/StartServer'
+
+const panels = {
+	[panelId.INIT]: SelectRoute,
+	[panelId.RETRIEVE_OBJECTS]: RetrieveObjects,
+	[panelId.RETRIEVE_KEYWORDS]: null as any,
+	[panelId.START_SERVER]: StartServer,
+}
 
 let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
 const initialState: State = {
 	panel: {
-		id: 'select-route',
+		id: panelId.INIT,
 		label: 'Select a route',
-		options: ['select-route', 'fetch-objects'],
-	},
-	panels: {
-		'select-route': {
-			selectedId: 'fetch-objects',
-			highlightedId: 'fetch-objects',
-		},
-		'fetch-objects': {
-			exts: [],
-		},
 	},
 }
 
@@ -47,9 +47,11 @@ function App() {
 		}, []),
 	} as Context
 
+	const Panel = panels[state?.panel.id as PanelId]
+
 	return (
 		<Provider value={ctx}>
-			<PanelRenderer id={state?.panel.id} />
+			<Panel />
 		</Provider>
 	)
 }

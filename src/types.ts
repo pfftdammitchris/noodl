@@ -1,9 +1,10 @@
 import { ListedItem } from 'ink-multi-select'
+import { panelId } from './constants'
 import createAggregator from './api/createAggregator'
 
 export type Aggregator = ReturnType<typeof createAggregator>
 
-export type PanelId = 'select-route' | 'fetch-objects'
+export type PanelId = typeof panelId[keyof typeof panelId]
 
 export interface Context extends State {
 	aggregator: Aggregator
@@ -24,16 +25,6 @@ export interface State {
 		id: PanelId
 		label: string
 		[key: string]: any
-	}
-	panels: {
-		'select-route': {
-			selected: PanelId
-			[key: string]: any
-		}
-		'fetch-objects': {
-			exts: ('json' | 'yml')[]
-			[key: string]: any
-		}
 	}
 }
 
@@ -80,9 +71,9 @@ export interface RootConfig {
 	timestamp: number
 }
 
-export interface ObjectResult<T = any> {
+export interface ObjectResult<T extends { [key: string]: any } = any> {
 	json: T
-	yml?: string
+	yml: { [key: string]: string }
 }
 
 export type PanelType = 'check' | 'input' | 'select' | 'select-multiple'

@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+import path from 'path'
 import yaml from 'yaml'
 import chalk from 'chalk'
 import { PlainObject } from 'scripts/keywords'
@@ -38,6 +39,10 @@ export function createPlaceholderReplacer(
 		return ''
 	}
 	return replace
+}
+
+export function getFilePath(...paths: string[]) {
+	return path.resolve(path.join(process.cwd(), ...paths))
 }
 
 export async function getNoodlObject(
@@ -94,4 +99,8 @@ export function prettifyErr(err: AxiosError | Error) {
 		}
 	}
 	return `[${chalk.yellow(err.name)}]: ${chalk.red(err.message)}`
+}
+
+export function withSuffix(suffix: string) {
+	return (str: string) => `${str}${suffix}`
 }

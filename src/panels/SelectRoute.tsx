@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Newline, Text } from 'ink'
+import { panelId } from '../constants'
 import Select from '../components/Select'
 import useCtx from '../useCtx'
 
@@ -7,8 +8,9 @@ function SelectRoute({ label = 'Select an option' }: any) {
 	const { mergeToPanel } = useCtx()
 
 	const items = [
-		{ label: 'Fetch objects', value: 'fetch-objects' },
-		{ label: 'Fetch keywords', value: 'fetch-keywords' },
+		{ label: 'Fetch objects', value: panelId.RETRIEVE_OBJECTS },
+		{ label: 'Fetch keywords', value: panelId.RETRIEVE_KEYWORDS },
+		{ label: 'Start server', value: panelId.START_SERVER },
 	]
 
 	const onHighlightPanel = React.useCallback(

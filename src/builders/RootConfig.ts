@@ -1,6 +1,7 @@
 import axios from 'axios'
 import yaml from 'yaml'
 import NOODLObject from '../api/NOODLObject'
+import { withSuffix } from '../utils/common'
 
 class RootConfigBuilder extends NOODLObject {
 	#defaultConfig = 'aitmed'
@@ -14,11 +15,11 @@ class RootConfigBuilder extends NOODLObject {
 	}
 
 	async build() {
+		const withExt = withSuffix('.yml')
 		let baseUrl = this.#protocol + '://'
 		baseUrl += this.#hostname + '/config'
 		baseUrl += '/'
-		baseUrl += this.config || this.#defaultConfig
-		baseUrl += '.yml'
+		baseUrl += withExt(this.config || this.#defaultConfig)
 		const { data: yml } = await axios.get(baseUrl)
 		this.yml = yml
 		this.json = yaml.parse(yml)
