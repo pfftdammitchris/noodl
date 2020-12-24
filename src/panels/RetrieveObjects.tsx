@@ -3,6 +3,7 @@ import { Box, Newline, Text } from 'ink'
 import fs from 'fs-extra'
 import chalk from 'chalk'
 import produce, { Draft } from 'immer'
+import mkdirp from 'mkdirp'
 import TextInput from 'ink-text-input'
 import useCtx from '../useCtx'
 import Select from '../components/Select'
@@ -95,13 +96,15 @@ function RetrieveObjectsPanel() {
 		if (state.config) {
 			console.log(`Config set to ${chalk.magentaBright(state.config)}`)
 			aggregator
-				.init({ loadPreloadPages: true;qq loadPages: true, version: 'latest' })
+				.init({ loadPreloadPages: true, loadPages: true, version: 'latest' })
 				.then(async ([rootConfig, appConfig]) => {
 					console.log('Retrieved root config')
 					console.log('Retrieved app config [cadlEndpoint]')
 					const writeOpts = { spaces: 2 }
 					const pathToJsonFolder = getFilePath('./data/objects/json/')
 					const pathToYmlFolder = getFilePath('./data/objects/yml/')
+					await mkdirp(pathToJsonFolder)
+					await mkdirp(pathToYmlFolder)
 					const exts = state.ext.split('-')
 					for (let index = 0; index < exts.length; index++) {
 						const ext = exts[index] as 'json' | 'yml'
