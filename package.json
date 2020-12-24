@@ -17,7 +17,7 @@
 		"noodl": "dist/cli.js"
 	},
 	"files": [
-		"dist/cli.js"
+		"dist"
 	],
 	"dependencies": {
 		"axios": "^0.21.0",
