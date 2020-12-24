@@ -14,7 +14,7 @@
 		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts"
 	},
 	"bin": {
-		"noodl-cli": "dist/cli.js"
+		"noodl": "dist/cli.js"
 	},
 	"files": [
 		"dist/cli.js"
