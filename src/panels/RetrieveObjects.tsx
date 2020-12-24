@@ -95,7 +95,7 @@ function RetrieveObjectsPanel() {
 		if (state.config) {
 			console.log(`Config set to ${chalk.magentaBright(state.config)}`)
 			aggregator
-				.init({ loadPreloadPages: true; loadPages: true, version: 'latest' })
+				.init({ loadPreloadPages: true;qq loadPages: true, version: 'latest' })
 				.then(async ([rootConfig, appConfig]) => {
 					console.log('Retrieved root config')
 					console.log('Retrieved app config [cadlEndpoint]')
