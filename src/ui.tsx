@@ -73,7 +73,7 @@ function App() {
 			const cliConfig = fs.readJsonSync('./noodlrc.json') as State['cliConfig']
 			dispatch({
 				type: 'set-cli-config',
-				config: merge(getDefaultCliConfig(), cliConfig),
+				config: merge(getDefaultCliConfig(), cliConfig || {}),
 			})
 		} else {
 			// Set default CLI config
