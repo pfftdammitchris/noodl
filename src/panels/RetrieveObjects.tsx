@@ -101,8 +101,8 @@ function RetrieveObjectsPanel() {
 					console.log('Retrieved root config')
 					console.log('Retrieved app config [cadlEndpoint]')
 					const writeOpts = { spaces: 2 }
-					const pathToJsonFolder = getFilePath('./data/objects/json/')
-					const pathToYmlFolder = getFilePath('./data/objects/yml/')
+					const pathToJsonFolder = getFilePath('./data/objects/json')
+					const pathToYmlFolder = getFilePath('./data/objects/yml')
 					await mkdirp(pathToJsonFolder)
 					await mkdirp(pathToYmlFolder)
 					const exts = state.ext.split('-')

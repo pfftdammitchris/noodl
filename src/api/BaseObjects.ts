@@ -77,9 +77,9 @@ class BaseObjects extends Objects implements IBaseObjects {
 			this.baseUrl,
 		)
 
+		this.emit('app.base.url', this.appBaseUrl)
 		this.emit('app.config', appConfig)
 		this.emit('base.url', this.baseUrl)
-		this.emit('app.base.url', this.appBaseUrl)
 
 		const preloadPages = appConfig.preload || []
 		const numPages = preloadPages.length
