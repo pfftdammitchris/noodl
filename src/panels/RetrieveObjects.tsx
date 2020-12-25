@@ -13,24 +13,15 @@ import { withJsonExt, withYmlExt } from '../utils/common'
 type Ext = 'json' | 'yml' | 'json-yml'
 
 export type Action =
-	| { type: 'set-processed-page'; page: string }
+	| { type: 'set-caption'; caption: string }
 	| { type: 'set-config'; config: string }
 	| { type: 'set-ext'; ext: Ext }
-	| { type: 'set-caption'; caption: string }
-	| {
-			type: 'add-object'
-			json?: { [key: string]: { [key: string]: any } }
-			yml?: { [key: string]: string }
-	  }
-	| { type: 'remove-object'; json?: string | string[]; yml?: string | string[] }
 
 export interface State {
 	ext: Ext | ''
 	config: string
 	objects: {
 		processedPages: string[]
-		json: { [name: string]: { [key: string]: any } }
-		yml: { [name: string]: string }
 	}
 	caption: string[]
 	step: {
@@ -44,8 +35,6 @@ const initialState: State = {
 	config: '',
 	objects: {
 		processedPages: [],
-		json: {},
-		yml: {},
 	},
 	caption: [],
 	step: {
@@ -56,11 +45,6 @@ const initialState: State = {
 
 const reducer = produce((draft: WritableDraft<State>, action: Action): void => {
 	switch (action.type) {
-		case 'set-processed-page':
-			return void (
-				!draft.objects.processedPages.includes(action.page) &&
-				draft.objects.processedPages.push(action.page)
-			)
 		case 'set-ext':
 			if (draft.ext !== action.ext) {
 				draft.ext = action.ext
