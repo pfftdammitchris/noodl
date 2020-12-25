@@ -26,11 +26,22 @@ export type Action =
 			}
 	  }
 
+export interface CLIConfigObject {
+	server: {
+		dir: string | string[]
+	}
+	objects: {
+		json: {
+			dir: string | string[]
+		}
+		yml: {
+			dir: string | string[]
+		}
+	}
+}
+
 export interface State {
 	cliConfig: {
-		server?: {
-			path?: string
-		}
 		json?: {
 			path?: string
 		}

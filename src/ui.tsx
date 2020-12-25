@@ -59,9 +59,6 @@ function App() {
 
 	React.useEffect(() => {
 		const getDefaultCliConfig = () => ({
-			server: {
-				path: getFilePath('./server'),
-			},
 			json: {
 				path: getFilePath('./data/objects/json'),
 			},
