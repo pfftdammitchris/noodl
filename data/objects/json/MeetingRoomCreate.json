@@ -50,7 +50,7 @@
         "bvid": ".Global.currentUser.vertex.id",
         "name": {
           "roomName": "New Room",
-          "videoProvider": "twilio"
+          "videoProvider": ".Global.currentUser.vertex.name.userName"
         }
       },
       "edgeAPI": {
@@ -185,7 +185,7 @@
                   },
                   {
                     "type": "label",
-                    "text": "participants name",
+                    "dataKey": "itemObject.name.videoProvider",
                     "style": {
                       "left": "0.08",
                       "top": "0.08",

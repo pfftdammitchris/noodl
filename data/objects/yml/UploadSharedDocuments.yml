@@ -162,41 +162,41 @@ UploadSharedDocuments:
                   #     textAlign:
                   #       y: center
 
-        - type: button
-          onClick:               
-            - goto: UploadDocuments 
-          text: "Share from My Documents"
-          style:
-            color: "0xFFFFFF"
-            background: "0x388eccff"
-            left: "0.2"
-            top: "0.85"
-            width: "0.6"
-            height: "0.05"
-            border:
-              style: "5"
-            borderRadius: "0"
-            display: inline
-            textAlign:
-              x: center
-              y: center
-        - type: button
-          onClick:               
-            - goto: SharedDocuments
-          text: "Upload in Meeting"
-          style:
-            color: "0xFFFFFF"
-            background: "0x388eccff"
-            left: "0.2"
-            top: "0.93"
-            width: "0.6"
-            height: "0.05"
-            border:
-              style: "5"
-            borderRadius: "0"
-            display: inline
-            textAlign:
-              x: center
-              y: center
+        # - type: button
+        #   onClick:               
+        #     - goto: UploadDocuments 
+        #   text: "Share from My Documents"
+        #   style:
+        #     color: "0xFFFFFF"
+        #     background: "0x388eccff"
+        #     left: "0.2"
+        #     top: "0.85"
+        #     width: "0.6"
+        #     height: "0.05"
+        #     border:
+        #       style: "5"
+        #     borderRadius: "0"
+        #     display: inline
+        #     textAlign:
+        #       x: center
+        #       y: center
+        # - type: button
+        #   onClick:               
+        #     - goto: SharedDocuments
+        #   text: "Upload in Meeting"
+        #   style:
+        #     color: "0xFFFFFF"
+        #     background: "0x388eccff"
+        #     left: "0.2"
+        #     top: "0.93"
+        #     width: "0.6"
+        #     height: "0.05"
+        #     border:
+        #       style: "5"
+        #     borderRadius: "0"
+        #     display: inline
+        #     textAlign:
+        #       x: center
+        #       y: center
 
               

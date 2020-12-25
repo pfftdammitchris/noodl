@@ -118,3 +118,25 @@ PatientDashboard:
               path: contacts.png
             - .PatientDashboardLabel:
               text: EmitRedraw
+        - .PatientDashboardView:
+          onClick:
+            - goto: GotoViewTag#redTag
+          style:
+            top: "0.6"
+          children:
+            - .PatientDashboardImage:
+              path: create.appointment.png
+            - .PatientDashboardLabel:
+              text: goto viewTag
+        - .PatientDashboardView:
+          onClick:
+            # - goto: Contacts
+            - goto: TestRedaw
+          style:
+            top: "0.6"
+            left: "0.55"
+          children:
+            - .PatientDashboardImage:
+              path: contacts.png
+            - .PatientDashboardLabel:
+              text: TestRedaw

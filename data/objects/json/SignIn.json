@@ -159,6 +159,8 @@
       }
     ],
     "formData": {
+      "checkOk": "false",
+      "checkMessage": "no message",
       "countryCode": "+1",
       "phoneNumber": "",
       "password": "",
@@ -413,6 +415,32 @@
                     "placeholder": "your phone number",
                     "dataKey": "formData.phoneNumber",
                     "required": "true",
+                    "onChange": [
+                      {
+                        "emit": {
+                          "actions": [
+                            {
+                              "=.builtIn.typeCheck.phoneNumber": {
+                                "dataIn": {
+                                  "phoneNumber": "=..formData.phoneNumber",
+                                  "countryCode": "=..formData.countryCode"
+                                },
+                                "dataOut": "SignIn.formData.checkOk"
+                              }
+                            },
+                            {
+                              "if": [
+                                "=..formData.checkOk",
+                                "continue",
+                                {
+                                  "..formData.checkMessage@": "Unacceptible phone number format example: 888-999-0000"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ],
                     "style": {
                       "textAlign": {
                         "x": "left"

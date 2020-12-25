@@ -7,6 +7,8 @@ export type PanelId = typeof panelId[keyof typeof panelId]
 
 export interface Context extends State {
 	aggregator: Aggregator
+	setCaption(caption: string): void
+	setErrorCaption(caption: string | Error): void
 	mergeToPanel(item: {
 		id?: string
 		label?: string
@@ -16,7 +18,16 @@ export interface Context extends State {
 }
 
 export type Action =
-	| { type: 'set-cli-config'; config: State['cliConfig'] }
+	| { type: 'set-caption'; caption: string }
+	| { type: 'set-server-options'; options: Partial<State['server']> }
+	| {
+			type: 'set-objects-json-options'
+			options: Partial<State['objects']['json']>
+	  }
+	| {
+			type: 'set-objects-yml-options'
+			options: Partial<State['objects']['yml']>
+	  }
 	| {
 			type: 'merge-to-panel'
 			panel: {
@@ -26,9 +37,32 @@ export type Action =
 			}
 	  }
 
+export interface State {
+	caption: string[]
+	server: {
+		url: string
+		dir: string
+	}
+	objects: {
+		json: {
+			dirs: string[]
+		}
+		yml: {
+			dirs: string[]
+		}
+	}
+	panel: {
+		id: PanelId
+		label: string
+		[key: string]: any
+	}
+}
+
 export interface CLIConfigObject {
 	server: {
-		dir: string | string[]
+		baseUrl: string
+		dir: string
+		port: number
 	}
 	objects: {
 		json: {
@@ -37,22 +71,6 @@ export interface CLIConfigObject {
 		yml: {
 			dir: string | string[]
 		}
-	}
-}
-
-export interface State {
-	cliConfig: {
-		json?: {
-			path?: string
-		}
-		yml?: {
-			path?: string
-		}
-	}
-	panel: {
-		id: PanelId
-		label: string
-		[key: string]: any
 	}
 }
 

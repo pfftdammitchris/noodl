@@ -54,16 +54,16 @@ VideoChat:
   components:
     - type: register
       onEvent: twilioOnPeopleJoin
-      action:
-        actionType: builtIn
-        funcName: hide
-        viewTag: waitForOtherTag
+      actions:
+        - actionType: builtIn
+          funcName: hide
+          viewTag: waitForOtherTag
     - type: register
       onEvent: twilioOnNoParticipant
-      action:
-        actionType: builtIn
-        funcName: show
-        viewTag: waitForOtherTag
+      actions:
+        - actionType: builtIn
+          funcName: show
+          viewTag: waitForOtherTag
     - type: view
       style:
         left: "0"
@@ -117,7 +117,7 @@ VideoChat:
                   x: center
         - type: image
           path: meetingCircle.png
-          viewTag: needHidden
+          viewTag: waitForOtherTag
           style:
             left: "0.4"
             top: "0.4"
@@ -127,9 +127,9 @@ VideoChat:
           borderRadius: 32
         - type: label
           contentType: hidden # passwordHidden
-          # viewTag: waitForOtherTag
+          viewTag: waitForOtherTag
           text: "Waiting for others to join"
-          viewTag: needHidden
+          #viewTag: needHidden
           style:
             left: "0"
             top: "0.55"

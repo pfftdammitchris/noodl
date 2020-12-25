@@ -34,7 +34,8 @@ ContactsList:
       sCondition: .DocType.GetAllContact # favorite bit=1, private bit=0 512 is contact
       _nonce: =.Global._nonce
   contactInfo:
-    document: ""
+    document: 
+      _nonce: =.Global._nonce
     docAPI:
       .DocAPI: "" 
       store:

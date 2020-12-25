@@ -16,6 +16,7 @@ AddDocuments:
         title: ""
         type: ..newDoc.docAPI.store.subtype.mediaType
         data: binFile
+        user: .Global.currentUser.vertex.name.userName
       deat:
         sig: ""
         url: ""     

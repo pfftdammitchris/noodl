@@ -306,19 +306,19 @@ DisplayProfile:
                 borderWidth: "1"
                 textAlign:
                   x: center
-        - type: button
-          text: Share my QR code
-          # onClick:
-          #   - goto: MyQRCode
-          style:
-            top: "0.8"
-            width: "0.5"
-            left: "0.25"
-            height: "0.05"
-            backgroundColor: "0x398FCD"
-            color: "0xffffff"
-            textAlign:
-              x: center        
+        # - type: button
+        #   text: Share my QR code
+        #   onClick:
+        #     - goto: MyQRCode
+        #   style:
+        #     top: "0.8"
+        #     width: "0.5"
+        #     left: "0.25"
+        #     height: "0.05"
+        #     backgroundColor: "0x398FCD"
+        #     color: "0xffffff"
+        #     textAlign:
+        #       x: center        
 
 
 

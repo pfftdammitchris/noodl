@@ -54,7 +54,9 @@
       }
     },
     "contactInfo": {
-      "document": "",
+      "document": {
+        "_nonce": "=.Global._nonce"
+      },
       "docAPI": {
         ".DocAPI": "",
         "store": {

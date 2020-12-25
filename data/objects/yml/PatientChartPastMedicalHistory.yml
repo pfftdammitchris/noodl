@@ -7,8 +7,6 @@ PatientChartPastMedicalHistory:
       value: Anemia
     - key: anxiety
       value: Anxiety
-    - key: asthma
-      value: Asthma  
   # data storage
   pmhObj:
     key: ""
@@ -190,9 +188,9 @@ PatientChartPastMedicalHistory:
                             actions: 
                               - if:
                                 - =.builtIn.array.has:
-                                    dataIn:
-                                      object: =..pmh
-                                      key: $var.key
+                                  dataIn:
+                                    object: =..pmh
+                                    key: $var.key
                                 - =.builtIn.array.removeByKey:
                                     dataIn:
                                       object: =..pmh 

@@ -34,7 +34,8 @@ FavoriteList:
       obfname : "mtime" 
       _nonce: =.Global._nonce
   contactInfo:
-    document: ""
+    document: 
+      _nonce: =.Global._nonce
     docAPI:
       .DocAPI: "" 
       store:

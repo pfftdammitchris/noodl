@@ -4,7 +4,21 @@
     "title": "Invite",
     "init": [
       ".SignInCheck",
-      "..listData.get"
+      "..listData.get",
+      {
+        "if": [
+          "..listData.contactList.doc.0",
+          "continue",
+          {
+            "=.builtIn.checkField": {
+              "dataIn": {
+                "contentType": "messageHidden",
+                "wait": 100
+              }
+            }
+          }
+        ]
+      }
     ],
     "searchData": {
       "searchContact": ""
@@ -144,6 +158,20 @@
                   "top": "0.015",
                   "left": "0.83",
                   "height": "0.03"
+                }
+              },
+              {
+                "type": "label",
+                "contentType": "messageHidden",
+                "text": "No contacts added",
+                "style": {
+                  "left": "0.31",
+                  "top": "0.05",
+                  "width": "0.72",
+                  "height": "0.04",
+                  "color": "0x000058",
+                  "fontSize": "16",
+                  "isHidden": "true"
                 }
               }
             ]

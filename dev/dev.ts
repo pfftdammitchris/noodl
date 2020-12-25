@@ -6,6 +6,7 @@ import axios from 'axios'
 import fs from 'fs-extra'
 import { getFilePath } from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
+import CLIConfig from '../src/builders/CLIConfig'
 
 const aggregator = createAggregator()
 
@@ -19,8 +20,6 @@ const pathToJsonFolder = getFilePath('./data/objects/json/')
 const pathToYmlFolder = getFilePath('./data/objects/yml/')
 fs.mkdirpSync(pathToJsonFolder)
 fs.mkdirpSync(pathToYmlFolder)
-
-console.log('hello')
 
 function createXmlUtil({
 	baseUrl = 'https://s3.us-east-2.amazonaws.com',
@@ -64,11 +63,11 @@ function createXmlUtil({
 	return o
 }
 
-const xmlApi = createXmlUtil()
+async function getS3Data() {
+	try {
+		const xmlApi = createXmlUtil()
+		const xmlElem = await xmlApi.loadXML()
 
-xmlApi
-	.loadXML()
-	.then((xmlElem) => {
 		let text = ''
 		let total = 0
 
@@ -114,7 +113,11 @@ xmlApi
 		)
 
 		console.log('DONE')
-	})
-	.catch((err) => {
-		console.error(err)
-	})
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+const cliConfig = new CLIConfig()
+
+console.log(cliConfig.toString())

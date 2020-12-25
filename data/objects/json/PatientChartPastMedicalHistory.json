@@ -10,10 +10,6 @@
       {
         "key": "anxiety",
         "value": "Anxiety"
-      },
-      {
-        "key": "asthma",
-        "value": "Asthma"
       }
     ],
     "pmhObj": {
@@ -331,11 +327,10 @@
                                 {
                                   "if": [
                                     {
-                                      "=.builtIn.array.has": {
-                                        "dataIn": {
-                                          "object": "=..pmh",
-                                          "key": "$var.key"
-                                        }
+                                      "=.builtIn.array.has": null,
+                                      "dataIn": {
+                                        "object": "=..pmh",
+                                        "key": "$var.key"
                                       }
                                     },
                                     {

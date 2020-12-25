@@ -47,7 +47,7 @@
           },
           {
             "type": "label",
-            "text": "Christopher Grenz",
+            "dataKey": "Global.currentUser.vertex.name.userName",
             "style": {
               "top": "0.2",
               "height": "0.03",

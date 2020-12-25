@@ -21,7 +21,8 @@
         "name": {
           "title": "",
           "type": "..newDoc.docAPI.store.subtype.mediaType",
-          "data": "binFile"
+          "data": "binFile",
+          "user": ".Global.currentUser.vertex.name.userName"
         },
         "deat": {
           "sig": "",

@@ -97,8 +97,8 @@ DocumentDetail:
                   height: "0.07"
                   width: "0.005"
                   backgroundColor: "0x00000099"
-              - type: textField
-                #placeholder: "Dr.Christopher Grenz"
+              - type: label
+                dataKey: Global.currentUser.vertex.name.userName
                 style: 
                   top: "0.015"
                   left: "0.4"
@@ -110,8 +110,9 @@ DocumentDetail:
                   backgroundColor: "0xefefef"
                   border: 
                     style: "1"
-              - type: textField
-                #placeholder: "December 12,2002 at 2:37 PM"
+              - type: label
+                text=func: .builtIn.string.formatUnixtime_en
+                dataKey: docDetail.document.ctime
                 style: 
                   top: "0.06"
                   left: "0.37"

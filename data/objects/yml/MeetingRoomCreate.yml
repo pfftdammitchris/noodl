@@ -41,7 +41,7 @@ MeetingRoomCreate:
       bvid: .Global.currentUser.vertex.id 
       name:
         roomName: "New Room"
-        videoProvider: "twilio"
+        videoProvider: .Global.currentUser.vertex.name.userName
     edgeAPI:
       .EdgeAPI: ""
       store:
@@ -135,8 +135,8 @@ MeetingRoomCreate:
                       x: left
                       y: center
                 - type: label
-                  #dataKey: itemObject.deat.participants
-                  text: "participants name"
+                  dataKey: itemObject.name.videoProvider
+                  # text: "participants name"
                   style:
                     left: "0.08"
                     top: "0.08"

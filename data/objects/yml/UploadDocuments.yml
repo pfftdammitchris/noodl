@@ -207,7 +207,7 @@ UploadDocuments:
         - actionType: builtIn
           funcName: goBack
           reload: true
-      text: "Share in meeting"
+      text: "Share one document in meeting"
       style:
         color: "0xFFFFFF"
         background: "0x388eccff"

@@ -127,6 +127,7 @@ MeetingSummary: #This is page name
                   x: right
             - type: label
               text : Dr.Christopher Gernz
+              # dataKey: dataObject.name.videoProvider
               style: 
                 top: "0.067"
                 left: "0.37"

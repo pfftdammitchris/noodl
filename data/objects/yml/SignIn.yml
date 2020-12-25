@@ -76,6 +76,8 @@ SignIn:
     - .Global.rootNotebookID@: =.Global.currentUser.vertex.deat.rnb64ID
     - .Global.currentUser.dataCache.loadingDateTime@ : =.Global.currentDateTime
   formData:
+    checkOk: "false"
+    checkMessage: "no message"
     countryCode: "+1"   
     phoneNumber: ""
     password: ""
@@ -230,6 +232,7 @@ SignIn:
                       x: left
                       y: center
                 - type: select
+                  #contentType: countryCode
                   contentType: countryCode
                   placeholder: ..formData.countryCode
                   dataKey: formData.countryCode # formData.countryCode : inputValue
@@ -240,6 +243,7 @@ SignIn:
                     # - "+965"
                     .CountryCode
                   required: "true"
+                  #required: "true"
                   style:
                     left: "0"
                     top: "0.045"
@@ -276,6 +280,19 @@ SignIn:
                   placeholder: "your phone number"
                   dataKey: formData.phoneNumber  # users' input will be saved to this key
                   required: "true"
+                  # when un-focus from the textField, dataKey object should be updated by the input data and use contentType to check the validation of the input.
+                  onChange:
+                    - emit:
+                        actions:
+                          - =.builtIn.typeCheck.phoneNumber:
+                              dataIn:
+                                phoneNumber: =..formData.phoneNumber
+                                countryCode: =..formData.countryCode
+                              dataOut: SignIn.formData.checkOk
+                          - if:
+                            - =..formData.checkOk
+                            - continue
+                            - ..formData.checkMessage@: "Unacceptible phone number format example: 888-999-0000"
                   style:
                     textAlign:
                       x: left
