@@ -1,5 +1,10 @@
 {
 	"packages": ["packages/*"],
 	"ignore": "chai-noodl-dom",
-	"version": "independent"
+	"version": "independent",
+	"command": {
+		"publish": {
+			"ignore": ["chai-noodl-dom", "noodl-building-blocks"]
+		}
+	}
 }
