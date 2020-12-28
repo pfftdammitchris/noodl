@@ -1,63 +1,72 @@
 import { IfObject } from './commonTypes'
 
 export type ActionType =
-  | 'builtIn'
-  | 'evalObject'
-  | 'pageJump'
-  | 'popUp'
-  | 'popUpDismiss'
-  | 'refresh'
-  | 'saveObject'
-  | 'updateObject'
+	| 'builtIn'
+	| 'evalObject'
+	| 'pageJump'
+	| 'popUp'
+	| 'popUpDismiss'
+	| 'refresh'
+	| 'saveObject'
+	| 'updateObject'
 
 export interface ActionObject<T extends string = any> {
-  actionType: T
-  dataKey?: any
-  reload?: boolean
-  viewTag?: string
-  wait?: boolean | number
-  [key: string]: any
+	actionType: T
+	dataKey?: any
+	dataObject?: any
+	reload?: boolean
+	viewTag?: string
+	wait?: boolean | number
+	[key: string]: any
 }
 
 export interface BuiltInActionObject<FuncName extends string = any>
-  extends ActionObject {
-  actionType: 'builtIn'
-  funcName: FuncName
+	extends ActionObject {
+	actionType: 'builtIn'
+	funcName: FuncName
+	contentType?: string // ex: "messageHidden"
+	viewTag?: string
 }
 
 export interface EvalActionObject extends ActionObject {
-  actionType: 'evalObject'
-  object?: Function | IfObject
+	actionType: 'evalObject'
+	object?: Function | IfObject
 }
 
 export interface PageJumpActionObject<D extends string = any>
-  extends ActionObject {
-  actionType: 'pageJump'
-  destination: D
+	extends ActionObject {
+	actionType: 'pageJump'
+	destination: D
 }
 
 export interface PopupActionObject<V extends string = any>
-  extends ActionObject {
-  actionType: 'popUp'
-  popUpView: V
+	extends ActionObject {
+	actionType: 'popUp'
+	popUpView: V
 }
 
 export interface PopupDismissActionObject<V extends string = any>
-  extends ActionObject {
-  actionType: 'popUpDismiss'
-  popUpView: V
+	extends ActionObject {
+	actionType: 'popUpDismiss'
+	popUpView: V
 }
 
 export interface RefreshActionObject extends ActionObject {
-  actionType: 'refresh'
+	actionType: 'refresh'
 }
 
 export interface SaveActionObject extends ActionObject {
-  actionType: 'saveObject'
-  object?: [string | ((...args: any[]) => any)] | ((...args: any[]) => any)
+	actionType: 'saveObject'
+	object?: [string | ((...args: any[]) => any)] | ((...args: any[]) => any)
 }
 
-export type UpdateActionObject<T = any> = {
-  actionType: 'updateObject'
-  object?: T
-}
+export type UpdateActionObject<T = any> =
+	| {
+			actionType: 'updateObject'
+			dataObject?: string // ex: "BLOB"
+			dataKey?: string
+	  }
+	| {
+			actionType: 'updateObject'
+			object?: T
+	  }

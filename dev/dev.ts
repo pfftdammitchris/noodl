@@ -7,6 +7,8 @@ import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import { findPair } from 'yaml/util'
 import globby from 'globby'
 import isNaN from 'lodash/isNaN'
+import has from 'lodash/has'
+import get from 'lodash/get'
 import isPlainObject from 'lodash/isPlainObject'
 import * as t from 'typescript-validators'
 import { getFilePath } from '../src/utils/common'
@@ -33,19 +35,6 @@ function loadFiles({
 				),
 			[],
 		)
-}
-
-function forEachDeepKeyValue(fn: (key: string, value: any) => void, obj: any) {
-	if (Array.isArray(obj)) {
-		obj.forEach((o) => forEachDeepKeyValue(fn, o))
-	} else if (isPlainObject(obj)) {
-		Object.entries(obj).forEach(([key, value]) => {
-			fn(key, value)
-			if (isPlainObject(value)) {
-				forEachDeepKeyValue(fn, value)
-			}
-		})
-	}
 }
 
 export interface QueryKeywordsResultObject<Keywords extends string[]> {
@@ -186,3 +175,54 @@ function getTypings(doc: yaml.Document['contents']) {
 			break
 	}
 }
+
+function forEachDeepKeyValue(
+	fn: (key: string, value: any, obj: any) => void,
+	obj: any,
+) {
+	if (Array.isArray(obj)) {
+		obj.forEach((o) => forEachDeepKeyValue(fn, o))
+	} else if (obj && typeof obj === 'object') {
+		Object.entries(obj).forEach(([key, value]) => {
+			fn(key, value, obj)
+			if (value) forEachDeepKeyValue(fn, value)
+		})
+	}
+}
+
+export function queryObjectsThatContain(keys: string | string[], root) {
+	const keywords = Array.isArray(keys) ? keys : [keys]
+	const results = []
+	forEachDeepKeyValue((key, value, obj) => {
+		if (keywords.includes(key)) {
+			results.push(obj)
+		}
+	}, root)
+	return results
+}
+
+export function queryAllPropsFor(opts: { keywords?: string[] }, root) {
+	const results = {}
+	forEachDeepKeyValue((key, value) => {
+		if (opts.keywords.includes(key)) {
+			if (isPlainObject(value)) {
+				Object.assign(results, value)
+			} else if (Array.isArray(value)) {
+				if (!Array.isArray(results[key])) results[key] = []
+				results[key].push(value)
+			}
+		}
+	}, root)
+	return results
+}
+
+const objs = loadFiles({
+	dir: 'data/objects',
+	ext: 'json',
+})
+
+fs.writeJsonSync(
+	'./results.json',
+	queryObjectsThatContain('actionType', objs),
+	{ spaces: 2 },
+)
