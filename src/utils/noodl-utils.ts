@@ -1,6 +1,65 @@
 import isPlainObject from 'lodash/isPlainObject'
-import yaml from 'yaml'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+
+export function has(path: string[], node: unknown): boolean
+export function has(path: string, node: unknown): boolean
+export function has(path: string | string[] | string[][], node: unknown) {
+	if (isYamlNode('map', node)) {
+		if (typeof path === 'string') {
+			return node.hasIn(path.split('.'))
+		} else if (Array.isArray(path) && path.length) {
+			return node.hasIn(path)
+		}
+	}
+	return false
+}
+
+export function hasPaths(
+	opts: { paths?: string[][]; required?: string[][] },
+	node: unknown,
+): boolean
+export function hasPaths(paths: string[][], node: unknown): boolean
+export function hasPaths(paths: any, node: unknown) {
+	if (isYamlNode('map', node)) {
+		if (isPlainObject(paths)) {
+			const required = paths.required
+			paths = paths.paths
+			if (required?.length) {
+				if (required.every((path: string[]) => node.hasIn(path))) {
+					return true
+				} else {
+					// As a fallback we can still assume true if it has at least these paths:
+					return paths.every((path: string[]) => node.hasIn(path))
+				}
+			} else {
+				return paths.every((path: string[]) => node.hasIn(path))
+			}
+		} else if (Array.isArray(paths)) {
+			return paths.every((p: string[]) => node.hasIn(p))
+		}
+	}
+	return false
+}
+
+export function isActionObj(node: YAMLMap) {
+	return has('actionType', node)
+}
+
+export function isBuiltInObj(node: YAMLMap) {
+	return node.get('actionType') === 'builtIn'
+}
+
+export function isComponentObj(node: YAMLMap) {
+	return has('type', node)
+}
+
+export function isEmitObj(node: YAMLMap) {
+	return has('emit', node)
+}
+
+export function isIfObj(node: YAMLMap) {
+	return has('if', node)
+}
 
 function isYamlNode(type: 'pair', node: any): node is Pair
 function isYamlNode(type: 'scalar', node: any): node is Scalar
@@ -20,99 +79,4 @@ function isYamlNode(type: string, node: any) {
 		}
 	}
 	return false
-}
-
-export function isDataKeyObj(node: unknown) {
-	if (isYamlNode('map', node)) {
-	}
-	return false
-}
-
-export interface IdentifierStore {
-	identified: any[]
-	unidentified: any[]
-	partial: any[]
-}
-
-function createNodeIdentifier(fn: (node: any) => any) {
-	return (step) => (node) => {
-		return step(fn(node))
-	}
-}
-
-function createPathIdentify(paths: string | string[]) {
-	const toPath = (p: typeof paths): string[] => {
-		if (!Array.isArray(p)) return [p]
-		return p
-	}
-	return createNodeIdentifier((node: YAMLMap | YAMLSeq) => {
-		return (paths as string[]).every((p: typeof paths): string[] => {
-      if (!Array.isArray(p)) return [p]
-      return p
-    }) => node.hasIn(toPath(p))
-	})
-}
-
-// Node has to be a YAMLMap
-function createPathIdentifier(paths: string[][]): (node: any) => boolean
-function createPathIdentifier(paths: string[]): (node: any) => boolean
-function createPathIdentifier(paths: string): (node: any) => boolean
-function createPathIdentifier(
-	fn: (util: {
-		required: <V extends string | number>(val: V[]) => V[]
-	}) => string | string[] | string[][],
-): (node: any) => boolean
-function createPathIdentifier(paths: any) {
-	let pathsList = [] as { paths: string[]; required?: boolean }[]
-
-	const toPath = (
-		v: (string | number) | (string | number)[],
-		required?: boolean,
-	): string[] => ({
-		path: Array.isArray(v) ? v.map(String) : [String(v)],
-		required: !!required,
-	})
-
-	const toPaths = (
-		p: any,
-		required?: boolean,
-	): { paths: string[]; required: boolean }[][] => {
-		if (Array.isArray(p)) {
-			if (Array.isArray(p[0])) return toPath(p, required)
-			return p.map((v) => toPath(v)) as any
-		}
-		return [[p]].map((v) => v.map(toPath))
-	}
-
-	const required = (val: (string | number)[]) => {
-		toPaths(val).forEach((paths) => {
-			pathsList
-		})
-		return result
-	}
-
-	if (typeof paths === 'function') {
-		pathsList = pathsList.concat(toPaths(paths({ required })))
-	} else {
-		pathsList = pathsList.concat(toPaths(paths))
-	}
-
-	return (node: any) => {
-		if (!node || !(node instanceof YAMLMap)) return false
-		const passes = requiredPathsList.concat(pathsList).every((p) => {
-			let isReq = requiredPathsList.includes(p)
-			const exists = node.hasIn(p)
-			if (!exists && isReq) return false
-			return true
-		})
-		if (passes) return node instanceof YAMLMap
-		return false
-	}
-}
-
-export function isEmitObj(node: unknown) {
-	return createPathIdentifier(({ required }) => [
-		['emit', 'dataKey'],
-		required(['emit', 'actions']),
-	])(node)
 }
