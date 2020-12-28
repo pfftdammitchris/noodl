@@ -34,6 +34,25 @@ export interface IdentifierStore {
 	partial: any[]
 }
 
+function createNodeIdentifier(fn: (node: any) => any) {
+	return (step) => (node) => {
+		return step(fn(node))
+	}
+}
+
+function createPathIdentify(paths: string | string[]) {
+	const toPath = (p: typeof paths): string[] => {
+		if (!Array.isArray(p)) return [p]
+		return p
+	}
+	return createNodeIdentifier((node: YAMLMap | YAMLSeq) => {
+		return (paths as string[]).every((p: typeof paths): string[] => {
+      if (!Array.isArray(p)) return [p]
+      return p
+    }) => node.hasIn(toPath(p))
+	})
+}
+
 // Node has to be a YAMLMap
 function createPathIdentifier(paths: string[][]): (node: any) => boolean
 function createPathIdentifier(paths: string[]): (node: any) => boolean

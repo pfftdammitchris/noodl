@@ -1,31 +1,14 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "src",
-    "declaration": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
+    "declaration": true,
+    "declarationDir": "dist",
+    "emitDeclarationOnly": true,
     "moduleResolution": "node",
-    "outDir": "build",
-    "noEmit": true,
     "noEmitOnError": false,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "target": "es2015"
+    "outDir": "dist",
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es5"
   },
-  "include": [
-    "src/**/*",
-    "packages/noodl-ui/dist",
-    "packages/noodl-utils/dist",
-    "packages/noodl-ui-dom/dist"
-  ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"],
+  "include": ["src"]
 }
