@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 describe('noodl-utils', () => {
 	describe('has', () => {
 		/*

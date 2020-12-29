@@ -34,6 +34,15 @@ export function getFilePath(...paths: string[]) {
 	return path.resolve(path.join(process.cwd(), ...paths))
 }
 
+export function prettifyErr(err: AxiosError | Error) {
+	if ('response' in err) {
+		if (err?.response?.data) {
+			return `[${chalk.yellow('AxiosError')}}]: ${err.response.data}`
+		}
+	}
+	return `[${chalk.yellow(err.name)}]: ${chalk.red(err.message)}`
+}
+
 export const replaceBaseUrlPlaceholder = createPlaceholderReplacer(
 	'\\${cadlBaseUrl}',
 	'g',
@@ -44,13 +53,8 @@ export const replaceVersionPlaceholder = createPlaceholderReplacer(
 	'g',
 )
 
-export function prettifyErr(err: AxiosError | Error) {
-	if ('response' in err) {
-		if (err?.response?.data) {
-			return `[${chalk.yellow('AxiosError')}}]: ${err.response.data}`
-		}
-	}
-	return `[${chalk.yellow(err.name)}]: ${chalk.red(err.message)}`
+export function toArray(value: any): any[] {
+	return Array.isArray(value) ? value : [value]
 }
 
 export const withSuffix = (suffix: string) => (str: string) => `${str}${suffix}`

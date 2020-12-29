@@ -12,7 +12,7 @@ import has from 'lodash/has'
 import get from 'lodash/get'
 import isPlainObject from 'lodash/isPlainObject'
 import * as t from 'typescript-validators'
-import { getFilePath } from '../src/utils/common'
+import { getFilePath, toArray } from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
 import { isEmitObj } from '../src/utils/noodl-utils'
 
@@ -191,20 +191,57 @@ function forEachDeepKeyValue(
 	}
 }
 
-export const createObjectUtils = function (objs: any) {
-	objs = Array.isArray(objs) ? objs : [objs]
+export interface PlainObject {
+	[key: string]: any
+}
+
+export interface PageObjectResult {
+	name: string
+	object: PlainObject
+}
+
+export const createObjectUtils = function () {
+	const state = {
+		objs: [] as PageObjectResult[],
+	}
+
+	function getObjectsContainingKeys(keys: string): any[]
+	function getObjectsContainingKeys(keys: string[]): any[]
+	function getObjectsContainingKeys(keywords: any) {
+		const results = [] as any[]
+		forEachDeepKeyValue(
+			(key, value, obj) => keywords.includes(key) && results.push(obj),
+			objs,
+		)
+		return results
+	}
+
+	function getKeywordOccurrences(keys: string): { [keyword: string]: number }
+	function getKeywordOccurrences(keys: string[]): { [keyword: string]: number }
+	function getKeywordOccurrences(keys: string | string[]) {
+		const keywords = Array.isArray(keys) ? keys : [keys]
+		const results = {} as { [keyword: string]: number }
+		objs.forEach((obj) => {
+			forEachDeepKeyValue((key, value, o) => {
+				if (keywords.includes(key)) {
+				}
+			}, obj)
+		})
+		return results
+	}
 
 	const o = {
-		getObjectsContainingKeys(keys: string | string[]) {
-			const keywords = Array.isArray(keys) ? keys : [keys]
-			const results = []
-			forEachDeepKeyValue(
-				(key, value, obj) => keywords.includes(key) && results.push(obj),
-				objs,
-			)
-			return results
+		loadObjs(objs: PlainObject | PlainObject[]) {
+			toArray(objs).forEach((obj: PlainObject) => {
+				state.objs.push({
+					name,
+					object: obj,
+				})
+			})
+			return o
 		},
-		// getKeyCount,
+		getObjectsContainingKeys,
+		getKeywordOccurrences,
 	}
 
 	return o
