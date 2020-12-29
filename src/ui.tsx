@@ -107,6 +107,12 @@ function App() {
 		}
 		const consumerCliConfig = fs.readJsonSync('noodl.json') as CLIConfigObject
 		if (consumerCliConfig) {
+			console.log(
+				chalk.green(
+					`FOUND consumerCliConfig`,
+					JSON.stringify(consumerCliConfig, null, 2),
+				),
+			)
 			const { server, objects } = consumerCliConfig
 			if (server?.baseUrl) configBuilder.setServerBaseUrl(server.baseUrl)
 			if (server?.dir) configBuilder.setServerDir(server.dir)

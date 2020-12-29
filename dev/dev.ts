@@ -7,9 +7,11 @@ import yaml, { createNode } from 'yaml'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import { findPair } from 'yaml/util'
 import globby from 'globby'
+import countBy from 'lodash/countBy'
 import isNaN from 'lodash/isNaN'
 import has from 'lodash/has'
 import get from 'lodash/get'
+import sortBy from 'lodash/sortBy'
 import isPlainObject from 'lodash/isPlainObject'
 import * as t from 'typescript-validators'
 import { getFilePath } from '../src/utils/common'
@@ -195,7 +197,7 @@ export const createObjectUtils = function (objs: any) {
 	objs = Array.isArray(objs) ? objs : [objs]
 
 	const o = {
-		getObjectsContainingKeys(keys: string | string[]) {
+		getObjectsThatContainKeys(keys: string | string[]): any[] {
 			const keywords = Array.isArray(keys) ? keys : [keys]
 			const results = []
 			forEachDeepKeyValue(
@@ -204,36 +206,40 @@ export const createObjectUtils = function (objs: any) {
 			)
 			return results
 		},
-		// getKeyCount,
+		getKeyCounts(keys?: string | string[]): Record<string, number> {
+			const keywords = Array.isArray(keys) ? keys : (keys && [keys]) || []
+			const results = {} as { [key: string]: number }
+			forEachDeepKeyValue((key, value, obj) => {
+				if (keywords.length) {
+					if (keywords.includes(key)) {
+						if (typeof results[key] !== 'number') results[key] = 0
+						results[key]++
+					}
+				} else {
+					if (typeof results[key] !== 'number') results[key] = 0
+					results[key]++
+				}
+			}, objs)
+			return Object.entries(results)
+				.sort((a, b) => {
+					if (a[1] > b[1]) return -1
+					if (a[1] === b[1]) return 0
+					return 1
+				})
+				.reduce((acc, [key, value]) => Object.assign(acc, { [key]: value }), {})
+		},
 	}
 
 	return o
 }
 
-export function queryAllPropsFor(opts: { keywords?: string[] }, root) {
-	const results = {}
-	forEachDeepKeyValue((key, value) => {
-		if (opts.keywords.includes(key)) {
-			if (isPlainObject(value)) {
-				Object.assign(results, value)
-			} else if (Array.isArray(value)) {
-				if (!Array.isArray(results[key])) results[key] = []
-				results[key].push(value)
-			}
-		}
-	}, root)
-	return results
-}
+const o = createObjectUtils(
+	loadFiles({
+		dir: 'data/objects',
+		ext: 'json',
+	}),
+)
 
-const objs = loadFiles({
-	dir: 'data/objects',
-	ext: 'json',
+fs.writeJsonSync('./results.json', o.getKeyCounts(), {
+	spaces: 2,
 })
-
-// fs.writeJsonSync(
-// 	'./results.json',
-// 	getObjectsContainingKeys('actionType', objs),
-// 	{ spaces: 2 },
-// )
-
-console.log('hi')
