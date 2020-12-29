@@ -1,4 +1,5 @@
 import axios from 'axios'
+import produce from 'immer'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
@@ -190,15 +191,23 @@ function forEachDeepKeyValue(
 	}
 }
 
-export function queryObjectsThatContain(keys: string | string[], root) {
-	const keywords = Array.isArray(keys) ? keys : [keys]
-	const results = []
-	forEachDeepKeyValue((key, value, obj) => {
-		if (keywords.includes(key)) {
-			results.push(obj)
-		}
-	}, root)
-	return results
+export const createObjectUtils = function (objs: any) {
+	objs = Array.isArray(objs) ? objs : [objs]
+
+	const o = {
+		getObjectsContainingKeys(keys: string | string[]) {
+			const keywords = Array.isArray(keys) ? keys : [keys]
+			const results = []
+			forEachDeepKeyValue(
+				(key, value, obj) => keywords.includes(key) && results.push(obj),
+				objs,
+			)
+			return results
+		},
+		// getKeyCount,
+	}
+
+	return o
 }
 
 export function queryAllPropsFor(opts: { keywords?: string[] }, root) {
@@ -221,8 +230,10 @@ const objs = loadFiles({
 	ext: 'json',
 })
 
-fs.writeJsonSync(
-	'./results.json',
-	queryObjectsThatContain('actionType', objs),
-	{ spaces: 2 },
-)
+// fs.writeJsonSync(
+// 	'./results.json',
+// 	getObjectsContainingKeys('actionType', objs),
+// 	{ spaces: 2 },
+// )
+
+console.log('hi')
