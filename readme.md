@@ -29,3 +29,19 @@ $ noodl-cli --help
 - https://github.com/sindresorhus/first-run
 - https://github.com/sindresorhus/latest-version
 - https://github.com/sindresorhus/clipboardy
+
+## Initial load
+
+- scan for noodl.json
+  - use noodl.json if existent + merge remaining default options
+- inject to ctx
+
+## Server script
+
+- config
+- scan serverFiles dir for objects
+  - ask to use existing files or retrieve fresh objects instead
+- scan for all assets and their urls
+- ask to download them to assets folder
+- run + watch server for live changes
+  - confirm/configure baseUrl in noodl.json

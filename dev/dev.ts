@@ -26,6 +26,18 @@ import {
 import createAggregator from '../src/api/createAggregator'
 import { isEmitObj } from '../src/utils/noodl-utils'
 
+const aggregator = createAggregator({
+	config: 'meet2d',
+})
+
+async function loadRemote({ config }) {
+	const [rootConfig, appConfig] = await aggregator.init({
+		loadPages: {
+			includePreloadPages: true,
+		},
+	})
+}
+
 function loadFiles(opts: { dir: string; ext: 'yml' }): yaml.Document[]
 function loadFiles(opts: { dir: string; ext: 'json' }): { [key: string]: any }[]
 function loadFiles({

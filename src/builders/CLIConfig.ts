@@ -1,10 +1,14 @@
-import { CLIConfigObject } from '../types'
+import isNil from 'lodash/isNil'
+import { ConsumerCLIConfigObject, CLIConfigObject } from '../types'
 import { getFilePath } from '../utils/common'
+
+const DEFAULT_JSON_OBJECTS_DIR = getFilePath('objects/json')
+const DEFAULT_YML_OBJECTS_DIR = getFilePath('objects/yml')
 
 class CLIConfig {
 	server = {
-		baseUrl: '',
-		dir: '',
+		baseUrl: 'http://127.0.0.1',
+		dir: getFilePath('server'),
 		port: 3000,
 	}
 	objects = {
@@ -12,15 +16,17 @@ class CLIConfig {
 		yml: { dir: [] as string[] },
 	}
 
-	constructor(opts?: Partial<CLIConfigObject>) {
+	constructor(opts?: Partial<ConsumerCLIConfigObject>) {
 		if (opts) {
 			if (opts.server) {
-				Object.entries(opts.server).forEach(
-					([k, v]) => ((this.server as any)[k] = v),
-				)
+				Object.entries(opts.server).forEach(([k, v]) => {
+					if (!isNil(v)) this.server[k] = v
+				})
 			}
-			this.insertExtDir('json', opts.objects?.json.dir)
-			this.insertExtDir('yml', opts.objects?.yml.dir)
+			if (opts.objects) {
+				this.insertExtDir('json', opts.objects?.json.dir)
+				this.insertExtDir('yml', opts.objects?.yml.dir)
+			}
 		}
 	}
 
@@ -91,7 +97,7 @@ class CLIConfig {
 				...this.server,
 				url: this.getServerUrl(),
 			},
-		}
+		} as CLIConfigObject
 	}
 
 	toString() {

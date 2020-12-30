@@ -1,5 +1,10 @@
+import path from 'path'
+
 export const DEFAULT_BASE_URL = 'https://public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
+export const DEFAULT_CONFIG_PATH = path.resolve(
+	path.join(process.cwd(), 'noodl.json'),
+)
 
 export const eventId = {
 	RETRIEVED_ROOT_CONFIG: 'retrieved.root.config',
@@ -11,7 +16,7 @@ export const eventId = {
 }
 
 export const panelId = {
-	INIT: 'select-route',
+	SELECT_ROUTE: 'select-route',
 	RETRIEVE_OBJECTS: 'retrieve-objects',
 	RETRIEVE_KEYWORDS: 'retrieve-keywords',
 	START_SERVER: 'start-server',

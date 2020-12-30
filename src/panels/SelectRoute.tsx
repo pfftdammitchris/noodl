@@ -5,7 +5,7 @@ import Select from '../components/Select'
 import useCtx from '../useCtx'
 
 function SelectRoute({ label = 'Select an option' }: any) {
-	const { mergeToPanel } = useCtx()
+	const { setPanel } = useCtx()
 
 	const items = [
 		{ label: 'Fetch objects', value: panelId.RETRIEVE_OBJECTS },
@@ -14,12 +14,12 @@ function SelectRoute({ label = 'Select an option' }: any) {
 	]
 
 	const onHighlightPanel = React.useCallback(
-		(item) => mergeToPanel({ highlightedId: item.value }),
+		(item) => setPanel({ highlightedId: item.value }),
 		[],
 	)
 
 	const onSelectPanel = React.useCallback(
-		(item) => mergeToPanel({ id: item.value, label: item.label }),
+		(item) => setPanel({ id: item.value, label: item.label }),
 		[],
 	)
 

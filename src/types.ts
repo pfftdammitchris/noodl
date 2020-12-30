@@ -9,12 +9,19 @@ export interface Context extends State {
 	aggregator: Aggregator
 	setCaption(caption: string): void
 	setErrorCaption(caption: string | Error): void
-	mergeToPanel(item: {
+	setServerOptions(options: Partial<State['server']>): void
+	setObjectsJsonOptions(options: Partial<State['objects']['json']>): void
+	setObjectsYmlOptions(options: Partial<State['objects']['yml']>): void
+	setPanel(item: {
 		id?: string
 		label?: string
 		value?: string
 		highlightedId?: string
 	}): void
+}
+
+export interface CLIConfigContext extends CLIConfigObject {
+	url: string
 }
 
 export type Action =
@@ -29,7 +36,7 @@ export type Action =
 			options: Partial<State['objects']['yml']>
 	  }
 	| {
-			type: 'merge-to-panel'
+			type: 'set-panel'
 			panel: {
 				id?: PanelId
 				label?: string
@@ -42,13 +49,14 @@ export interface State {
 	server: {
 		url: string
 		dir: string
+		port: null | number
 	}
 	objects: {
 		json: {
-			dirs: string[]
+			dir: string[]
 		}
 		yml: {
-			dirs: string[]
+			dir: string[]
 		}
 	}
 	panel: {
@@ -58,7 +66,7 @@ export interface State {
 	}
 }
 
-export interface CLIConfigObject {
+export interface ConsumerCLIConfigObject {
 	server: {
 		baseUrl: string
 		dir: string
@@ -70,6 +78,22 @@ export interface CLIConfigObject {
 		}
 		yml: {
 			dir: string | string[]
+		}
+	}
+}
+
+export interface CLIConfigObject {
+	server: {
+		baseUrl: string
+		dir: string
+		port: number
+	}
+	objects: {
+		json: {
+			dir: string[]
+		}
+		yml: {
+			dir: string[]
 		}
 	}
 }
