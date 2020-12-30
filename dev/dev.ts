@@ -1,9 +1,12 @@
+import { config } from 'dotenv'
+config()
 import axios from 'axios'
 import produce from 'immer'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
 import yaml, { createNode } from 'yaml'
+import xml2parser from 'fast-xml-parser'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import { findPair } from 'yaml/util'
 import globby from 'globby'
@@ -12,9 +15,14 @@ import isNaN from 'lodash/isNaN'
 import has from 'lodash/has'
 import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
+import orderBy from 'lodash/orderBy'
 import isPlainObject from 'lodash/isPlainObject'
 import * as t from 'typescript-validators'
-import { getFilePath } from '../src/utils/common'
+import {
+	forEachDeepKeyValue,
+	getFilePath,
+	sortObjPropsByKeys,
+} from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
 import { isEmitObj } from '../src/utils/noodl-utils'
 
@@ -179,20 +187,6 @@ function getTypings(doc: yaml.Document['contents']) {
 	}
 }
 
-function forEachDeepKeyValue(
-	fn: (key: string, value: any, obj: any) => void,
-	obj: any,
-) {
-	if (Array.isArray(obj)) {
-		obj.forEach((o) => forEachDeepKeyValue(fn, o))
-	} else if (obj && typeof obj === 'object') {
-		Object.entries(obj).forEach(([key, value]) => {
-			fn(key, value, obj)
-			if (value) forEachDeepKeyValue(fn, value)
-		})
-	}
-}
-
 export const createObjectUtils = function (objs: any) {
 	objs = Array.isArray(objs) ? objs : [objs]
 
@@ -220,13 +214,20 @@ export const createObjectUtils = function (objs: any) {
 					results[key]++
 				}
 			}, objs)
-			return Object.entries(results)
-				.sort((a, b) => {
-					if (a[1] > b[1]) return -1
-					if (a[1] === b[1]) return 0
-					return 1
-				})
-				.reduce((acc, [key, value]) => Object.assign(acc, { [key]: value }), {})
+			return sortObjPropsByKeys(results)
+		},
+		getPaths() {
+			const results = [] as string[]
+			forEachDeepKeyValue((key, value, obj) => {
+				if (typeof value === 'string') {
+					if (value.startsWith('http')) {
+						!results.includes(value) && results.push(value)
+					} else if (/(path|resource)/i.test(key)) {
+						!results.includes(value) && results.push(value)
+					}
+				}
+			}, objs)
+			return results.sort()
 		},
 	}
 
@@ -240,6 +241,6 @@ const o = createObjectUtils(
 	}),
 )
 
-fs.writeJsonSync('./results.json', o.getKeyCounts(), {
+fs.writeJsonSync('./results.json', o.getAllUrls(), {
 	spaces: 2,
 })

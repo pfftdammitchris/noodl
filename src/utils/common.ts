@@ -30,8 +30,36 @@ export function createPlaceholderReplacer(
 	return replace
 }
 
+/**
+ * Recursively traverses each key/value, calling the callback on each iteration
+ * @param { function } fn - Callback function
+ * @param { object | array } obj
+ */
+export function forEachDeepKeyValue(
+	fn: (key: string, value: any, obj: any) => void,
+	obj: any,
+) {
+	if (Array.isArray(obj)) {
+		obj.forEach((o) => forEachDeepKeyValue(fn, o))
+	} else if (obj && typeof obj === 'object') {
+		Object.entries(obj).forEach(([key, value]) => {
+			fn(key, value, obj)
+			if (value) forEachDeepKeyValue(fn, value)
+		})
+	}
+}
+
 export function getFilePath(...paths: string[]) {
 	return path.resolve(path.join(process.cwd(), ...paths))
+}
+
+export function prettifyErr(err: AxiosError | Error) {
+	if ('response' in err) {
+		if (err?.response?.data) {
+			return `[${chalk.yellow('AxiosError')}}]: ${err.response.data}`
+		}
+	}
+	return `[${chalk.yellow(err.name)}]: ${chalk.red(err.message)}`
 }
 
 export const replaceBaseUrlPlaceholder = createPlaceholderReplacer(
@@ -44,13 +72,14 @@ export const replaceVersionPlaceholder = createPlaceholderReplacer(
 	'g',
 )
 
-export function prettifyErr(err: AxiosError | Error) {
-	if ('response' in err) {
-		if (err?.response?.data) {
-			return `[${chalk.yellow('AxiosError')}}]: ${err.response.data}`
-		}
-	}
-	return `[${chalk.yellow(err.name)}]: ${chalk.red(err.message)}`
+export function sortObjPropsByKeys(obj: { [key: string]: any }) {
+	return Object.entries(obj)
+		.sort((a, b) => {
+			if (a[1] > b[1]) return -1
+			if (a[1] === b[1]) return 0
+			return 1
+		})
+		.reduce((acc, [key, value]) => Object.assign(acc, { [key]: value }), {})
 }
 
 export const withSuffix = (suffix: string) => (str: string) => `${str}${suffix}`

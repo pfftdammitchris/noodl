@@ -11,7 +11,8 @@
 		"build": "tsc",
 		"prestart": "rm -rf dist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
-		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts"
+		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts",
+		"dev:file": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only"
 	},
 	"bin": {
 		"noodl": "dist/cli.js"
@@ -22,6 +23,8 @@
 	"dependencies": {
 		"axios": "^0.21.1",
 		"chalk": "^4.1.0",
+		"dotenv": "^8.2.0",
+		"fast-xml-parser": "^3.17.6",
 		"fs-extra": "^9.0.1",
 		"globby": "^11.0.1",
 		"immer": "^8.0.0",
@@ -35,6 +38,7 @@
 		"ink-text-input": "^4.0.1",
 		"lodash": "^4.17.20",
 		"meow": "^8.1.0",
+		"pretty-bytes": "^5.5.0",
 		"react": "^17.0.1",
 		"typescript-validators": "^1.0.2",
 		"yaml": "^1.10.0"
