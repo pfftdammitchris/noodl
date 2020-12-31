@@ -1,6 +1,6 @@
 import axios from 'axios'
 import yaml from 'yaml'
-import { RootConfig } from '../types/types'
+import { RootConfig } from '../types'
 import NOODLObject from '../api/Object'
 import { withSuffix } from '../utils/common'
 

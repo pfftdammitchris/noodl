@@ -1,6 +1,6 @@
 import axios from 'axios'
 import yaml from 'yaml'
-import { AppConfig } from '../types/types'
+import { AppConfig } from '../types'
 import NOODLObject from '../api/Object'
 import { replaceBaseUrlPlaceholder } from '../utils/common'
 

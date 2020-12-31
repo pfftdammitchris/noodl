@@ -9,7 +9,7 @@ import {
 	DEFAULT_SERVER_PORT,
 	DEFAULT_SERVER_URL,
 } from '../constants'
-import { ConsumerCLIConfigObject } from '../types/types'
+import { ConsumerCLIConfigObject } from '../types'
 
 function Settings() {
 	const [initialized, setInitialized] = React.useState(false)
