@@ -2,8 +2,9 @@ import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
+import { eventId } from '../constants'
 import { withSuffix } from '../utils/common'
-import { ObjectResult } from '../types/types'
+import { AnyFn, EventId, ObjectResult } from '../types'
 import RootConfig from '../builders/RootConfig'
 import AppConfig from '../builders/AppConfig'
 
@@ -26,6 +27,9 @@ const createAggregator = function (opts?: ConfigOptions) {
 	let config = opts?.config || 'aitmed'
 	let host = opts?.host || 'public.aitmed.com'
 
+	const cbIds = [] as string[]
+	const cbs = {} as Record<EventId, AnyFn[]>
+
 	const objects = {
 		json: {},
 		yml: {},
@@ -33,6 +37,10 @@ const createAggregator = function (opts?: ConfigOptions) {
 
 	const withLocale = withSuffix('_en')
 	const withExt = withSuffix('.yml')
+
+	function _emit(event: EventId, ...args: any[]) {
+		cbs[event]?.forEach?.((fn) => fn(...args))
+	}
 
 	async function _loadPage(name: string, suffix: string = '') {
 		try {
@@ -87,10 +95,18 @@ const createAggregator = function (opts?: ConfigOptions) {
 				.setVersion(opts?.version || 'latest')
 				.build()
 			objects.yml[config] = objects.json[config]?.yml
+			_emit(eventId.RETRIEVED_ROOT_CONFIG, {
+				json: objects.json[config],
+				yml: objects.yml[config],
+			})
 			objects.json['cadlEndpoint'] = await api.appConfig
 				.setRootConfig(objects.json[config] as any)
 				.build()
 			objects.yml['cadlEndpoint'] = objects.json.cadlEndpoint.yml
+			_emit(eventId.RETRIEVED_APP_CONFIG, {
+				json: objects.json.cadlEndpoint,
+				yml: objects.yml.cadlEndpoint,
+			})
 			if (opts?.loadPages) {
 				await o.loadPages({
 					includePreloadPages: true,
@@ -127,6 +143,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 							page as string,
 							withExt(withLocale('')),
 						)
+						_emit(eventId.RETRIEVED_APP_OBJECT, result)
 						return onPage?.({ name: page, ...result } as any)
 					},
 				),
@@ -134,6 +151,15 @@ const createAggregator = function (opts?: ConfigOptions) {
 			)
 			// Flatten out the promises for parallel reqs
 			await Promise.all(chunkedPageReqs.map((o) => Promise.all(o)))
+		},
+		on(event: EventId, fn: AnyFn, id: string) {
+			if (!Array.isArray(cbs[event])) cbs[event] = []
+			if (!cbs[event]?.includes(fn)) {
+				if (id && cbIds.includes(id)) return
+				cbs[event]?.push(fn)
+			}
+			if (id && !cbIds.includes(id)) cbIds.push(id)
+			return o
 		},
 	}
 

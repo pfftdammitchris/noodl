@@ -3,7 +3,12 @@ import fs from 'fs-extra'
 import merge from 'lodash/merge'
 import CLIConfigBuilder from '../builders/CLIConfig'
 import useCtx from '../useCtx'
-import { DEFAULT_CONFIG_PATH, DEFAULT_SERVER_PATH } from '../constants'
+import {
+	DEFAULT_CONFIG_PATH,
+	DEFAULT_SERVER_PATH,
+	DEFAULT_SERVER_PORT,
+	DEFAULT_SERVER_URL,
+} from '../constants'
 import { ConsumerCLIConfigObject } from '../types/types'
 
 function Settings() {
@@ -11,6 +16,7 @@ function Settings() {
 	const {
 		server,
 		objects,
+		setCaption,
 		setObjectsJsonOptions,
 		setObjectsYmlOptions,
 		setServerOptions,
@@ -32,12 +38,17 @@ function Settings() {
 				...consumerConfig?.server,
 				dir: consumerConfig?.server.dir || DEFAULT_SERVER_PATH,
 			},
-		})
+		} as ConsumerCLIConfigObject)
 		const cliConfig = configBuilder.toJS()
-		setServerOptions({ dir: cliConfig.server.dir || DEFAULT_SERVER_PATH })
+		setServerOptions({
+			dir: cliConfig.server.dir || DEFAULT_SERVER_PATH,
+			port: cliConfig.server.port || DEFAULT_SERVER_PORT,
+			host: DEFAULT_SERVER_URL,
+		})
 		setObjectsJsonOptions({ dir: cliConfig.objects.json.dir })
 		setObjectsYmlOptions({ dir: cliConfig.objects.yml.dir })
 		setInitialized(true)
+		setCaption('Initialized')
 	}, [])
 
 	React.useEffect(() => {

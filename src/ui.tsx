@@ -1,6 +1,7 @@
 import React from 'react'
 import chalk from 'chalk'
 import produce from 'immer'
+import Spinner from 'ink-spinner'
 import { Newline, Static, Text } from 'ink'
 import { WritableDraft } from 'immer/dist/internal'
 import { Provider } from './useCtx'
@@ -12,6 +13,7 @@ import SelectRoute from './panels/SelectRoute'
 import StartServer from './panels/StartServer'
 import RetrieveObjects from './panels/RetrieveObjects'
 import RetrieveKeywords from './panels/RetrieveKeywords'
+import HighlightedText from './components/HighlightedText'
 
 const panels = {
 	[panelId.SELECT_ROUTE]: SelectRoute,
@@ -24,7 +26,7 @@ let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
 const initialState: State = {
 	caption: [],
-	server: { url: '', dir: '', port: null },
+	server: { host: '', dir: '', port: null },
 	objects: {
 		json: { dir: [] },
 		yml: { dir: [] },
@@ -33,6 +35,7 @@ const initialState: State = {
 		id: panelId.SELECT_ROUTE,
 		label: 'Select a route',
 	},
+	spinner: false,
 }
 
 const reducer = produce(
@@ -50,6 +53,8 @@ const reducer = produce(
 				return void Object.keys(action.panel).forEach(
 					(key) => (draft.panel[key] = action.panel[key]),
 				)
+			case 'set-spinner':
+				return void (draft.spinner = action.spinner)
 		}
 	},
 )
@@ -102,6 +107,14 @@ function App() {
 			},
 			[],
 		),
+		toggleSpinner: React.useCallback(
+			(type?: false | string) =>
+				dispatch({
+					type: 'set-spinner',
+					spinner: type === undefined ? 'point' : type === false ? false : type,
+				}),
+			[],
+		),
 	} as Context
 
 	const Panel = panels[state?.panel.id as PanelId]
@@ -110,6 +123,11 @@ function App() {
 		<Provider value={ctx}>
 			<Newline />
 			<Settings />
+			{state?.spinner ? (
+				<HighlightedText color="whiteBright">
+					<Spinner type={state.spinner as any} />
+				</HighlightedText>
+			) : null}
 			<Panel />
 			<Static items={state?.caption as string[]}>
 				{(caption) => <Text key={caption}>{caption}</Text>}

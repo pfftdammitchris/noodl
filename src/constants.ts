@@ -1,13 +1,14 @@
 import path from 'path'
 
+const getFilePath = (...s: string[]) =>
+	path.resolve(path.join(process.cwd(), ...s))
+
 export const DEFAULT_BASE_URL = 'https://public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
-export const DEFAULT_CONFIG_PATH = path.resolve(
-	path.join(process.cwd(), 'noodl.json'),
-)
-export const DEFAULT_SERVER_PATH = path.resolve(
-	path.join(process.cwd(), 'server'),
-)
+export const DEFAULT_CONFIG_PATH = getFilePath('noodl.json')
+export const DEFAULT_SERVER_URL = 'http://127.0.0.1'
+export const DEFAULT_SERVER_PATH = getFilePath('server')
+export const DEFAULT_SERVER_PORT = 3000
 
 export const eventId = {
 	RETRIEVED_ROOT_CONFIG: 'retrieved.root.config',
@@ -16,7 +17,8 @@ export const eventId = {
 	RETRIEVED_ROOT_BASE_URL: 'retrieved.root.config.base.url',
 	RETRIEVED_APP_ENDPOINT: 'retrieved.app.endpoint',
 	RETRIEVED_APP_BASE_URL: 'retrieved.app.base.url',
-}
+	RETRIEVED_APP_OBJECT: 'retrieved.app.object',
+} as const
 
 export const panelId = {
 	SELECT_ROUTE: 'select-route',

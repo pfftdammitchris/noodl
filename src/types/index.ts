@@ -1,9 +1,14 @@
-import { panelId } from '../constants'
+import { eventId, panelId } from '../constants'
 import createAggregator from '../api/createAggregator'
+
+export interface AnyFn {
+	(...args: any[]): any
+}
 
 export type Aggregator = ReturnType<typeof createAggregator>
 
 export type PanelId = typeof panelId[keyof typeof panelId]
+export type EventId = typeof eventId[keyof typeof eventId]
 
 export interface Context extends State {
 	aggregator: Aggregator
@@ -18,6 +23,7 @@ export interface Context extends State {
 		value?: string
 		highlightedId?: string
 	}): void
+	toggleSpinner(type?: false | string): void
 }
 
 export interface CLIConfigContext extends CLIConfigObject {
@@ -43,11 +49,12 @@ export type Action =
 				[key: string]: any
 			}
 	  }
+	| { type: 'set-spinner'; spinner: false | string }
 
 export interface State {
 	caption: string[]
 	server: {
-		url: string
+		host: string
 		dir: string
 		port: null | number
 	}
@@ -64,11 +71,12 @@ export interface State {
 		label: string
 		[key: string]: any
 	}
+	spinner?: false | string
 }
 
 export interface ConsumerCLIConfigObject {
 	server: {
-		baseUrl: string
+		host: string
 		dir: string
 		port: number
 	}
@@ -84,7 +92,7 @@ export interface ConsumerCLIConfigObject {
 
 export interface CLIConfigObject {
 	server: {
-		baseUrl: string
+		host: string
 		dir: string
 		port: number
 	}
@@ -99,7 +107,7 @@ export interface CLIConfigObject {
 }
 
 export interface AppConfig {
-	baseUrl: string
+	host: string
 	assetsUrl: string
 	languageSuffix: string | { [lang: string]: string }
 	fileSuffix: string

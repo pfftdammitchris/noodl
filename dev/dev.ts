@@ -253,6 +253,8 @@ const o = createObjectUtils(
 	}),
 )
 
-fs.writeJsonSync('./results.json', o.getAllUrls(), {
+console.time('results')
+fs.writeJsonSync('./results.json', o.getKeyCounts(), {
 	spaces: 2,
 })
+console.timeEnd('results')

@@ -2,6 +2,12 @@ import { AxiosError } from 'axios'
 import path from 'path'
 import chalk from 'chalk'
 
+// chalk helpers
+export const highlight = (...s: any[]) => chalk.yellow(...s)
+export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
+export const magenta = (...s: any[]) => chalk.magenta(...s)
+export const red = (...s: any[]) => chalk.red(...s)
+
 export function createPlaceholderReplacer(
 	placeholders: string | string[],
 	flags?: string,

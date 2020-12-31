@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil'
-import { ConsumerCLIConfigObject, CLIConfigObject } from '../types/types'
+import { ConsumerCLIConfigObject, CLIConfigObject } from '../types'
 import { getFilePath } from '../utils/common'
 
 const DEFAULT_JSON_OBJECTS_DIR = getFilePath('objects/json')
@@ -7,7 +7,7 @@ const DEFAULT_YML_OBJECTS_DIR = getFilePath('objects/yml')
 
 class CLIConfig {
 	server = {
-		baseUrl: 'http://127.0.0.1',
+		host: 'http://127.0.0.1',
 		dir: getFilePath('server'),
 		port: 3000,
 	}
@@ -47,8 +47,8 @@ class CLIConfig {
 	}
 
 	getServerUrl() {
-		if (!this.server.baseUrl) return ''
-		const url = new URL(this.server.baseUrl)
+		if (!this.server.host) return ''
+		const url = new URL(this.server.host)
 		url.port = String(this.server.port)
 		return url.toString()
 	}
@@ -62,8 +62,8 @@ class CLIConfig {
 		return this
 	}
 
-	setServerBaseUrl(baseUrl: string) {
-		this.server.baseUrl = baseUrl
+	setServerBaseUrl(host: string) {
+		this.server.host = host
 		return this
 	}
 
