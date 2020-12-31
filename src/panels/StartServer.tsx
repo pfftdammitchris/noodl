@@ -74,7 +74,7 @@ function StartServer() {
 		if (item.value === 'fs') {
 			setCaption(`Retrieving data from ${magenta(server.dir)}...`)
 			// aggregator.on()
-			aggregator.init({ loadPages: true })
+			// aggregator.init({ loadPages: true })
 		} else if (item.value === 'remote') {
 			//
 		}
