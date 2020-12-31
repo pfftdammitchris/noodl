@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import merge from 'lodash/merge'
 import CLIConfigBuilder from '../builders/CLIConfig'
 import useCtx from '../useCtx'
-import { DEFAULT_CONFIG_PATH } from '../constants'
+import { DEFAULT_CONFIG_PATH, DEFAULT_SERVER_PATH } from '../constants'
 import { ConsumerCLIConfigObject } from '../types/types'
 
 function Settings() {
@@ -25,9 +25,16 @@ function Settings() {
 	)
 
 	React.useEffect(() => {
-		const configBuilder = new CLIConfigBuilder(getConsumerConfig())
+		const consumerConfig = getConsumerConfig()
+		const configBuilder = new CLIConfigBuilder({
+			...consumerConfig,
+			server: {
+				...consumerConfig?.server,
+				dir: consumerConfig?.server.dir || DEFAULT_SERVER_PATH,
+			},
+		})
 		const cliConfig = configBuilder.toJS()
-		setServerOptions({ dir: cliConfig.server.dir })
+		setServerOptions({ dir: cliConfig.server.dir || DEFAULT_SERVER_PATH })
 		setObjectsJsonOptions({ dir: cliConfig.objects.json.dir })
 		setObjectsYmlOptions({ dir: cliConfig.objects.yml.dir })
 		setInitialized(true)

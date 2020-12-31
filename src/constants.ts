@@ -5,6 +5,9 @@ export const DEFAULT_CONFIG = 'aitmed'
 export const DEFAULT_CONFIG_PATH = path.resolve(
 	path.join(process.cwd(), 'noodl.json'),
 )
+export const DEFAULT_SERVER_PATH = path.resolve(
+	path.join(process.cwd(), 'server'),
+)
 
 export const eventId = {
 	RETRIEVED_ROOT_CONFIG: 'retrieved.root.config',

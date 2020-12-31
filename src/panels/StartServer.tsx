@@ -40,7 +40,11 @@ function StartServer() {
 		(config: string) => {
 			dispatch({ type: c.action.SET_CONFIG, config })
 			setCaption(`Config set to ${chalk.magenta(config)}`)
-
+			console.log(getFilePath(server.dir))
+			console.log(getFilePath(server.dir))
+			console.log(getFilePath(server.dir))
+			console.log(getFilePath(server.dir))
+			console.log(getFilePath(server.dir))
 			if (fs.existsSync(getFilePath(server.dir))) {
 				const dirFiles = fs.readdirSync(getFilePath(server.dir), 'utf8')
 				dispatch({ type: c.action.SET_DIR_FILES, dirFiles })
@@ -58,7 +62,7 @@ function StartServer() {
 			// 	dispatch({ type: c.action.SET_STEP, step: c.step.PROMPT_DATA_SOURCE })
 			// }
 		},
-		[state?.dataSource],
+		[server, state?.dataSource],
 	)
 
 	const onSetDataSource = React.useCallback((item: any) => {
@@ -75,6 +79,17 @@ function StartServer() {
 		(value: string) => setConfigInput(value),
 		[],
 	)
+
+	const onConfirmUseServerDirFiles = React.useCallback(() => {
+		let serverFiles = state?.dirFiles || []
+		let assetFiles = [] as string[]
+		if (serverFiles.includes('assets')) {
+			assetFiles = assetFiles.concat(
+				fs.readdirSync(getFilePath(server.dir, 'assets')),
+			)
+		}
+		console.log('asset files', assetFiles)
+	}, [state, server])
 
 	// Initiate the location of where the data is at
 	React.useEffect(() => {
