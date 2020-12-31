@@ -21,3 +21,18 @@ export const panelId = {
 	RETRIEVE_KEYWORDS: 'retrieve-keywords',
 	START_SERVER: 'start-server',
 } as const
+
+export const serverScript = {
+	action: {
+		SET_CONFIG: 'set.config',
+		SET_STEP: 'set.step',
+		SET_DATA_SOURCE: 'set.data.source',
+		SET_DIR_FILES: 'set.dir.files',
+	},
+	step: {
+		CONFIG: 'config',
+		PROMPT_DATA_SOURCE: 'prompt.data.source',
+		PROMPT_SERVER_DIR: 'prompt.server.dir',
+		CONFIRM_USE_SERVER_DIR_FILES: 'confirm.use.server.dir.files',
+	},
+} as const

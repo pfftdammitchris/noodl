@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
 import { withSuffix } from '../utils/common'
-import { ObjectResult } from '../types'
+import { ObjectResult } from '../types/types'
 import RootConfig from '../builders/RootConfig'
 import AppConfig from '../builders/AppConfig'
 

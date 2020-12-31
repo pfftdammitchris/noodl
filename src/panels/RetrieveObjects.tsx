@@ -8,6 +8,7 @@ import chalk from 'chalk'
 import TextInput from 'ink-text-input'
 import Spinner from 'ink-spinner'
 import useCtx from '../useCtx'
+import HighlightedText from '../components/HighlightedText'
 import Select from '../components/Select'
 import { withJsonExt, withYmlExt } from '../utils/common'
 
@@ -62,7 +63,7 @@ const reducer = produce((draft: WritableDraft<State>, action: Action): void => {
 			)
 		case 'set-status':
 			return void (
-				draft.status !== action.statius && (draft.status = action.status)
+				draft.status !== action.status && (draft.status = action.status)
 			)
 	}
 })
@@ -96,13 +97,9 @@ function RetrieveObjectsPanel() {
 	React.useEffect(() => {
 		if (state.config) {
 			setCaption(`Config set to ${chalk.magentaBright(state.config)}\n`)
-
 			const exts = state.ext.split('-')
-
 			let savedPageCount = 0
-
 			dispatch({ type: 'set-status', status: 'fetching-objects' })
-
 			aggregator
 				.init({
 					version: 'latest',
@@ -115,10 +112,10 @@ function RetrieveObjectsPanel() {
 									try {
 										for (
 											let index = 0;
-											index < (objects as any)[ext].dirs.length;
+											index < (objects as any)[ext].dir.length;
 											index++
 										) {
-											const dir = (objects as any)[ext].dirs[index]
+											const dir = (objects as any)[ext].dir[index]
 											if (dir) {
 												await fs.mkdirp(dir)
 												if (ext === 'json') {
@@ -160,14 +157,13 @@ function RetrieveObjectsPanel() {
 
 	return (
 		<Box padding={1} flexDirection="column">
-			<Text color="yellow">
+			<HighlightedText>
 				{!state.ext
 					? 'Fetch these extensions (Select one):'
 					: !state.config
 					? 'Which config should we use?'
 					: null}
-			</Text>
-			<Newline />
+			</HighlightedText>
 			<Box flexDirection="column">
 				{!state.ext ? (
 					<Select items={items} onSelect={onSelectExt} />
@@ -181,9 +177,9 @@ function RetrieveObjectsPanel() {
 				) : null}
 			</Box>
 			{state.status === 'fetching-objects' && (
-				<Text color="whiteBright">
+				<HighlightedText color="whiteBright">
 					<Spinner type="point" interval={80} />
-				</Text>
+				</HighlightedText>
 			)}
 		</Box>
 	)

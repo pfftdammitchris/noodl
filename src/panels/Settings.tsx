@@ -4,7 +4,7 @@ import merge from 'lodash/merge'
 import CLIConfigBuilder from '../builders/CLIConfig'
 import useCtx from '../useCtx'
 import { DEFAULT_CONFIG_PATH } from '../constants'
-import { ConsumerCLIConfigObject } from '../types'
+import { ConsumerCLIConfigObject } from '../types/types'
 
 function Settings() {
 	const [initialized, setInitialized] = React.useState(false)

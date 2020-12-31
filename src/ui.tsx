@@ -1,11 +1,11 @@
 import React from 'react'
 import chalk from 'chalk'
 import produce from 'immer'
-import { Static, Text } from 'ink'
+import { Newline, Static, Text } from 'ink'
 import { WritableDraft } from 'immer/dist/internal'
 import { Provider } from './useCtx'
 import { panelId } from './constants'
-import { Action, Context, PanelId, State } from './types'
+import { Action, Context, PanelId, State } from './types/types'
 import createAggregator from './api/createAggregator'
 import Settings from './panels/Settings'
 import SelectRoute from './panels/SelectRoute'
@@ -108,6 +108,7 @@ function App() {
 
 	return (
 		<Provider value={ctx}>
+			<Newline />
 			<Settings />
 			<Panel />
 			<Static items={state?.caption as string[]}>

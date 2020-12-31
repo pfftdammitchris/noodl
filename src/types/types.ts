@@ -1,5 +1,5 @@
-import { panelId } from './constants'
-import createAggregator from './api/createAggregator'
+import { panelId } from '../constants'
+import createAggregator from '../api/createAggregator'
 
 export type Aggregator = ReturnType<typeof createAggregator>
 
@@ -96,13 +96,6 @@ export interface CLIConfigObject {
 			dir: string[]
 		}
 	}
-}
-
-export type ConsoleLog = typeof console.log
-
-export interface Log extends ConsoleLog {
-	attention(s?: string): Log
-	blank(): Log
 }
 
 export interface AppConfig {

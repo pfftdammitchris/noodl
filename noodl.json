@@ -1,18 +1,1 @@
-{
-  "objects": {
-    "json": {
-      "dir": [
-        "/Users/christ/noodl-cli/data/objects/json"
-      ]
-    },
-    "yml": {
-      "dir": [
-        "/Users/christ/noodl-cli/data/objects/yml"
-      ]
-    }
-  },
-  "server": {
-    "url": "",
-    "dir": ""
-  }
-}
+{"server":{"url":"","dir":"","port":null},"objects":{"json":{"dir":["/Users/christ/noodl-cli/data/objects/json"]},"yml":{"dir":["/Users/christ/noodl-cli/data/objects/yml"]}}}

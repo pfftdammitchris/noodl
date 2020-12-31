@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil'
-import { ConsumerCLIConfigObject, CLIConfigObject } from '../types'
+import { ConsumerCLIConfigObject, CLIConfigObject } from '../types/types'
 import { getFilePath } from '../utils/common'
 
 const DEFAULT_JSON_OBJECTS_DIR = getFilePath('objects/json')
