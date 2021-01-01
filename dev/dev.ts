@@ -5,6 +5,7 @@ import produce, { applyPatches, enablePatches } from 'immer'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
+import { ActionType, ComponentType } from 'noodl-types'
 import yaml, { createNode } from 'yaml'
 import xml2parser from 'fast-xml-parser'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
@@ -25,6 +26,7 @@ import {
 } from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
 import { isEmitObj } from '../src/utils/noodl-utils'
+import { isObject } from 'lodash'
 enablePatches()
 
 const aggregator = createAggregator({
@@ -257,3 +259,80 @@ export const createObjectUtils = function (objs: any) {
 // fs.writeJsonSync('./results.json', o.getKeyCounts(), {
 // 	spaces: 2,
 // })
+
+const signInYml = fs.readFileSync(
+	getFilePath('data/generated/yml/SignIn.yml'),
+	'utf8',
+)
+
+const doc = yaml.parseDocument(signInYml)
+const contents = doc.contents as YAMLMap
+
+export interface IdentifierFn<Fn extends (value: any) => boolean> {
+	(value: unknown): value is ReturnType<Fn>
+}
+export interface ConditionFn<O> {
+	(value: O): boolean
+}
+
+export type CastReturnType<V> = (v: unknown) => v is V
+
+export interface OnType<Type> {
+	(fn: ConditionFn<Type>): (v: Type) => boolean
+}
+
+const identify = (function () {
+	const hasAnyKeys = (...keys: string[]) => (step) => (v: any) =>
+		keys.every((key) => v.get(key)) ? step(v) : v
+
+	const onYAMLMap = compose((fn) => (step) => (v: any): v is YAMLMap =>
+		!!(v && v instanceof YAMLMap && fn(v)),
+	)
+
+	// const onYAMLMap = (fn: ConditionFn<YAMLMap>) => (v: any): v is YAMLMap =>
+	// 	!!(v && v instanceof YAMLMap && fn(v))
+
+	const onYAMLSeq = (fn: ConditionFn<YAMLSeq>) => (step) => (
+		v: any,
+	): v is YAMLSeq => !!(v && v instanceof YAMLSeq && fn(v))
+
+	function compose(fn) {
+		return (step) => fns.reduceRight((acc, fn) => acc(step(fn)))
+	}
+
+	const o = {
+		action: onYAMLMap(hasAnyKeys('actionType', 'emit', 'goto')),
+		actionChain: onYAMLSeq((v) => {
+			return true
+		}),
+		component: {
+			button: onYAMLMap((v) => v.get('type') === 'button'),
+			divider: onYAMLMap((v) => v.get('type') === 'divider'),
+			footer: onYAMLMap((v) => v.get('type') === 'footer'),
+			header: onYAMLMap((v) => v.get('type') === 'header'),
+			image: onYAMLMap((v) => v.get('type') === 'image'),
+			label: onYAMLMap((v) => v.get('type') === 'label'),
+			list: onYAMLMap((v) => v.get('type') === 'list'),
+			listItem: onYAMLMap((v) => v.get('type') === 'listItem'),
+			plugin: onYAMLMap((v) => v.get('type') === 'plugin'),
+			pluginHead: onYAMLMap((v) => v.get('type') === 'pluginHead'),
+			pluginBodyTail: onYAMLMap((v) => v.get('type') === 'pluginBodyTail'),
+			popUp: onYAMLMap((v) => v.get('type') === 'popUp'),
+			register: onYAMLMap((v) => v.get('type') === 'register'),
+			scrollView: onYAMLMap((v) => v.get('type') === 'scrollView'),
+			select: onYAMLMap((v) => v.get('type') === 'select'),
+			textField: onYAMLMap((v) => v.get('type') === 'textField'),
+			textView: onYAMLMap((v) => v.get('type') === 'textView'),
+			video: onYAMLMap((v) => v.get('type') === 'video'),
+			view: onYAMLMap((v) => v.get('type') === 'view'),
+		},
+	}
+
+	return o
+})()
+
+const s = {}
+
+if (identify.component.button(s)) {
+	let t = s
+}
