@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 config()
 import axios from 'axios'
-import produce from 'immer'
+import produce, { applyPatches, enablePatches } from 'immer'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
@@ -25,6 +25,7 @@ import {
 } from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
 import { isEmitObj } from '../src/utils/noodl-utils'
+enablePatches()
 
 const aggregator = createAggregator({
 	config: 'meet2d',
@@ -246,15 +247,13 @@ export const createObjectUtils = function (objs: any) {
 	return o
 }
 
-const o = createObjectUtils(
-	loadFiles({
-		dir: 'data/objects',
-		ext: 'json',
-	}),
-)
+// const o = createObjectUtils(
+// 	loadFiles({
+// 		dir: 'data/objects',
+// 		ext: 'json',
+// 	}),
+// )
 
-console.time('results')
-fs.writeJsonSync('./results.json', o.getKeyCounts(), {
-	spaces: 2,
-})
-console.timeEnd('results')
+// fs.writeJsonSync('./results.json', o.getKeyCounts(), {
+// 	spaces: 2,
+// })
