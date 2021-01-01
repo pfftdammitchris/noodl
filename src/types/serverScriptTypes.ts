@@ -16,5 +16,4 @@ export interface State {
 	dataSource: '' | 'fs' | 'remote'
 	dirFiles: string[]
 	step: '' | typeof serverScript.step[keyof typeof serverScript.step]
-	spinner: boolean
 }

@@ -2,31 +2,30 @@ import React from 'react'
 import fs from 'fs-extra'
 import path from 'path'
 import SelectInput from 'ink-select-input'
-import Spinner from 'ink-spinner'
 import { UncontrolledTextInput } from 'ink-text-input'
 import { Box, BoxProps } from 'ink'
 import produce, { Draft } from 'immer'
-import { getFilePath, highlight, italic, magenta, red } from '../utils/common'
+import { deepOrange, getFilePath, magenta } from '../utils/common'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
-import { DEFAULT_SERVER_PATH, serverScript as c } from '../constants'
+import * as c from '../constants'
 import * as T from '../types/serverScriptTypes'
 
 const initialState: T.State = {
 	config: '',
 	dataSource: '',
 	dirFiles: [],
-	step: c.step.CONFIG,
+	step: c.serverScript.step.CONFIG,
 } as T.State
 
 const reducer = produce(
 	(draft: Draft<T.State> = initialState, action: T.Action): void => {
 		switch (action.type) {
-			case c.action.SET_CONFIG:
+			case c.serverScript.action.SET_CONFIG:
 				return void (draft.config = action.config)
-			case c.action.SET_DATA_SOURCE:
+			case c.serverScript.action.SET_DATA_SOURCE:
 				return void (draft.dataSource = action.dataSource)
-			case c.action.SET_STEP:
+			case c.serverScript.action.SET_STEP:
 				return void (draft.step = action.step)
 		}
 	},
@@ -41,7 +40,7 @@ function StartServer() {
 	const onSetConfig = React.useCallback(
 		(config: string) => {
 			if (!config) return
-			dispatch({ type: c.action.SET_CONFIG, config })
+			dispatch({ type: c.serverScript.action.SET_CONFIG, config })
 			setCaption(`Config set to ${magenta(config)}`)
 			if (fs.existsSync(server.dir)) {
 				setStep('')
@@ -52,12 +51,12 @@ function StartServer() {
 						`Assets folder created at ${magenta(getAssetsFolder(server.dir))}`,
 					)
 				}
-				if (!state?.dataSource) setStep(c.step.PROMPT_DATA_SOURCE)
+				if (!state?.dataSource) setStep(c.serverScript.step.PROMPT_DATA_SOURCE)
 				// TODO - scan config object and retrieve missing data (images, videos, etc)
 			} else {
 				setCaption('Server dir does not exist')
 				// Confirm to create server dir
-				setStep(c.step.PROMPT_SERVER_DIR)
+				setStep(c.serverScript.step.PROMPT_SERVER_DIR)
 			}
 
 			// if (state?.dataSource === '') {
@@ -68,21 +67,41 @@ function StartServer() {
 	)
 
 	const onSetDataSource = React.useCallback((item: any) => {
-		dispatch({ type: c.action.SET_DATA_SOURCE, dataSource: item.value })
+		dispatch({
+			type: c.serverScript.action.SET_DATA_SOURCE,
+			dataSource: item.value,
+		})
+		setStep('')
 		setCaption(`Data source set to ${magenta(item.value)}`)
 		toggleSpinner()
 		if (item.value === 'fs') {
-			setCaption(`Retrieving data from ${magenta(server.dir)}...`)
-			// aggregator.on()
-			// aggregator.init({ loadPages: true })
+			setCaption(`Retrieving data from ${magenta(server.dir)}`)
+			let count = 0
+			aggregator.on(
+				c.aggregator.event.RETRIEVED_APP_OBJECT,
+				({ name }) => {
+					setCaption(`Retrieved: ${magenta(name)}`)
+					count++
+				},
+				'onSetDataSource',
+			)
+			aggregator.init({ loadPages: true }).then(([rootConfig, appConfig]) => {
+				setCaption(`\nFinished with ${magenta(count)} objects\n`)
+				toggleSpinner(false)
+				/**
+				 * TODO - scan objects and find:
+				 * 		1. urls (images/videos/pdfs/word docs)
+				 * 		2.
+				 */
+			})
 		} else if (item.value === 'remote') {
 			//
 		}
 	}, [])
 
 	const setStep = React.useCallback((step: T.State['step']) => {
-		dispatch({ type: c.action.SET_STEP, step })
-		console.log('NEXT STEP: ' + magenta(step || '<none>'))
+		dispatch({ type: c.serverScript.action.SET_STEP, step })
+		console.log(`${deepOrange('STEP')}: ` + magenta(step || '<none>'))
 	}, [])
 
 	const onConfirmUseServerDirFiles = React.useCallback(() => {
@@ -101,12 +120,12 @@ function StartServer() {
 			setCaption('Starting server from memory...')
 			setStep('')
 		} else {
-			await fs.ensureDir(DEFAULT_SERVER_PATH)
-			setCaption(`Server dir created at ${magenta(DEFAULT_SERVER_PATH)}`)
-			await fs.ensureDir(getAssetsFolder(DEFAULT_SERVER_PATH))
+			await fs.ensureDir(c.DEFAULT_SERVER_PATH)
+			setCaption(`Server dir created at ${magenta(c.DEFAULT_SERVER_PATH)}`)
+			await fs.ensureDir(getAssetsFolder(c.DEFAULT_SERVER_PATH))
 			setCaption(
 				`Assets folder created at ${magenta(
-					getAssetsFolder(DEFAULT_SERVER_PATH),
+					getAssetsFolder(c.DEFAULT_SERVER_PATH),
 				)}`,
 			)
 			setCaption(`Fetching contents from config "${magenta(state?.config)}"`)
@@ -114,17 +133,11 @@ function StartServer() {
 	}, [])
 
 	React.useEffect(() => {
-		setCaption(`STEP: ${magenta(state?.step)}`)
+		setCaption(`${deepOrange('STEP')}: ${magenta(state?.step)}`)
 		setCaption(`Server dir: ${magenta(server.dir)}`)
 		setCaption(`Server host: ${magenta(server.host)}`)
 		setCaption(`Server port: ${magenta(server.port)}`)
 	}, [])
-
-	// Initiate the location of where the data is at
-	React.useEffect(() => {
-		const hasConfig = state?.config !== ''
-		const hasDataSource = ['fs', 'remote'].includes(state?.dataSource || '')
-	}, [state?.config, state?.dataSource])
 
 	const Container = React.memo(
 		({
@@ -143,14 +156,14 @@ function StartServer() {
 
 	return (
 		<>
-			{currentStep === c.step.CONFIG ? (
+			{currentStep === c.serverScript.step.CONFIG ? (
 				<Container label="Which config should we use?">
 					<UncontrolledTextInput
 						onSubmit={onSetConfig}
 						placeholder="Enter the config here"
 					/>
 				</Container>
-			) : currentStep === c.step.PROMPT_DATA_SOURCE ? (
+			) : currentStep === c.serverScript.step.PROMPT_DATA_SOURCE ? (
 				<Container label="Where is the data going to be retrieved from?">
 					<SelectInput
 						items={[
@@ -160,7 +173,7 @@ function StartServer() {
 						onSelect={onSetDataSource}
 					/>
 				</Container>
-			) : currentStep === c.step.CONFIRM_USE_SERVER_DIR_FILES ? (
+			) : currentStep === c.serverScript.step.CONFIRM_USE_SERVER_DIR_FILES ? (
 				<Container
 					label={
 						state?.dirFiles.length
@@ -177,7 +190,7 @@ function StartServer() {
 						onSelect={onConfirmUseServerDirFiles}
 					/>
 				</Container>
-			) : currentStep === c.step.PROMPT_SERVER_DIR ? (
+			) : currentStep === c.serverScript.step.PROMPT_SERVER_DIR ? (
 				<Container label="Could not locate a directory for your server. Would you like to create one?">
 					<SelectInput
 						items={[

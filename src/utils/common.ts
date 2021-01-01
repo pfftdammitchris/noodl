@@ -5,7 +5,13 @@ import chalk from 'chalk'
 // chalk helpers
 export const highlight = (...s: any[]) => chalk.yellow(...s)
 export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
+export const blue = (...s: any[]) => chalk.blue(...s)
+export const cyan = (...s: any[]) => chalk.cyan(...s)
+export const green = (...s: any[]) => chalk.green(...s)
+export const hotpink = (...s: any[]) => chalk.hex('#F65CA1')(...s)
 export const magenta = (...s: any[]) => chalk.magenta(...s)
+export const orange = (...s: any[]) => chalk.keyword('orange')(...s)
+export const deepOrange = (...s: any[]) => chalk.hex('#FF8B3F')(...s)
 export const red = (...s: any[]) => chalk.red(...s)
 
 export function createPlaceholderReplacer(

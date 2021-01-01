@@ -1,4 +1,4 @@
-import { eventId, panelId } from '../constants'
+import { aggregatorEvent, panelId } from '../constants'
 import createAggregator from '../api/createAggregator'
 
 export interface AnyFn {
@@ -8,7 +8,7 @@ export interface AnyFn {
 export type Aggregator = ReturnType<typeof createAggregator>
 
 export type PanelId = typeof panelId[keyof typeof panelId]
-export type EventId = typeof eventId[keyof typeof eventId]
+export type EventId = typeof aggregatorEvent[keyof typeof aggregatorEvent]
 
 export interface Context extends State {
 	aggregator: Aggregator
@@ -139,7 +139,9 @@ export interface RootConfig {
 	timestamp?: number
 }
 
-export interface ObjectResult<T extends { [key: string]: any } = any> {
-	json: T
-	yml: { [key: string]: string }
+export interface ObjectResult<
+	T extends { [key: string]: any } = { [key: string]: any }
+> {
+	json: T | T[]
+	yml: string
 }

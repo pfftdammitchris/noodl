@@ -11,6 +11,7 @@ import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
 import Select from '../components/Select'
 import { withJsonExt, withYmlExt } from '../utils/common'
+import * as c from '../constants'
 
 type Ext = 'json' | 'yml' | 'json-yml'
 
@@ -101,6 +102,9 @@ function RetrieveObjectsPanel() {
 			let savedPageCount = 0
 			dispatch({ type: 'set-status', status: 'fetching-objects' })
 			aggregator
+				// .on(c.aggregator.event.RETRIEVED_ROOT_CONFIG)
+				// .on(c.aggregator.event.RETRIEVED_APP_CONFIG)
+				// .on(c.aggregator.event.RETRIEVED_APP_OBJECT)
 				.init({
 					version: 'latest',
 					loadPages: {
