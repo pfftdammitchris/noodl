@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { config } from 'dotenv'
+config()
 import React from 'react'
 import meow from 'meow'
 import { render } from 'ink'

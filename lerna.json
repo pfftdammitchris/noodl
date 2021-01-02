@@ -3,8 +3,8 @@
 	"ignore": "chai-noodl-dom",
 	"version": "independent",
 	"command": {
-		"publish": {
-			"ignore": ["chai-noodl-dom", "noodl-building-blocks"]
+		"publishChanges": {
+			"ignore": ["chai-noodl-dom"]
 		}
 	}
 }

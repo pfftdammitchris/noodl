@@ -1,8 +1,11 @@
+import { config } from 'dotenv'
+config()
 import chalk from 'chalk'
-import isPlo from 'lodash/isPlainObject'
-import xmljs from 'xml-js'
+import chunk from 'lodash/chunk'
+import xmlParser from 'fast-xml-parser'
 import axios from 'axios'
 import fs from 'fs-extra'
+import prettyBytes from 'pretty-bytes'
 import { getFilePath } from '../src/utils/common'
 
 const writeOpts = { spaces: 2 }
@@ -21,12 +24,21 @@ function createXmlUtil({
 	const o = {
 		baseUrl,
 		endpoint,
-		async loadXML() {
+		async getS3Objects(): Promise<
+			{
+				Key: string
+				LastModified: string
+				ETag: string
+				Size: number
+				StorageClass: string
+			}[]
+		> {
 			try {
 				const { data: xml } = await axios.get(`${`${baseUrl}/${endpoint}`}`, {
 					headers: { 'Content-Type': 'application/xml' },
 				})
-				return xmljs.xml2js(xml)
+				const { ListBucketResult } = xmlParser.parse(xml)
+				return ListBucketResult.Contents
 			} catch (error) {
 				console.log(`[${chalk.red(error.name)}]: ${error.message}`)
 			}
@@ -35,18 +47,16 @@ function createXmlUtil({
 		isImg: (s: string) => /([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))/i.test(s),
 		isVid: (s: string) => /([a-z\-_0-9\/\:\.]*\.(mp4|avi|wmv))/i.test(s),
 		isYml: (s: string = '') => s.endsWith('.yml'),
-		isLastModifiedDate: (o: any) => isPlo(o) && o.name === 'LastModified',
-		walkXmlNodes(
-			xmlElem: xmljs.Element | xmljs.ElementCompact,
-			cb: (elem: xmljs.Element | xmljs.ElementCompact) => void,
-		) {
-			if (Array.isArray(xmlElem?.elements)) {
-				xmlElem.elements.forEach((_o) => {
-					cb(_o)
-					o.walkXmlNodes(_o, cb)
-				})
+		isJson: (s: string = '') => s.endsWith('.json'),
+		createUrl(pathname: string) {
+			return `https://public.aitmed.com/${pathname}`
+		},
+		formatS3Object(obj: any) {
+			return {
+				url: o.createUrl(obj.Key),
+				modifiedAt: obj.LastModified,
+				size: prettyBytes(obj.Size),
 			}
-			cb(xmlElem)
 		},
 	}
 
@@ -56,54 +66,45 @@ function createXmlUtil({
 async function getS3Data() {
 	try {
 		const xmlApi = createXmlUtil()
-		const xmlElem = await xmlApi.loadXML()
-
-		let text = ''
-		let total = 0
 
 		const store = {
 			images: {},
 			ymls: {},
+			json: {},
 			videos: {},
 		}
 
-		const insert = (text: string, type: string) => {
-			const endpoint = text.substring(0, text.lastIndexOf('/'))
-			const slice = store[type]
-			const url = `${xmlApi.baseUrl}${xmlApi.endpoint}/${text}`
-			if (!Array.isArray(slice[endpoint])) slice[endpoint] = []
-			if (!slice[endpoint].includes(url)) slice[endpoint].push(url)
-		}
+		const chunks = chunk(await xmlApi.getS3Objects(), 5)
 
-		xmlApi.walkXmlNodes(xmlElem, (result) => {
-			if (result) {
-				total++
-				if (xmlApi.isKey) {
-					result?.elements?.forEach?.((o) => {
-						text = o.text
-						if (xmlApi.isYml(text)) {
-							console.log(chalk.yellow(`[${total}] YML: ${text}`))
-							insert(text, 'ymls')
-						} else if (xmlApi.isImg(text)) {
-							insert(text, 'images')
-							console.log(chalk.yellow(`[${total}] IMG: ${text}`))
-						} else if (xmlApi.isVid(text)) {
-							insert(text, 'videos')
-							console.log(chalk.yellow(`[${total}] VID: ${text}`))
+		await Promise.all(
+			chunks.map((c) =>
+				Promise.all(
+					c.map((obj) => {
+						const item = xmlApi.formatS3Object(obj)
+						if (xmlApi.isImg(obj.Key)) {
+							store.images[item.url] = item
+						} else if (xmlApi.isVid(obj.Key)) {
+							store.videos[item.url] = item
+						} else if (xmlApi.isYml(obj.Key)) {
+							store.ymls[item.url] = item
+						} else if (xmlApi.isJson(obj.Key)) {
+							store.json[item.url] = item
 						}
-					})
-				}
-			}
-		})
-
-		fs.writeJsonSync(
-			getFilePath('./data/xml.json'),
-			{ timestamp: new Date().toISOString(), ...store },
-			{ spaces: 2 },
+					}),
+				),
+			),
 		)
+
+		// fs.writeJsonSync(
+		// 	getFilePath('./data/results.json'),
+		// 	{ timestamp: new Date().toISOString(), ...store },
+		// 	{ spaces: 2 },
+		// )
 
 		console.log('DONE')
 	} catch (error) {
 		console.error(error)
 	}
 }
+
+getS3Data()

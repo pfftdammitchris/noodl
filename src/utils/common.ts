@@ -2,6 +2,18 @@ import { AxiosError } from 'axios'
 import path from 'path'
 import chalk from 'chalk'
 
+// chalk helpers
+export const highlight = (...s: any[]) => chalk.yellow(...s)
+export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
+export const blue = (...s: any[]) => chalk.blue(...s)
+export const cyan = (...s: any[]) => chalk.cyan(...s)
+export const green = (...s: any[]) => chalk.green(...s)
+export const hotpink = (...s: any[]) => chalk.hex('#F65CA1')(...s)
+export const magenta = (...s: any[]) => chalk.magenta(...s)
+export const orange = (...s: any[]) => chalk.keyword('orange')(...s)
+export const deepOrange = (...s: any[]) => chalk.hex('#FF8B3F')(...s)
+export const red = (...s: any[]) => chalk.red(...s)
+
 export function createPlaceholderReplacer(
 	placeholders: string | string[],
 	flags?: string,
@@ -30,6 +42,25 @@ export function createPlaceholderReplacer(
 	return replace
 }
 
+/**
+ * Recursively traverses each key/value, calling the callback on each iteration
+ * @param { function } fn - Callback function
+ * @param { object | array } obj
+ */
+export function forEachDeepKeyValue(
+	fn: (key: string, value: any, obj: any) => void,
+	obj: any,
+) {
+	if (Array.isArray(obj)) {
+		obj.forEach((o) => forEachDeepKeyValue(fn, o))
+	} else if (obj && typeof obj === 'object') {
+		Object.entries(obj).forEach(([key, value]) => {
+			fn(key, value, obj)
+			if (value) forEachDeepKeyValue(fn, value)
+		})
+	}
+}
+
 export function getFilePath(...paths: string[]) {
 	return path.resolve(path.join(process.cwd(), ...paths))
 }
@@ -53,8 +84,14 @@ export const replaceVersionPlaceholder = createPlaceholderReplacer(
 	'g',
 )
 
-export function toArray(value: any): any[] {
-	return Array.isArray(value) ? value : [value]
+export function sortObjPropsByKeys(obj: { [key: string]: any }) {
+	return Object.entries(obj)
+		.sort((a, b) => {
+			if (a[1] > b[1]) return -1
+			if (a[1] === b[1]) return 0
+			return 1
+		})
+		.reduce((acc, [key, value]) => Object.assign(acc, { [key]: value }), {})
 }
 
 export const withSuffix = (suffix: string) => (str: string) => `${str}${suffix}`

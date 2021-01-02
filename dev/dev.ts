@@ -1,20 +1,45 @@
+import { config } from 'dotenv'
+config()
 import axios from 'axios'
-import produce from 'immer'
+import produce, { applyPatches, enablePatches } from 'immer'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
+import { ActionType, ComponentType } from 'noodl-types'
 import yaml, { createNode } from 'yaml'
+import xml2parser from 'fast-xml-parser'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import { findPair } from 'yaml/util'
 import globby from 'globby'
+import isNil from 'lodash/isNil'
+import countBy from 'lodash/countBy'
 import isNaN from 'lodash/isNaN'
 import has from 'lodash/has'
 import get from 'lodash/get'
+import sortBy from 'lodash/sortBy'
+import orderBy from 'lodash/orderBy'
 import isPlainObject from 'lodash/isPlainObject'
 import * as t from 'typescript-validators'
-import { getFilePath, toArray } from '../src/utils/common'
+import {
+	forEachDeepKeyValue,
+	getFilePath,
+	sortObjPropsByKeys,
+} from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
-import { isEmitObj } from '../src/utils/noodl-utils'
+import { AnyFn } from '../src/types'
+enablePatches()
+
+const aggregator = createAggregator({
+	config: 'meet2d',
+})
+
+async function loadRemote({ config }) {
+	const [rootConfig, appConfig] = await aggregator.init({
+		loadPages: {
+			includePreloadPages: true,
+		},
+	})
+}
 
 function loadFiles(opts: { dir: string; ext: 'yml' }): yaml.Document[]
 function loadFiles(opts: { dir: string; ext: 'json' }): { [key: string]: any }[]
@@ -177,100 +202,160 @@ function getTypings(doc: yaml.Document['contents']) {
 	}
 }
 
-function forEachDeepKeyValue(
-	fn: (key: string, value: any, obj: any) => void,
-	obj: any,
-) {
-	if (Array.isArray(obj)) {
-		obj.forEach((o) => forEachDeepKeyValue(fn, o))
-	} else if (obj && typeof obj === 'object') {
-		Object.entries(obj).forEach(([key, value]) => {
-			fn(key, value, obj)
-			if (value) forEachDeepKeyValue(fn, value)
-		})
-	}
-}
-
-export interface PlainObject {
-	[key: string]: any
-}
-
-export interface PageObjectResult {
-	name: string
-	object: PlainObject
-}
-
-export const createObjectUtils = function () {
-	const state = {
-		objs: [] as PageObjectResult[],
-	}
-
-	function getObjectsContainingKeys(keys: string): any[]
-	function getObjectsContainingKeys(keys: string[]): any[]
-	function getObjectsContainingKeys(keywords: any) {
-		const results = [] as any[]
-		forEachDeepKeyValue(
-			(key, value, obj) => keywords.includes(key) && results.push(obj),
-			objs,
-		)
-		return results
-	}
-
-	function getKeywordOccurrences(keys: string): { [keyword: string]: number }
-	function getKeywordOccurrences(keys: string[]): { [keyword: string]: number }
-	function getKeywordOccurrences(keys: string | string[]) {
-		const keywords = Array.isArray(keys) ? keys : [keys]
-		const results = {} as { [keyword: string]: number }
-		objs.forEach((obj) => {
-			forEachDeepKeyValue((key, value, o) => {
-				if (keywords.includes(key)) {
-				}
-			}, obj)
-		})
-		return results
-	}
+export const createObjectUtils = function (objs: any) {
+	objs = Array.isArray(objs) ? objs : [objs]
 
 	const o = {
-		loadObjs(objs: PlainObject | PlainObject[]) {
-			toArray(objs).forEach((obj: PlainObject) => {
-				state.objs.push({
-					name,
-					object: obj,
-				})
-			})
-			return o
+		getObjectsThatContainKeys(keys: string | string[]): any[] {
+			const keywords = Array.isArray(keys) ? keys : [keys]
+			const results = []
+			forEachDeepKeyValue(
+				(key, value, obj) => keywords.includes(key) && results.push(obj),
+				objs,
+			)
+			return results
 		},
-		getObjectsContainingKeys,
-		getKeywordOccurrences,
+		getKeyCounts(keys?: string | string[]): Record<string, number> {
+			const keywords = Array.isArray(keys) ? keys : (keys && [keys]) || []
+			const results = {} as { [key: string]: number }
+			forEachDeepKeyValue((key, value, obj) => {
+				if (keywords.length) {
+					if (keywords.includes(key)) {
+						if (typeof results[key] !== 'number') results[key] = 0
+						results[key]++
+					}
+				} else {
+					if (typeof results[key] !== 'number') results[key] = 0
+					results[key]++
+				}
+			}, objs)
+			return sortObjPropsByKeys(results)
+		},
+		getPaths() {
+			const results = [] as string[]
+			forEachDeepKeyValue((key, value, obj) => {
+				if (typeof value === 'string') {
+					if (value.startsWith('http')) {
+						!results.includes(value) && results.push(value)
+					} else if (/(path|resource)/i.test(key)) {
+						!results.includes(value) && results.push(value)
+					}
+				}
+			}, objs)
+			return results.sort()
+		},
 	}
 
 	return o
 }
 
-export function queryAllPropsFor(opts: { keywords?: string[] }, root) {
-	const results = {}
-	forEachDeepKeyValue((key, value) => {
-		if (opts.keywords.includes(key)) {
-			if (isPlainObject(value)) {
-				Object.assign(results, value)
-			} else if (Array.isArray(value)) {
-				if (!Array.isArray(results[key])) results[key] = []
-				results[key].push(value)
-			}
-		}
-	}, root)
-	return results
-}
-
-const objs = loadFiles({
-	dir: 'data/objects',
-	ext: 'json',
-})
-
-// fs.writeJsonSync(
-// 	'./results.json',
-// 	getObjectsContainingKeys('actionType', objs),
-// 	{ spaces: 2 },
+// const o = createObjectUtils(
+// 	loadFiles({
+// 		dir: 'data/objects',
+// 		ext: 'json',
+// 	}),
 // )
 
-console.log('hi')
+// fs.writeJsonSync('./results.json', o.getKeyCounts(), {
+// 	spaces: 2,
+// })
+
+const signInYml = fs.readFileSync(
+	getFilePath('data/generated/yml/SignIn.yml'),
+	'utf8',
+)
+
+const doc = yaml.parseDocument(signInYml)
+const contents = doc.contents as YAMLMap
+
+export const identify = (function () {
+	const hasAnyKeys = (keys: string | string[], v: YAMLMap) =>
+		(Array.isArray(keys) ? keys : [keys]).some((key) => v.has(key))
+	const exists = (v: unknown) => !isNil(v)
+	const isActionType = (actionType: ActionType, v: YAMLMap) =>
+		v.get('actionType') === actionType
+	const isPair = (v: unknown): v is Pair => v instanceof Pair
+	const isYAMLMap = (v: any): v is YAMLMap => exists(v) && v instanceof YAMLMap
+	const isYAMLSeq = (v: any): v is YAMLSeq => exists(v) && v instanceof YAMLSeq
+
+	const o = {
+		action: {
+			any(v: unknown) {
+				return isYAMLMap(v) && v.has('actionType')
+			},
+			builtIn(v: unknown) {
+				return isYAMLMap(v) && (v.has('funcName') || isActionType('builtIn', v))
+			},
+			evalObject(v: unknown) {
+				return isYAMLMap(v) && isActionType('evalObject', v)
+			},
+			pageJump(v: unknown) {
+				return isYAMLMap(v) && isActionType('pageJump', v)
+			},
+			popUp(v: unknown) {
+				return isYAMLMap(v) && isActionType('popUp', v)
+			},
+			popUpDismiss(v: unknown) {
+				return isYAMLMap(v) && isActionType('popUpDismiss', v)
+			},
+			refresh(v: unknown) {
+				return isYAMLMap(v) && isActionType('refresh', v)
+			},
+			saveObject(v: unknown) {
+				return isYAMLMap(v) && isActionType('saveObject', v)
+			},
+			updateObject(v: unknown) {
+				return isYAMLMap(v) && isActionType('updateObject', v)
+			},
+		},
+		actionChain(v: unknown) {
+			return isYAMLSeq(v) && v.items.every(o.action.any)
+		},
+		component: [
+			'button',
+			'divider',
+			'footer',
+			'header',
+			'image',
+			'label',
+			'list',
+			'listItem',
+			'plugin',
+			'pluginHead',
+			'pluginBodyTail',
+			'popUp',
+			'register',
+			'select',
+			'scrollView',
+			'textField',
+			'textView',
+			'video',
+			'view',
+		].reduce(
+			(acc, type) =>
+				Object.assign(acc, {
+					[type](value: unknown) {
+						return isYAMLMap(value) && value.get(type) === type
+					},
+				}),
+			{} as { [K in ComponentType]: (value: unknown) => boolean },
+		),
+		goto(v: unknown) {
+			return isYAMLMap(v) && v.has('goto')
+		},
+	}
+
+	return o
+})()
+
+const actionChain = createNode([
+	{ goto: 'SignIn' },
+	{ actionType: 'evalObject', object: null },
+	{ actionType: 'popUp' },
+])
+
+console.log(
+	`is s an action chain? --> ${chalk.magenta(
+		identify.actionChain(actionChain) ? 'YES' : 'NO',
+	)}`,
+)

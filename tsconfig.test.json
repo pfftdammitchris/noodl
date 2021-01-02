@@ -8,6 +8,6 @@
 		"target": "es2019"
 	},
 	"extends": "./tsconfig.json",
-	"exclude": ["node_modules"],
+	"exclude": ["node_modules", "packages"],
 	"include": ["src/**/*.test.ts"]
 }
