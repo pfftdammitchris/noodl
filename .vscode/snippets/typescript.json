@@ -1,0 +1,23 @@
+{
+	"test": {
+		"prefix": "test",
+		"body": [
+			"import { expect } from 'chai'",
+			"",
+			"describe(`$1`, () => {",
+			"  xit(`$2`, () => {",
+			"    $3",
+			"  })",
+			"})",
+			""
+		]
+	},
+	"prettyDOM": {
+		"prefix": "importpdom",
+		"body": "import { prettyDOM } from '@testing-library/dom'"
+	},
+	"prettyDOM() log": {
+		"prefix": "pdom",
+		"body": "console.info(prettyDOM())"
+	}
+}

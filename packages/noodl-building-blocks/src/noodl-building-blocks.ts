@@ -1,9 +1,5 @@
-import PageBuilder from './Page'
-
 class NOODLBuilder {
-  createPage() {
-    return new PageBuilder()
-  }
+	createPage() {}
 }
 
 export default NOODLBuilder

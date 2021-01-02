@@ -11,6 +11,7 @@ import xml2parser from 'fast-xml-parser'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import { findPair } from 'yaml/util'
 import globby from 'globby'
+import isNil from 'lodash/isNil'
 import countBy from 'lodash/countBy'
 import isNaN from 'lodash/isNaN'
 import has from 'lodash/has'
@@ -25,8 +26,7 @@ import {
 	sortObjPropsByKeys,
 } from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
-import { isEmitObj } from '../src/utils/noodl-utils'
-import { isObject } from 'lodash'
+import { AnyFn } from '../src/types'
 enablePatches()
 
 const aggregator = createAggregator({
@@ -268,71 +268,92 @@ const signInYml = fs.readFileSync(
 const doc = yaml.parseDocument(signInYml)
 const contents = doc.contents as YAMLMap
 
-export interface IdentifierFn<Fn extends (value: any) => boolean> {
-	(value: unknown): value is ReturnType<Fn>
-}
-export interface ConditionFn<O> {
-	(value: O): boolean
-}
-
-export type CastReturnType<V> = (v: unknown) => v is V
-
-export interface OnType<Type> {
-	(fn: ConditionFn<Type>): (v: Type) => boolean
-}
-
-const identify = (function () {
-	const hasAnyKeys = (...keys: string[]) => (step) => (v: any) =>
-		keys.every((key) => v.get(key)) ? step(v) : v
-
-	const onYAMLMap = compose((fn) => (step) => (v: any): v is YAMLMap =>
-		!!(v && v instanceof YAMLMap && fn(v)),
-	)
-
-	// const onYAMLMap = (fn: ConditionFn<YAMLMap>) => (v: any): v is YAMLMap =>
-	// 	!!(v && v instanceof YAMLMap && fn(v))
-
-	const onYAMLSeq = (fn: ConditionFn<YAMLSeq>) => (step) => (
-		v: any,
-	): v is YAMLSeq => !!(v && v instanceof YAMLSeq && fn(v))
-
-	function compose(fn) {
-		return (step) => fns.reduceRight((acc, fn) => acc(step(fn)))
-	}
+export const identify = (function () {
+	const exists = (v: unknown) => !isNil(v)
+	const isActionType = (actionType: ActionType, v: YAMLMap) =>
+		v.get('actionType') === actionType
+	const isPair = (v: unknown): v is Pair => v instanceof Pair
+	const isYAMLMap = (v: any): v is YAMLMap => exists(v) && v instanceof YAMLMap
+	const isYAMLSeq = (v: any): v is YAMLSeq => exists(v) && v instanceof YAMLSeq
 
 	const o = {
-		action: onYAMLMap(hasAnyKeys('actionType', 'emit', 'goto')),
-		actionChain: onYAMLSeq((v) => {
-			return true
-		}),
-		component: {
-			button: onYAMLMap((v) => v.get('type') === 'button'),
-			divider: onYAMLMap((v) => v.get('type') === 'divider'),
-			footer: onYAMLMap((v) => v.get('type') === 'footer'),
-			header: onYAMLMap((v) => v.get('type') === 'header'),
-			image: onYAMLMap((v) => v.get('type') === 'image'),
-			label: onYAMLMap((v) => v.get('type') === 'label'),
-			list: onYAMLMap((v) => v.get('type') === 'list'),
-			listItem: onYAMLMap((v) => v.get('type') === 'listItem'),
-			plugin: onYAMLMap((v) => v.get('type') === 'plugin'),
-			pluginHead: onYAMLMap((v) => v.get('type') === 'pluginHead'),
-			pluginBodyTail: onYAMLMap((v) => v.get('type') === 'pluginBodyTail'),
-			popUp: onYAMLMap((v) => v.get('type') === 'popUp'),
-			register: onYAMLMap((v) => v.get('type') === 'register'),
-			scrollView: onYAMLMap((v) => v.get('type') === 'scrollView'),
-			select: onYAMLMap((v) => v.get('type') === 'select'),
-			textField: onYAMLMap((v) => v.get('type') === 'textField'),
-			textView: onYAMLMap((v) => v.get('type') === 'textView'),
-			video: onYAMLMap((v) => v.get('type') === 'video'),
-			view: onYAMLMap((v) => v.get('type') === 'view'),
+		action: {
+			any(v: unknown) {
+				return isYAMLMap(v) && v.has('actionType')
+			},
+			builtIn(v: unknown) {
+				return isYAMLMap(v) && (v.has('funcName') || isActionType('builtIn', v))
+			},
+			evalObject(v: unknown) {
+				return isYAMLMap(v) && isActionType('evalObject', v)
+			},
+			pageJump(v: unknown) {
+				return isYAMLMap(v) && isActionType('pageJump', v)
+			},
+			popUp(v: unknown) {
+				return isYAMLMap(v) && isActionType('popUp', v)
+			},
+			popUpDismiss(v: unknown) {
+				return isYAMLMap(v) && isActionType('popUpDismiss', v)
+			},
+			refresh(v: unknown) {
+				return isYAMLMap(v) && isActionType('refresh', v)
+			},
+			saveObject(v: unknown) {
+				return isYAMLMap(v) && isActionType('saveObject', v)
+			},
+			updateObject(v: unknown) {
+				return isYAMLMap(v) && isActionType('updateObject', v)
+			},
+		},
+		actionChain(v: unknown) {
+			return isYAMLSeq(v) && v.items.every(o.action.any)
+		},
+		component: [
+			'button',
+			'divider',
+			'footer',
+			'header',
+			'image',
+			'label',
+			'list',
+			'listItem',
+			'plugin',
+			'pluginHead',
+			'pluginBodyTail',
+			'popUp',
+			'register',
+			'select',
+			'scrollView',
+			'textField',
+			'textView',
+			'video',
+			'view',
+		].reduce(
+			(acc, type) =>
+				Object.assign(acc, {
+					[type](value: unknown) {
+						return isYAMLMap(value) && value.get(type) === type
+					},
+				}),
+			{} as { [K in ComponentType]: (value: unknown) => boolean },
+		),
+		goto(v: unknown) {
+			return isYAMLMap(v) && v.has('goto')
 		},
 	}
 
 	return o
 })()
 
-const s = {}
+const actionChain = createNode([
+	{ goto: 'SignIn' },
+	{ actionType: 'evalObject', object: null },
+	{ actionType: 'popUp' },
+])
 
-if (identify.component.button(s)) {
-	let t = s
-}
+console.log(
+	`is s an action chain? --> ${chalk.magenta(
+		identify.actionChain(actionChain) ? 'YES' : 'NO',
+	)}`,
+)

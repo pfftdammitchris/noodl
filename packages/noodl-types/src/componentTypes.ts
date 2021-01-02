@@ -2,106 +2,110 @@ import { ActionObject } from './actionTypes'
 import { StyleObject } from './styleTypes'
 
 export type ComponentType =
-  | 'button'
-  | 'divider'
-  | 'footer'
-  | 'header'
-  | 'image'
-  | 'label'
-  | 'list'
-  | 'listItem'
-  | 'plugin'
-  | 'pluginHead'
-  | 'pluginBodyTail'
-  | 'popUp'
-  | 'register'
-  | 'select'
-  | 'scrollView'
-  | 'textField'
-  | 'textView'
-  | 'video'
-  | 'view'
+	| 'button'
+	| 'divider'
+	| 'footer'
+	| 'header'
+	| 'image'
+	| 'label'
+	| 'list'
+	| 'listItem'
+	| 'plugin'
+	| 'pluginHead'
+	| 'pluginBodyTail'
+	| 'popUp'
+	| 'register'
+	| 'select'
+	| 'scrollView'
+	| 'textField'
+	| 'textView'
+	| 'video'
+	| 'view'
 
 export interface ComponentObject<T extends string = any> {
-  type: T
-  style: StyleObject
-  children?: any[]
-  [key: string]: any
+	type: T
+	style: StyleObject
+	children?: any[]
+	[key: string]: any
 }
 
 export interface ButtonComponentObject extends ComponentObject {
-  type: 'button'
+	type: 'button'
 }
 
 export interface DividerComponentObject extends ComponentObject {
-  type: 'divider'
+	type: 'divider'
 }
 
 export interface FooterComponentObject extends ComponentObject {
-  type: 'footer'
+	type: 'footer'
 }
 
 export interface HeaderComponentObject extends ComponentObject {
-  type: 'header'
+	type: 'header'
 }
 
 export interface ImageComponentObject extends ComponentObject {
-  type: 'image'
-  path: string
+	type: 'image'
+	path: string
 }
 
 export interface LabelComponentObject extends ComponentObject {
-  type: 'label'
+	type: 'label'
 }
 
 export interface ListComponentObject extends ComponentObject {
-  type: 'list'
-  iteratorVar: String
-  listObject: any[]
+	type: 'list'
+	iteratorVar: String
+	listObject: any[]
 }
 
 export interface ListItemComponentObject extends ComponentObject {
-  type: 'listItem'
+	type: 'listItem'
 }
 
 export interface PluginComponentObject extends ComponentObject {
-  type: 'plugin'
+	type: 'plugin'
 }
 
 export interface PluginHeadComponentObject extends ComponentObject {
-  type: 'pluginHead'
+	type: 'pluginHead'
+}
+
+export interface PluginBodyTailComponentObject extends ComponentObject {
+	type: 'pluginBodyTail'
 }
 
 export interface PopUpComponentObject extends ComponentObject {
-  type: 'popUp'
+	type: 'popUp'
 }
 
 export interface RegisterComponentObject extends ComponentObject {
-  type: 'register'
-  onEvent?: string
-  actions?: ActionObject[]
+	type: 'register'
+	onEvent?: string
+	actions?: ActionObject[]
 }
 
 export interface SelectComponentObject extends ComponentObject {
-  type: 'select'
+	type: 'select'
 }
 
 export interface ScrollViewComponentObject extends ComponentObject {
-  type: 'scrollView'
+	type: 'scrollView'
 }
 
 export interface TextFieldComponentObject extends ComponentObject {
-  type: 'textField'
+	type: 'textField'
 }
 
 export interface TextViewComponentObject extends ComponentObject {
-  type: 'textView'
+	type: 'textView'
 }
 
 export interface VideoComponentObject extends ComponentObject {
-  type: 'video'
+	type: 'video'
 }
 
 export interface ViewComponentObject extends ComponentObject {
-  type: 'view'
+	type: 'view'
 }
