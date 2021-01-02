@@ -269,6 +269,8 @@ const doc = yaml.parseDocument(signInYml)
 const contents = doc.contents as YAMLMap
 
 export const identify = (function () {
+	const hasAnyKeys = (keys: string | string[], v: YAMLMap) =>
+		(Array.isArray(keys) ? keys : [keys]).some((key) => v.has(key))
 	const exists = (v: unknown) => !isNil(v)
 	const isActionType = (actionType: ActionType, v: YAMLMap) =>
 		v.get('actionType') === actionType
