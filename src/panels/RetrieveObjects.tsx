@@ -1,8 +1,9 @@
+// @ts-nocheck
 import React from 'react'
 import { WritableDraft } from 'immer/dist/internal'
+import { Box, Newline, Text } from 'ink'
 import produce from 'immer'
 import path from 'path'
-import { Box, Newline, Text } from 'ink'
 import fs from 'fs-extra'
 import chalk from 'chalk'
 import TextInput from 'ink-text-input'
