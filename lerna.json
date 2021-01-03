@@ -1,10 +1,7 @@
 {
 	"packages": ["packages/*"],
-	"ignore": "chai-noodl-dom",
 	"version": "independent",
 	"command": {
-		"publishChanges": {
-			"ignore": ["chai-noodl-dom"]
-		}
+		"publishChanges": {}
 	}
 }

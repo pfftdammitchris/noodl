@@ -5,19 +5,12 @@ import produce, { applyPatches, enablePatches } from 'immer'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
-import { ActionType, ComponentType } from 'noodl-types'
+import { ActionType, ComponentType, identify } from 'noodl-types'
 import yaml, { createNode } from 'yaml'
 import xml2parser from 'fast-xml-parser'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
-import { findPair } from 'yaml/util'
 import globby from 'globby'
 import isNil from 'lodash/isNil'
-import countBy from 'lodash/countBy'
-import isNaN from 'lodash/isNaN'
-import has from 'lodash/has'
-import get from 'lodash/get'
-import sortBy from 'lodash/sortBy'
-import orderBy from 'lodash/orderBy'
 import isPlainObject from 'lodash/isPlainObject'
 import * as t from 'typescript-validators'
 import {
@@ -175,33 +168,6 @@ function queryKeywords<Keywords extends string[]>(
 // 	}
 // }
 
-function onKeyValue(keyValue: Pair) {
-	//
-}
-
-function getTypings(doc: yaml.Document['contents']) {
-	switch (doc.type) {
-		case 'ALIAS':
-		case 'BLOCK_FOLDED':
-		case 'BLOCK_LITERAL':
-		case 'COMMENT':
-		case 'DIRECTIVE':
-		case 'DOCUMENT':
-		case 'FLOW_MAP':
-		case 'FLOW_SEQ':
-		case 'MAP':
-		case 'MAP_KEY':
-		case 'MAP_VALUE':
-		case 'PLAIN':
-		case 'QUOTE_DOUBLE':
-		case 'QUOTE_SINGLE':
-		case 'SEQ':
-		case 'SEQ_ITEM':
-		default:
-			break
-	}
-}
-
 export const createObjectUtils = function (objs: any) {
 	objs = Array.isArray(objs) ? objs : [objs]
 
@@ -268,80 +234,67 @@ const signInYml = fs.readFileSync(
 const doc = yaml.parseDocument(signInYml)
 const contents = doc.contents as YAMLMap
 
-export const identify = (function () {
+export const id = (function () {
 	const hasAnyKeys = (keys: string | string[], v: YAMLMap) =>
 		(Array.isArray(keys) ? keys : [keys]).some((key) => v.has(key))
 	const exists = (v: unknown) => !isNil(v)
 	const isActionType = (actionType: ActionType, v: YAMLMap) =>
 		v.get('actionType') === actionType
 	const isPair = (v: unknown): v is Pair => v instanceof Pair
+	const isScalar = (v: any): v is Scalar => exists(v) && v instanceof Scalar
 	const isYAMLMap = (v: any): v is YAMLMap => exists(v) && v instanceof YAMLMap
 	const isYAMLSeq = (v: any): v is YAMLSeq => exists(v) && v instanceof YAMLSeq
 
 	const o = {
-		action: {
-			any(v: unknown) {
-				return isYAMLMap(v) && v.has('actionType')
-			},
-			builtIn(v: unknown) {
-				return isYAMLMap(v) && (v.has('funcName') || isActionType('builtIn', v))
-			},
-			evalObject(v: unknown) {
-				return isYAMLMap(v) && isActionType('evalObject', v)
-			},
-			pageJump(v: unknown) {
-				return isYAMLMap(v) && isActionType('pageJump', v)
-			},
-			popUp(v: unknown) {
-				return isYAMLMap(v) && isActionType('popUp', v)
-			},
-			popUpDismiss(v: unknown) {
-				return isYAMLMap(v) && isActionType('popUpDismiss', v)
-			},
-			refresh(v: unknown) {
-				return isYAMLMap(v) && isActionType('refresh', v)
-			},
-			saveObject(v: unknown) {
-				return isYAMLMap(v) && isActionType('saveObject', v)
-			},
-			updateObject(v: unknown) {
-				return isYAMLMap(v) && isActionType('updateObject', v)
-			},
-		},
-		actionChain(v: unknown) {
-			return isYAMLSeq(v) && v.items.every(o.action.any)
-		},
-		component: [
-			'button',
-			'divider',
-			'footer',
-			'header',
-			'image',
-			'label',
-			'list',
-			'listItem',
-			'plugin',
-			'pluginHead',
-			'pluginBodyTail',
-			'popUp',
-			'register',
-			'select',
-			'scrollView',
-			'textField',
-			'textView',
-			'video',
-			'view',
-		].reduce(
-			(acc, type) =>
+		action: Object.entries(identify.action).reduce(
+			(acc, [key, value]) =>
 				Object.assign(acc, {
-					[type](value: unknown) {
-						return isYAMLMap(value) && value.get(type) === type
+					[key]: (value) => {
+						return isYAMLMap(value) && identify.action[key](value.toJSON())
 					},
 				}),
-			{} as { [K in ComponentType]: (value: unknown) => boolean },
+			{} as {
+				[K in keyof typeof identify.action]: (value: YAMLMap) => boolean
+			},
 		),
+		actionChain(v: unknown) {
+			return (
+				isYAMLSeq(v) &&
+				v.items.every(
+					(obj) => isYAMLMap(obj) && identify.action.any(obj.toJSON()),
+				)
+			)
+		},
+		component: Object.entries(identify.component).reduce(
+			(acc, [key, value]) =>
+				Object.assign(acc, {
+					[key]: (value) => {
+						return isYAMLMap(value) && identify.component[key](value.toJSON())
+					},
+				}),
+			{} as {
+				[K in keyof typeof identify.component]: (value: YAMLMap) => boolean
+			},
+		),
+		emit(v: unknown) {
+			return isYAMLMap(v) && identify.emit(v.toJSON())
+		},
 		goto(v: unknown) {
-			return isYAMLMap(v) && v.has('goto')
+			return isYAMLMap(v) && identify.goto(v.toJSON())
+		},
+		gotoUrl(v: unknown) {
+			return isScalar(v) && identify.gotoUrl(v.toJSON())
+		},
+		gotoObject(v: unknown) {
+			return isYAMLMap(v) && identify.gotoObject(v.toJSON())
+		},
+		style: {
+			any(v: unknown) {
+				return isYAMLMap(v) && identify.style.any(v.toJSON())
+			},
+			border(v: unknown) {
+				return isYAMLMap(v) && identify.style.border(v.toJSON())
+			},
 		},
 	}
 

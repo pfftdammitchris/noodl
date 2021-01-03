@@ -39,7 +39,7 @@ export interface StyleObject {
 	top?: string
 	width?: string
 	zIndex?: number // TODO - check if handling
-	[styleKey: string]: any
+	[key: string]: any
 }
 
 export type StyleAlign = 'centerX' | 'centerY'
@@ -51,6 +51,7 @@ export interface StyleBorderObject {
 	width?: string | number
 	color?: string | number
 	line?: string // ex: "solid"
+	[key: string]: any
 }
 
 export type StyleTextAlign =
@@ -63,4 +64,5 @@ export type StyleTextAlign =
 export interface StyleTextAlignObject {
 	x?: 'left' | 'center' | 'right'
 	y?: 'left' | 'center' | 'right'
+	[key: string]: any
 }

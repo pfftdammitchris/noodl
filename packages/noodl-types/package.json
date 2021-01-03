@@ -5,9 +5,11 @@
 	"author": "Christopher Tran <christopher@aitmed.com>",
 	"homepage": "",
 	"license": "ISC",
+	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "rm -rf dist && tsc",
+		"build:utils": "rm -rf dist && tsc -p tsconfig-utils.json",
 		"start": "rm -rf dist && tsc --watch",
 		"test": "echo \"Error: run tests from root\" && exit 1"
 	},

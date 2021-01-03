@@ -1,0 +1,35 @@
+{
+	"name": "chai-noodl",
+	"version": "1.0.1",
+	"description": "Chai unit test plugin for the noodl-ui library",
+	"keywords": [
+		"noodl",
+		"chai",
+		"mocha",
+		"plugin"
+	],
+	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
+	"homepage": "",
+	"license": "ISC",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"repository": {
+		"type": "git",
+		"url": "http://gitlab.aitmed.com/pfftdammitchris/aitmed-noodl-web.git"
+	},
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"start": "rm -rf dist && tsc -w",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
+		"dev": "ts-node-dev --respawn --transpile-only src/__tests__/p.ts"
+	},
+	"dependencies": {
+		"noodl-utils": "0.0.40"
+	},
+	"devDependencies": {
+		"noodl-types": "file:../noodl-types"
+	}
+}
