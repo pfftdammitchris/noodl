@@ -124,6 +124,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 				.build()
 			objects.yml[config] = objects.json[config]?.yml || ''
 			_emit(c.aggregator.event.RETRIEVED_ROOT_CONFIG, {
+				name: config,
 				json: objects.json[config],
 				yml: objects.yml[config],
 			})
@@ -132,6 +133,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 				.build()
 			objects.yml['cadlEndpoint'] = objects.json.cadlEndpoint?.yml || ''
 			_emit(c.aggregator.event.RETRIEVED_APP_CONFIG, {
+				name: 'cadlEndpoint',
 				json: objects.json.cadlEndpoint,
 				yml: objects.yml.cadlEndpoint,
 			})

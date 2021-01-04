@@ -13,6 +13,7 @@ import HighlightedText from '../components/HighlightedText'
 import Select from '../components/Select'
 import { withJsonExt, withYmlExt } from '../utils/common'
 import * as c from '../constants'
+import { ObjectResult } from 'types'
 
 type Ext = 'json' | 'yml' | 'json-yml'
 
@@ -98,62 +99,62 @@ function RetrieveObjectsPanel() {
 
 	React.useEffect(() => {
 		if (state.config) {
+			async function onNOODLObject(args: ObjectResult & { name: string }) {
+				if (typeof args === 'object') {
+					const { name, json, yml } = args
+					for (let ext of exts) {
+						try {
+							for (
+								let index = 0;
+								index < (objects as any)[ext].dir.length;
+								index++
+							) {
+								const dir = (objects as any)[ext].dir[index]
+								if (dir) {
+									await fs.mkdirp(dir)
+									if (ext === 'json') {
+										await fs.writeJson(
+											withJsonExt(path.join(dir, name)),
+											json,
+											{ spaces: 2 },
+										)
+									} else if (ext === 'yml') {
+										await fs.writeFile(withYmlExt(path.join(dir, name)), yml, {
+											encoding: 'utf8',
+										})
+									}
+								}
+							}
+						} catch (error) {
+							setCaption(
+								`[${chalk.red(`${name} - [${error.name}]`)}]: ${error.message}`,
+							)
+						}
+					}
+					savedPageCount++
+					setCaption(`Saved ${chalk.yellow(name)}`)
+				}
+			}
+
 			setCaption(`Config set to ${chalk.magentaBright(state.config)}\n`)
 			const exts = state.ext.split('-')
 			let savedPageCount = 0
 			dispatch({ type: 'set-status', status: 'fetching-objects' })
 			aggregator
-				// .on(c.aggregator.event.RETRIEVED_ROOT_CONFIG)
-				// .on(c.aggregator.event.RETRIEVED_APP_CONFIG)
+				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, async ({ json, yml }) => {
+					await onNOODLObject({ name: state.config, json, yml })
+				})
+				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onNOODLObject)
 				// .on(c.aggregator.event.RETRIEVED_APP_OBJECT)
 				.init({
 					version: 'latest',
 					loadPages: {
 						includePreloadPages: true,
-						async onPage(args) {
-							if (typeof args === 'object') {
-								const { name, json, yml } = args
-								for (let ext of exts) {
-									try {
-										for (
-											let index = 0;
-											index < (objects as any)[ext].dir.length;
-											index++
-										) {
-											const dir = (objects as any)[ext].dir[index]
-											if (dir) {
-												await fs.mkdirp(dir)
-												if (ext === 'json') {
-													await fs.writeJson(
-														withJsonExt(path.join(dir, name)),
-														json,
-														{ spaces: 2 },
-													)
-												} else if (ext === 'yml') {
-													await fs.writeFile(
-														withYmlExt(path.join(dir, name)),
-														yml,
-														{ encoding: 'utf8' },
-													)
-												}
-											}
-										}
-									} catch (error) {
-										setCaption(
-											`[${chalk.red(`${name} - [${error.name}]`)}]: ${
-												error.message
-											}`,
-										)
-									}
-								}
-								savedPageCount++
-								setCaption(`Saved page ${chalk.yellow(name)}`)
-							}
-						},
+						onPage: onNOODLObject,
 					},
 				})
 				.then(() => {
-					setCaption(`\nSaved ${chalk.yellow(savedPageCount)} pages`)
+					setCaption(`\nSaved ${chalk.yellow(savedPageCount)} objects`)
 				})
 				.catch(setErrorCaption)
 				.finally(() => dispatch({ type: 'set-status', status: 'idle' }))

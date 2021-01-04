@@ -65,6 +65,26 @@ export function getFilePath(...paths: string[]) {
 	return path.resolve(path.join(process.cwd(), ...paths))
 }
 
+export function isImg(s: string) {
+	return /([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))/i.test(s)
+}
+
+export function isPdf(s: string) {
+	return s.endsWith('.pdf')
+}
+
+export function isVid(s: string) {
+	return /([a-z\-_0-9\/\:\.]*\.(mp4|avi|wmv))/i.test(s)
+}
+
+export function isYml(s: string = '') {
+	return s.endsWith('.yml')
+}
+
+export function isJson(s: string = '') {
+	return s.endsWith('.json')
+}
+
 export function prettifyErr(err: AxiosError | Error) {
 	if ('response' in err) {
 		if (err?.response?.data) {
