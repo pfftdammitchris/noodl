@@ -35,6 +35,8 @@ import {
 	EmitObject,
 	GotoObject,
 	GotoUrl,
+	IfObject,
+	Path,
 	ToastObject,
 } from './uncategorizedTypes'
 import {
@@ -199,5 +201,36 @@ export const identify = (function () {
 		},
 	}
 
-	return o
+	const paths = {
+		action: {
+			any() {},
+			pageJump() {},
+		},
+		actionChain() {},
+		component: {
+			any() {},
+			button() {},
+		},
+		emit(value: unknown): value is { emit: EmitObject } {
+			return isPlainObject(value) && 'emit' in value
+		},
+		goto(value: unknown): value is { goto: GotoUrl | GotoObject } {
+			return isPlainObject(value) && 'goto' in value
+		},
+		path(value: unknown): value is { path: Path } {
+			return isPlainObject(value) && 'path' in value
+		},
+		style: {
+			any() {},
+			border() {},
+		},
+		toast(value: unknown): value is { toast: ToastObject } {
+			return isPlainObject(value) && 'toast' in value
+		},
+	}
+
+	return {
+		...o,
+		paths,
+	}
 })()

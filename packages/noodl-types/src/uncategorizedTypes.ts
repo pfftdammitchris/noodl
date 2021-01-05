@@ -21,6 +21,8 @@ export interface IfObject {
 	[key: string]: any
 }
 
+export type Path = string | EmitObject | IfObject
+
 export interface ToastObject {
 	message?: string
 	style?: StyleObject
