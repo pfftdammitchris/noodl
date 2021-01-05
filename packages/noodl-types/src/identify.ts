@@ -31,7 +31,12 @@ import {
 	VideoComponentObject,
 	ViewComponentObject,
 } from './componentTypes'
-import { EmitObject, GotoObject, GotoUrl } from './uncategorizedTypes'
+import {
+	EmitObject,
+	GotoObject,
+	GotoUrl,
+	ToastObject,
+} from './uncategorizedTypes'
 import {
 	excludeKeys,
 	hasAnyKeys,
@@ -188,6 +193,9 @@ export const identify = (function () {
 					!hasAnyKeys(excludeKeys(minimalStyleKeys, minimalBorderStyleKeys), v)
 				)
 			},
+		},
+		toast(value: unknown): value is { toast: ToastObject } {
+			return isPlainObject(value) && 'toast' in value
 		},
 	}
 

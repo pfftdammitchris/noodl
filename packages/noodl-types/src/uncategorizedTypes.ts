@@ -1,3 +1,5 @@
+import { StyleObject } from './styleTypes'
+
 export interface EmitObject {
 	emit: {
 		actions: any[]
@@ -17,4 +19,9 @@ export interface GotoObject {
 export interface IfObject {
 	if: [any, any, any]
 	[key: string]: any
+}
+
+export interface ToastObject {
+	message?: string
+	style?: StyleObject
 }
