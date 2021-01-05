@@ -12,7 +12,7 @@ import path from 'path'
 import globby from 'globby'
 import isPlainObject from 'lodash/isPlainObject'
 import createAggregator from '../src/api/createAggregator'
-import { ActionType, ComponentType, identify } from 'noodl-types'
+import { ActionType, ComponentType } from 'noodl-types'
 import {
 	forEachDeepKeyValue,
 	getFilePath,
@@ -26,6 +26,7 @@ enablePatches()
 
 const Find = (function () {
 	const o = {
+		actionTypes() {},
 		objectsThatContainKeys({
 			name = '',
 			keys,
@@ -159,7 +160,12 @@ function onNode<RT>(fn: (node: Scalar | Pair | YAMLMap | YAMLSeq) => RT) {
 	return (node: Scalar | Pair | YAMLMap | YAMLSeq) => fn(node)
 }
 
-const ID = (function () {
+export const isYAMLMap = (v: unknown): v is YAMLMap => v instanceof YAMLMap
+export const isYAMLSeq = (v: unknown): v is YAMLSeq => v instanceof YAMLSeq
+export const isPair = (v: unknown): v is Pair => v instanceof Pair
+export const isScalar = (v: unknown): v is Scalar => v instanceof Scalar
+
+export const identify = (function () {
 	function hasAllKeys(keys: string | string[]) {
 		return (node: YAMLMap) =>
 			(Array.isArray(keys) ? keys : [keys]).every((key) => node.has(key))
@@ -180,11 +186,6 @@ const ID = (function () {
 		return (node: unknown) => fns.every((fn) => fn(node as N))
 	}
 
-	const isYAMLMap = (v: unknown): v is YAMLMap => v instanceof YAMLMap
-	const isYAMLSeq = (v: unknown): v is YAMLSeq => v instanceof YAMLSeq
-	const isPair = (v: unknown): v is Pair => v instanceof Pair
-	const isScalar = (v: unknown): v is Scalar => v instanceof Scalar
-
 	const onYAMLMap = <RT>(fn: (node: YAMLMap) => RT) => (v: unknown) =>
 		isYAMLMap(v) ? fn(v) : false
 	const onYAMLSeq = <RT>(fn: (node: YAMLSeq) => RT) => (v: unknown) =>
@@ -195,6 +196,7 @@ const ID = (function () {
 		isScalar(v) ? fn(v) : false
 
 	const o = {
+		id: 'identify',
 		action: {
 			any: onYAMLMap(composeFilters(hasKey('actionType'))),
 			builtIn: onYAMLMap(
@@ -206,7 +208,33 @@ const ID = (function () {
 			evalObject: onYAMLMap(
 				composeFilters(hasKeyEqualTo('actionType', 'evalObject')),
 			),
+			pageJump: onYAMLMap(
+				composeFilters(hasKeyEqualTo('actionType', 'pageJump')),
+			),
+			popUp: onYAMLMap(composeFilters(hasKeyEqualTo('actionType', 'popUp'))),
+			popUpDismiss: onYAMLMap(
+				composeFilters(hasKeyEqualTo('actionType', 'popUpDismiss')),
+			),
+			refresh: onYAMLMap(
+				composeFilters(hasKeyEqualTo('actionType', 'refresh')),
+			),
+			saveObject: onYAMLMap(
+				composeFilters(hasKeyEqualTo('actionType', 'saveObject')),
+			),
+			updateObject: onYAMLMap(
+				composeFilters(hasKeyEqualTo('actionType', 'updateObject')),
+			),
+		} as { [K in ActionType]: (node: YAMLMap) => boolean } & {
+			any: (node: YAMLMap) => boolean
 		},
+		actionChain: onYAMLSeq((node) =>
+			node.items.some(onYAMLMap(hasAnyKeys(['actionType', 'emit', 'goto']))),
+		),
+		component: {
+			any: onYAMLMap(
+				composeFilters(hasAnyKeys(['style', 'children']), hasKey('type')),
+			),
+		} as { any(node: unknown): node is YAMLMap },
 		keyValue: {
 			actionType: onPair((node) => node.key.value === 'actionType'),
 		},
@@ -216,13 +244,13 @@ const ID = (function () {
 	return o
 })()
 
-traverse((node) => {
-	if (ID.action.any(node)) {
-		paths.push(node)
-	}
-}, contents)
+// traverse((node) => {
+// 	if (ID.component.any(node)) {
+// 		paths.push(node)
+// 	}
+// }, contents)
 
-console.log(paths.map((p) => p.toJSON()))
-console.log(paths.length)
+// console.log(paths.map((p) => p.toJSON()))
+// console.log(paths.length)
 
 export default Find

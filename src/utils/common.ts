@@ -43,6 +43,21 @@ export function createPlaceholderReplacer(
 	return replace
 }
 
+export function entriesDeepKeyValue(cb, obj) {
+	const result = {}
+	if (Array.isArray(obj)) {
+		obj.forEach((o) => Object.assign(result, entriesDeepKeyValue(cb, o)))
+	} else if (isPlainObject(obj)) {
+		Object.entries(obj).forEach(([key, value], index, collection) => {
+			result[key] = cb(key, value, collection) || {}
+			if (isPlainObject(value)) {
+				Object.assign(result[key], entriesDeepKeyValue(cb, value))
+			}
+		}, {})
+	}
+	return result
+}
+
 /**
  * Recursively traverses each key/value, calling the callback on each iteration
  * @param { function } fn - Callback function
