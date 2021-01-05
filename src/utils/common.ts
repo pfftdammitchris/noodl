@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios'
+import isPlainObject from 'lodash/isPlainObject'
 import path from 'path'
 import chalk from 'chalk'
 
@@ -47,16 +48,18 @@ export function createPlaceholderReplacer(
  * @param { function } fn - Callback function
  * @param { object | array } obj
  */
-export function forEachDeepKeyValue(
-	fn: (key: string, value: any, obj: any) => void,
-	obj: any,
+export function forEachDeepKeyValue<O = any>(
+	cb: (key: string, value: any, obj: { [key: string]: any }) => void,
+	obj: O | O[],
 ) {
 	if (Array.isArray(obj)) {
-		obj.forEach((o) => forEachDeepKeyValue(fn, o))
-	} else if (obj && typeof obj === 'object') {
+		obj.forEach((v) => forEachDeepKeyValue(cb, v))
+	} else if (isPlainObject(obj)) {
 		Object.entries(obj).forEach(([key, value]) => {
-			fn(key, value, obj)
-			if (value) forEachDeepKeyValue(fn, value)
+			cb(key, value, obj)
+			if (isPlainObject(value) || Array.isArray(value)) {
+				forEachDeepKeyValue(cb, value)
+			}
 		})
 	}
 }
