@@ -35,6 +35,7 @@ import { EmitObject, GotoObject, GotoUrl } from './uncategorizedTypes'
 import {
 	excludeKeys,
 	hasAnyKeys,
+	isBool,
 	isPlainObject,
 	PlainObject,
 } from './_internal'
@@ -82,6 +83,20 @@ export const identify = (function () {
 		},
 		actionChain(v: unknown): v is ActionObject[] {
 			return Array.isArray(v) && v.some(o.action.any)
+		},
+		/**
+		 * Returns true if the value is a NOODL boolean. A value is a NOODL boolean
+		 * if the value is truthy, true, "true", false, or "false"
+		 * @param { any } value
+		 */
+		isBoolean(value: unknown) {
+			return isBool(value) || o.isBooleanTrue(value) || o.isBooleanFalse(value)
+		},
+		isBooleanTrue(value: unknown): value is true | 'true' {
+			return value === true || value === 'true'
+		},
+		isBooleanFalse(value: unknown): value is false | 'false' {
+			return value === false || value === 'false'
 		},
 		component: {
 			button(value: unknown): value is ButtonComponentObject {
@@ -153,6 +168,14 @@ export const identify = (function () {
 		},
 		gotoObject(v: unknown): v is GotoObject {
 			return isPlainObject(v) && 'goto' in v
+		},
+		reference(value: unknown): value is string {
+			if (typeof value !== 'string') return false
+			if (value.startsWith('.')) return true
+			if (value.startsWith('=')) return true
+			if (value.startsWith('@')) return true
+			if (value.endsWith('@')) return true
+			return false
 		},
 		style: {
 			any(v: unknown) {

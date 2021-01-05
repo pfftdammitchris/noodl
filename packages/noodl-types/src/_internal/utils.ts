@@ -46,6 +46,10 @@ export function hasInAnyKeys(keys: string | string[], value: PlainObject) {
 	return (Array.isArray(keys) ? keys : [keys]).some((k) => has(value, k))
 }
 
+export function isBool(value: unknown): value is Boolean {
+	return typeof value === 'boolean'
+}
+
 export function isNil(v: unknown) {
 	return v === null || typeof v === 'undefined'
 }
