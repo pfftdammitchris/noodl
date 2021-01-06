@@ -45,6 +45,9 @@ interface Store {
 		border: StyleBorderObject[]
 	}
 	urls: string[]
+	containedKeys: {
+		[keyword: string]: any[]
+	}
 }
 
 function loadFiles(opts: { dir: string; ext: 'yml' }): yaml.Document[]
@@ -291,11 +294,20 @@ const handleUrls = createNodeHandler((node, store) => {
 	}
 })
 
-const handleObjectsThatContainTheseKeys = (keys: string | string[]): any[] => {
+const handleObjectsThatContainTheseKeys = (keys: string | string[]) => {
 	keys = Array.isArray(keys) ? keys : [keys]
+	const numKeys = keys.length
 	return createNodeHandler((node, store) => {
 		if (isYAMLMap(node)) {
-			//
+			for (let index = 0; index < numKeys; index++) {
+				const key = keys[index]
+				if (node.has(key)) {
+					if (!Array.isArray(store.containedKeys[key])) {
+						store.containedKeys[key] = []
+					}
+					store.containedKeys[key].push(node.toJSON())
+				}
+			}
 		}
 	})
 }
@@ -316,6 +328,7 @@ noodlTypes
 		if (!store.funcNames) store.funcNames = []
 		if (!store.styles) store.styles = {} as Store['styles']
 		if (!store.styles.border) store.styles.border = []
+		if (!store.containedKeys) store.containedKeys = {}
 	})
 	.on('end', (store) => {
 		store.actionTypes = store.actionTypes.sort()
@@ -326,19 +339,20 @@ noodlTypes
 		store.funcNames = store.funcNames.sort()
 		store.urls = store.urls.sort()
 	})
-	.run
-	// handleActionType,
-	// handleComponentType,
-	// handleComponentKeys,
-	// handleEmitObjects,
-	// handleIfObjects,
-	// handleFuncNames,
-	// handleReferences,
-	// handleStyleKeys,
-	// handleUrls,
-	// handleActionObjects,
-	// handleComponentObjects,
-	// handleBorderObjects,
-	()
+	.run(
+		// handleActionType,
+		// handleComponentType,
+		// handleComponentKeys,
+		// handleEmitObjects,
+		// handleIfObjects,
+		// handleFuncNames,
+		// handleObjectsThatContainTheseKeys(['contentType']),
+		// handleReferences,
+		// handleStyleKeys,
+		handleUrls,
+		// handleActionObjects,
+		// handleComponentObjects,
+		// handleBorderObjects,
+	)
 
 console.log(chalk.green(`noodl-types scripting ended`))
