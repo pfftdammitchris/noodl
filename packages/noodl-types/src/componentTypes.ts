@@ -51,8 +51,8 @@ export interface ListItemComponentObject extends ComponentObject {
 	[key: string]: any
 }
 
-export interface NoodlComponentObject extends ComponentObject {
-	type: 'noodl'
+export interface PageComponentObject extends ComponentObject {
+	type: 'page'
 	[key: string]: any
 }
 
