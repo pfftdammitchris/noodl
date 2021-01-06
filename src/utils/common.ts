@@ -2,6 +2,8 @@ import { AxiosError } from 'axios'
 import isPlainObject from 'lodash/isPlainObject'
 import path from 'path'
 import chalk from 'chalk'
+import yaml from 'yaml'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 
 // chalk helpers
 export const highlight = (...s: any[]) => chalk.yellow(...s)
@@ -83,6 +85,24 @@ export function getFilePath(...paths: string[]) {
 	return path.resolve(path.join(process.cwd(), ...paths))
 }
 
+export function hasAllKeys(keys: string | string[]) {
+	return (node: YAMLMap) =>
+		(Array.isArray(keys) ? keys : [keys]).every((key) => node.has(key))
+}
+
+export function hasAnyKeys(keys: string | string[]) {
+	return (node: YAMLMap) =>
+		(Array.isArray(keys) ? keys : [keys]).some((key) => node.has(key))
+}
+
+export function hasKey(key: string) {
+	return (node: YAMLMap) => node.has(key)
+}
+
+export function hasKeyEqualTo(key: string, value: any) {
+	return (node: YAMLMap) => node.has(key) && node.get(key) === value
+}
+
 export function isImg(s: string) {
 	return /([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))/i.test(s)
 }
@@ -101,6 +121,46 @@ export function isYml(s: string = '') {
 
 export function isJson(s: string = '') {
 	return s.endsWith('.json')
+}
+
+export function isJs(s: string = '') {
+	return s.endsWith('.js')
+}
+
+export function isHtml(s: string = '') {
+	return s.endsWith('.html')
+}
+
+export function isYAMLMap(v: unknown): v is YAMLMap {
+	return v instanceof YAMLMap
+}
+
+export function isYAMLSeq(v: unknown): v is YAMLSeq {
+	return v instanceof YAMLSeq
+}
+
+export function isPair(v: unknown): v is Pair {
+	return v instanceof Pair
+}
+
+export function isScalar(v: unknown): v is Scalar {
+	return v instanceof Scalar
+}
+
+export function onYAMLMap(fn: (node: YAMLMap) => any) {
+	return (v: unknown): v is YAMLMap => (isYAMLMap(v) ? fn(v) : false)
+}
+
+export function onYAMLSeq(fn: (node: YAMLSeq) => any) {
+	return (v: unknown): v is YAMLSeq => (isYAMLSeq(v) ? fn(v) : false)
+}
+
+export function onPair(fn: (node: Pair) => any) {
+	return (v: unknown): v is Pair => (isPair(v) ? fn(v) : false)
+}
+
+export function onScalar(fn: (node: Scalar) => any) {
+	return (v: unknown): v is Scalar => (isScalar(v) ? fn(v) : false)
 }
 
 export function prettifyErr(err: AxiosError | Error) {
@@ -130,6 +190,32 @@ export function sortObjPropsByKeys(obj: { [key: string]: any }) {
 			return 1
 		})
 		.reduce((acc, [key, value]) => Object.assign(acc, { [key]: value }), {})
+}
+
+export function traverse(
+	cb: (node: Scalar | Pair | YAMLMap | YAMLSeq) => void,
+	docsList: yaml.Document | yaml.Document[],
+) {
+	docsList = Array.isArray(docsList) ? docsList : [docsList]
+	const walk = (contents: Scalar | Pair | YAMLMap | YAMLSeq) => {
+		if (contents instanceof Scalar) {
+			cb(contents)
+		} else if (contents instanceof Pair) {
+			cb(contents)
+			walk(contents.value)
+		} else if (contents instanceof YAMLMap) {
+			cb(contents)
+			contents.items.forEach((pair) => walk(pair))
+		} else if (contents instanceof YAMLSeq) {
+			contents.items.forEach((node) => {
+				walk(node)
+			})
+		}
+	}
+	const numDocs = docsList.length
+	for (let index = 0; index < numDocs; index++) {
+		walk(docsList[index]?.contents)
+	}
 }
 
 export const withSuffix = (suffix: string) => (str: string) => `${str}${suffix}`

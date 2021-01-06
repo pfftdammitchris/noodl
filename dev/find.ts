@@ -1,28 +1,24 @@
 console.clear()
 import { config } from 'dotenv'
 config()
-import axios from 'axios'
-import produce, { applyPatches, enablePatches } from 'immer'
-import chalk from 'chalk'
-import partialRight from 'lodash/partialRight'
-import yaml from 'yaml'
-import fs from 'fs-extra'
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
-import path from 'path'
-import globby from 'globby'
-import isPlainObject from 'lodash/isPlainObject'
-import createAggregator from '../src/api/createAggregator'
-import { ActionType, ComponentType } from 'noodl-types'
+import { isReference } from 'noodl-utils'
 import {
 	forEachDeepKeyValue,
-	getFilePath,
+	hasAllKeys,
+	hasAnyKeys,
+	hasKey,
+	hasKeyEqualTo,
+	isImg,
+	isJs,
+	isHtml,
+	isPdf,
+	isVid,
+	onPair,
+	onScalar,
+	onYAMLMap,
+	onYAMLSeq,
 	sortObjPropsByKeys,
 } from '../src/utils/common'
-import { AnyFn } from '../src/types'
-import { getLogoutPageObject } from './helpers'
-import * as T from './types'
-
-enablePatches()
 
 const Find = (function () {
 	const o = {
@@ -74,126 +70,16 @@ const Find = (function () {
 			}, objs)
 			return sortObjPropsByKeys(results)
 		},
-		getPathnames({ name = '', objs }: { name?: string; objs: any }) {
-			const results = {
-				name,
-				results: [],
-			}
-			forEachDeepKeyValue((key, value, obj) => {
-				if (typeof value === 'string') {
-					if (value.startsWith('http')) {
-						!results.results.includes(value) && results.results.push(value)
-					} else if (/(path|resource)/i.test(key)) {
-						!results.results.includes(value) && results.results.push(value)
-					}
-				}
-			}, objs)
-			return results.results.sort()
-		},
 	}
 
 	return o
 })()
 
-// const objsThatContainKeys = Find.objectsThatContainKeys({
-// 	name: 'Logout',
-// 	keys: 'path',
-// 	objs: getLogoutPageObject(),
-// })
-
-// const keyCounts = Find.getKeyCounts({
-// 	objs: [],
-// })
-
-const getPathnames = Find.getPathnames({
-	objs: getLogoutPageObject(),
-})
-
-// console.log(getPathnames)
-
-fs.writeJsonSync(getFilePath('./hehe.json'), getPathnames, { spaces: 2 })
-// globby(getFilePath('data/generated/json/**/*.json')).then(async (filepaths) => {
-// 	const objects = await Promise.all(
-// 		filepaths.map((filepath) => fs.readJsonSync(filepath)),
-//   )
-
-// })
-
-const yml = fs.readFileSync(
-	getFilePath('data/generated/yml/Logout.yml'),
-	'utf8',
-)
-
-const doc = yaml.parseDocument(yml)
-const contents = doc.contents as YAMLMap
-
-function traverse(
-	cb: (node: Scalar | Pair | YAMLMap | YAMLSeq) => void,
-	value: Scalar | Pair | YAMLMap | YAMLSeq,
-) {
-	if (value instanceof Scalar) {
-		cb(value)
-	} else if (value instanceof Pair) {
-		cb(value)
-		traverse(cb, value.value)
-	} else if (value instanceof YAMLMap) {
-		cb(value)
-		value.items.forEach((pair) => traverse(cb, pair))
-	} else if (value instanceof YAMLSeq) {
-		cb(value)
-		value.items.forEach((node) => {
-			traverse(cb, node)
-		})
-	}
-}
-
-let stats = {
-	map: 0,
-	seq: 0,
-	pair: 0,
-	scalar: 0,
-}
-
-const paths = []
-
-function onNode<RT>(fn: (node: Scalar | Pair | YAMLMap | YAMLSeq) => RT) {
-	return (node: Scalar | Pair | YAMLMap | YAMLSeq) => fn(node)
-}
-
-export const isYAMLMap = (v: unknown): v is YAMLMap => v instanceof YAMLMap
-export const isYAMLSeq = (v: unknown): v is YAMLSeq => v instanceof YAMLSeq
-export const isPair = (v: unknown): v is Pair => v instanceof Pair
-export const isScalar = (v: unknown): v is Scalar => v instanceof Scalar
-
 export const identify = (function () {
-	function hasAllKeys(keys: string | string[]) {
-		return (node: YAMLMap) =>
-			(Array.isArray(keys) ? keys : [keys]).every((key) => node.has(key))
-	}
-	function hasAnyKeys(keys: string | string[]) {
-		return (node: YAMLMap) =>
-			(Array.isArray(keys) ? keys : [keys]).some((key) => node.has(key))
-	}
-	function hasKey(key: string) {
-		return (node: YAMLMap) => node.has(key)
-	}
-	function hasKeyEqualTo(key: string, value: any) {
-		return (node: YAMLMap) => node.has(key) && node.get(key) === value
-	}
-
 	function composeFilters<N>(...fns: ((node: N) => boolean)[]) {
 		fns = fns.reverse()
 		return (node: unknown) => fns.every((fn) => fn(node as N))
 	}
-
-	const onYAMLMap = <RT>(fn: (node: YAMLMap) => RT) => (v: unknown) =>
-		isYAMLMap(v) ? fn(v) : false
-	const onYAMLSeq = <RT>(fn: (node: YAMLSeq) => RT) => (v: unknown) =>
-		isYAMLSeq(v) ? fn(v) : false
-	const onPair = <RT>(fn: (node: Pair) => RT) => (v: unknown) =>
-		isPair(v) ? fn(v) : false
-	const onScalar = <RT>(fn: (node: Scalar) => RT) => (v: unknown) =>
-		isScalar(v) ? fn(v) : false
 
 	const o = {
 		id: 'identify',
@@ -224,8 +110,6 @@ export const identify = (function () {
 			updateObject: onYAMLMap(
 				composeFilters(hasKeyEqualTo('actionType', 'updateObject')),
 			),
-		} as { [K in ActionType]: (node: YAMLMap) => boolean } & {
-			any: (node: YAMLMap) => boolean
 		},
 		actionChain: onYAMLSeq((node) =>
 			node.items.some(onYAMLMap(hasAnyKeys(['actionType', 'emit', 'goto']))),
@@ -234,23 +118,78 @@ export const identify = (function () {
 			any: onYAMLMap(
 				composeFilters(hasAnyKeys(['style', 'children']), hasKey('type')),
 			),
-		} as { any(node: unknown): node is YAMLMap },
+			button: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'button'))),
+			divider: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'divider'))),
+			image: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'image'))),
+			label: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'label'))),
+			list: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'list'))),
+			listItem: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'listItem'))),
+			popUp: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'popUp'))),
+			scrollView: onYAMLMap(
+				composeFilters(hasKeyEqualTo('type', 'scrollView')),
+			),
+			select: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'select'))),
+			textField: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'textField'))),
+			textView: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'textView'))),
+			view: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'view'))),
+		},
+		emit: onYAMLMap(composeFilters(hasKey('emit'))),
+		if: onYAMLMap(composeFilters(hasKey('if'))),
 		keyValue: {
 			actionType: onPair((node) => node.key.value === 'actionType'),
+			funcName: onPair((node) => node.key.value === 'funcName'),
 		},
-		paths: {},
+		scalar: {
+			reference: onScalar((node) => isReference(node.value)),
+			url: onScalar(
+				(node) =>
+					typeof node.value === 'string' &&
+					!node.value.startsWith('.') &&
+					(isImg(node.value) ||
+						isJs(node.value) ||
+						isHtml(node.value) ||
+						isPdf(node.value) ||
+						isVid(node.value)),
+			),
+		},
+		style: {
+			any: onYAMLMap(
+				composeFilters(
+					hasAnyKeys([
+						'align',
+						'axis',
+						'backgroundColor',
+						'border',
+						'color',
+						'width',
+						'height',
+						'left',
+						'letterSpacing',
+						'top',
+						'fontSize',
+						'fontFamily',
+						'required',
+						'textAlign',
+						'',
+					]),
+				),
+			),
+			border: onYAMLMap(
+				(node) =>
+					typeof node.get('style') === 'string' ||
+					typeof node.get('style') === 'number',
+			),
+		},
+		paths: {
+			style: {
+				any: onPair((node) => node.key.value === 'style'),
+			},
+			textAlign: onPair((node) => /textAlign/i.test(node.key.value)),
+			textBoard: onPair((node) => /textBoard/i.test(node.key.value)),
+		},
 	}
 
 	return o
 })()
-
-// traverse((node) => {
-// 	if (ID.component.any(node)) {
-// 		paths.push(node)
-// 	}
-// }, contents)
-
-// console.log(paths.map((p) => p.toJSON()))
-// console.log(paths.length)
 
 export default Find

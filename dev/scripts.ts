@@ -1,91 +1,80 @@
 import { config } from 'dotenv'
 config()
-import { enablePatches } from 'immer'
-import chalk from 'chalk'
+import chunk from 'lodash/chunk'
 import fs from 'fs-extra'
 import path from 'path'
-import { ComponentType } from 'noodl-types'
-import { componentTypes } from 'noodl-utils'
-import yaml from 'yaml'
-import globby from 'globby'
-import isPlainObject from 'lodash/isPlainObject'
-import * as t from 'typescript-validators'
-import {
-	entriesDeepKeyValue,
-	forEachDeepKeyValue,
-	getFilePath,
-	sortObjPropsByKeys,
-} from '../src/utils/common'
-import createAggregator from '../src/api/createAggregator'
+import { traverse } from '../src/utils/common'
 import { createObjectUtils } from './dev'
 import { identify as ID } from './find'
-enablePatches()
+import { YAMLNode } from './types'
 
 function Scripts() {
+	let cbs = {
+		start: [] as ((...args: any[]) => void)[],
+		end: [] as ((...args: any[]) => void)[],
+	}
+
 	const utils = {} as ReturnType<typeof createObjectUtils> & {
 		identify: typeof ID
 	}
 
 	const o = {
-		'noodl-types'({ rootDir }: { rootDir: string }) {
+		'noodl-types'<Store = any>({ rootDir }: { rootDir: string }) {
 			const pathToDataFile = path.join(rootDir, 'src/data.json')
-			let dataFile: any
+			const state = {
+				dataFile: {} as Store,
+			}
 
 			fs.ensureFileSync(pathToDataFile)
-			dataFile = fs.readFileSync(pathToDataFile, 'utf8')
+			state.dataFile = fs.readFileSync(pathToDataFile, 'utf8') as any
 
 			try {
-				dataFile = JSON.parse(dataFile) || {}
+				state.dataFile = JSON.parse(state.dataFile as any) || {}
 			} catch (error) {
-				fs.writeJsonSync(pathToDataFile, (dataFile = {}), { spaces: 2 })
+				fs.writeJsonSync(pathToDataFile, (state.dataFile = {} as Store), {
+					spaces: 2,
+				})
 			}
 
 			function save() {
-				fs.writeJsonSync(pathToDataFile, dataFile, { spaces: 2 })
+				fs.writeJsonSync(pathToDataFile, state.dataFile, { spaces: 2 })
+			}
+
+			const composeNodeFns = (...fns) => {
+				fns = fns.reverse()
+				return (node) => fns.forEach((fn) => fn(node, state.dataFile))
 			}
 
 			const noodlTypes = {
-				refreshActionTypes() {
-					const results = utils.getActionTypes(utils.data())
-					if (!dataFile.actionTypes) dataFile.actionTypes = []
-					if (Array.isArray(results) && results.length) {
-						results.forEach((key) => {
-							if (!dataFile.actionTypes.includes(key)) {
-								dataFile.actionTypes.push(key)
-							}
-						})
+				on(event: 'end' | 'start', fn: (store: typeof state.dataFile) => void) {
+					if (event === 'start') {
+						if (!cbs.start.includes(fn)) cbs.start.push(fn)
+					} else if (event === 'end') {
+						if (!cbs.end.includes(fn)) cbs.end.push(fn)
 					}
-					save()
-					return noodlTypes
+					return this
 				},
-				refreshComponentKeys() {
-					const results = utils.getAllComponentKeys(utils.data())
-					if (!dataFile.componentKeys) dataFile.componentKeys = []
-					if (Array.isArray(results) && results.length) {
-						results.forEach((key) => {
-							if (!dataFile.componentKeys.includes(key)) {
-								dataFile.componentKeys.push(key)
-							}
-						})
+				run(
+					...scriptFns: ((
+						node: YAMLNode,
+						store: typeof state.dataFile,
+					) => any)[]
+				) {
+					cbs.start.forEach((fn) => fn(state.dataFile))
+					const chunkedDocs = chunk(utils.data(), 8)
+					const numChunks = chunkedDocs.length
+					const processFns = composeNodeFns(...scriptFns)
+					for (let index = 0; index < numChunks; index++) {
+						const docs = chunkedDocs[index]
+						const numDocs = docs.length
+						for (let i = 0; i < numDocs; i++) {
+							traverse(processFns, docs[i])
+						}
 					}
+					cbs.end.forEach((fn) => fn(state.dataFile))
 					save()
-					return noodlTypes
-				},
-				refreshComponentTypes() {
-					const results = utils.getComponentTypes(utils.data())
-					if (!dataFile.componentTypes) dataFile.componentTypes = []
-					if (Array.isArray(results) && results.length) {
-						results.forEach((key) => {
-							if (!dataFile.componentTypes.includes(key)) {
-								dataFile.componentTypes.push(key)
-							}
-						})
-					}
-					save()
-					return noodlTypes
 				},
 			}
-
 			return noodlTypes
 		},
 		use(mod: ReturnType<typeof createObjectUtils> | typeof ID) {

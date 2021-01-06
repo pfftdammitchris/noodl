@@ -1,37 +1,50 @@
 import { config } from 'dotenv'
 config()
+import {
+	ActionObject,
+	ActionType,
+	ComponentObject,
+	ComponentType,
+	EmitObject,
+	IfObject,
+	StyleBorderObject,
+} from 'noodl-types'
 import { enablePatches } from 'immer'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
-import { ActionType, ComponentType } from 'noodl-types'
-import { actionTypes, componentTypes } from 'noodl-utils'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { componentTypes } from 'noodl-utils'
 import yaml from 'yaml'
 import globby from 'globby'
-import isPlainObject from 'lodash/isPlainObject'
-import * as t from 'typescript-validators'
 import {
-	entriesDeepKeyValue,
 	forEachDeepKeyValue,
 	getFilePath,
+	isPair,
+	isYAMLMap,
 	sortObjPropsByKeys,
+	traverse,
 } from '../src/utils/common'
 import Scripts from './scripts'
-import createAggregator from '../src/api/createAggregator'
-import { identify, isPair, isScalar, isYAMLMap, isYAMLSeq } from './find'
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { identify } from './find'
+import { YAMLNode } from './types'
 enablePatches()
 
-const aggregator = createAggregator({
-	config: 'meet2d',
-})
-
-async function loadRemote({ config }) {
-	const [rootConfig, appConfig] = await aggregator.init({
-		loadPages: {
-			includePreloadPages: true,
-		},
-	})
+interface Store {
+	actions: Partial<{ [K in ActionType]: ActionObject[] }>
+	actionTypes: string[]
+	components: Partial<{ [K in ComponentType]: ComponentObject[] }>
+	componentKeys: string[]
+	componentTypes: string[]
+	emit: EmitObject[]
+	funcNames: string[]
+	if: IfObject[]
+	references: string[]
+	styleKeys: string[]
+	styles: {
+		border: StyleBorderObject[]
+	}
+	urls: string[]
 }
 
 function loadFiles(opts: { dir: string; ext: 'yml' }): yaml.Document[]
@@ -59,31 +72,6 @@ export const createObjectUtils = function (
 	ymlDocs: yaml.Document | yaml.Document[],
 ) {
 	const docs = Array.isArray(ymlDocs) ? ymlDocs : [ymlDocs]
-
-	function traverse(
-		cb: (node: Scalar | Pair | YAMLMap | YAMLSeq) => void,
-		docsList: yaml.Document[],
-	) {
-		const walk = (contents: Scalar | Pair | YAMLMap | YAMLSeq) => {
-			if (contents instanceof Scalar) {
-				cb(contents)
-			} else if (contents instanceof Pair) {
-				cb(contents)
-				walk(contents.value)
-			} else if (contents instanceof YAMLMap) {
-				cb(contents)
-				contents.items.forEach((pair) => walk(pair))
-			} else if (contents instanceof YAMLSeq) {
-				contents.items.forEach((node) => {
-					walk(node)
-				})
-			}
-		}
-		const numDocs = docsList.length
-		for (let index = 0; index < numDocs; index++) {
-			walk(docsList[index].contents)
-		}
-	}
 
 	const o = {
 		id: 'object.utils',
@@ -134,7 +122,7 @@ export const createObjectUtils = function (
 			)
 			return results.sort()
 		},
-		getActionTypes(data: any) {
+		getActionTypes(docs: yaml.Document | yaml.Document[]) {
 			const results = [] as string[]
 			traverse((node) => {
 				if (isPair(node)) {
@@ -144,7 +132,7 @@ export const createObjectUtils = function (
 						}
 					}
 				}
-			}, data)
+			}, docs)
 			return results.sort()
 		},
 		getAllComponentKeys(data: any) {
@@ -189,14 +177,168 @@ const o = createObjectUtils(
 		ext: 'yml',
 	}),
 )
+
 const scripts = Scripts()
 scripts.use(o)
 scripts.use(identify)
 
-const noodlTypes = scripts['noodl-types']({
+const noodlTypes = scripts['noodl-types']<Store>({
 	rootDir: getFilePath('packages/noodl-types'),
 })
 
-noodlTypes.refreshComponentTypes()
+function createNodeHandler(fn: (node: YAMLNode, store: Store) => void) {
+	return (node: YAMLNode, store: Store) => {
+		return fn(node, store)
+	}
+}
+
+const handleActionType = createNodeHandler((node, store) => {
+	if (identify.keyValue.actionType(node)) {
+		if (!store.actionTypes.includes(node.value.value)) {
+			store.actionTypes.push(node.value.value)
+		}
+	}
+})
+
+const handleComponentType = createNodeHandler((node, store) => {
+	if (identify.component.any(node)) {
+		if (!store.componentTypes.includes(node.get('type'))) {
+			store.componentTypes.push(node.get('type'))
+		}
+	}
+})
+
+const handleComponentKeys = createNodeHandler((node, store) => {
+	if (identify.component.any(node)) {
+		node.items.forEach((pair) => {
+			if (!store.componentKeys.includes(pair.key.value)) {
+				store.componentKeys.push(pair.key.value)
+			}
+		})
+	}
+})
+
+const handleFuncNames = createNodeHandler((node, store) => {
+	if (identify.keyValue.funcName(node)) {
+		if (!store.funcNames.includes(node.value.value)) {
+			store.funcNames.push(node.value.value)
+		}
+	}
+})
+
+const handleReferences = createNodeHandler((node, store) => {
+	if (identify.scalar.reference(node)) {
+		if (!store.references.includes(node.value)) {
+			store.references.push(node.value)
+		}
+	}
+})
+
+const handleStyleKeys = createNodeHandler((node, store) => {
+	if (identify.paths.style.any(node)) {
+		if (isYAMLMap(node.value)) {
+			node.value.items.forEach((pair: Pair) => {
+				if (pair.key?.value && !identify.scalar.reference(pair.key)) {
+					if (!store.styleKeys.includes(pair.key.value)) {
+						store.styleKeys.push(pair.key.value)
+					}
+				}
+			})
+		}
+	}
+})
+
+const handleActionObjects = createNodeHandler((node, store) => {
+	if (identify.action.any(node)) {
+		const actionType = node.get('actionType')
+		if (!store.actions[actionType]) store.actions[actionType] = []
+		store.actions[actionType].push(node.toJSON())
+	}
+})
+
+const handleBorderObjects = createNodeHandler((node, store) => {
+	if (identify.style.border(node)) {
+		if (!store.styles.border) store.styles.border = []
+		store.styles.border.push(node)
+	}
+})
+
+const handleEmitObjects = createNodeHandler((node, store) => {
+	if (identify.emit(node)) {
+		if (!store.emit) store.emit = []
+		store.emit.push(node.get('emit'))
+	}
+})
+
+const handleIfObjects = createNodeHandler((node, store) => {
+	if (identify.if(node)) {
+		if (!store.if) store.if = []
+		store.if.push(node.get('if'))
+	}
+})
+
+const handleComponentObjects = createNodeHandler((node, store) => {
+	if (identify.component.any(node)) {
+		const componentType = node.get('type')
+		if (!store.components[componentType]) store.components[componentType] = []
+		store.components[componentType].push(node.toJSON())
+	}
+})
+
+const handleUrls = createNodeHandler((node, store) => {
+	if (identify.scalar.url(node)) {
+		if (!store.urls.includes(node.value)) store.urls.push(node.value)
+	}
+})
+
+const handleObjectsThatContainTheseKeys = (keys: string | string[]): any[] => {
+	keys = Array.isArray(keys) ? keys : [keys]
+	return createNodeHandler((node, store) => {
+		if (isYAMLMap(node)) {
+			//
+		}
+	})
+}
+
+noodlTypes
+	.on('start', (store) => {
+		// Temp do a fresh start everytime for now
+		Object.keys(store).forEach((key) => delete store[key])
+		if (!Array.isArray(store.actionTypes)) store.actionTypes = []
+		if (!Array.isArray(store.componentTypes)) store.componentTypes = []
+		if (!Array.isArray(store.componentKeys)) store.componentKeys = []
+		if (!Array.isArray(store.references)) store.references = []
+		if (!Array.isArray(store.styleKeys)) store.styleKeys = []
+		if (!Array.isArray(store.urls)) store.urls = []
+		if (!store.actions) store.actions = {}
+		if (!store.components) store.components = {}
+		if (!store.emit) store.emit = []
+		if (!store.funcNames) store.funcNames = []
+		if (!store.styles) store.styles = {} as Store['styles']
+		if (!store.styles.border) store.styles.border = []
+	})
+	.on('end', (store) => {
+		store.actionTypes = store.actionTypes.sort()
+		store.componentTypes = store.componentTypes.sort()
+		store.componentKeys = store.componentKeys.sort()
+		store.references = store.references.sort()
+		store.styleKeys = store.styleKeys.sort()
+		store.funcNames = store.funcNames.sort()
+		store.urls = store.urls.sort()
+	})
+	.run
+	// handleActionType,
+	// handleComponentType,
+	// handleComponentKeys,
+	// handleEmitObjects,
+	// handleIfObjects,
+	// handleFuncNames,
+	// handleReferences,
+	// handleStyleKeys,
+	// handleUrls,
+	// handleActionObjects,
+	// handleComponentObjects,
+	// handleBorderObjects,
+	()
 
 console.log(chalk.green(`noodl-types scripting ended`))
