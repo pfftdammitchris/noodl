@@ -51,6 +51,11 @@ export interface ListItemComponentObject extends ComponentObject {
 	[key: string]: any
 }
 
+export interface NoodlComponentObject extends ComponentObject {
+	type: 'noodl'
+	[key: string]: any
+}
+
 export interface PluginComponentObject extends ComponentObject {
 	type: 'plugin'
 	[key: string]: any

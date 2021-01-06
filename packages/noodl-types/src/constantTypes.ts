@@ -17,6 +17,7 @@ export type ComponentType =
 	| 'label'
 	| 'list'
 	| 'listItem'
+	| 'noodl'
 	| 'plugin'
 	| 'pluginHead'
 	| 'pluginBodyTail'

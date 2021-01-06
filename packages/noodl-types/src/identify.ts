@@ -19,6 +19,7 @@ import {
 	LabelComponentObject,
 	ListComponentObject,
 	ListItemComponentObject,
+	NoodlComponentObject,
 	PluginBodyTailComponentObject,
 	PluginComponentObject,
 	PluginHeadComponentObject,
@@ -129,6 +130,9 @@ export const identify = (function () {
 			},
 			listItem(value: unknown): value is ListItemComponentObject {
 				return isPlainObject(value) && value.type === 'listItem'
+			},
+			noodl(value: unknown): value is NoodlComponentObject {
+				return isPlainObject(value) && value.type === 'noodl'
 			},
 			plugin(value: unknown): value is PluginComponentObject {
 				return isPlainObject(value) && value.type === 'plugin'
