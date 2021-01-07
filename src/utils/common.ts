@@ -1,11 +1,15 @@
 import { AxiosError } from 'axios'
+import fs from 'fs-extra'
 import isPlainObject from 'lodash/isPlainObject'
 import path from 'path'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import globby from 'globby'
+import { PlainObject } from '../types'
 
 // chalk helpers
+export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
 export const highlight = (...s: any[]) => chalk.yellow(...s)
 export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
 export const blue = (...s: any[]) => chalk.blue(...s)
@@ -15,7 +19,8 @@ export const hotpink = (...s: any[]) => chalk.hex('#F65CA1')(...s)
 export const magenta = (...s: any[]) => chalk.magenta(...s)
 export const orange = (...s: any[]) => chalk.keyword('orange')(...s)
 export const deepOrange = (...s: any[]) => chalk.hex('#FF8B3F')(...s)
-export const red = (...s: any[]) => chalk.red(...s)
+export const red = (...s: any[]) => chalk.redBright(...s)
+export const newline = () => console.log('')
 
 export function createPlaceholderReplacer(
 	placeholders: string | string[],
@@ -85,6 +90,24 @@ export function getFilePath(...paths: string[]) {
 	return path.resolve(path.join(process.cwd(), ...paths))
 }
 
+export function groupAssets(urls: string[]) {
+	return urls.reduce(
+		(acc, url) => {
+			if (isImg(url)) acc.images.push(url)
+			else if (isVid(url)) acc.videos.push(url)
+			else if (isPdf(url)) acc.pdfs.push(url)
+			else acc.other.push(url)
+			return acc
+		},
+		{
+			images: [] as string[],
+			other: [] as string[],
+			pdfs: [] as string[],
+			videos: [] as string[],
+		},
+	)
+}
+
 export function hasAllKeys(keys: string | string[]) {
 	return (node: YAMLMap) =>
 		(Array.isArray(keys) ? keys : [keys]).every((key) => node.has(key))
@@ -101,6 +124,37 @@ export function hasKey(key: string) {
 
 export function hasKeyEqualTo(key: string, value: any) {
 	return (node: YAMLMap) => node.has(key) && node.get(key) === value
+}
+
+export function loadFiles(opts: {
+	dir: string
+	ext: 'yml'
+	onFile?(args: { file: yaml.Document; filename: string }): void
+}): yaml.Document[]
+export function loadFiles(opts: {
+	dir: string
+	ext: 'json'
+	onFile?(args: { file: PlainObject; filename: string }): void
+}): PlainObject[]
+export function loadFiles({
+	dir,
+	ext = 'json',
+	onFile,
+}: {
+	dir: string
+	ext?: 'json' | 'yml'
+	onFile?(args: { file?: PlainObject | yaml.Document; filename: string }): void
+}) {
+	return globby
+		.sync(path.resolve(getFilePath(dir), `**/*.${ext}`))
+		.reduce((acc, filename) => {
+			const file =
+				ext === 'json'
+					? fs.readJsonSync(filename)
+					: yaml.parseDocument(fs.readFileSync(filename, 'utf8'))
+			onFile?.({ file, filename })
+			return acc.concat(file)
+		}, [])
 }
 
 export function isImg(s: string) {

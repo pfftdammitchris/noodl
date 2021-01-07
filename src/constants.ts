@@ -19,6 +19,7 @@ export const aggregator = {
 		RETRIEVED_APP_ENDPOINT: 'retrieved.app.endpoint',
 		RETRIEVED_APP_BASE_URL: 'retrieved.app.base.url',
 		RETRIEVED_APP_OBJECT: 'retrieved.app.object',
+		RETRIEVE_APP_OBJECT_FAILED: 'retrieve.app.object.failed',
 	},
 } as const
 
@@ -41,5 +42,6 @@ export const serverScript = {
 		PROMPT_DATA_SOURCE: 'prompt.data.source',
 		PROMPT_SERVER_DIR: 'prompt.server.dir',
 		CONFIRM_USE_SERVER_DIR_FILES: 'confirm.use.server.dir.files',
+		DOWNLOAD_ASSETS: 'download.assets',
 	},
 } as const

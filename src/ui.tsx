@@ -69,6 +69,7 @@ function App() {
 	const ctx: Context = {
 		...state,
 		aggregator,
+		aggregator,
 		setPanel: React.useCallback((panel: any) => {
 			dispatch({ type: 'set-panel', panel })
 		}, []),

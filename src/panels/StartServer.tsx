@@ -1,11 +1,24 @@
 import React from 'react'
+import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
+import download from 'download'
 import SelectInput from 'ink-select-input'
 import { UncontrolledTextInput } from 'ink-text-input'
 import { Box, BoxProps } from 'ink'
 import produce, { Draft } from 'immer'
-import { deepOrange, getFilePath, magenta } from '../utils/common'
+import createObjectScripts from '../api/createObjectScripts'
+import {
+	captioning,
+	deepOrange,
+	getFilePath,
+	groupAssets,
+	highlight,
+	magenta,
+	newline,
+	red,
+} from '../utils/common'
+import scriptObjs, { id as scriptId, Store } from '../utils/scripts'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
 import * as c from '../constants'
@@ -16,6 +29,10 @@ const initialState: T.State = {
 	dataSource: '',
 	dirFiles: [],
 	step: c.serverScript.step.CONFIG,
+	stepContext: Object.values(c.serverScript.step).reduce(
+		(acc, key) => Object.assign(acc, { [key]: {} }),
+		{},
+	),
 } as T.State
 
 const reducer = produce(
@@ -25,13 +42,22 @@ const reducer = produce(
 				return void (draft.config = action.config)
 			case c.serverScript.action.SET_DATA_SOURCE:
 				return void (draft.dataSource = action.dataSource)
-			case c.serverScript.action.SET_STEP:
-				return void (draft.step = action.step)
+			case c.serverScript.action.SET_STEP: {
+				draft.step = action.step
+				if (action.options) {
+					Object.assign(
+						draft.stepContext[action.step as Exclude<T.State['step'], ''>],
+						action.options,
+					)
+				}
+				break
+			}
 		}
 	},
 )
 
 function StartServer() {
+	const { current: scripts } = React.useRef(createObjectScripts<Store>())
 	const [state, dispatch] = React.useReducer(reducer, initialState)
 	const { aggregator, ownConfig, server, setCaption, toggleSpinner } = useCtx()
 
@@ -44,7 +70,7 @@ function StartServer() {
 			setCaption(`Config set to ${magenta(config)}`)
 			if (fs.existsSync(server.dir)) {
 				setStep('')
-				setCaption('Server dir exists. Scanning now...')
+				setCaption(captioning('Server dir exists. Scanning now...'))
 				if (!fs.existsSync(getAssetsFolder(server.dir))) {
 					fs.ensureDirSync(getAssetsFolder(server.dir))
 					setCaption(
@@ -66,43 +92,118 @@ function StartServer() {
 		[server, state?.dataSource],
 	)
 
-	const onSetDataSource = React.useCallback((item: any) => {
-		dispatch({
-			type: c.serverScript.action.SET_DATA_SOURCE,
-			dataSource: item.value,
-		})
-		setStep('')
-		setCaption(`Data source set to ${magenta(item.value)}`)
-		toggleSpinner()
-		if (item.value === 'fs') {
-			setCaption(`Retrieving data from ${magenta(server.dir)}`)
-			let count = 0
-			aggregator.on(
-				c.aggregator.event.RETRIEVED_APP_OBJECT,
-				({ name }) => {
-					setCaption(`Retrieved: ${magenta(name)}`)
-					count++
-				},
-				'onSetDataSource',
-			)
-			aggregator.init({ loadPages: true }).then(([rootConfig, appConfig]) => {
-				setCaption(`\nFinished with ${magenta(count)} objects\n`)
-				setCaption(`Checking assets and urls...`)
-				/**
-				 * TODO - scan objects and find:
-				 * 		1. urls (images/videos/pdfs/word docs)
-				 * 		2.
-				 */
+	const onSetDataSource = React.useCallback(
+		(item: any) => {
+			dispatch({
+				type: c.serverScript.action.SET_DATA_SOURCE,
+				dataSource: item.value,
 			})
-		} else if (item.value === 'remote') {
-			//
-		}
-	}, [])
+			setStep('')
+			setCaption(`Data source set to ${magenta(item.value)}`)
+			toggleSpinner()
+			if (item.value === 'fs') {
+				setCaption(`Retrieving data from ${magenta(server.dir)}`)
+				let currentCount = 0
+				let failedCount = 0
+				let totalPreloadPages = 0
+				let totalPages = 0
+				aggregator
+					.on(c.aggregator.event.RETRIEVED_APP_CONFIG, ({ json }) => {
+						totalPreloadPages = json?.preload?.length || 0
+						totalPages = json?.page?.length || 0
+					})
+					.on(c.aggregator.event.RETRIEVE_APP_OBJECT_FAILED, (name) => {
+						failedCount++
+					})
+					.on(c.aggregator.event.RETRIEVED_APP_OBJECT, ({ name }) => {
+						currentCount++
+						setCaption(
+							`Received page ${magenta(name)} (${highlight(
+								`${currentCount}/${totalPages}`,
+							)})`,
+						)
+					})
+					.init({ loadPages: true })
+					.then(([rootConfig, appConfig]) => {
+						newline()
+						setCaption(
+							`Finished with ${magenta(currentCount)} objects ${
+								failedCount
+									? `(${red(failedCount)} objects were unsuccessful)`
+									: ''
+							}`,
+						)
+						newline()
+						setCaption(captioning('Checking assets and urls...'))
+						newline()
+						const docNameMapper = new Map<yaml.Document, string>()
+						const ymlDocs = Object.entries(aggregator.get('yml')).reduce(
+							(acc, [name, yml]) => {
+								const doc = yaml.parseDocument(yml)
+								docNameMapper.set(doc, name)
+								return acc.concat(doc)
+							},
+							[] as yaml.Document[],
+						)
+						scripts.data(ymlDocs)
+						scripts
+							.use(scriptObjs[scriptId.RETRIEVE_URLS])
+							.on('start', (store) => {
+								if (!store.urls) store.urls = []
+							})
+							.on('end', (store) => {
+								store.urls = store.urls.sort()
+								const assets = groupAssets(store.urls)
+								const { images, other, pdfs, videos } = assets
+								setCaption(`Found ${magenta(images.length)} image links`)
+								setCaption(`Found ${magenta(pdfs.length)} pdf links`)
+								setCaption(`Found ${magenta(videos.length)} video links`)
+								setCaption(`Found ${magenta(other.length)} other asset links`)
+								newline()
+								setCaption(
+									`Total links: ${magenta(
+										store.urls.length,
+									)} in config ${magenta(state?.config)}`,
+								)
+								newline()
+								setCaption(captioning(`Downloading assets...`))
+								newline()
+								setStep(c.serverScript.step.DOWNLOAD_ASSETS, {
+									...assets,
+									failedCount,
+									totalPages,
+									totalPreloadPages,
+									current: {
+										images: [],
+										other: [],
+										pdfs: [],
+										videos: [],
+										totalPreloadPages: 0,
+										totalPages: 0,
+										failed: [],
+									},
+								})
+							})
+							.run()
+					})
+			} else if (item.value === 'remote') {
+				//
+			}
+		},
+		[state],
+	)
 
-	const setStep = React.useCallback((step: T.State['step']) => {
-		dispatch({ type: c.serverScript.action.SET_STEP, step })
-		console.log(`${deepOrange('STEP')}: ` + magenta(step || '<none>'))
-	}, [])
+	const setStep = React.useCallback(
+		(step: T.State['step'], stepContext?: any) => {
+			dispatch({
+				type: c.serverScript.action.SET_STEP,
+				step,
+				options: stepContext,
+			})
+			console.log(`${deepOrange('STEP')}: ` + magenta(step || '<none>'))
+		},
+		[],
+	)
 
 	const onConfirmUseServerDirFiles = React.useCallback(() => {
 		let serverFiles = state?.dirFiles || []
@@ -138,6 +239,12 @@ function StartServer() {
 		setCaption(`Server host: ${magenta(server.host)}`)
 		setCaption(`Server port: ${magenta(server.port)}`)
 	}, [])
+
+	React.useEffect(() => {
+		if (state?.step === c.serverScript.step.DOWNLOAD_ASSETS) {
+			const stepContext = state.stepContext[c.serverScript.step.DOWNLOAD_ASSETS]
+		}
+	}, [state?.step])
 
 	const Container = React.memo(
 		({

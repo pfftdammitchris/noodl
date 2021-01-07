@@ -72,6 +72,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 					}`,
 				)
 			}
+			_emit(c.aggregator.event.RETRIEVE_APP_OBJECT_FAILED, name)
 			return { json: {}, yml: '' }
 		}
 	}
