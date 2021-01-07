@@ -30,10 +30,10 @@ const reducer = produce(
 		}
 	},
 )
-
+f
 function StartServer() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { aggregator, server, setCaption, toggleSpinner } = useCtx()
+	const { aggregator, ownConfig, server, setCaption, toggleSpinner } = useCtx()
 
 	const getAssetsFolder = (serverDir: string) => path.join(serverDir, 'assets')
 
@@ -137,6 +137,10 @@ function StartServer() {
 		setCaption(`Server dir: ${magenta(server.dir)}`)
 		setCaption(`Server host: ${magenta(server.host)}`)
 		setCaption(`Server port: ${magenta(server.port)}`)
+
+		if (!ownConfig) {
+			setStep('prompt.cli.config')
+		}
 	}, [])
 
 	const Container = React.memo(

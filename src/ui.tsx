@@ -1,5 +1,6 @@
 import React from 'react'
 import chalk from 'chalk'
+import fs from 'fs-extra'
 import produce from 'immer'
 import Spinner from 'ink-spinner'
 import { Newline, Static, Text } from 'ink'
@@ -14,6 +15,7 @@ import StartServer from './panels/StartServer'
 import RetrieveObjects from './panels/RetrieveObjects'
 import RetrieveKeywords from './panels/RetrieveKeywords'
 import HighlightedText from './components/HighlightedText'
+import { getFilePath } from 'utils/common'
 
 const panels = {
 	[panelId.SELECT_ROUTE]: SelectRoute,
@@ -25,6 +27,7 @@ const panels = {
 let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
 const initialState: State = {
+	ownConfig: null,
 	caption: [],
 	server: { host: '', dir: '', port: null },
 	objects: {
@@ -41,6 +44,8 @@ const initialState: State = {
 const reducer = produce(
 	(draft: WritableDraft<State> = initialState, action: Action): void => {
 		switch (action.type) {
+			case 'set-own-config':
+				return void (draft.ownConfig = action.value)
 			case 'set-caption':
 				return void draft.caption.push(action.caption)
 			case 'set-server-options':
@@ -118,6 +123,11 @@ function App() {
 	} as Context
 
 	const Panel = panels[state?.panel.id as PanelId]
+
+	// Initiates the app's cli presence state
+	React.useEffect(() => {
+		dispatch({ type: 'set-own-config', value: fs.existsSync('noodl.json') })
+	}, [])
 
 	return (
 		<Provider value={ctx}>

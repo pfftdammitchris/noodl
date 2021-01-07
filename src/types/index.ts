@@ -31,6 +31,7 @@ export interface CLIConfigContext extends CLIConfigObject {
 }
 
 export type Action =
+	| { type: 'set-own-config'; value: boolean | null }
 	| { type: 'set-caption'; caption: string }
 	| { type: 'set-server-options'; options: Partial<State['server']> }
 	| {
@@ -52,6 +53,7 @@ export type Action =
 	| { type: 'set-spinner'; spinner: false | string }
 
 export interface State {
+	ownConfig: boolean | null
 	caption: string[]
 	server: {
 		host: string
