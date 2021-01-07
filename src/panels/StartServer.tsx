@@ -30,7 +30,7 @@ const reducer = produce(
 		}
 	},
 )
-f
+
 function StartServer() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
 	const { aggregator, ownConfig, server, setCaption, toggleSpinner } = useCtx()
@@ -87,7 +87,7 @@ function StartServer() {
 			)
 			aggregator.init({ loadPages: true }).then(([rootConfig, appConfig]) => {
 				setCaption(`\nFinished with ${magenta(count)} objects\n`)
-				toggleSpinner(false)
+				setCaption(`Checking assets and urls...`)
 				/**
 				 * TODO - scan objects and find:
 				 * 		1. urls (images/videos/pdfs/word docs)
@@ -137,10 +137,6 @@ function StartServer() {
 		setCaption(`Server dir: ${magenta(server.dir)}`)
 		setCaption(`Server host: ${magenta(server.host)}`)
 		setCaption(`Server port: ${magenta(server.port)}`)
-
-		if (!ownConfig) {
-			setStep('prompt.cli.config')
-		}
 	}, [])
 
 	const Container = React.memo(

@@ -1,5 +1,6 @@
 import { aggregatorEvent, panelId } from '../constants'
 import createAggregator from '../api/createAggregator'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 
 export interface AnyFn {
 	(...args: any[]): any
@@ -147,3 +148,9 @@ export interface ObjectResult<
 	json: T | T[]
 	yml: string
 }
+
+export interface PlainObject {
+	[key: string]: any
+}
+
+export type YAMLNode = Scalar | Pair | YAMLMap | YAMLSeq

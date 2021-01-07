@@ -1,6 +1,3 @@
-console.clear()
-import { config } from 'dotenv'
-config()
 import { isReference } from 'noodl-utils'
 import {
 	forEachDeepKeyValue,
@@ -18,62 +15,7 @@ import {
 	onYAMLMap,
 	onYAMLSeq,
 	sortObjPropsByKeys,
-} from '../src/utils/common'
-
-const Find = (function () {
-	const o = {
-		actionTypes() {},
-		objectsThatContainKeys({
-			name = '',
-			keys,
-			objs,
-		}: {
-			name?: string
-			keys: string | string[]
-			objs: any
-		}) {
-			const keywords = Array.isArray(keys) ? keys : [keys]
-			const results = {
-				name,
-				keywords,
-				results: keywords.reduce(
-					(acc, keyword) => Object.assign(acc, { [keyword]: [] }),
-					{},
-				),
-			}
-			forEachDeepKeyValue(
-				(key, value, obj) =>
-					keywords.includes(key) && results.results[key].push(obj),
-				objs,
-			)
-			return results
-		},
-		getKeyCounts({
-			keys,
-			objs,
-		}: {
-			objs: any
-			keys?: string | string[]
-		}): { [key: string]: number } {
-			const keywords = Array.isArray(keys) ? keys : (keys && [keys]) || []
-			const results = {} as { [key: string]: number }
-			forEachDeepKeyValue((key, value, obj) => {
-				if (keywords.length) {
-					if (keywords.includes(key)) {
-						if (typeof results[key] !== 'number') results[key] = 0
-						results[key]++
-					}
-				} else {
-					if (typeof results[key] !== 'number') results[key] = 0
-					results[key]++
-				}
-			}, objs)
-			return sortObjPropsByKeys(results)
-		},
-	}
-
-	return o
-})()
+} from '../utils/common'
 
 export const identify = (function () {
 	function composeFilters<N>(...fns: ((node: N) => boolean)[]) {
@@ -192,4 +134,61 @@ export const identify = (function () {
 	return o
 })()
 
-export default Find
+const Utils = (function () {
+	const o = {
+		actionTypes() {},
+		objectsThatContainKeys({
+			name = '',
+			keys,
+			objs,
+		}: {
+			name?: string
+			keys: string | string[]
+			objs: any
+		}) {
+			const keywords = Array.isArray(keys) ? keys : [keys]
+			const results = {
+				name,
+				keywords,
+				results: keywords.reduce(
+					(acc, keyword) => Object.assign(acc, { [keyword]: [] }),
+					{},
+				),
+			}
+			forEachDeepKeyValue(
+				(key, value, obj) =>
+					keywords.includes(key) && (results.results as any)[key].push(obj),
+				objs,
+			)
+			return results
+		},
+		getKeyCounts({
+			keys,
+			objs,
+		}: {
+			objs: any
+			keys?: string | string[]
+		}): { [key: string]: number } {
+			const keywords = Array.isArray(keys) ? keys : (keys && [keys]) || []
+			const results = {} as { [key: string]: number }
+			forEachDeepKeyValue((key, value, obj) => {
+				if (keywords.length) {
+					if (keywords.includes(key)) {
+						if (typeof results[key] !== 'number') results[key] = 0
+						results[key]++
+					}
+				} else {
+					if (typeof results[key] !== 'number') results[key] = 0
+					results[key]++
+				}
+			}, objs)
+			return sortObjPropsByKeys(results)
+		},
+	}
+
+	return o as typeof o & { identify: typeof identify }
+})()
+
+Utils.identify = identify
+
+export default Utils

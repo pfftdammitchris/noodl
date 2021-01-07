@@ -4,10 +4,10 @@ import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 export function has(path: string[], node: unknown): boolean
 export function has(path: string, node: unknown): boolean
 export function has(path: string | string[] | string[][], node: unknown) {
-	if (isYamlNode('map', node)) {
+	if (isYAMLNode('map', node)) {
 		if (typeof path === 'string') {
 			return node.hasIn(path.split('.'))
-		} else if (Array.isArray(path) && path.length) {
+		} else if (Array.isArray(path)) {
 			return node.hasIn(path)
 		}
 	}
@@ -20,7 +20,7 @@ export function hasPaths(
 ): boolean
 export function hasPaths(paths: string[][], node: unknown): boolean
 export function hasPaths(paths: any, node: unknown) {
-	if (isYamlNode('map', node)) {
+	if (isYAMLNode('map', node)) {
 		if (isPlainObject(paths)) {
 			const required = paths.required
 			paths = paths.paths
@@ -61,11 +61,11 @@ export function isIfObj(node: YAMLMap) {
 	return has('if', node)
 }
 
-function isYamlNode(type: 'pair', node: any): node is Pair
-function isYamlNode(type: 'scalar', node: any): node is Scalar
-function isYamlNode(type: 'map', node: any): node is YAMLMap
-function isYamlNode(type: 'seq', node: any): node is YAMLSeq
-function isYamlNode(type: string, node: any) {
+export function isYAMLNode(type: 'pair', node: any): node is Pair
+export function isYAMLNode(type: 'scalar', node: any): node is Scalar
+export function isYAMLNode(type: 'map', node: any): node is YAMLMap
+export function isYAMLNode(type: 'seq', node: any): node is YAMLSeq
+export function isYAMLNode(type: string, node: any) {
 	if (node) {
 		switch (type) {
 			case 'map':

@@ -15,7 +15,6 @@ import StartServer from './panels/StartServer'
 import RetrieveObjects from './panels/RetrieveObjects'
 import RetrieveKeywords from './panels/RetrieveKeywords'
 import HighlightedText from './components/HighlightedText'
-import { getFilePath } from 'utils/common'
 
 const panels = {
 	[panelId.SELECT_ROUTE]: SelectRoute,
