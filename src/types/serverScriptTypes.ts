@@ -9,8 +9,16 @@ export type Action =
 	| { type: typeof serverScript.action.SET_DIR_FILES; dirFiles: string[] }
 	| {
 			type: typeof serverScript.action.SET_STEP
-			step: State['step']
+			step: Exclude<
+				State['step'],
+				typeof serverScript['step']['DOWNLOAD_ASSETS']
+			>
 			options?: any
+	  }
+	| {
+			type: typeof serverScript.action.SET_STEP
+			step: typeof serverScript.step.DOWNLOAD_ASSETS
+			assets: string[]
 	  }
 
 // export type Step
@@ -23,22 +31,7 @@ export interface State {
 	stepContext: Partial<
 		{
 			[K in typeof serverScript.step.DOWNLOAD_ASSETS]: {
-				current: {
-					images: string[]
-					other: string[]
-					pdfs: string[]
-					videos: string[]
-					totalPreloadPages: number
-					totalPages: number
-					failed: string[]
-				}
-				images: string[]
-				other: string[]
-				pdfs: string[]
-				videos: string[]
-				failedCount: number
-				totalPages: number
-				totalPreloadPages: number
+				assets: string[]
 			}
 		} &
 			{

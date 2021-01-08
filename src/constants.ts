@@ -36,6 +36,8 @@ export const serverScript = {
 		SET_STEP: 'set.step',
 		SET_DATA_SOURCE: 'set.data.source',
 		SET_DIR_FILES: 'set.dir.files',
+		SET_PENDING: 'set.pending',
+		DOWNLOAD_ASSET: 'download.asset',
 	},
 	step: {
 		CONFIG: 'config',

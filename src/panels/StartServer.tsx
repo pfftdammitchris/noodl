@@ -2,7 +2,6 @@ import React from 'react'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
-import download from 'download'
 import SelectInput from 'ink-select-input'
 import { UncontrolledTextInput } from 'ink-text-input'
 import { Box, BoxProps } from 'ink'
@@ -21,6 +20,7 @@ import {
 import scriptObjs, { id as scriptId, Store } from '../utils/scripts'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
+import StartServerDownloadAssets from './StartServerDownloadAssets'
 import * as c from '../constants'
 import * as T from '../types/serverScriptTypes'
 
@@ -44,11 +44,18 @@ const reducer = produce(
 				return void (draft.dataSource = action.dataSource)
 			case c.serverScript.action.SET_STEP: {
 				draft.step = action.step
-				if (action.options) {
-					Object.assign(
-						draft.stepContext[action.step as Exclude<T.State['step'], ''>],
-						action.options,
-					)
+				if (action.step === c.serverScript.step.DOWNLOAD_ASSETS) {
+					draft.stepContext[c.serverScript.step.DOWNLOAD_ASSETS] = {
+						...draft.stepContext[c.serverScript.step.DOWNLOAD_ASSETS],
+						assets: action.assets,
+					}
+				} else {
+					if (action.options) {
+						Object.assign(
+							draft.stepContext[action.step as Exclude<T.State['step'], ''>],
+							action.options,
+						)
+					}
 				}
 				break
 			}
@@ -169,19 +176,7 @@ function StartServer() {
 								setCaption(captioning(`Downloading assets...`))
 								newline()
 								setStep(c.serverScript.step.DOWNLOAD_ASSETS, {
-									...assets,
-									failedCount,
-									totalPages,
-									totalPreloadPages,
-									current: {
-										images: [],
-										other: [],
-										pdfs: [],
-										videos: [],
-										totalPreloadPages: 0,
-										totalPages: 0,
-										failed: [],
-									},
+									assets: store.urls,
 								})
 							})
 							.run()
@@ -239,12 +234,6 @@ function StartServer() {
 		setCaption(`Server host: ${magenta(server.host)}`)
 		setCaption(`Server port: ${magenta(server.port)}`)
 	}, [])
-
-	React.useEffect(() => {
-		if (state?.step === c.serverScript.step.DOWNLOAD_ASSETS) {
-			const stepContext = state.stepContext[c.serverScript.step.DOWNLOAD_ASSETS]
-		}
-	}, [state?.step])
 
 	const Container = React.memo(
 		({
@@ -307,6 +296,13 @@ function StartServer() {
 						onSelect={onCreateServerDir}
 					/>
 				</Container>
+			) : currentStep === c.serverScript.step.DOWNLOAD_ASSETS ? (
+				<StartServerDownloadAssets
+					assets={
+						state?.stepContext[c.serverScript.step.DOWNLOAD_ASSETS]
+							?.assets as string[]
+					}
+				/>
 			) : null}
 		</>
 	)
