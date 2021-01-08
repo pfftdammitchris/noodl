@@ -1,0 +1,26 @@
+{
+  "DownloadApp": {
+    "init": [
+      {
+        "if": [
+          ".builtIn.isIOS",
+          {
+            "goto": "https://apps.apple.com/us/app/aitcom/id1526258312"
+          },
+          "continue"
+        ]
+      },
+      {
+        "if": [
+          ".builtIn.isAndroid",
+          {
+            "goto": "https://play.google.com/store/apps/details?id=com.aitmed.aitcom"
+          },
+          {
+            "goto": "https://www.aitmed.com"
+          }
+        ]
+      }
+    ]
+  }
+}

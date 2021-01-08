@@ -1,0 +1,240 @@
+{
+  "HaDizziness": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Dizziness"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Is a common brain dysfunction and one of the most common clinical symptoms."
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Dizziness is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/dizziness.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Get emergency medical if is accompanied by:"
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "60px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Difficulty in breathing"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Chest pain."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Sudden, severe headache."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Numbness or weakness."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Faint."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Blurring or double vision."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Heartbeat is fast or irregular."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Ambiguous or speech difficulties."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Nausea."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Falling down or walking difficulties."
+              }
+            ]
+          },
+          {
+            ".HaBodyContent": null,
+            "style": {
+              "top": "360px"
+            },
+            "textBoard": [
+              {
+                "text": "Dizziness is a term used to describe a range of sensations, such as feeling faint, woozy, weak or unsteady. the common cause of dizziness include"
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Inner ear problems that cause dizziness",
+            "style": {
+              "top": "420px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "480px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Benign paroxysmal positional vertigo (BPPV). Commonly known as 'tolith', the prevalence rate is about 2.4%, and the incidence increases gradually with age. The exact pathogenesis is still unclear. This condition causes an intense and brief but false sense that you're spinning or moving. These episodes are triggered by a rapid change in head movement, such as when you turn over in bed, sit up or experience a blow to the head. BPPV is the most common cause of vertigo."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Meniere's disease (Ménière's syndrome). Also known as membrane lost water, is an unexplained inner ear disease with idiopathic endolymphatic hydrops as the main pathological feature. It's characterized by sudden episodes of vertigo lasting as long as several hours. You may also experience fluctuating hearing loss, ringing in the ear and the feeling of a plugged ear."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ lost to the road. Labyrinthitis, also known as otitis media, is a common complication of suppurative otitis media. According to the extent of lesions and changes in disease course, it can be divided into three types: localized labyrinthitis, serous labyrinthitis and suppurative labyrinthitis. The degree of dizziness is gradually aggravated, and both are accompanied by hearing loss."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Migraine vertigo (vestibular migraine) Migraine vertigo is the most common central vestibular dysfunction. People who experience migraines may have episodes of vertigo or other types of dizziness even when they're not having a severe headache. Such vertigo episodes can last minutes to hours and may be associated with headache as well as light and noise sensitivity."
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Dizziness caused by Circulation problems",
+            "style": {
+              "top": "900px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "960px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ low blood pressure. The characteristics are: dizziness or syncope when standing for too long, fatigue, hunger or sudden standing. It can be relieved after a short rest in the supine, often accompanied by tinnitus, but no hearing loss; and lack of inner ear and brain Blood-related, mild hypotension causes dizziness due to mild cerebral ischemia and hypoxia;"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Poor blood circulation. Conditions such as cardiomyopathy, heart attack, heart arrhythmia and transient ischemic attack could cause dizziness. And a decrease in blood volume may cause inadequate blood flow to your brain or inner ear thus causes the symptom."
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Other causes of dizziness",
+            "style": {
+              "top": "1140px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "1200px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Extraocular muscle paralysis. Congenital dysplasia or acquired traumatic eye disease caused by extraocular muscle paralysis, leading to visual afferent defects, the actual visual afferent information and the expected incoming information have a contradiction, resulting in pathological visual vertigo."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Mental dizziness. refers to vertigo caused by anxiety and other mental disorders. Its clinical features are: dizziness exists almost every day, is persistent, can be accompanied by panic attacks and other mental appearance."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Medications. Dizziness can be a side effect of certain medications — such as anti-seizure drugs, antidepressants, sedatives and tranquilizers. In particular, blood pressure lowering medications may cause faintness if they lower your blood pressure too much"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Low blood sugar (hypoglycemia). This condition generally occurs in people with diabetes who use insulin. Dizziness (lightheadedness) may be accompanied by sweating and anxiety."
+              }
+            ]
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "1470px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "Dizziness",
+            "style": {
+              "top": "1530px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "2.95",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

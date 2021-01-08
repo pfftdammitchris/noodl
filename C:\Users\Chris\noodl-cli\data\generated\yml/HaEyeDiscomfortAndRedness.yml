@@ -1,0 +1,94 @@
+HaEyeDiscomfortAndRedness:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Eye discomfort and redness
+        - .HaHeaderLittleLabel:
+          text: Constipation is difficult or infrequent passage of stool, hardness of stool, or a feeling of incomplete evacuation
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: Common eye discomfort include Achy, Gritty sensation, Redness, Sensitivity to light, pain etc.
+    - .HaBodyImg:
+      path: healthAZ/eye-discomfort-and-redness.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency medical if:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Severe eye pain or irritation"
+            - br: 
+            - text: "⦁ Direct injury to the eye."
+            - br: 
+            - text: "⦁ Swelling in or around your eyes."
+            - br: 
+            - text: "⦁ Discharge of blood or pus from your eyes."
+            - br: 
+            - text: "⦁ Double vision or loss of vision."      
+            - br: 
+            - text: "⦁ Sudden or new appearance of halos around lights."
+            - br: 
+            - text: "⦁ Nausea or vomiting."
+            - br: 
+            - text: "⦁ Sudden, severe headache."
+        - .HaBodyTitle:
+          text: "Common eye discomfort include Achy, Gritty sensation, Redness, Sensitivity to light, pain ect. Common happened disease include:"
+          style: 
+            top: "330px"           
+        - .HaBodyContent:
+          style: 
+            top: "420px"
+          textBoard: 
+            - text: "A cataract is a clouding of the eye's natural lens, which lies behind the iris and the pupil. Cataracts are the most common cause of vision loss in people over age 40 and is the principal cause of blindness in the world. In fact, there are more cases of cataracts worldwide than there are of glaucoma, macular degeneration and diabetic retinopathy combined, according to Prevent Blindness America (PBA). Timely cataract surgery can not only improve the visual function as early as possible, but also more importantly, it can deepen the space of the eye and effectively reduce the possibility of glaucoma development."
+            - br: 
+            - text: "Glaucoma is a group of diseases that damage the eye’s optic nerve and can result in vision loss and blindness. The onset and visual impairment are usually occult. When there is a serious visual decline or acute pain episode, the best treatment opportunity is often missed."
+            - br: 
+            - text: "Age-related macular degeneration: The macula is the most sensitive place for human vision. With the increase of age, some middle-aged and elderly people have lesions in the macular area, causing vision loss, visual distortion and even blindness."
+            - br: 
+            - text: "Diabetic retinopathy: This is one of the important complications of diabetes. It is the most cause of blindness in middle-aged people. Timely screening and follow-up treatment can effectively control vision loss."
+        - .HaBodyContentList:
+          style: 
+            top: "780px"
+          textBoard: 
+            - text: "⦁ One eye turns in or out while the other points straight ahead"
+            - br: 
+            - text: "⦁ Frequent blinking"
+            - br: 
+            - text: "⦁ Red or watery eyes"
+            - br: 
+            - text: "⦁ Difficulty concentrating"
+            - br: 
+            - text: "⦁ Covering or closing one eye"
+            - br: 
+            - text: "⦁ Holding a book very close to read"
+            - br: 
+            - text: "⦁ Squinting or sitting very close when watching television"
+            - br: 
+            - text: "⦁ Complaints of headaches"
+            - br: 
+            - text: "⦁ Complaints of blurred or double vision."
+        - .HaBottomTag: 
+          style: 
+            top: "1110px"
+        - .HaBottomTagname: 
+          text: "eye"
+          style: 
+            top: "1170px"
+        - .HaBottomTagname: 
+          text: "redness"
+          style: 
+            top: "1170px"
+            left: "0.04"       
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.6"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

@@ -1,0 +1,66 @@
+HaEarProblemsInChild:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Ear problems in child
+        - .HaHeaderLittleLabel:
+          text: The ears are very delicate structures, especially in children.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Ear problems in child is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/ear-problems-in-child.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency care if your child:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Has ear pain"
+            - br: 
+            - text: "⦁ Has discharge of blood, pus or clear fluid from the ear"
+            - br: 
+            - text: "⦁ Pulls at or scratches his or her ear"
+            - br: 
+            - text: "⦁ Have delays in speech development or unclear speech"
+            - br: 
+            - text: "⦁ Respond to sounds inconsistently."
+            - br: 
+            - text: "⦁ Does not respond to instructions or being called"
+            - br: 
+            - text: "⦁ Does not understand speech"
+            - br: 
+            - text: "⦁ Turns up music or the television"
+        - .HaBodyTitle:
+          text: "Find possible causes of ear problem based on specific factors. Use our patient Questionnaire."
+          style: 
+            top: "330px"
+        - .HaBodyContent:
+          style: 
+            top: "420px"
+          textBoard: 
+            - text: "Two common ear conditions may affect children. Acute otitis media (AOM) is an infection that usually involves fever, pain, and evidence of middle ear (behind the eardrum) inflammation with effusion (fluid). This is the most common type of ear infection. It is usually painful because parts of the middle ear are swollen and infected, and fluid is trapped behind the eardrum. Symptoms include fever and possibly puss in the ear. Infants and children with acute otitis media often pull on their ears. It can be treated with antibiotics because it's usually caused by bacteria, not a virus, although it can be a complication from a virus."
+            - br: 
+            - text: "Otitis media with effusion (OME) is fluid in the middle ear without signs of infection. This type of ear infection is very common, and it is caused by the buildup of fluid in the middle ear. It often happens after an ear infection has run its course. Most of the time, children will not have pain, but a doctor will be able to see the fluid behind the eardrum. Otitis media with effusion usually goes away on its own, and antibiotics won't be effective. It's common to have with allergies, when exposed to irritants like cigarette smoke and in conjunction with viral upper respiratory infections."
+            - br: 
+            - text: "Others include Otitis externa, Objects in the ear, etc."
+        - .HaBottomTag: 
+          style: 
+            top: "750px"
+        - .HaBottomTagname: 
+          text: "ear"
+          style: 
+            top: "810px"
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.2"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

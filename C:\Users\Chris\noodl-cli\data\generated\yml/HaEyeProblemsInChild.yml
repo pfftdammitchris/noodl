@@ -1,0 +1,86 @@
+HaEyeProblemsInChild:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Eye Problems in children
+        - .HaHeaderLittleLabel:
+          text: Vision is fundamental for so many aspects of learning, from recognizing faces and shapes to reading.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Eye Problems in children is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/eye-problems-in-child.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency medical care if:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Severe eye pain or irritation"
+            - br: 
+            - text: "⦁ Swelling or redness in or around the eyes"
+            - br: 
+            - text: "⦁ Discharge of blood or pus from the eyes"
+            - br: 
+            - text: "⦁ Unequal pupil sizes"
+            - br: 
+            - text: "⦁ Problems with eye movement"             
+        - .HaBodyContent:
+          style: 
+            top: "240px"
+          textBoard: 
+            - text: "Good vision is important for a child’s educational, physical and social development. With many children suffering from an undetected vision problem, it’s important to be aware of the signs to give every child the best chance of reaching their full potential."
+            - br: 
+            - text: ""
+            - br:
+            - text: "Children who are struggling with undetected vision problems often fail to progress well in school."
+            - br: 
+            - text: ""
+            - br:
+            - text: "You can use the following checklist to look for the common symptoms that children with vision problems exhibit."
+        - .HaBodyContentList:
+          style: 
+            top: "450px"
+          textBoard: 
+            - text: "⦁ One eye turns in or out while the other points straight ahead"
+            - br: 
+            - text: "⦁ Frequent blinking"
+            - br: 
+            - text: "⦁ Red or watery eyes"
+            - br: 
+            - text: "⦁ Difficulty concentrating"
+            - br: 
+            - text: "⦁ Covering or closing one eye"
+            - br: 
+            - text: "⦁ Holding a book very close to read"
+            - br: 
+            - text: "⦁ Squinting or sitting very close when watching television"
+            - br: 
+            - text: "⦁ Complaints of headaches"
+            - br: 
+            - text: "⦁ Complaints of blurred or double vision."
+        - .HaBottomTag: 
+          style: 
+            top: "750px"
+        - .HaBottomTagname: 
+          text: "eye"
+          style: 
+            top: "810px"
+        - .HaBottomTagname: 
+          text: "vision"
+          style: 
+            top: "810px"
+            left: "0.04"       
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.25"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

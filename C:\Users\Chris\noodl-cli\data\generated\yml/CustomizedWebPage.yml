@@ -1,0 +1,170 @@
+CustomizedWebPage: 
+  viewPort: top
+  components:
+    - type: view
+      style: 
+        left: "0"
+        top: "0"
+        width: "1"
+        height: "1"
+      children: 
+        #header
+        - .BaseHeader:
+        #middle card
+        - type: view
+          style: 
+            top: "0"
+            left: "0"
+            width: "1"
+            height: "2"
+          children:           
+            - type: view
+              style:
+                top: "0.12"
+                left: "0"
+                width: "1"
+                backgroundColor: "0xfece55"
+                height: "0.65"
+              children:
+                - type: label
+                  text: Customized Telehealth Platform
+                  style:
+                    top: "0.1"
+                    width: "1"
+                    fontSize: "45"
+                    fontWeight: "600"
+                    fontStyle: "bold"
+                    letterSpacing: "0.2"
+                    fontFamily: sans-serif
+                    # color: "0xfefefe"
+                    textAlign:
+                      x: center
+                - type: image
+                  path: "hiclipart.com.png"
+                  style: 
+                    left: "0.27"
+                    width: "0.23"
+                    top: "0.253"
+                - type: image
+                  path: "UrgentCareimage.png"
+                  style: 
+                    left: "0.3"
+                    width: "0.17"
+                    top: "0.28"
+                - type: label
+                  textBoard:
+                    - text: "Build Your Own"
+                    - br: 
+                    - text: "Telehealth Platform"
+                    - br: 
+                    - text: "Brand Your Business"
+                  style:
+                    top: "0.25"
+                    left: "0.53"
+                    width: "0.25"
+                    fontSize: "40"
+                    fontStyle: "bold"
+                    fontFamily: Roboto Bold
+                    # color: "0xffffff"
+                    textAlign:
+                      x: left
+                - type: button
+                  text:  Request a Demo
+                  textAlign:
+                    x: center
+                    y: center
+                  onClick: 
+                    - goto: ContactInformation
+                  style:
+                    left: "0.58"
+                    top: "0.48"
+                    width: "0.1"
+                    height: "0.04"
+                    fontSize: "20"
+                    color: "0xfefefe"
+                    backgroundColor: "0x30b355"
+                    border:
+                      style: 5  
+                    borderRadius: "5"                           
+                - type: button
+                  text: AiTmed Partner
+                  style:
+                    left: "0.58"
+                    top: "0.54"
+                    width: "0.1"
+                    height: "0.04"
+                    fontSize: "20"
+                    color: "0xfefefe"
+                    backgroundColor: "0x30b355"
+                    border:
+                      style: 5  
+                    borderRadius: "5"  
+                  onClick:
+                    - goto: https://test.aitmed.com/
+            - type: view
+              style: 
+                left: "0"
+                top: "0.77"
+                width: "1"
+                height: "0.6"
+                backgroundColor: "0xffffff"
+              children: 
+                - type: view
+                  style: 
+                    left: "0.25"
+                    width: "0.5"
+                    height: "0.6"
+                    top: "0"
+                  children: 
+                    - .CloudWaitingRoomImg:
+                      path: "insurance.png"
+                      style: 
+                        width: "0.07"
+                        left: "0.08"
+                    - .CloudWaitingRoomLabel:
+                      text: "Questionnaire and Form"
+                      style: 
+                        top: "0.23"
+                        width: "0.22"
+                    - .CloudWaitingRoomImg:
+                      path: "webTV.png"
+                      style: 
+                        width: "0.12"
+                        left: "0.28"
+                    - .CloudWaitingRoomLabel:
+                      text: "Web Page"
+                      style: 
+                        top: "0.23"
+                        left: "0.23"
+                        width: "0.22"
+                    - .CloudWaitingRoomImg:
+                      path: "Appicon.png"
+                      style: 
+                        width: "0.07"
+                        top: "0.4"
+                        left: "0.085"
+                    - .CloudWaitingRoomLabel:
+                      text: "Tailored APP"
+                      style: 
+                        top: "0.55"
+                        width: "0.22"   
+                    - .CloudWaitingRoomImg:
+                      path: "thunder.png"
+                      style: 
+                        top: "0.4"
+                        width: "0.07"
+                        left: "0.3"
+                    - .CloudWaitingRoomLabel:
+                      text: "Functions"
+                      style: 
+                        top: "0.55"
+                        left: "0.23"
+                        width: "0.22"
+       #footer
+        - type: view
+          style:
+            top: "1.5"
+            width: "1"
+            height: "0.7"
+          children: 
+            - .BaseFooter:        

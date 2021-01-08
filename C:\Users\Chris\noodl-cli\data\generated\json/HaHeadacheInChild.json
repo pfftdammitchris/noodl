@@ -1,0 +1,311 @@
+{
+  "HaHeadacheInChild": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Headaches in children"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Headaches in children are common and usually aren't serious."
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Headaches in children is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/headache-in-a-child.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Get emergency medical care if:"
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "60px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Is sudden and severe or the 'worst headache ever' "
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ A headache, fever, and a stiff neck are present (Meningitis)"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Changes in sensation, vision, sudden weakness, loss of coordination, seizures, difficulty speaking or understanding speech,and drowsiness or confusion"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Red eyes and halos around lights"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Headaches in people with cancer or weakened immune system (AIDS)"
+              }
+            ]
+          },
+          {
+            ".HaBodyContent": null,
+            "style": {
+              "top": "240px"
+            },
+            "textBoard": [
+              {
+                "text": "Headache can be a pain in any part of the head, including the face, skull, etc. Headaches may interfere with one's ability to work or do ones normal daily activities. Some people have headaches on a daily basis while others hardly ever get them at all. Though headaches can be painful and stressful, they are rarely due to any serious conditions. Headaches not caused by another disorder are usually classified as primary headaches. Headaches caused by another disorder are classified a secondary headaches. Primary headache disorders include migraine, tension type headaches, and cluster headaches. Secondary headaches may result from disorders of the brain, eyes, nose, teeth, sinuses, throat, jaws, ears, and or neck."
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Common Causes of Headache:",
+            "style": {
+              "top": "420px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "480px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Tension headache (stress related)"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Migraine"
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Less common causes of headache:",
+            "style": {
+              "top": "570px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "630px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Cluster headache"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Meningitis"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Brain tumor"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Bleeding in the brain (intracerebral or subarachnoid hemorrhage)"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Lyme disease"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Influenza"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Caffeine withdrawal"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Withdrawal from pain medication"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ High blood pressure"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Eye straining"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Temporal giant cell arteritis"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Glaucoma– Red eyes and halos seen around lights"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Sinusitis"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Head injury"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Tooth pain"
+              }
+            ]
+          },
+          {
+            ".HaBodyContent": null,
+            "style": {
+              "top": "1110px"
+            },
+            "textBoard": [
+              {
+                "text": "Headache is a big concern when it occurs suddenly. A severe headache that includes fever and stiff neck suggests Meningitis, which is life-threatening if untreated. A sudden worst headache of your life headache may suggest bleeding in the brain. People should see a doctor if headaches occur as doctors can determine the type and causes headaches based on medical history, symptoms and exam.If your healthcare provider suspect’s that the cause of headache is severe in nature, further testing may be warranted. Treatment may be necessary in some causes of headaches. Pain medication is prescribed but must be taken cautiously."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "If you are experiencing a headache, Connect with one of our Healthcare professionals immediately and be seen within minutes from the comfort of your own home, work, or anywhere you may be. Often times our doctors can diagnose, treat, and make recommendations within 15 minutes or less."
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "How to prepare and get the most for your AITMED Ⓡ online visit following these helpful tips:",
+            "style": {
+              "top": "1380px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "1470px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Find a quiet, private place for your visit"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Tell the provider who the visit is for, you or someone else"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Write down your questions for the visit before your appointment time"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Bleeding in the brain (intracerebral or subarachnoid hemorrhage)"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Be specific about your concerns, symptoms, and questions"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Stay engaged and follow post-visit instructions if any are provided"
+              }
+            ]
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "1670px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "headaches",
+            "style": {
+              "top": "1730px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "3.2",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

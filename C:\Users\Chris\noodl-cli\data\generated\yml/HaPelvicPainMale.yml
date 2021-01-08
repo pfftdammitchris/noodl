@@ -1,0 +1,66 @@
+HaPelvicPainMale:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Pelvic pain in male
+        - .HaHeaderLittleLabel:
+          text: Refers to pain below the belly button in the anterior lower abdomen including the sex organ
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Pelvic pain in male pain in maleation is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/pelvic-pain-male.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency care if your child:"
+        - .HaBodyContentList:
+          textBoard:
+            - text: "⦁ Fever"
+            - br: 
+            - text: "⦁ Nausea or vomiting"
+            - br: 
+            - text: "⦁ Is accompanied by dizziness, fainting, nausea or vomiting"
+            - br: 
+            - text: "⦁ Blood in your semen"
+            - br: 
+            - text: "⦁ Blood in your urine"
+            - br: 
+            - text: "⦁ A lump or swelling in your groin or scrotum"
+          style:
+            top: "60px"
+        - .HaBodyTitle:
+          text: "Find possible causes of pelvic pain based on specific factors. Use our patient Questionnaire."
+          style:
+            top: "270px"
+        - .HaBodyContent:
+          textBoard:
+            - text: "Depending on its source, pelvic pain can be dull or sharp; it might be constant or off and on (intermittent); and it might be mild, moderate or severe. Pelvic pain can sometimes radiate to your lower back, buttocks or thighs. Sometimes, you might notice pelvic pain only at certain times, such as when you urinate or during sexual activity."
+            - br:
+            - text: ""
+            - br:
+            - text: "Men may have chronic pelvic pain from a number of disorders, including urinary dysfunction or irritable bowel syndrome (IBS). However, prostatitis is the most common male-specific cause of pelvic pain. Prostatitis is swelling and inflammation of the prostate gland, a walnut-sized gland situated directly below the bladder in men. The prostate gland produces fluid (semen) that nourishes and transports sperm. Prostatitis often causes painful or difficult urination. Other symptoms include pain in the groin, pelvic area or genitals and sometimes flu-like symptoms. Prostatitis affects men of all ages but tends to be more common in men 50 or younger. The condition has a number of causes. Sometimes the cause isn't identified. If prostatitis is caused by a bacterial infection, it can usually be treated with antibiotics. Depending on the cause, prostatitis can come on gradually or suddenly. It might improve quickly, either on its own or with treatment. Some types of prostatitis last for months or keep recurring (chronic prostatitis)."
+            - br:
+            - text: ""
+            - br:
+            - text: "A urinary tract infection (UTI) is an infection in any part of your urinary system — your kidneys, ureters, bladder and urethra. Most infections involve the lower urinary tract — the bladder and the urethra. It is a reason for pelvic pain."
+          style:
+            top: "340px"
+        - .HaBottomTag: 
+          style: 
+            top: "800px"
+        - .HaBottomTagname: 
+          text: "pelvic"
+          style: 
+            top: "860px" 
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.3"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

@@ -1,0 +1,96 @@
+HaLegOrFootSwelling:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Leg or Foot Swelling
+        - .HaHeaderLittleLabel:
+          text: Swelling may be due to excess fluid in the tissues which may be a result of a cardiovascular disease. If the swelling is present on one side only, it may be due to a blood clot which may be life threatening if gone untreated.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Leg or Foot Swelling is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/leg-or-foot-swelling.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Seek urgent or emergency care immediately if the following:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Difficulty Breathing (shortness of breath) or coughing up blood"
+            - br: 
+            - text: "⦁ Swelling on one side only"
+            - br: 
+            - text: "⦁ Numbness, or extreme pain"
+            - br: 
+            - text: "⦁ Post surgical extreme swelling and pain"
+            - br: 
+            - text: "⦁ Redness, painful (Infection) with fever"
+        - .HaBodyContent:
+          style: 
+            top: "240px"
+          textBoard: 
+            - text: "Swelling of the lower extremities can be caused by many different factors. When considering what those factors are, the first question one needs to ask is whether the swelling is on one side (Unilateral) or on both sides (bilateral)."
+            - br: 
+            - text: "Swelling that occurs throughout the body has different causes and may be linked to heart failure, liver failure, and kidney disorders. Pooling of blood in the legs may be a cause of swelling, however, this is more likely to occur in obese individuals and commonly resolves in the morning."
+            - br: 
+            - text: "Pregnancy is another normal common cause of swelling in the lower extremities, however, if this swelling involves the face or hands and is accompanied with high blood pressure, it may suggest preeclampsia which is dangerous to both the mother and the fetus if left untreated."        
+            - br: 
+            - text: "A worrisome type of swelling is one that is confined to a single limb (Unilateral) or part of a limb commonly caused by a blood clot (Deep vein thrombosis) or a skin infection (Cellulitis). Both deep vein thrombosis and skin infections may be lead to fatality if left untreated. Blood clots may dislodge, travel to the lungs leading to blocking of the lung arteries (pulmonary embolism). Cellulitis is infectious (not contagious) and is a serious condition requiring antibiotics. If left untreated, it may lead to widespread infection which can be fatal."        
+            - br: 
+            - text: "Allergic reactions may cause acute swelling but typically include other parts of the body as well. It may be accompanied with trouble breathing. It is highly recommended that people with any of these warning signs see a doctor right away."        
+            - br: 
+            - text: "Congenital causes that block lymph Vessels(Lymphedema) is a less common cause. Previous surgeries or cancerous tumors may be a cause. If you're a tumor constricts vessels any part of the limb downstream (distally) can swell. Varicose veins are a easily diagnosable sign of changes to the veins in the legs that can be treated."    
+            - br: 
+            - text: "Connect with an AiT Healthcare provider who can diagnose, treat, and give recommendations immediately within minutes."        
+        - .HaBodyTitle:
+          style: 
+            top: "750px"
+          text: "How to prepare and get the most for your AITMED Ⓡ online visit following these helpful tips:"
+        - .HaBodyContentList:
+          style: 
+            top: "840px"
+          textBoard: 
+            - text: "⦁ Find a quiet, private place for your visit"
+            - br: 
+            - text: "⦁ Tell the provider who the visit is for, you or someone else"
+            - br: 
+            - text: "⦁ Write down your questions for the visit before your appointment time"       
+            - br: 
+            - text: "⦁ Be specific about your concerns, symptoms, and questions"
+            - br: 
+            - text: "⦁ Stay engaged and follow post-visit instructions if any are provided"      
+        - .HaBottomTag: 
+          style: 
+            top: "1020px"
+        - .HaBottomTagname: 
+          text: "leg"
+          style: 
+            top: "1080px"
+        - .HaBottomTagname: 
+          text: "foot swelling"
+          style: 
+            top: "1080px"
+            left: "0.032"     
+        - .HaBottomTagname: 
+          text: "foot"
+          style: 
+            top: "1080px"
+            left: "0.107"     
+        - .HaBottomTagname: 
+          text: "swelling "
+          style: 
+            top: "1080px"
+            left: "0.144"     
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.55"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

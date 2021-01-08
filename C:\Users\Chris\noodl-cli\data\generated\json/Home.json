@@ -1,0 +1,838 @@
+{
+  "Home": {
+    "pageNumber": "10",
+    "viewPort": "top",
+    "components": [
+      ".BaseHeader",
+      {
+        "type": "view",
+        "style": {
+          "top": "0.12",
+          "left": "0",
+          "width": "1",
+          "height": "1"
+        },
+        "children": [
+          {
+            "type": "image",
+            "path": "homeLandingPage.png",
+            "style": {
+              "top": "0",
+              "left": "0",
+              "width": "1"
+            }
+          },
+          {
+            "type": "view",
+            "style": {
+              "top": "0",
+              "left": "0",
+              "width": "0.8",
+              "height": "0.5"
+            },
+            "children": [
+              {
+                "type": "label",
+                "textBoard": [
+                  {
+                    "text": "Fast, Private, Secure"
+                  },
+                  {
+                    "br": null
+                  },
+                  {
+                    "text": "Blockchain-based telehealth"
+                  }
+                ],
+                "style": {
+                  "top": "0.13",
+                  "left": "0.1",
+                  "width": "0.7",
+                  "height": "0.25",
+                  "fontSize": "7vh",
+                  "fontWeight": "700",
+                  "fontFamily": "sans-serif",
+                  "lineHeight": "1.8",
+                  "color": "0xFFFFFF"
+                }
+              },
+              {
+                "type": "label",
+                "text": "Full service healthcare solutions for your wellness and illness",
+                "style": {
+                  "top": "0.44",
+                  "left": "0.1",
+                  "width": "0.7",
+                  "height": "0.05",
+                  "fontSize": "4vh",
+                  "fontWeight": "320",
+                  "fontFamily": "sans-serif",
+                  "color": "0xFFFFFF"
+                }
+              },
+              {
+                "type": "button",
+                "text": "Sign up for free",
+                "style": {
+                  "top": "0.6",
+                  "left": "0.25",
+                  "width": "0.12",
+                  "height": "0.06",
+                  "fontSize": "2.2vh",
+                  "color": "0xFFFFFF",
+                  "backgroundColor": "0x2fb355ff",
+                  "paddingTop": 9,
+                  "paddingLeft": 5,
+                  "paddingBottom": 10,
+                  "border": {
+                    "style": "5"
+                  },
+                  "borderRadius": "5"
+                },
+                "onClick": [
+                  {
+                    "goto": "..SignUp.url"
+                  }
+                ]
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "0.6",
+                  "left": "0.44",
+                  "width": "0.12",
+                  "height": "0.06",
+                  "backgroundColor": "0x2fb355ff",
+                  "border": {
+                    "style": "5"
+                  },
+                  "borderRadius": "5"
+                },
+                "onClick": [
+                  {
+                    "actionType": "popUp",
+                    "popUpView": "videoView"
+                  }
+                ],
+                "children": [
+                  {
+                    "type": "image",
+                    "path": "video.png",
+                    "style": {
+                      "left": "0.01",
+                      "width": "0.015",
+                      "top": "0.01",
+                      "backgroundColor": "0xd79053",
+                      "border": {
+                        "style": "3"
+                      },
+                      "borderColor": "0xd79053",
+                      "borderRadius": "50",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
+                      "paddingTop": "5px",
+                      "paddingBottom": "5px"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Watch video",
+                    "style": {
+                      "top": "0.015",
+                      "left": "0.04",
+                      "width": "0.12",
+                      "height": "0.06",
+                      "fontSize": "2.2vh",
+                      "color": "0xffffff"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "view",
+            "style": {
+              "top": "0.85",
+              "left": "0",
+              "width": "1",
+              "height": "1",
+              "textAlign": {
+                "x": "center",
+                "y": "center"
+              },
+              "backgroundColor": "0xf7f7f7"
+            },
+            "children": [
+              {
+                "type": "label",
+                "textBoard": [
+                  {
+                    "text": "Expand your practice. Be more efficient."
+                  },
+                  {
+                    "br": null
+                  },
+                  {
+                    "text": "Improve patient outcomes."
+                  }
+                ],
+                "style": {
+                  "top": "0.04",
+                  "left": "0.25",
+                  "width": "0.5",
+                  "height": "0.5",
+                  "fontFamily": "sans-serif",
+                  "fontWeight": 400,
+                  "fontSize": "30",
+                  "lineHeight": "80px"
+                }
+              }
+            ]
+          },
+          {
+            "type": "view",
+            "style": {
+              "top": "1.05",
+              "left": "0",
+              "width": "1",
+              "height": "0.85",
+              "backgroundColor": "0xf7f7f7"
+            },
+            "children": [
+              {
+                "type": "view",
+                "style": {
+                  "top": "0.1",
+                  "left": "0.1",
+                  "width": "0.2",
+                  "height": "0.1",
+                  "textAlign": {
+                    "x": "center",
+                    "y": "center"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "image",
+                    "path": "homeRemoteMonitoring.png",
+                    "style": {
+                      "top": "0",
+                      "left": "0.1",
+                      "width": "0.045"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Remote Monitoring",
+                    "style": {
+                      "top": "0.1",
+                      "left": "0",
+                      "width": "0.25",
+                      "height": "0.1",
+                      "fontSize": "24",
+                      "fontWeight": 500,
+                      "fontFamily": "Raleway Semi Bold"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Utilize monitoring devices for a more complete telehealth visit",
+                    "style": {
+                      "top": "0.17",
+                      "left": "0.02",
+                      "width": "0.2",
+                      "height": "0.1",
+                      "color": "0x707070",
+                      "fontSize": "21",
+                      "fontWeight": 300,
+                      "fontFamily": "Raleway"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "0.1",
+                  "left": "0.4",
+                  "width": "0.2",
+                  "height": "0.1",
+                  "textAlign": {
+                    "x": "center",
+                    "y": "center"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "image",
+                    "path": "homeFreeForPatientsIcon.png",
+                    "style": {
+                      "top": "0",
+                      "left": "0.1",
+                      "width": "0.045"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Free for Patients",
+                    "style": {
+                      "top": "0.1",
+                      "left": "0",
+                      "width": "0.25",
+                      "height": "0.1",
+                      "fontSize": "24",
+                      "fontWeight": 500,
+                      "fontFamily": "Raleway Semi Bold"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Our platform is free for any patient to use",
+                    "style": {
+                      "top": "0.17",
+                      "left": "0.02",
+                      "width": "0.2",
+                      "height": "0.1",
+                      "color": "0x707070",
+                      "fontSize": "21",
+                      "fontWeight": 300,
+                      "fontFamily": "Raleway"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "0.1",
+                  "left": "0.7",
+                  "width": "0.2",
+                  "height": "0.1",
+                  "textAlign": {
+                    "x": "center",
+                    "y": "center"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "image",
+                    "path": "homePrivateAndSecureIcon.png",
+                    "style": {
+                      "top": "0",
+                      "left": "0.1",
+                      "width": "0.045"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Private / Secure",
+                    "style": {
+                      "top": "0.1",
+                      "left": "0",
+                      "width": "0.25",
+                      "height": "0.1",
+                      "fontSize": "24",
+                      "fontWeight": 500,
+                      "fontFamily": "Raleway Semi Bold"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Blockchain technology provides the highest security and privacy",
+                    "style": {
+                      "top": "0.17",
+                      "left": "0.02",
+                      "width": "0.2",
+                      "height": "0.1",
+                      "color": "0x707070",
+                      "fontSize": "21",
+                      "fontWeight": 300,
+                      "fontFamily": "Raleway"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "0.5",
+                  "left": "0.1",
+                  "width": "0.2",
+                  "height": "0.1",
+                  "textAlign": {
+                    "x": "center",
+                    "y": "center"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "image",
+                    "path": "HomeAitmedMedicalStore.png",
+                    "style": {
+                      "top": "0",
+                      "left": "0.1",
+                      "width": "0.045"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "AiTmed Medical Store",
+                    "style": {
+                      "top": "0.1",
+                      "left": "0",
+                      "width": "0.25",
+                      "height": "0.1",
+                      "fontSize": "24",
+                      "fontWeight": 500,
+                      "fontFamily": "Raleway Semi Bold"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "One-stop-shop to provide fast and convenient access to health products and monitoring devices",
+                    "style": {
+                      "top": "0.17",
+                      "left": "0.02",
+                      "width": "0.2",
+                      "height": "0.1",
+                      "color": "0x707070",
+                      "fontSize": "21",
+                      "fontWeight": 300,
+                      "fontFamily": "Raleway"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "0.5",
+                  "left": "0.4",
+                  "width": "0.2",
+                  "height": "0.1",
+                  "textAlign": {
+                    "x": "center",
+                    "y": "center"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "image",
+                    "path": "homeWellnessIcon.png",
+                    "style": {
+                      "top": "0",
+                      "left": "0.1",
+                      "width": "0.045"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Wellness",
+                    "style": {
+                      "top": "0.1",
+                      "left": "0",
+                      "width": "0.25",
+                      "height": "0.1",
+                      "fontSize": "24",
+                      "fontWeight": 500,
+                      "fontFamily": "Raleway Semi Bold"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "AiTmed-designed platform to inspire and facilitate wellness for each individual",
+                    "style": {
+                      "top": "0.17",
+                      "left": "0.02",
+                      "width": "0.2",
+                      "height": "0.1",
+                      "color": "0x707070",
+                      "fontSize": "21",
+                      "fontWeight": 300,
+                      "fontFamily": "Raleway"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "0.5",
+                  "left": "0.7",
+                  "width": "0.2",
+                  "height": "0.1",
+                  "textAlign": {
+                    "x": "center",
+                    "y": "center"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "image",
+                    "path": "homeWorldwideUsage.png",
+                    "style": {
+                      "top": "0",
+                      "left": "0.1",
+                      "width": "0.045"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Worldwide Usage",
+                    "style": {
+                      "top": "0.1",
+                      "left": "0",
+                      "width": "0.25",
+                      "height": "0.1",
+                      "fontSize": "24",
+                      "fontWeight": 500,
+                      "fontFamily": "Raleway Semi Bold"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "AiTmed connects health resources and people worldwide",
+                    "style": {
+                      "top": "0.17",
+                      "left": "0.02",
+                      "width": "0.2",
+                      "height": "0.1",
+                      "color": "0x707070",
+                      "fontSize": "21",
+                      "fontWeight": 300,
+                      "fontFamily": "Raleway"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "view",
+            "style": {
+              "top": "1.9",
+              "left": "0",
+              "width": "1",
+              "height": "0.6"
+            },
+            "children": [
+              {
+                "type": "label",
+                "text": "The Doctor is One-Click Away",
+                "style": {
+                  "top": "0.09",
+                  "fontSize": "50",
+                  "fontWeight": 600,
+                  "width": "0.7",
+                  "left": "0.15",
+                  "textAlign": {
+                    "x": "center"
+                  },
+                  "letterSpacing": 2
+                }
+              },
+              {
+                "type": "label",
+                "style": {
+                  "top": "0.21",
+                  "fontSize": "32",
+                  "fontWeight": 300,
+                  "width": "0.7",
+                  "left": "0.15",
+                  "textAlign": {
+                    "x": "center"
+                  }
+                },
+                "textBoard": [
+                  {
+                    "text": "Maintaining",
+                    "fontWeight": 400
+                  },
+                  {
+                    "text": "&nbsp;&nbsp;"
+                  },
+                  {
+                    "text": "health & wellness",
+                    "color": "0x3884BA",
+                    "fontWeight": 400
+                  },
+                  {
+                    "text": "&nbsp;&nbsp;"
+                  },
+                  {
+                    "text": "for all",
+                    "fontWeight": 400
+                  }
+                ]
+              },
+              {
+                "type": "button",
+                "text": "Get started today!",
+                "onClick": [
+                  {
+                    "goto": "Home"
+                  }
+                ],
+                "style": {
+                  "top": "0.35",
+                  "left": "0.44",
+                  "width": "0.12",
+                  "height": "0.06",
+                  "fontSize": "2.2vh",
+                  "color": "0xFFFFFF",
+                  "backgroundColor": "0x2fb355ff",
+                  "border": {
+                    "style": "5"
+                  },
+                  "borderRadius": "5"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "popUp",
+        "viewTag": "videoView",
+        "style": {
+          "width": "1",
+          "height": "1",
+          "top": "0"
+        },
+        "children": [
+          {
+            "type": "video",
+            "videoFormat": "mp4",
+            "path": "https://public.aitmed.com/commonRes/video/aitmed228FromBlair11192020.mp4",
+            "poster": "videoBack.png",
+            "controls": true,
+            "style": {
+              "top": "0.2",
+              "left": "0.25",
+              "width": "0.5"
+            }
+          },
+          {
+            "type": "image",
+            "path": "close.png",
+            "onClick": [
+              {
+                "actionType": "popUpDismiss",
+                "popUpView": "videoView"
+              }
+            ],
+            "style": {
+              "left": "0.73",
+              "top": "0.2",
+              "zIndex": "100"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "top": "2.55",
+          "left": "0",
+          "width": "1",
+          "height": "0.45",
+          "backgroundColor": "0xfafafa"
+        },
+        "children": [
+          {
+            "type": "view",
+            "style": {
+              "top": "0",
+              "left": "0.1",
+              "width": "0.8",
+              "height": "0.3"
+            },
+            "children": [
+              {
+                ".H1": null,
+                "text": "Our Partners",
+                "style": {
+                  "top": "0.03",
+                  "width": "0.8",
+                  "fontSize": "50",
+                  "textAlign": {
+                    "x": "center"
+                  }
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://www.uclahealth.org/ortho/"
+                  }
+                ],
+                "path": "partnerLogo/uclahealthLogo.png",
+                "style": {
+                  "left": "0",
+                  "top": "0.2",
+                  "height": "50px"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://comsi.aitmed.com/"
+                  }
+                ],
+                "path": "partnerLogo/comsiLogo.png",
+                "style": {
+                  "left": "0.14",
+                  "height": "50px"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://thespinepro.aitmed.com/"
+                  }
+                ],
+                "path": "partnerLogo/aitmedLogo_thespinepro2.png",
+                "style": {
+                  "left": "0.28",
+                  "height": "45px"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://dermanoor.aitmed.com/"
+                  }
+                ],
+                "path": "partnerLogo/dermanoorLogo.png",
+                "style": {
+                  "left": "0.42",
+                  "height": "50px"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://sharkoffmd.aitmed.com/"
+                  }
+                ],
+                "path": "partnerLogo/sharkoffmdLogo_sharkoffmd.png",
+                "style": {
+                  "left": "0.56",
+                  "height": "50px"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://vidahealth.aitmed.com/"
+                  }
+                ],
+                "path": "partnerLogo/vidaHealthLogo.png",
+                "style": {
+                  "left": "0.7",
+                  "height": "50px"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://pi-attorney.aitmed.com"
+                  }
+                ],
+                "path": "partnerLogo/piAttorneyLogo.png",
+                "style": {
+                  "left": "0",
+                  "top": "0.35",
+                  "height": "35px"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://hanorthopaedics.aitmed.com/SignIn"
+                  }
+                ],
+                "path": "partnerLogo/hanorthopaedicsLogo2.png",
+                "style": {
+                  "left": "0.12",
+                  "top": "0.35",
+                  "width": "0.15"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://mosaiccare.aitmed.com/"
+                  }
+                ],
+                "path": "partnerLogo/mosaiccareLogo.png",
+                "style": {
+                  "left": "0.3",
+                  "top": "0.35",
+                  "width": "0.25"
+                }
+              },
+              {
+                ".HomePartner": null,
+                "onClick": [
+                  {
+                    "goto": "https://askhelen.aitmed.com/"
+                  }
+                ],
+                "path": "partnerLogo/askhelenLogo.png",
+                "style": {
+                  "left": "0.57",
+                  "top": "0.35",
+                  "height": "35px"
+                }
+              },
+              {
+                "type": "button",
+                "text": "View More",
+                "onClick": [
+                  {
+                    "goto": "Partner"
+                  }
+                ],
+                "style": {
+                  "top": "0.35",
+                  "left": "0.72",
+                  "width": "0.08",
+                  "height": "0.04",
+                  "backgroundColor": "0xffffff",
+                  "color": "0x000000",
+                  "border": {
+                    "style": "3"
+                  },
+                  "borderColor": "0x000000"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "top": "3.01",
+          "left": "0",
+          "width": "1",
+          "height": "0.6"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

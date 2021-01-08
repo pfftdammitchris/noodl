@@ -1,0 +1,22 @@
+Covid19Data:
+  pageNumber: "100"
+  viewPort: top
+  components:
+    - .BaseHeader:
+    - type: plugin
+      path: dynamicData.js
+      style:
+        width: "1"
+        top: "0.12"
+        height: "1"
+
+          
+
+
+
+
+
+
+
+
+

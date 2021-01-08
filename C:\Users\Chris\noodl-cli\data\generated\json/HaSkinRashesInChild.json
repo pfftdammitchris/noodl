@@ -1,0 +1,155 @@
+{
+  "HaSkinRashesInChild": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Skin rashes in child"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Childhood rashes are common and aren't usually a cause for concern. However, see your doctor if your child has a rash and seems unwell, or if you're worried."
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Skin rashes in child is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/skin-rashes-in-child.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Consult your child's doctor if:"
+          },
+          {
+            ".HaBodyContentList": null,
+            "textBoard": [
+              {
+                "text": "⦁ A rash or lesion affects the eyes"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Blue, red or purple dots appear in the affected area"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ The lesion is crusty, blistering or oozing"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ A rash is accompanied by a fever, dizziness, shortness of breath, vomiting or a stiff neck"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ A rash is accompanied by any other troubling symptoms"
+              },
+              {
+                "br": null
+              }
+            ],
+            "style": {
+              "top": "60px"
+            }
+          },
+          {
+            ".HaBodyContent": null,
+            "text": "A rash is a reaction of the skin. It can be caused by many things, such as a reaction by contact to a skin irritant, a drug reaction, an infection, or an allergic reaction. Many different agents can cause similar-appearing rashes because the skin has a limited number of possible responses. Very often the other associated symptoms or history, in addition to the rash, help establish the cause of the rash. A history of tick bites, exposure to other ill children or adults, recent antibiotic use, environmental exposures, or prior immunizations are all important elements of the patient's history to help determine the cause of a skin rash in a child.",
+            "style": {
+              "top": "250px"
+            }
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Here is some common cause:",
+            "style": {
+              "top": "420px"
+            }
+          },
+          {
+            ".HaBodyContent": null,
+            "textBoard": [
+              {
+                "text": "Hand-foot-and-mouth disease — a mild, contagious viral infection common in young children — is characterized by sores in the mouth and a rash on the hands and feet. Hand-foot-and-mouth disease is most commonly caused by a coxsackievirus."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "There's no specific treatment for hand-foot-and-mouth disease. Frequent hand-washing and avoiding close contact with people who are infected with hand-foot-and-mouth disease may help reduce your child's risk of infection. Eczema:is a condition that makes your skin red and itchy. It's common in children but can occur at any age. Atopic dermatitis is long lasting (chronic) and tends to flare periodically. It may be accompanied by asthma or hay fever."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "No cure has been found for atopic dermatitis. But treatments and self-care measures can relieve itching and prevent new outbreaks. For example, it helps to avoid harsh soaps, moisturize your skin regularly, and apply medicated creams or ointments."
+              }
+            ],
+            "style": {
+              "top": "480px"
+            }
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "830px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "skin rash",
+            "style": {
+              "top": "890px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "2.3",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,209 @@
+Business:
+  pageNumber: "20"
+  viewPort: top
+  components:
+    - .BaseHeader
+    - type: view
+      style:
+        top: "0"
+        left: "0"
+        width: "1"
+        height: "1"
+        fontFamily: Roboto Bold    
+      children:
+        - type: image
+          path: businessBack.png
+          style:
+            opacity: 0.5
+            left: "0"
+            top: "0"
+            height: "1.4"
+            border:
+              style: "5"
+        - type: view
+          style:
+            left: "0"
+            height: "0.2"
+            top: "0.1"
+            fontSize: "20"
+            fontStyle: bold
+            textAlign:
+              x: center
+              y: center
+          children:
+            - type: label
+              text: Partner with AiTmed
+              style:
+                left: "0" #???
+                height: "0.1"
+                top: "0.25"
+                width: "1"
+                fontSize: "80"
+                color: "0x388fcd"
+                fontFamily: Roboto Bold
+                textAlign:
+                  x: center
+                textShadow: 2
+            - type: button
+              text: Sign In
+              textAlign:
+                x: center
+                y: center
+              onClick: 
+                - goto: ..SignIn.url
+              style:
+                left: "0.42"
+                top: "0.5"
+                width: "0.16"
+                height: "0.07"
+                fontSize: "17"
+                color: "0xfefefe"
+                backgroundColor: "0x30b355"
+                border:
+                  style: 5  
+                borderRadius: "5"            
+            - type: button
+              text: Sign up for free trial
+              textAlign:
+                x: center
+                y: center
+              onClick: 
+                - goto: ..SignUp.url
+              style:
+                left: "0.42"
+                top: "0.6"
+                width: "0.16"
+                height: "0.07"
+                fontSize: "17"
+                color: "0xfefefe"
+                backgroundColor: "0x30b355"
+                border:
+                  style: "5"     
+                borderRadius: "5"                  
+            - type: button
+              text: Request Demo
+              style:
+                left: "0.42"
+                top: "0.7"
+                width: "0.16"
+                height: "0.07"
+                fontSize: "17"
+                color: "0xfefefe"
+                backgroundColor: "0x30b355"
+                textAlign:
+                  x: center
+                border:
+                  style: "5"
+                borderRadius: "5"  
+              onClick:
+                - goto: ContactInformation
+            - type: label
+              text: Coming Soon!
+              style:
+                left: "0"
+                top: "0.88"
+                width: "1"
+                fontSize: "62"
+                fontWeight: 600
+                fontFamily: Roboto Bold 
+                color: "0x000000"
+                textAlign:
+                  x: center           
+            - type: label
+              textBoard: 
+              - text: Doing business with AiTmed means  giving your patients the 
+              - br: 
+              - text: " most effient "
+                color: '0x388fcd'
+              - text: "&nbsp;&nbsp;"
+              - text: telemedicine tool
+              style:
+                left: "0"
+                top: "1.05"
+                width: "1"
+                fontSize: "40"
+                color: "0x000000"
+                textAlign:
+                  x: center
+        - type: view
+          style:
+              top: "1.4"
+              left: "0"
+              width: "1"
+              height: "0.35"
+          children:
+            - type: button
+              style:
+                left: "0"
+                top: "0"
+                width: "0.5"
+                height: "0.35"
+                backgroundColor: "0x388fcd"
+                border:
+                  style: "5"
+                  width: "0"   
+              onClick:
+                - goto: CopyOfCloudWaitingRoom5          
+              children:
+                - type: image
+                  path: hospital.png
+                  style:
+                    left: "0.06"
+                    top: "0.055"
+                    height: "0.2"
+                    border:
+                      style: "5"
+                - type: label
+                  text: Medical Facilities
+                  style:
+                    width: "0.3"
+                    left: "0.18"
+                    top: "0.13"
+                    fontSize: "40"
+                    color: "0xFFFFFF"
+                    textDecoration: "underline"
+                    textAlign:
+                      x: center
+                      y: center
+            - type: button
+              style:
+                left: "0.5"
+                top: "0"
+                width: "0.5"
+                height: "0.35"
+                backgroundColor: "0x388fcd"
+                border:
+                  style: "5"
+              onClick:
+                - goto: InsuranceCompany
+              children:
+                - type: image
+                  path: insurance.png
+                  style:
+                    left: "0.06"
+                    top: "0.055"
+                    height: "0.2"
+                    border:
+                      style: "5"
+
+                - type: label
+                  text: Insurance Companies
+                  style:
+                    width: "0.3"
+                    left: "0.18"
+                    top: "0.13"
+                    fontSize: "40"
+                    color: "0xFFFFFF"
+                    textDecoration: "underline"
+                    textAlign:
+                      x: center
+                      y: center
+    - type: view
+      style:
+        top: "1.7"
+        left: "0"
+        width: "1"
+        height: "0.7"   
+        backgroundColor: "0xffffff" 
+      children:
+        - .BaseFooter

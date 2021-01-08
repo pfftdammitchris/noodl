@@ -1,0 +1,354 @@
+Forpatients:
+  pageNumber: "40"
+  viewPort: top
+  components: 
+    - .BaseHeader
+    - type: image
+      path: "memberLandingPage.png"
+      style: 
+        left: "0"
+        top: "0.12"
+        width: "1" 
+    - type: view
+      style:
+        left: "0"
+        top: "0"
+        width: "1"
+        height: "1"
+      children: 
+        - type: label
+          textBoard:
+            - text: "AiTmed Cares for Everyone's "
+            - br:
+            - text: "WELLNESS and ILLNESS "
+            - br:
+            - text: "Easy and Secure"
+          style: 
+            height: "0.3"
+            width: "0.8"
+            left: "0.1"
+            top: "0.25"
+            fontSize: "55"
+            fontFamily: "sans-serif"
+            color: "0xffffff"
+            fontStyle: "bold"
+            # backgroundColor: "0xcdcdcd"
+            textAlign: 
+              x: center
+
+      
+    - type: button 
+      onClick: 
+        - goto: ..SignIn.url
+      text: Sign In
+      style:
+        border:
+          style: "5"
+        left: "0.41"
+        top: "0.55"
+        width: "0.18"
+        height: "0.07"
+        backgroundColor: "0x339933"
+        color: "0xffffffff"
+        textAlign: 
+          x: center
+        fontSize: "20"
+
+    - type: button 
+      text: Sign up for free trial
+      onClick: 
+        - goto: ..SignUp.url
+      style:
+        border:
+          style: "5"
+        left: "0.41"
+        top: "0.65"
+        width: "0.18"
+        height: "0.07"
+        backgroundColor: "0x339933"
+        color: "0xffffffff"
+        textAlign: 
+          x: center
+        fontSize: "20"
+    - type: label
+      text: Coming Soon!
+      style: 
+        left: "0.2"
+        width: "0.6" 
+        top: "0.78"
+        height: "0.1"
+        fontSize: "55"
+        fontFamily: "sans-serif"
+        fontStyle: "bold"
+        color: "0xffffff"
+        textAlign: 
+          x: center
+    - type: button
+      style: 
+        left: "0"
+        top: "1.001"
+        height: "0.27"
+        width: "0.5"
+        backgroundColor: "0x388eccff"
+        border:
+          style: 5
+          width: 1
+      children: 
+        - type: image
+          path: illness.png
+          style: 
+            left: "0.1"
+            height: "0.15"
+            top: "0.05"
+            filter: invert(100%)
+        - type: label
+          text: ILLNESS
+          onClick:
+            - goto: Forpatients
+          style: 
+            left: "0.22"
+            width: "0.18"
+            height: "0.15"
+            top: "0.05"
+            color: "0xffffffff"
+            fontSize: "32"
+            fontStyle: "bold"
+            textDecoration: underline
+            textAlign:
+              y: center
+    - type: button
+      style: 
+        left: "0.5"
+        top: "1.001"
+        height: "0.27"
+        width: "0.5"
+        backgroundColor: "0x388eccff"
+        border:
+          style: 5
+          width: 1
+      children: 
+        - type: image
+          path: like.png
+          style: 
+            left: "0.1"
+            height: "0.15"
+            top: "0.05"
+            filter: invert(100%)
+        - type: label
+          text: WELLNESS
+          onClick:
+            - goto: Index
+          style: 
+            left: "0.22"
+            width: "0.18"
+            height: "0.15"
+            top: "0.05"
+            color: "0xffffffff"
+            fontSize: "32"
+            fontStyle: "bold"
+            textDecoration: underline
+            textAlign: 
+              y: center
+
+    - type: image
+      path: memberIpadIcon.png
+      style: 
+        left: "0"
+        top: "1.201"
+        width: "1"
+        height: "0.85"
+
+    - type: view
+      style: 
+        left: "0"
+        width: "1"
+        height: "0.63"
+        top: "1.91"
+        backgroundColor: "0x388eccff"
+      children:
+        - type: label
+          text: Look for a doctor anytime & anywhere
+          style: 
+            color: "0xffffffff"
+            left: "0.15"
+            width: "0.7"
+            top: "0.04"
+            height: "0.08"
+            fontSize: "41"
+            fontStyle: "bold"
+            textAlign: 
+              x: center
+              # y: center
+        - type: label
+          text: "(Coming Soon)"
+          style: 
+            color: "0xffffffff"
+            left: "0.15"
+            width: "0.7"
+            top: "0.12"
+            height: "0.08"
+            fontSize: "41"
+            fontStyle: "bold"
+            textAlign: 
+              x: center
+              # y: center
+        - type: label
+          text: I am looking for
+          style: 
+            color: "0xFFFFFF"
+            left: "0"
+            height: "0.06"
+            width: "0.4"
+            top: "0.26"
+            fontSize: "30"
+            textAlign: 
+              x: right
+        - type: textField
+          placeholder:     Specialty or Doctor
+          style:
+            left: "0.42"
+            top: "0.25"
+            width: "0.25"
+            height: "0.08"
+            paddingLeft: "20px"
+            textAlign: 
+              x: left
+              y: center
+            fontSize: "18" 
+            border:
+              style: 5           
+            
+        - type: label
+          text: In 
+          style: 
+            left: "0"
+            top: "0.385"
+            height: "0.06"
+            width: "0.4"
+            fontSize: "30"
+            color: "0xffffff"
+            textAlign: 
+              x: right
+        - type: textField
+          placeholder: City,State or Zip code
+          style: 
+            left: "0.42"
+            top: "0.375"
+            height: "0.08"
+            width: "0.25"
+            fontSize: "18"
+            paddingLeft: "20px"
+            textAlign:
+              x: left
+              y: center
+            border:
+              style: 5
+
+        - type: image
+          path: location1.png
+          style: 
+            left: "0.75"
+            top: "0.2"
+            height: "0.2"
+            width: "0.1"
+
+        - type: button
+          text: FIND
+          onClick: 
+            # - goto: xxx
+          style:
+            left: "0.44"
+            top: "0.5"
+            width: "0.12"
+            height: "0.08"
+            backgroundColor: "0x339933"
+            color: "0xffffffff"
+            fontSize: "20"
+            borderRadius: "5" 
+            border:
+              style: 5
+
+    - type: view
+      style: 
+        left: "0"
+        width: "1"
+        height: "0.7"
+        top: "2.65"
+        textAlign:
+          x: center
+          y: center
+      children:
+
+        - type: image
+          path: lock1.png
+          style: 
+            left: "0.1"
+            top: "0.07"
+            width: "0.2"
+
+        - type: label
+          textBoard: 
+            - text: Blockchain-Encrypted 
+            - br: 
+            - text: Patient Chart
+          style: 
+            left: "0.3"
+            top: "0.01"
+            width: "0.5"
+            height: "0.1"
+            fontSize: "50"
+            fontStyle: "bold"
+            textAlign:
+              x: center
+
+        - type: label
+          text: Users can store and manage their own medical documentation,lab results,or imaging studies
+          style: 
+            left: "0.35"
+            top: "0.2"
+            height: "0.1"
+            width: "0.4"
+            fontSize: "20"
+            fontWeight: 300
+            textAlign: 
+              x: center
+
+        - type: label
+          text: Every document is blockchain-encrypted.Only you can give authorization to access your information.This ensures the highest level of security and privacy.
+          style: 
+            top: "0.3"
+            height: "0.2"
+            left: "0.35"
+            width: "0.4"
+            fontSize: "20"
+            fontWeight: 300
+            textAign: 
+              x: center
+              y: center
+
+        - type: button 
+          text: Access Your Health Record
+          onClick:
+            # - goto: xxx
+          style: 
+            border:
+              style: "5"
+            left: "0.4"
+            top: "0.47"
+            height: "0.08"
+            width: "0.2"
+            fontSize: "20"
+            textAlign: 
+              x: center
+            backgroundColor: "0x339933"
+            color: "0xffffffff"
+            borderRadius: 4
+
+    - type: view 
+      style: 
+        left: "0"
+        top: "3.2"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter
