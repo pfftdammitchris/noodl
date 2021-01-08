@@ -83,19 +83,13 @@ const createObjectScripts = function <Store = any>({
 			}
 			return o
 		},
-		run({ scripts }: { scripts?: string[] } = {}) {
+		run() {
 			if (!_internal.dataFile) _internal.dataFile = {} as Store
 			cbs.start.forEach((fn) => fn(_internal.dataFile))
 			const chunkedDocs = chunk(o.data(), 8)
 			const numChunks = chunkedDocs.length
 			const processFns = composeNodeFns(
-				..._internal.observers.reduce((acc, obs) => {
-					if (scripts === undefined) return acc.concat(obs.fn)
-					if (scripts?.includes?.(obs.id || '')) {
-						return acc.concat(obs.fn)
-					}
-					return acc
-				}, []),
+				..._internal.observers.map(({ fn }) => fn),
 			)
 			for (let index = 0; index < numChunks; index++) {
 				const docs = chunkedDocs[index]
@@ -108,10 +102,15 @@ const createObjectScripts = function <Store = any>({
 			save()
 			return o
 		},
-		use(obj: NOODLTypesObserver) {
-			if (!_internal.observers.includes(obj)) {
-				_internal.observers.push(obj)
+		use(obj: NOODLTypesObserver | NOODLTypesObserver[]) {
+			if (obj) {
+				;(Array.isArray(obj) ? obj : [obj]).forEach((o) => {
+					if (!_internal.observers.includes(o)) {
+						_internal.observers.push(o)
+					}
+				})
 			}
+
 			return o
 		},
 	}

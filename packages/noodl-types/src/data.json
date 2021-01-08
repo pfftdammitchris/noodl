@@ -1,27 +1,6 @@
 {
-  "actionTypes": [
-    "builtIn",
-    "evalObject",
-    "popUp",
-    "popUpDismiss",
-    "refresh",
-    "saveObject",
-    "updateObject"
-  ],
-  "componentTypes": [
-    "button",
-    "divider",
-    "image",
-    "label",
-    "list",
-    "listItem",
-    "popUp",
-    "scrollView",
-    "select",
-    "textField",
-    "textView",
-    "view"
-  ],
+  "actionTypes": [],
+  "componentTypes": [],
   "componentKeys": [],
   "references": [],
   "styleKeys": [],

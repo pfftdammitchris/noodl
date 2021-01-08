@@ -1,11 +1,14 @@
 import { config } from 'dotenv'
 config()
 import { enablePatches } from 'immer'
+import fs from 'fs-extra'
 import chalk from 'chalk'
 import createObjectScripts from '../src/api/createObjectScripts'
 import scripts, { id as scriptId, Store } from '../src/utils/scripts'
 import { getFilePath, loadFiles } from '../src/utils/common'
 enablePatches()
+
+const pathToDataFile = getFilePath('packages/noodl-types/src/data.json')
 
 const o = createObjectScripts({
 	pathToDataFile: getFilePath('packages/noodl-types/src/data.json'),
@@ -18,6 +21,18 @@ const o = createObjectScripts({
 Object.values(scriptId).forEach((id) => o.use(scripts[id]))
 
 o.on('start', (store) => {
+	fs.ensureFileSync(pathToDataFile as string)
+	try {
+		_internal.dataFile = JSON.parse(
+			fs.readFileSync(pathToDataFile as string, 'utf8'),
+		)
+	} catch (error) {
+		fs.writeJsonSync(
+			pathToDataFile as string,
+			(_internal.dataFile = {} as Store),
+			{ spaces: 2 },
+		)
+	}
 	// Temp do a fresh start everytime for now
 	Object.keys(store).forEach((key) => delete store[key])
 	if (!Array.isArray(store.actionTypes)) store.actionTypes = []
@@ -35,6 +50,7 @@ o.on('start', (store) => {
 	if (!store.containedKeys) store.containedKeys = {}
 })
 	.on('end', (store) => {
+		console.log(store)
 		store.actionTypes = store.actionTypes.sort()
 		store.componentTypes = store.componentTypes.sort()
 		store.componentKeys = store.componentKeys.sort()
@@ -42,9 +58,9 @@ o.on('start', (store) => {
 		store.styleKeys = store.styleKeys.sort()
 		store.funcNames = store.funcNames.sort()
 		store.urls = store.urls.sort()
+		fs.writeJsonSync(pathToDataFile, store, { spaces: 2 })
 	})
-	.run({
-		scripts: [scriptId.ACTION_TYPES, scriptId.ACTION_OBJECTS],
-	})
+	.use(scripts[scriptId.COMPONENT_TYPES])
+	.run()
 
 console.log(chalk.green(`Scripts ended`))

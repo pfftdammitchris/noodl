@@ -19,7 +19,6 @@ import {
 	LabelComponentObject,
 	ListComponentObject,
 	ListItemComponentObject,
-	PageComponentObject,
 	PluginBodyTailComponentObject,
 	PluginComponentObject,
 	PluginHeadComponentObject,
@@ -131,9 +130,6 @@ export const identify = (function () {
 			listItem(value: unknown): value is ListItemComponentObject {
 				return isPlainObject(value) && value.type === 'listItem'
 			},
-			page(value: unknown): value is PageComponentObject {
-				return isPlainObject(value) && value.type === 'page'
-			},
 			plugin(value: unknown): value is PluginComponentObject {
 				return isPlainObject(value) && value.type === 'plugin'
 			},
@@ -227,6 +223,9 @@ export const identify = (function () {
 		style: {
 			any() {},
 			border() {},
+		},
+		textFunc(value: unknown): value is { path: Path } {
+			return isPlainObject(value) && 'path' in value
 		},
 		toast(value: unknown): value is { toast: ToastObject } {
 			return isPlainObject(value) && 'toast' in value

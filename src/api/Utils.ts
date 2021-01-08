@@ -24,7 +24,6 @@ export const identify = (function () {
 	}
 
 	const o = {
-		id: 'identify',
 		action: {
 			any: onYAMLMap(composeFilters(hasKey('actionType'))),
 			builtIn: onYAMLMap(
@@ -66,6 +65,7 @@ export const identify = (function () {
 			label: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'label'))),
 			list: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'list'))),
 			listItem: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'listItem'))),
+			page: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'page'))),
 			popUp: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'popUp'))),
 			scrollView: onYAMLMap(
 				composeFilters(hasKeyEqualTo('type', 'scrollView')),
