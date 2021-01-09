@@ -3,7 +3,7 @@ import { StyleObject } from './styleTypes'
 
 export interface ComponentObject<T extends string = any> {
 	type: T
-	style: StyleObject
+	style?: StyleObject
 	children?: any[]
 	[key: string]: any
 }
