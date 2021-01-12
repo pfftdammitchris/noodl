@@ -1,6 +1,7 @@
-import { aggregatorEvent, panelId } from '../constants'
-import createAggregator from '../api/createAggregator'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { aggregator as aggregatorEvent, panelId } from '../constants'
+import { State } from '../useApp'
+import createAggregator from '../api/createAggregator'
 
 export interface AnyFn {
 	(...args: any[]): any
@@ -9,7 +10,7 @@ export interface AnyFn {
 export type Aggregator = ReturnType<typeof createAggregator>
 
 export type PanelId = typeof panelId[keyof typeof panelId]
-export type EventId = typeof aggregatorEvent[keyof typeof aggregatorEvent]
+export type EventId = typeof aggregatorEvent.event[keyof typeof aggregatorEvent.event]
 
 export interface Context extends State {
 	aggregator: Aggregator
@@ -29,52 +30,6 @@ export interface Context extends State {
 
 export interface CLIConfigContext extends CLIConfigObject {
 	url: string
-}
-
-export type Action =
-	| { type: 'set-own-config'; value: boolean | null }
-	| { type: 'set-caption'; caption: string }
-	| { type: 'set-server-options'; options: Partial<State['server']> }
-	| {
-			type: 'set-objects-json-options'
-			options: Partial<State['objects']['json']>
-	  }
-	| {
-			type: 'set-objects-yml-options'
-			options: Partial<State['objects']['yml']>
-	  }
-	| {
-			type: 'set-panel'
-			panel: {
-				id?: PanelId
-				label?: string
-				[key: string]: any
-			}
-	  }
-	| { type: 'set-spinner'; spinner: false | string }
-
-export interface State {
-	ownConfig: boolean | null
-	caption: string[]
-	server: {
-		host: string
-		dir: string
-		port: null | number
-	}
-	objects: {
-		json: {
-			dir: string[]
-		}
-		yml: {
-			dir: string[]
-		}
-	}
-	panel: {
-		id: PanelId
-		label: string
-		[key: string]: any
-	}
-	spinner?: false | string
 }
 
 export interface ConsumerCLIConfigObject {
@@ -142,9 +97,7 @@ export interface RootConfig {
 	timestamp?: number
 }
 
-export interface ObjectResult<
-	T extends { [key: string]: any } = { [key: string]: any }
-> {
+export interface ObjectResult<T extends { [key: string]: any } = any> {
 	json: T | T[]
 	yml: string
 }

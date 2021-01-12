@@ -1,14 +1,27 @@
 import path from 'path'
 
-const getFilePath = (...s: string[]) =>
-	path.resolve(path.join(process.cwd(), ...s))
+function getFilePath(...s: string[]) {
+	return path.resolve(path.join(process.cwd(), ...s))
+}
 
 export const DEFAULT_BASE_URL = 'https://public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
-export const DEFAULT_CONFIG_PATH = getFilePath('noodl.json')
+export const DEFAULT_CONFIG_PATH = 'noodl.json'
 export const DEFAULT_SERVER_URL = 'http://127.0.0.1'
-export const DEFAULT_SERVER_PATH = getFilePath('server')
+export const DEFAULT_SERVER_PATH = 'server'
 export const DEFAULT_SERVER_PORT = 3000
+
+export const app = {
+	action: {
+		SET_OWN_CONFIG: 'set.own.config',
+		SET_CAPTION: 'set.caption',
+		SET_SERVER_OPTIONS: 'set.server.options',
+		SET_OBJECTS_JSON_OPTIONS: 'set.objects.json.options',
+		SET_OBJECTS_YML_OPTIONS: 'set.obects.yml.options',
+		SET_PANEL: 'set.panel',
+		SET_SPINNER: 'set.spinner',
+	},
+} as const
 
 export const aggregator = {
 	event: {
@@ -34,16 +47,13 @@ export const serverScript = {
 	action: {
 		SET_CONFIG: 'set.config',
 		SET_STEP: 'set.step',
-		SET_DATA_SOURCE: 'set.data.source',
 		SET_DIR_FILES: 'set.dir.files',
 		SET_PENDING: 'set.pending',
 		DOWNLOAD_ASSET: 'download.asset',
 	},
 	step: {
 		CONFIG: 'config',
-		PROMPT_DATA_SOURCE: 'prompt.data.source',
-		PROMPT_SERVER_DIR: 'prompt.server.dir',
-		CONFIRM_USE_SERVER_DIR_FILES: 'confirm.use.server.dir.files',
+		LOAD_FILES: 'load.files',
 		DOWNLOAD_ASSETS: 'download.assets',
 	},
 } as const

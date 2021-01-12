@@ -1,9 +1,19 @@
 import React from 'react'
+import chalk from 'chalk'
 import download from 'download'
 import produce, { Draft } from 'immer'
+import uniq from 'lodash/uniq'
 import { WritableDraft } from 'immer/dist/internal'
-import { Box, Text } from 'ink'
-import { isImg, isPdf, isVid, magenta } from '../utils/common'
+import { Box, Static } from 'ink'
+import {
+	isImg,
+	isJs,
+	isPdf,
+	isVid,
+	magenta,
+	highlight,
+	red,
+} from '../utils/common'
 import { serverScript } from '../constants'
 import useCtx from '../useCtx'
 
@@ -36,7 +46,11 @@ function getAssetType(url: string) {
 	if (isImg(url)) return 'image'
 	else if (isVid(url)) return 'video'
 	else if (isPdf(url)) return 'pdf'
-	else return undefined
+	else if (isJs(url)) return 'javascript'
+	else if (url.endsWith('.html')) return 'html'
+	else if (url.endsWith('.yml')) return 'yaml'
+	else if (url.endsWith('.json')) return 'json'
+	else return ''
 }
 
 function insertAssetType(url: string, draft: Draft<State>): void {
@@ -69,10 +83,10 @@ const reducer = produce((draft: WritableDraft<State>, action: Action) => {
 
 function StartServerDownloadAssets({ assets = [] }: { assets: string[] }) {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { server, setCaption, setErrorCaption } = useCtx()
+	const { aggregator, server, setCaption, setErrorCaption } = useCtx()
 
 	const previousLinks = React.useMemo(
-		() => state.downloaded.concat(state.downloading, state.pending),
+		() => uniq(state.downloaded.concat(state.downloading, state.pending)),
 		[state.downloaded, state.downloading, state.pending],
 	)
 
@@ -86,17 +100,29 @@ function StartServerDownloadAssets({ assets = [] }: { assets: string[] }) {
 
 	React.useEffect(() => {
 		if (state.pending.length && state.downloading.length < 10) {
-			const url = state.pending[state.pending.length - 1] as string
-			dispatch({ type: serverScript.action.DOWNLOAD_ASSET, url })
 			const assetType = getAssetType(url)
-			setCaption(`Downloading: ${magenta(url)}`)
+			const assetsUrl = aggregator.get('cadlEndpoint').json?.assetsUrl || ''
+			const path = state.pending[state.pending.length - 1] as string
+			const url = path.startsWith('http') ? path : assetsUrl + path
+			dispatch({ type: serverScript.action.DOWNLOAD_ASSET, url })
+			setCaption(`Downloading ${chalk.whiteBright(url)} to your assets folder`)
 			download(url, server.dir)
-				.then(() => setCaption(`Downloaded ${magenta(url)}`))
-				.catch(setErrorCaption)
+				.then(() => {
+					setCaption(
+						`Downloaded ${chalk.whiteBright(assetType)} file ${magenta(url)}`,
+					)
+				})
+				.catch((err: Error) => {
+					if (/notfound/i.test(err.message)) {
+						setCaption(`${highlight(url)} ${red('does not exist')}`)
+					} else {
+						setErrorCaption(err)
+					}
+				})
 		}
-	}, [state.pending])
+	}, [state.pending, state.downloading])
 
-	return <Box flexDirection="column">{null}</Box>
+	return null
 }
 
 export default StartServerDownloadAssets

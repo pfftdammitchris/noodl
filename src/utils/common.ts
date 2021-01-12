@@ -87,7 +87,7 @@ export function forEachDeepKeyValue<O = any>(
 }
 
 export function getFilePath(...paths: string[]) {
-	return path.resolve(path.join(process.cwd(), ...paths))
+	return path.normalize(path.resolve(path.join(process.cwd(), ...paths)))
 }
 
 export function groupAssets(urls: string[]) {

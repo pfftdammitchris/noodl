@@ -28,6 +28,7 @@ function SelectRoute({ label = 'Select an option' }: any) {
 			<Text color="yellow">{label}</Text>
 			<Newline />
 			<Select
+				initialIndex={2}
 				items={items}
 				onHighlight={onHighlightPanel}
 				onSelect={onSelectPanel}

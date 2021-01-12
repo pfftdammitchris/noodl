@@ -2,10 +2,6 @@ import { serverScript } from '../constants'
 
 export type Action =
 	| { type: typeof serverScript.action.SET_CONFIG; config: State['config'] }
-	| {
-			type: typeof serverScript.action.SET_DATA_SOURCE
-			dataSource: State['dataSource']
-	  }
 	| { type: typeof serverScript.action.SET_DIR_FILES; dirFiles: string[] }
 	| {
 			type: typeof serverScript.action.SET_STEP

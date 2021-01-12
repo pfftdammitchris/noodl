@@ -61,9 +61,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 		} catch (error) {
 			if (error.response?.status === 404) {
 				console.log(
-					`[${chalk.red(error.name)}] on page ${chalk.red(
-						name,
-					)}: Could not find page or page not found`,
+					`[${chalk.red(error.name)}]: Could not find page ${chalk.red(name)}`,
 				)
 			} else {
 				console.log(
@@ -78,7 +76,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 	}
 
 	function _on(
-		event: typeof c.aggregator.event.RETRIEVED_APP_OBJECT,
+		event: EventId,
 		fn: (
 			opts: ObjectResult & {
 				name: string
@@ -96,14 +94,23 @@ const createAggregator = function (opts?: ConfigOptions) {
 		return o
 	}
 
+	function _get(ext: 'json'): typeof objects.json
+	function _get(ext: 'yml'): typeof objects.yml
+	function _get(
+		ext?: keyof typeof objects.json,
+	): typeof objects.json[keyof typeof objects.json]
+	function _get(ext?: never): typeof objects
+	function _get(ext?: any) {
+		if (typeof ext === 'string') {
+			if (ext === 'json') return objects.json
+			if (ext === 'yml') return objects.yml
+			else return objects.json[ext as string]
+		}
+		return objects
+	}
+
 	const o = {
-		get(ext?: 'json' | 'yml') {
-			if (typeof ext === 'string') {
-				if (ext === 'json') return objects.json
-				if (ext === 'yml') return objects.yml
-			}
-			return objects
-		},
+		get: _get,
 		setConfig(value: string) {
 			config = value
 			return o
@@ -162,6 +169,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 				}),
 			)
 		},
+		loadPage: _loadPage,
 		async loadPages({
 			chunks = 4,
 			includePreloadPages,
