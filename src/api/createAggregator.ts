@@ -26,6 +26,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 
 	let config = opts?.config || 'aitmed'
 	let host = opts?.host || 'public.aitmed.com'
+	let initialized = false
 
 	const cbIds = [] as string[]
 	const cbs = {} as Record<EventId, AnyFn[]>
@@ -48,6 +49,9 @@ const createAggregator = function (opts?: ConfigOptions) {
 	async function _loadPage(name: string, suffix: string = '') {
 		try {
 			const url = api.appConfig.getPageUrl(name + suffix)
+			console.log(url)
+			console.log(url)
+			console.log(url)
 			objects.yml[name] = (await axios.get(url)).data
 			objects.json[name] = yaml.parse(objects.yml[name] as string)
 
@@ -110,6 +114,9 @@ const createAggregator = function (opts?: ConfigOptions) {
 	}
 
 	const o = {
+		get initialized() {
+			return initialized
+		},
 		get: _get,
 		setConfig(value: string) {
 			config = value
@@ -145,6 +152,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 				json: objects.json.cadlEndpoint,
 				yml: objects.yml.cadlEndpoint,
 			})
+			initialized = true
 			if (opts?.loadPages) {
 				await o.loadPages({
 					includePreloadPages: true,

@@ -110,6 +110,7 @@ function RetrieveObjectsPanel() {
 								index++
 							) {
 								const dir = (objects as any)[ext].dir[index]
+								console.log(`dir:`, objects)
 								if (dir) {
 									await fs.mkdirp(dir)
 									if (ext === 'json') {
@@ -118,7 +119,8 @@ function RetrieveObjectsPanel() {
 											json,
 											{ spaces: 2 },
 										)
-									} else if (ext === 'yml') {
+									}
+									if (ext === 'yml') {
 										await fs.writeFile(withYmlExt(path.join(dir, name)), yml, {
 											encoding: 'utf8',
 										})

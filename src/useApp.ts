@@ -60,8 +60,8 @@ const initialState: State = {
 	caption: [],
 	server: { host: '', dir: '', port: null },
 	objects: {
-		json: { dir: [] },
-		yml: { dir: [] },
+		json: { dir: [getFilePath('data/generated/json')] },
+		yml: { dir: [getFilePath('data/generated/yml')] },
 	},
 	panel: {
 		id: panelId.SELECT_ROUTE,
@@ -81,7 +81,7 @@ const reducer = produce(
 				return void Object.assign(draft.server, action.options)
 			case c.action.SET_OBJECTS_JSON_OPTIONS:
 				return void Object.assign(draft.objects.json, action.options)
-			case c.action.SET_OBJECTS_JSON_OPTIONS:
+			case c.action.SET_OBJECTS_YML_OPTIONS:
 				return void Object.assign(draft.objects.yml, action.options)
 			case c.action.SET_PANEL:
 				return void Object.keys(action.panel).forEach(

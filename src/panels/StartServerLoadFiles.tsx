@@ -45,7 +45,11 @@ function StartServerLoadFiles({ config = '' }: { config: string | undefined }) {
 					configFile = aggregator.get(config)?.yml || ''
 				}
 				if (!configFile) {
-					configFile = (await aggregator.loadPage(config, '.yml'))?.yml || ''
+					if (!aggregator.initialized) {
+						await aggregator.init({ loadPages: true })
+					}
+					configFile = aggregator.get('yml')[config]
+					console.log(configFile)
 				}
 				if (!configFile) {
 					throw new Error(

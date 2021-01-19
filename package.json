@@ -12,7 +12,7 @@
 		"prestart": "rm -rf dist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
 		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts",
-		"dev:file": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only",
+		"dev:file": "ts-node-dev --respawn --transpile-only",
 		"test": "cross-env NODE_ENV=test ts-node-dev --respawn --transpile-only dev/runTests.ts",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files \"dev/**/*.ts\""
 	},

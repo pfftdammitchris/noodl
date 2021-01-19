@@ -1,95 +1,46 @@
-import {
-	ActionObject,
-	BuiltInActionObject,
-	EvalActionObject,
-	PageJumpActionObject,
-	PopupActionObject,
-	PopupDismissActionObject,
-	RefreshActionObject,
-	SaveActionObject,
-	UpdateActionObject,
-} from './actionTypes'
-import { ActionType } from './constantTypes'
-import {
-	ButtonComponentObject,
-	DividerComponentObject,
-	FooterComponentObject,
-	HeaderComponentObject,
-	ImageComponentObject,
-	LabelComponentObject,
-	ListComponentObject,
-	ListItemComponentObject,
-	PluginBodyTailComponentObject,
-	PluginComponentObject,
-	PluginHeadComponentObject,
-	PopUpComponentObject,
-	RegisterComponentObject,
-	ScrollViewComponentObject,
-	SelectComponentObject,
-	TextFieldComponentObject,
-	TextViewComponentObject,
-	VideoComponentObject,
-	ViewComponentObject,
-} from './componentTypes'
-import {
-	EmitObject,
-	GotoObject,
-	GotoUrl,
-	IfObject,
-	Path,
-	ToastObject,
-} from './uncategorizedTypes'
-import {
-	excludeKeys,
-	hasAnyKeys,
-	isBool,
-	isPlainObject,
-	PlainObject,
-} from './_internal'
 import { minimalStyleKeys, minimalBorderStyleKeys } from './_internal/constants'
+import * as T from '.'
+import * as u from './_internal'
+import { StyleObject } from './styleTypes'
 
 export const identify = (function () {
-	function isActionType<Type extends ActionType>(
-		actionType: Type,
-		value: PlainObject,
-	) {
-		return value.actionType === actionType
-	}
-
 	const o = {
 		action: {
-			any(v: unknown) {
-				return isPlainObject(v) && 'actionType' in v
+			any(v: unknown): v is T.ActionObject {
+				return u.isPlainObject(v) && 'actionType' in v
 			},
-			builtIn(v: unknown): v is BuiltInActionObject {
+			builtIn(v: unknown): v is T.BuiltInActionObject {
 				return (
-					isPlainObject(v) && ('funcName' in v || isActionType('builtIn', v))
+					u.isPlainObject(v) && ('funcName' in v || v.actionType === 'builtIn')
 				)
 			},
-			evalObject(v: unknown): v is EvalActionObject {
-				return isPlainObject(v) && isActionType('evalObject', v)
+			evalObject(v: unknown): v is T.EvalActionObject {
+				return u.isPlainObject(v) && v.actionType === 'evalObject'
 			},
-			pageJump(v: unknown): v is PageJumpActionObject {
-				return isPlainObject(v) && isActionType('pageJump', v)
+			pageJump(v: unknown): v is T.PageJumpActionObject {
+				return u.isPlainObject(v) && v.actionType === 'pageJump'
 			},
-			popUp(v: unknown): v is PopupActionObject {
-				return isPlainObject(v) && isActionType('popUp', v)
+			popUp(v: unknown): v is T.PopupActionObject {
+				return u.isPlainObject(v) && v.actionType === 'popUp'
 			},
-			popUpDismiss(v: unknown): v is PopupDismissActionObject {
-				return isPlainObject(v) && isActionType('popUpDismiss', v)
+			popUpDismiss(v: unknown): v is T.PopupDismissActionObject {
+				return u.isPlainObject(v) && v.actionType === 'popUpDismiss'
 			},
-			refresh(v: unknown): v is RefreshActionObject {
-				return isPlainObject(v) && isActionType('refresh', v)
+			refresh(v: unknown): v is T.RefreshActionObject {
+				return u.isPlainObject(v) && v.actionType === 'refresh'
 			},
-			saveObject(v: unknown): v is SaveActionObject {
-				return isPlainObject(v) && isActionType('saveObject', v)
+			saveObject(v: unknown): v is T.SaveActionObject {
+				return u.isPlainObject(v) && v.actionType === 'saveObject'
 			},
-			updateObject(v: unknown): v is UpdateActionObject {
-				return isPlainObject(v) && isActionType('updateObject', v)
+			updateObject(v: unknown): v is T.UpdateActionObject {
+				return u.isPlainObject(v) && v.actionType === 'updateObject'
 			},
 		},
-		actionChain(v: unknown): v is ActionObject[] {
-			return Array.isArray(v) && v.some(o.action.any)
+		actionChain(v: unknown) {
+			return (
+				Array.isArray(v) &&
+				[o.action.any, o.emit, o.goto, o.toast].some((fn) => v.some(fn))
+			)
 		},
 		/**
 		 * Returns true if the value is a NOODL boolean. A value is a NOODL boolean
@@ -97,7 +48,7 @@ export const identify = (function () {
 		 * @param { any } value
 		 */
 		isBoolean(value: unknown) {
-			return isBool(value) || o.isBooleanTrue(value) || o.isBooleanFalse(value)
+			return o.isBooleanTrue(value) || o.isBooleanFalse(value)
 		},
 		isBooleanTrue(value: unknown): value is true | 'true' {
 			return value === true || value === 'true'
@@ -106,75 +57,72 @@ export const identify = (function () {
 			return value === false || value === 'false'
 		},
 		component: {
-			button(value: unknown): value is ButtonComponentObject {
-				return isPlainObject(value) && value.type === 'button'
+			button(value: unknown): value is T.ButtonComponentObject {
+				return u.isPlainObject(value) && value.type === 'button'
 			},
-			divider(value: unknown): value is DividerComponentObject {
-				return isPlainObject(value) && value.type === 'divider'
+			divider(value: unknown): value is T.DividerComponentObject {
+				return u.isPlainObject(value) && value.type === 'divider'
 			},
-			footer(value: unknown): value is FooterComponentObject {
-				return isPlainObject(value) && value.type === 'footer'
+			footer(value: unknown): value is T.FooterComponentObject {
+				return u.isPlainObject(value) && value.type === 'footer'
 			},
-			header(value: unknown): value is HeaderComponentObject {
-				return isPlainObject(value) && value.type === 'header'
+			header(value: unknown): value is T.HeaderComponentObject {
+				return u.isPlainObject(value) && value.type === 'header'
 			},
-			image(value: unknown): value is ImageComponentObject {
-				return isPlainObject(value) && value.type === 'image'
+			image(value: unknown): value is T.ImageComponentObject {
+				return u.isPlainObject(value) && value.type === 'image'
 			},
-			label(value: unknown): value is LabelComponentObject {
-				return isPlainObject(value) && value.type === 'label'
+			label(value: unknown): value is T.LabelComponentObject {
+				return u.isPlainObject(value) && value.type === 'label'
 			},
-			list(value: unknown): value is ListComponentObject {
-				return isPlainObject(value) && value.type === 'list'
+			list(value: unknown): value is T.ListComponentObject {
+				return u.isPlainObject(value) && value.type === 'list'
 			},
-			listItem(value: unknown): value is ListItemComponentObject {
-				return isPlainObject(value) && value.type === 'listItem'
+			listItem(value: unknown): value is T.ListItemComponentObject {
+				return u.isPlainObject(value) && value.type === 'listItem'
 			},
-			plugin(value: unknown): value is PluginComponentObject {
-				return isPlainObject(value) && value.type === 'plugin'
+			plugin(value: unknown): value is T.PluginComponentObject {
+				return u.isPlainObject(value) && value.type === 'plugin'
 			},
-			pluginHead(value: unknown): value is PluginHeadComponentObject {
-				return isPlainObject(value) && value.type === 'pluginHead'
+			pluginHead(value: unknown): value is T.PluginHeadComponentObject {
+				return u.isPlainObject(value) && value.type === 'pluginHead'
 			},
-			pluginBodyTail(value: unknown): value is PluginBodyTailComponentObject {
-				return isPlainObject(value) && value.type === 'pluginBodyTail'
+			pluginBodyTail(value: unknown): value is T.PluginBodyTailComponentObject {
+				return u.isPlainObject(value) && value.type === 'pluginBodyTail'
 			},
-			popUp(value: unknown): value is PopUpComponentObject {
-				return isPlainObject(value) && value.type === 'popUp'
+			popUp(value: unknown): value is T.PopUpComponentObject {
+				return u.isPlainObject(value) && value.type === 'popUp'
 			},
-			register(value: unknown): value is RegisterComponentObject {
-				return isPlainObject(value) && value.type === 'register'
+			register(value: unknown): value is T.RegisterComponentObject {
+				return u.isPlainObject(value) && value.type === 'register'
 			},
-			select(value: unknown): value is SelectComponentObject {
-				return isPlainObject(value) && value.type === 'select'
+			select(value: unknown): value is T.SelectComponentObject {
+				return u.isPlainObject(value) && value.type === 'select'
 			},
-			scrollView(value: unknown): value is ScrollViewComponentObject {
-				return isPlainObject(value) && value.type === 'scrollView'
+			scrollView(value: unknown): value is T.ScrollViewComponentObject {
+				return u.isPlainObject(value) && value.type === 'scrollView'
 			},
-			textField(value: unknown): value is TextFieldComponentObject {
-				return isPlainObject(value) && value.type === 'textField'
+			textField(value: unknown): value is T.TextFieldComponentObject {
+				return u.isPlainObject(value) && value.type === 'textField'
 			},
-			textView(value: unknown): value is TextViewComponentObject {
-				return isPlainObject(value) && value.type === 'textView'
+			textView(value: unknown): value is T.TextViewComponentObject {
+				return u.isPlainObject(value) && value.type === 'textView'
 			},
-			video(value: unknown): value is VideoComponentObject {
-				return isPlainObject(value) && value.type === 'video'
+			video(value: unknown): value is T.VideoComponentObject {
+				return u.isPlainObject(value) && value.type === 'video'
 			},
-			view(value: unknown): value is ViewComponentObject {
-				return isPlainObject(value) && value.type === 'view'
+			view(value: unknown): value is T.ViewComponentObject {
+				return u.isPlainObject(value) && value.type === 'view'
 			},
 		},
-		emit(v: unknown): v is EmitObject {
-			return isPlainObject(v) && 'emit' in v
+		emit(v: unknown): v is T.EmitObject {
+			return u.isPlainObject(v) && 'emit' in v
 		},
-		goto(v: unknown): v is GotoUrl | GotoObject {
-			return o.gotoUrl(v) || o.gotoObject(v)
+		goto(v: unknown): v is T.GotoObject {
+			return u.isPlainObject(v) && 'goto' in v
 		},
-		gotoUrl(v: unknown): v is GotoUrl {
-			return typeof v === 'string'
-		},
-		gotoObject(v: unknown): v is GotoObject {
-			return isPlainObject(v) && 'goto' in v
+		if(v: unknown): v is T.IfObject {
+			return u.isPlainObject(v) && 'if' in v
 		},
 		reference(value: unknown): value is string {
 			if (typeof value !== 'string') return false
@@ -184,51 +132,57 @@ export const identify = (function () {
 			if (value.endsWith('@')) return true
 			return false
 		},
+		url(v: unknown): v is string {
+			return (
+				typeof v === 'string' &&
+				!v.startsWith('.') &&
+				(u.isImg(v) || u.isJs(v) || u.isHtml(v) || u.isPdf(v) || u.isVid(v))
+			)
+		},
 		style: {
-			any(v: unknown) {
-				return isPlainObject(v) && hasAnyKeys(minimalStyleKeys, v)
+			any(v: unknown): v is StyleObject {
+				return u.isPlainObject(v) && u.hasAnyKeys(minimalStyleKeys, v)
 			},
 			border(v: unknown) {
 				return (
-					isPlainObject(v) &&
-					hasAnyKeys(['color', 'style', 'width'], v) &&
-					!hasAnyKeys(excludeKeys(minimalStyleKeys, minimalBorderStyleKeys), v)
+					u.isPlainObject(v) &&
+					u.hasAnyKeys(['color', 'style', 'width'], v) &&
+					!u.hasAnyKeys(
+						u.excludeKeys(minimalStyleKeys, minimalBorderStyleKeys),
+						v,
+					)
 				)
 			},
 		},
-		toast(value: unknown): value is { toast: ToastObject } {
-			return isPlainObject(value) && 'toast' in value
+		toast(value: unknown): value is { toast: T.ToastObject } {
+			return u.isPlainObject(value) && 'message' in value
 		},
 	}
 
 	const paths = {
-		action: {
-			any() {},
-			pageJump() {},
-		},
 		actionChain() {},
 		component: {
 			any() {},
 			button() {},
 		},
-		emit(value: unknown): value is { emit: EmitObject } {
-			return isPlainObject(value) && 'emit' in value
+		emit(value: unknown): value is { emit: T.EmitObject } {
+			return u.isPlainObject(value) && 'emit' in value
 		},
-		goto(value: unknown): value is { goto: GotoUrl | GotoObject } {
-			return isPlainObject(value) && 'goto' in value
+		goto(value: unknown): value is { goto: T.GotoUrl | T.GotoObject } {
+			return u.isPlainObject(value) && 'goto' in value
 		},
-		path(value: unknown): value is { path: Path } {
-			return isPlainObject(value) && 'path' in value
+		path(value: unknown): value is { path: T.Path } {
+			return u.isPlainObject(value) && 'path' in value
 		},
 		style: {
 			any() {},
 			border() {},
 		},
-		textFunc(value: unknown): value is { path: Path } {
-			return isPlainObject(value) && 'path' in value
+		textFunc(value: unknown): value is { path: T.Path } {
+			return u.isPlainObject(value) && 'path' in value
 		},
-		toast(value: unknown): value is { toast: ToastObject } {
-			return isPlainObject(value) && 'toast' in value
+		toast(value: unknown): value is { toast: T.ToastObject } {
+			return u.isPlainObject(value) && 'toast' in value
 		},
 	}
 

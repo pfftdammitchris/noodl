@@ -1,9 +1,38 @@
 import chalk from 'chalk'
 import { expect } from 'chai'
-import { identify } from '../identify'
+import { identify } from '../Identify'
 
-describe(`identify`, () => {
-	describe(`${chalk.keyword('hotpink')('toast')}`, () => {
+describe(chalk.keyword('orange')('identify'), () => {
+	describe.only(`actionChain`, () => {
+		it.only(`should accept emit objects`, () => {
+			expect(
+				identify.actionChain([
+					{ emit: { dataKey: { var1: 'itemObject' } }, actions: [] },
+				]),
+			).to.be.true
+		})
+		xit(`should accept goto objects`, () => {
+			expect(
+				identify.actionChain([
+					{ emit: { dataKey: { var1: 'itemObject' } }, actions: [] },
+					{ goto: 'PatientDashboard' },
+					{ toast: { message: 'Hello' } },
+				]),
+			).to.be.true
+		})
+
+		xit(`should accept emit, goto, and toast objects`, () => {
+			expect(
+				identify.actionChain([
+					{ emit: { dataKey: { var1: 'itemObject' } }, actions: [] },
+					{ goto: 'PatientDashboard' },
+					{ toast: { message: 'Hello' } },
+				]),
+			).to.be.true
+		})
+	})
+
+	describe(`toast`, () => {
 		it(`should be a toast`, () => {
 			expect(identify.toast({ toast: { message: 'hello', style: {} } })).to.be
 				.true

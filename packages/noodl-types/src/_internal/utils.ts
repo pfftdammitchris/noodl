@@ -1,5 +1,6 @@
+import get from 'lodash/get'
 import has from 'lodash/has'
-import { PlainObject } from './types'
+import { PlainObject } from '../internalTypes'
 
 export function excludeKeys(keys1: string[], keys2: string | string[]) {
 	const targetKeys = Array.isArray(keys2) ? keys2 : [keys2]
@@ -10,12 +11,21 @@ export function exists(v: unknown) {
 	return !isNil(v)
 }
 
-export function hasAllKeys(keys: string | string[], value: PlainObject) {
-	return (Array.isArray(keys) ? keys : [keys]).every((k) => k in value)
+export function hasKey(key: string, value: any) {
+	return has(value, key)
 }
 
-export function hasInAllKeys(keys: string | string[], value: PlainObject) {
-	return (Array.isArray(keys) ? keys : [keys]).every((k) => has(value, k))
+export function hasKeyEqualTo(key: string, value: any) {
+	return has(value, key) && get(value, key) === value
+}
+export function hasAllKeys(keys: string | string[]) {
+	return (value: PlainObject) =>
+		(Array.isArray(keys) ? keys : [keys]).every((k) => k in (value || {}))
+}
+
+export function hasInAllKeys(keys: string | string[]) {
+	return (value: PlainObject) =>
+		(Array.isArray(keys) ? keys : [keys]).every((k) => has(value, k))
 }
 
 export function hasMinimumKeys(
@@ -56,4 +66,32 @@ export function isNil(v: unknown) {
 
 export function isPlainObject(value: unknown): value is PlainObject {
 	return exists(value) && !Array.isArray(value) && typeof value === 'object'
+}
+
+export function isImg(s: string) {
+	return /([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))/i.test(s)
+}
+
+export function isPdf(s: string) {
+	return s.endsWith('.pdf')
+}
+
+export function isVid(s: string) {
+	return /([a-z\-_0-9\/\:\.]*\.(mp4|avi|wmv))/i.test(s)
+}
+
+export function isYml(s: string = '') {
+	return s.endsWith('.yml')
+}
+
+export function isJson(s: string = '') {
+	return s.endsWith('.json')
+}
+
+export function isJs(s: string = '') {
+	return s.endsWith('.js')
+}
+
+export function isHtml(s: string = '') {
+	return s.endsWith('.html')
 }
