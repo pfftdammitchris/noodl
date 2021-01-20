@@ -1,4 +1,5 @@
 {
+	"initialOption": "fetch-objects",
 	"server": {
 		"host": "http://127.0.0.1",
 		"dir": "server",
@@ -6,7 +7,15 @@
 		"url": "http://127.0.0.1:3000/"
 	},
 	"objects": {
-		"json": { "dir": [] },
-		"yml": { "dir": ["../aitmed-noodl-web/data/serverFiles"] }
+		"json": {
+			"dir": ["./data/generated/json", "../aitmed-noodl-web/generated/json"]
+		},
+		"yml": {
+			"dir": [
+				"./data/generated/yml",
+				"../aitmed-noodl-web/generated/yml",
+				"../aitmed-noodl-web/scripts/serverFiles"
+			]
+		}
 	}
 }

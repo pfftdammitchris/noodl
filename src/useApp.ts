@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import fs from 'fs-extra'
 import produce from 'immer'
 import { WritableDraft } from 'immer/dist/internal'
-import { app as c, DEFAULT_CONFIG_PATH, panelId } from './constants'
+import { app as c, DEFAULT_CONFIG_FILEPATH, panelId } from './constants'
 import { Context, PanelId } from './types'
 import { getFilePath } from './utils/common'
 import createAggregator from './api/createAggregator'
@@ -11,18 +11,6 @@ import createAggregator from './api/createAggregator'
 export type Action =
 	| { type: typeof c.action.SET_OWN_CONFIG; value: boolean | null }
 	| { type: typeof c.action.SET_CAPTION; caption: string }
-	| {
-			type: typeof c.action.SET_SERVER_OPTIONS
-			options: Partial<State['server']>
-	  }
-	| {
-			type: typeof c.action.SET_OBJECTS_JSON_OPTIONS
-			options: Partial<State['objects']['json']>
-	  }
-	| {
-			type: typeof c.action.SET_OBJECTS_YML_OPTIONS
-			options: Partial<State['objects']['yml']>
-	  }
 	| {
 			type: typeof c.action.SET_PANEL
 			panel: { id?: PanelId; label?: string; [key: string]: any }
@@ -32,19 +20,6 @@ export type Action =
 export interface State {
 	ownConfig: boolean | null
 	caption: string[]
-	server: {
-		host: string
-		dir: string
-		port: null | number
-	}
-	objects: {
-		json: {
-			dir: string[]
-		}
-		yml: {
-			dir: string[]
-		}
-	}
 	panel: {
 		id: PanelId
 		label: string
@@ -58,11 +33,6 @@ let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 const initialState: State = {
 	ownConfig: null,
 	caption: [],
-	server: { host: '', dir: '', port: null },
-	objects: {
-		json: { dir: [getFilePath('data/generated/json')] },
-		yml: { dir: [getFilePath('data/generated/yml')] },
-	},
 	panel: {
 		id: panelId.SELECT_ROUTE,
 		label: 'Select a route',
@@ -77,12 +47,6 @@ const reducer = produce(
 				return void (draft.ownConfig = action.value)
 			case c.action.SET_CAPTION:
 				return void draft.caption.push(action.caption)
-			case c.action.SET_SERVER_OPTIONS:
-				return void Object.assign(draft.server, action.options)
-			case c.action.SET_OBJECTS_JSON_OPTIONS:
-				return void Object.assign(draft.objects.json, action.options)
-			case c.action.SET_OBJECTS_YML_OPTIONS:
-				return void Object.assign(draft.objects.yml, action.options)
 			case c.action.SET_PANEL:
 				return void Object.keys(action.panel).forEach(
 					(key) => (draft.panel[key] = action.panel[key]),
@@ -114,39 +78,6 @@ function useApp() {
 		dispatch({ type: c.action.SET_PANEL, panel })
 	}, [])
 
-	const setServerOptions = React.useCallback(
-		(options: Partial<State['server']>) => {
-			const changes = {} as any
-			Object.entries(options).forEach(([key, value]) => {
-				changes[key] = value
-			})
-			dispatch({ type: c.action.SET_SERVER_OPTIONS, options: changes })
-		},
-		[],
-	)
-
-	const setObjectsJsonOptions = React.useCallback(
-		(options: Partial<State['objects']['json']>) => {
-			const changes = {} as any
-			Object.entries(options).forEach(([key, value]) => {
-				changes[key] = value
-			})
-			dispatch({ type: c.action.SET_OBJECTS_JSON_OPTIONS, options: changes })
-		},
-		[],
-	)
-
-	const setObjectsYmlOptions = React.useCallback(
-		(options: Partial<State['objects']['yml']>) => {
-			const changes = {} as any
-			Object.entries(options).forEach(([key, value]) => {
-				changes[key] = value
-			})
-			dispatch({ type: c.action.SET_OBJECTS_YML_OPTIONS, options: changes })
-		},
-		[],
-	)
-
 	const toggleSpinner = React.useCallback(
 		(type?: false | string) =>
 			dispatch({
@@ -160,7 +91,7 @@ function useApp() {
 	React.useEffect(() => {
 		dispatch({
 			type: c.action.SET_OWN_CONFIG,
-			value: fs.existsSync(getFilePath(DEFAULT_CONFIG_PATH)),
+			value: fs.existsSync(getFilePath(DEFAULT_CONFIG_FILEPATH)),
 		})
 	}, [])
 
@@ -170,9 +101,6 @@ function useApp() {
 		setPanel,
 		setCaption,
 		setErrorCaption,
-		setServerOptions,
-		setObjectsJsonOptions,
-		setObjectsYmlOptions,
 		toggleSpinner,
 	}
 

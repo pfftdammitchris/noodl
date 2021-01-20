@@ -1,9 +1,13 @@
 export const DEFAULT_CONFIG_HOSTNAME = 'public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
-export const DEFAULT_CONFIG_PATH = 'noodl.json'
-export const DEFAULT_SERVER_URL = 'http://127.0.0.1'
+export const DEFAULT_CONFIG_FILEPATH = 'noodl.json'
+export const DEFAULT_GENERATED_DIR = 'generated'
+export const DEFAULT_JSON_OBJECTS_DIR = `${DEFAULT_GENERATED_DIR}/json`
+export const DEFAULT_YML_OBJECTS_DIR = `${DEFAULT_GENERATED_DIR}/yml`
+export const DEFAULT_SERVER_HOSTNAME = '127.0.0.1'
 export const DEFAULT_SERVER_PATH = 'server'
 export const DEFAULT_SERVER_PORT = 3000
+export const DEFAULT_SERVER_PROTOCOL = 'http'
 
 export const app = {
 	action: {
@@ -35,6 +39,24 @@ export const panelId = {
 	RETRIEVE_OBJECTS: 'retrieve-objects',
 	RETRIEVE_KEYWORDS: 'retrieve-keywords',
 	START_SERVER: 'start-server',
+} as const
+
+export const retrieveObjectsScript = {
+	action: {
+		SET_EXT: 'set.ext',
+		SET_CONFIG: 'set.config',
+		SET_CAPTION: 'set.caption',
+		SET_STATUS: 'set.status',
+	},
+	step: {
+		SET_EXT: 'set.ext',
+		SET_CONFIG: 'set.config',
+		FETCH_OBJECTS: 'fetch.objects',
+	},
+	status: {
+		IDLE: 'idle',
+		FETCHING_OBJECTS: 'fetching.objects',
+	},
 } as const
 
 export const serverScript = {

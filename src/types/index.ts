@@ -16,9 +16,6 @@ export interface Context extends State {
 	aggregator: Aggregator
 	setCaption(caption: string): void
 	setErrorCaption(caption: string | Error): void
-	setServerOptions(options: Partial<State['server']>): void
-	setObjectsJsonOptions(options: Partial<State['objects']['json']>): void
-	setObjectsYmlOptions(options: Partial<State['objects']['yml']>): void
 	setPanel(item: {
 		id?: string
 		label?: string
@@ -28,15 +25,12 @@ export interface Context extends State {
 	toggleSpinner(type?: false | string): void
 }
 
-export interface CLIConfigContext extends CLIConfigObject {
-	url: string
-}
-
 export interface CLIConfigObject {
 	server: {
 		dir: string
 		port: number
 		host: string
+		protocol: string
 	}
 	objects: {
 		hostname: string

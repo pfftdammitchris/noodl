@@ -1,27 +1,22 @@
 import React from 'react'
 import fs from 'fs-extra'
-import CLIConfigBuilder from '../builders/CLIConfig'
 import useCtx from '../useCtx'
-import { DEFAULT_CONFIG_PATH } from '../constants'
+import { DEFAULT_CONFIG_FILEPATH } from '../constants'
 import { CLIConfigObject } from '../types'
 import { getFilePath } from '../utils/common'
+import cliConfig from '../cliConfig'
 
-function Settings({
-	server: serverProp,
-	objects: objectsProp,
-}: Partial<CLIConfigObject>) {
-	const {
-		setCaption,
-		setErrorCaption,
-		setObjectsJsonOptions,
-		setObjectsYmlOptions,
-		setServerOptions,
-	} = useCtx()
+export interface SettingsProps {
+	defaults?: Partial<CLIConfigObject>
+}
+
+function Settings({ defaults }: SettingsProps) {
+	const { setCaption, setErrorCaption } = useCtx()
 
 	const getConsumerConfig = React.useCallback(():
 		| CLIConfigObject
 		| undefined => {
-		const configPath = getFilePath(DEFAULT_CONFIG_PATH)
+		const configPath = getFilePath(DEFAULT_CONFIG_FILEPATH)
 		let configObj: any
 		try {
 			configObj = fs.readJsonSync(configPath)
@@ -32,15 +27,7 @@ function Settings({
 	}, [])
 
 	React.useEffect(() => {
-		const configBuilder = new CLIConfigBuilder({
-			server: serverProp,
-			objects: objectsProp,
-			...getConsumerConfig(),
-		})
-		const cliConfig = configBuilder.toJS()
-		setServerOptions(cliConfig.server)
-		setObjectsJsonOptions(cliConfig.objects.json)
-		setObjectsYmlOptions(cliConfig.objects.yml)
+		cliConfig.merge({ ...defaults, ...getConsumerConfig() })
 		setCaption('Initialized')
 	}, [])
 

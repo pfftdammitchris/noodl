@@ -1,3 +1,4 @@
+import curry from 'lodash/curry'
 import { AxiosError } from 'axios'
 import fs from 'fs-extra'
 import isPlainObject from 'lodash/isPlainObject'
@@ -21,6 +22,7 @@ export const orange = (...s: any[]) => chalk.keyword('orange')(...s)
 export const deepOrange = (...s: any[]) => chalk.hex('#FF8B3F')(...s)
 export const red = (...s: any[]) => chalk.redBright(...s)
 export const white = (...s: any[]) => chalk.whiteBright(...s)
+export const yellow = (...s: any[]) => chalk.yellow(...s)
 export const newline = () => console.log('')
 
 export function createPlaceholderReplacer(
@@ -235,6 +237,14 @@ export const replaceBaseUrlPlaceholder = createPlaceholderReplacer(
 export const replaceVersionPlaceholder = createPlaceholderReplacer(
 	'\\${cadlVersion}',
 	'g',
+)
+
+export const saveJson = curry((filepath: string, data: any) =>
+	fs.writeJsonSync(filepath, data, { spaces: 2 }),
+)
+
+export const saveYml = curry((filepath: string, data: any) =>
+	fs.writeFileSync(filepath, data, { encoding: 'utf8' }),
 )
 
 export function sortObjPropsByKeys(obj: { [key: string]: any }) {

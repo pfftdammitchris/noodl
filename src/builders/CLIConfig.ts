@@ -1,22 +1,22 @@
 import merge from 'lodash/merge'
 import { CLIConfigObject } from '../types'
 import { getFilePath } from '../utils/common'
-
-const DEFAULT_JSON_OBJECTS_DIR = getFilePath('objects/json')
-const DEFAULT_YML_OBJECTS_DIR = getFilePath('objects/yml')
+import * as c from '../constants'
 
 class CLIConfig {
 	server = {
-		host: 'http://127.0.0.1',
-		dir: getFilePath('server'),
-		port: 3000,
+		host: c.DEFAULT_SERVER_HOSTNAME,
+		dir: c.DEFAULT_SERVER_PATH,
+		port: c.DEFAULT_SERVER_PORT,
+		protocol: c.DEFAULT_SERVER_PROTOCOL,
 	}
 	objects = {
+		hostname: c.DEFAULT_CONFIG_HOSTNAME,
 		json: { dir: [] as string[] },
 		yml: { dir: [] as string[] },
 	}
 
-	constructor(opts?: Partial<CLIConfigObject>) {
+	merge(opts?: Partial<CLIConfigObject>) {
 		if (opts) {
 			if (opts.server) {
 				merge(this.server, opts.server)
@@ -46,81 +46,52 @@ class CLIConfig {
 				})
 			}
 			if (!this.objects.json.dir.length) {
-				this.objects.json.dir.push(DEFAULT_JSON_OBJECTS_DIR)
+				this.objects.json.dir.push(c.DEFAULT_JSON_OBJECTS_DIR)
 			}
 			if (!this.objects.yml.dir.length) {
-				this.objects.yml.dir.push(DEFAULT_YML_OBJECTS_DIR)
+				this.objects.yml.dir.push(c.DEFAULT_YML_OBJECTS_DIR)
 			}
 		}
 	}
 
-	insertExtDir(ext: 'json' | 'yml', dirs: string | string[] | undefined) {
-		if (dirs) {
-			dirs = Array.isArray(dirs) ? dirs : [dirs]
-			dirs.forEach((d) => {
-				if (!this.objects[ext].dir.includes(d)) {
-					this.objects[ext].dir.push(d)
-				}
-			})
+	serverDir(pathToFolder?: string) {
+		if (pathToFolder) {
+			this.server.dir = getFilePath(pathToFolder) || ''
+			return this
 		}
-		return this
+		return this.server.dir || ''
 	}
 
-	getServerDir() {
-		return this.server.dir
+	serverHost(host?: string) {
+		if (host) {
+			this.server.host = host
+			return this
+		}
+		return this.server.host || ''
 	}
 
-	getServerUrl() {
-		if (!this.server.host) return ''
-		const url = new URL(this.server.host)
-		url.port = String(this.server.port)
-		return url.toString()
-	}
-
-	getServerPort() {
+	serverPort(port?: number) {
+		if (port !== undefined) {
+			this.server.port = Number(port)
+			return this
+		}
 		return this.server.port
 	}
 
-	setServerDir(pathToFolder: string) {
-		this.server.dir = getFilePath(pathToFolder)
-		return this
+	serverProtocol() {
+		return this.server.protocol || ''
 	}
 
-	setServerBaseUrl(host: string) {
-		this.server.host = host
-		return this
-	}
-
-	setServerPort(port: number) {
-		this.server.port = port
-		return this
-	}
-
-	setJsonObjectsDir(pathToFolder: string | string[]) {
-		if (typeof pathToFolder === 'string') {
-			this.objects.json.dir.push(pathToFolder)
-		} else if (Array.isArray(pathToFolder)) {
-			pathToFolder.forEach((p) => this.objects.json.dir.push(p))
-		}
-		return this
-	}
-
-	setYmlObjectsDir(pathToFolder: string | string[]) {
-		if (typeof pathToFolder === 'string') {
-			this.objects.yml.dir.push(pathToFolder)
-		} else if (Array.isArray(pathToFolder)) {
-			pathToFolder.forEach((p) => this.objects.yml.dir.push(p))
-		}
-		return this
+	serverUrl() {
+		return `${this.server.protocol || ''}://${this.server.host || ''}:${
+			this.server.port || ''
+		}`
 	}
 
 	toJS() {
 		return {
 			objects: this.objects,
-			server: {
-				...this.server,
-				url: this.getServerUrl(),
-			},
+			server: this.server,
 		} as CLIConfigObject
 	}
 

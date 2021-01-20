@@ -1,7 +1,6 @@
-// @ts-nocheck
 import React from 'react'
 import { WritableDraft } from 'immer/dist/internal'
-import { Box, Newline, Text } from 'ink'
+import { Box } from 'ink'
 import produce from 'immer'
 import path from 'path'
 import fs from 'fs-extra'
@@ -14,28 +13,35 @@ import Select from '../components/Select'
 import {
 	getFilePath,
 	magenta,
-	white,
+	yellow,
+	saveJson,
+	saveYml,
 	withJsonExt,
 	withYmlExt,
 } from '../utils/common'
+import cliConfig from '../cliConfig'
 import * as c from '../constants'
-import { ObjectResult } from 'types'
+import { ObjectResult } from '../types'
 
-type Ext = 'json' | 'yml' | 'json-yml'
+const actionId = c.retrieveObjectsScript.action
+const stepId = c.retrieveObjectsScript.step
+const statusId = c.retrieveObjectsScript.status
+
+export type Ext = 'json' | 'yml' | 'json-yml'
 
 export type Action =
-	| { type: 'set-caption'; caption: string }
-	| { type: 'set-config'; config: string }
-	| { type: 'set-ext'; ext: Ext }
-	| { type: 'set-status'; status: State['status'] }
+	| { type: typeof actionId.SET_CAPTION; caption: string }
+	| { type: typeof actionId.SET_CONFIG; config: string }
+	| { type: typeof actionId.SET_EXT; ext: Ext }
+	| { type: typeof actionId.SET_STATUS; status: State['status'] }
 
 export interface State {
 	ext: Ext | ''
 	config: string
 	caption: string[]
-	status: 'idle' | 'fetching-objects'
+	status: typeof statusId[keyof typeof statusId]
 	step: {
-		current: 'set-ext' | 'set-config' | 'fetch-objects'
+		current: typeof stepId[keyof typeof stepId]
 		items: State['step']['current'][]
 	}
 }
@@ -44,33 +50,29 @@ const initialState: State = {
 	ext: '',
 	config: '',
 	caption: [],
-	status: 'idle',
+	status: statusId.IDLE,
 	step: {
-		current: 'set-ext',
-		items: ['set-ext', 'set-config', 'fetch-objects'],
+		current: stepId.SET_EXT,
+		items: [stepId.SET_EXT, stepId.SET_CONFIG, stepId.FETCH_OBJECTS],
 	},
 }
 
 const reducer = produce((draft: WritableDraft<State>, action: Action): void => {
 	switch (action.type) {
-		case 'set-ext':
-			if (draft.ext !== action.ext) {
-				draft.ext = action.ext
-				draft.step.current = 'set-config'
-			}
+		case actionId.SET_EXT:
+			draft.ext = action.ext
+			draft.step.current = stepId.SET_CONFIG
 			break
-		case 'set-config':
-			if (draft.config !== action.config) {
-				draft.config = action.config
-				draft.step.current = 'fetch-objects'
-			}
+		case actionId.SET_CONFIG:
+			draft.config = action.config
+			draft.step.current = stepId.FETCH_OBJECTS
 			break
-		case 'set-caption':
+		case actionId.SET_CAPTION:
 			return void (
 				!draft.caption.includes(action.caption) &&
 				draft.caption.push(action.caption)
 			)
-		case 'set-status':
+		case actionId.SET_STATUS:
 			return void (
 				draft.status !== action.status && (draft.status = action.status)
 			)
@@ -80,7 +82,7 @@ const reducer = produce((draft: WritableDraft<State>, action: Action): void => {
 function RetrieveObjectsPanel() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
 	const [configInput, setConfigInput] = React.useState('')
-	const { aggregator, objects, setCaption, setErrorCaption } = useCtx()
+	const { aggregator, setCaption, setErrorCaption } = useCtx()
 
 	const items = [
 		{ label: 'JSON + YML', value: 'json-yml' },
@@ -89,7 +91,7 @@ function RetrieveObjectsPanel() {
 	]
 
 	const onSelectExt = React.useCallback(
-		(item) => dispatch({ type: 'set-ext', ext: item.value }),
+		(item) => dispatch({ type: actionId.SET_EXT, ext: item.value }),
 		[],
 	)
 
@@ -100,45 +102,41 @@ function RetrieveObjectsPanel() {
 
 	const onSubmitConfig = React.useCallback((config) => {
 		aggregator.setConfig(config)
-		dispatch({ type: 'set-config', config })
+		dispatch({ type: stepId.SET_CONFIG, config })
 	}, [])
 
 	React.useEffect(() => {
 		if (state.config) {
+			const exts = state.ext.split('-') as Exclude<Ext, 'json-yml'>[]
+
 			async function onNOODLObject(args: ObjectResult & { name: string }) {
 				if (typeof args === 'object') {
 					const { name, json, yml } = args
 					for (let ext of exts) {
+						const withExt = ext === 'json' ? withJsonExt : withYmlExt
+						const saveFn = ext === 'json' ? saveJson : saveYml
 						try {
 							for (
 								let index = 0;
-								index < (objects as any)[ext].dir.length;
+								index < cliConfig.objects[ext].dir?.length || 0;
 								index++
 							) {
-								let dir = (objects as any)[ext].dir[index]
+								let dir = cliConfig.objects[ext].dir[index]
+								let filepath: string
 								if (dir) {
-									dir = path.resolve(process.cwd(), dir)
-									await fs.mkdirp(dir)
-									if (ext === 'json') {
-										await fs.writeJson(withJsonExt((dir, name)), json, {
-											spaces: 2,
-										})
-										setCaption(
-											`Saved ${chalk.yellow(`${name}.${ext}`)} to ${magenta(
-												dir,
-											)}`,
-										)
+									dir = getFilePath(dir)
+									filepath = withExt(path.join(dir, name))
+									const save = saveFn(filepath)
+
+									if (!fs.existsSync(dir)) {
+										await fs.mkdirp(dir)
+										setCaption(`Created folder ${magenta(dir)}`)
 									}
-									if (ext === 'yml') {
-										await fs.writeFile(withYmlExt((dir, name)), yml, {
-											encoding: 'utf8',
-										})
-										setCaption(
-											`Saved ${chalk.yellow(`${name}.${ext}`)} to ${magenta(
-												dir,
-											)}`,
-										)
-									}
+
+									save(ext === 'json' ? json : yml)
+									setCaption(
+										`Saved ${yellow(`${name}.${ext}`)} to ${magenta(dir)}`,
+									)
 								}
 							}
 						} catch (error) {
@@ -152,9 +150,9 @@ function RetrieveObjectsPanel() {
 			}
 
 			setCaption(`Config set to ${chalk.magentaBright(state.config)}\n`)
-			const exts = state.ext.split('-')
+
 			let savedPageCount = 0
-			dispatch({ type: 'set-status', status: 'fetching-objects' })
+			dispatch({ type: actionId.SET_STATUS, status: statusId.FETCHING_OBJECTS })
 			aggregator
 				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, async ({ json, yml }) => {
 					await onNOODLObject({ name: state.config, json, yml })
@@ -165,14 +163,16 @@ function RetrieveObjectsPanel() {
 					version: 'latest',
 					loadPages: {
 						includePreloadPages: true,
-						onPage: onNOODLObject,
+						onPage: onNOODLObject as any,
 					},
 				})
 				.then(() => {
 					setCaption(`\nSaved ${chalk.yellow(savedPageCount)} objects`)
 				})
 				.catch(setErrorCaption)
-				.finally(() => dispatch({ type: 'set-status', status: 'idle' }))
+				.finally(() =>
+					dispatch({ type: actionId.SET_STATUS, status: statusId.IDLE }),
+				)
 		}
 	}, [state.config])
 
@@ -180,7 +180,7 @@ function RetrieveObjectsPanel() {
 		<Box padding={1} flexDirection="column">
 			<HighlightedText>
 				{!state.ext
-					? 'Fetch these extensions (Select one):'
+					? 'Choose extensions (Select an item)'
 					: !state.config
 					? 'Which config should we use?'
 					: null}
@@ -197,7 +197,7 @@ function RetrieveObjectsPanel() {
 					/>
 				) : null}
 			</Box>
-			{state.status === 'fetching-objects' && (
+			{state.status === statusId.FETCHING_OBJECTS && (
 				<HighlightedText color="whiteBright">
 					<Spinner type="point" interval={80} />
 				</HighlightedText>
