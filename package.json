@@ -9,6 +9,7 @@
 		"app": "node dist/cli.js",
 		"prebuild": "rm -rf dist",
 		"build": "tsc",
+		"lib:build": "lerna exec --scope noodl-types \"npm run build\"",
 		"prestart": "rm -rf dist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
 		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts",
@@ -23,9 +24,7 @@
 		"dist"
 	],
 	"dependencies": {
-		"chai-noodl": "file:packages/chai-noodl",
 		"download": "^8.0.0",
-		"noodl-building-blocks": "file:packages/noodl-building-blocks",
 		"noodl-types": "file:packages/noodl-types"
 	},
 	"devDependencies": {
@@ -40,6 +39,7 @@
 		"@types/react": "^17.0.0",
 		"axios": "^0.21.1",
 		"chai": "^4.2.0",
+		"chai-noodl": "file:packages/chai-noodl",
 		"cross-env": "^7.0.3",
 		"dotenv": "^8.2.0",
 		"eslint-plugin-react": "^7.21.5",
@@ -55,6 +55,7 @@
 		"ink-text-input": "^4.0.1",
 		"lerna": "^3.22.1",
 		"mocha": "^8.2.1",
+		"noodl-building-blocks": "file:packages/noodl-building-blocks",
 		"noodl-types": "file:../noodl-types",
 		"react": "^17.0.1",
 		"ts-mocha": "^8.0.0",
