@@ -16,7 +16,7 @@ export const identify = (function () {
 			},
 			evalObject(v: unknown): v is T.EvalActionObject {
 				return u.isPlainObject(v) && v.actionType === 'evalObject'
-			},
+			},o
 			pageJump(v: unknown): v is T.PageJumpActionObject {
 				return u.isPlainObject(v) && v.actionType === 'pageJump'
 			},
