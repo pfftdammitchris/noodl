@@ -1,0 +1,12 @@
+{
+	"server": {
+		"host": "http://127.0.0.1",
+		"dir": "server",
+		"port": 3000,
+		"url": "http://127.0.0.1:3000/"
+	},
+	"objects": {
+		"json": { "dir": [] },
+		"yml": { "dir": ["../aitmed-noodl-web/data/serverFiles"] }
+	}
+}

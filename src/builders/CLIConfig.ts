@@ -1,5 +1,5 @@
-import isNil from 'lodash/isNil'
-import { ConsumerCLIConfigObject, CLIConfigObject } from '../types'
+import merge from 'lodash/merge'
+import { CLIConfigObject } from '../types'
 import { getFilePath } from '../utils/common'
 
 const DEFAULT_JSON_OBJECTS_DIR = getFilePath('objects/json')
@@ -16,16 +16,40 @@ class CLIConfig {
 		yml: { dir: [] as string[] },
 	}
 
-	constructor(opts?: Partial<ConsumerCLIConfigObject>) {
+	constructor(opts?: Partial<CLIConfigObject>) {
 		if (opts) {
 			if (opts.server) {
-				Object.entries(opts.server).forEach(([k, v]) => {
-					if (!isNil(v)) this.server[k] = v
-				})
+				merge(this.server, opts.server)
 			}
 			if (opts.objects) {
-				this.insertExtDir('json', opts.objects?.json.dir)
-				this.insertExtDir('yml', opts.objects?.yml.dir)
+				merge(this.objects, opts.objects, {
+					json: {
+						...this.objects.json,
+						dir: this.objects.json.dir.concat(
+							opts.objects?.json?.dir
+								? Array.isArray(opts.objects?.json?.dir)
+									? opts.objects?.json?.dir
+									: [opts.objects?.json?.dir]
+								: [],
+						),
+					},
+					yml: {
+						...this.objects.yml,
+						dir: this.objects.yml.dir.concat(
+							opts.objects?.yml?.dir
+								? Array.isArray(opts.objects?.yml?.dir)
+									? opts.objects?.yml?.dir
+									: [opts.objects?.yml?.dir]
+								: [],
+						),
+					},
+				})
+			}
+			if (!this.objects.json.dir.length) {
+				this.objects.json.dir.push(DEFAULT_JSON_OBJECTS_DIR)
+			}
+			if (!this.objects.yml.dir.length) {
+				this.objects.yml.dir.push(DEFAULT_YML_OBJECTS_DIR)
 			}
 		}
 	}

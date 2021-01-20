@@ -20,6 +20,7 @@ export const magenta = (...s: any[]) => chalk.magenta(...s)
 export const orange = (...s: any[]) => chalk.keyword('orange')(...s)
 export const deepOrange = (...s: any[]) => chalk.hex('#FF8B3F')(...s)
 export const red = (...s: any[]) => chalk.redBright(...s)
+export const white = (...s: any[]) => chalk.whiteBright(...s)
 export const newline = () => console.log('')
 
 export function createPlaceholderReplacer(

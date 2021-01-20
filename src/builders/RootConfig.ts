@@ -34,7 +34,7 @@ class RootConfigBuilder extends NOODLObject implements RootConfig {
 		const { data: yml } = await axios.get(baseUrl)
 		this.yml = yml
 		this.json = yaml.parse(yml)
-		this.json = Object.entries(this.json).reduce(
+		this.json = Object.entries(this.json || {}).reduce(
 			(acc, [key, value]: [string, any]) => {
 				acc[key] =
 					typeof value === 'string'
@@ -47,7 +47,7 @@ class RootConfigBuilder extends NOODLObject implements RootConfig {
 			},
 			{} as any,
 		)
-		return this.json
+		return this.json || {}
 	}
 
 	setProtocol(protocol: string) {

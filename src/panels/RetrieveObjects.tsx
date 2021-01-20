@@ -11,7 +11,13 @@ import Spinner from 'ink-spinner'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
 import Select from '../components/Select'
-import { withJsonExt, withYmlExt } from '../utils/common'
+import {
+	getFilePath,
+	magenta,
+	white,
+	withJsonExt,
+	withYmlExt,
+} from '../utils/common'
 import * as c from '../constants'
 import { ObjectResult } from 'types'
 
@@ -109,21 +115,29 @@ function RetrieveObjectsPanel() {
 								index < (objects as any)[ext].dir.length;
 								index++
 							) {
-								const dir = (objects as any)[ext].dir[index]
-								console.log(`dir:`, objects)
+								let dir = (objects as any)[ext].dir[index]
 								if (dir) {
+									dir = path.resolve(process.cwd(), dir)
 									await fs.mkdirp(dir)
 									if (ext === 'json') {
-										await fs.writeJson(
-											withJsonExt(path.join(dir, name)),
-											json,
-											{ spaces: 2 },
+										await fs.writeJson(withJsonExt((dir, name)), json, {
+											spaces: 2,
+										})
+										setCaption(
+											`Saved ${chalk.yellow(`${name}.${ext}`)} to ${magenta(
+												dir,
+											)}`,
 										)
 									}
 									if (ext === 'yml') {
-										await fs.writeFile(withYmlExt(path.join(dir, name)), yml, {
+										await fs.writeFile(withYmlExt((dir, name)), yml, {
 											encoding: 'utf8',
 										})
+										setCaption(
+											`Saved ${chalk.yellow(`${name}.${ext}`)} to ${magenta(
+												dir,
+											)}`,
+										)
 									}
 								}
 							}
@@ -134,7 +148,6 @@ function RetrieveObjectsPanel() {
 						}
 					}
 					savedPageCount++
-					setCaption(`Saved ${chalk.yellow(name)}`)
 				}
 			}
 

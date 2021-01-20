@@ -32,34 +32,19 @@ export interface CLIConfigContext extends CLIConfigObject {
 	url: string
 }
 
-export interface ConsumerCLIConfigObject {
-	server: {
-		host: string
-		dir: string
-		port: number
-	}
-	objects: {
-		json: {
-			dir: string | string[]
-		}
-		yml: {
-			dir: string | string[]
-		}
-	}
-}
-
 export interface CLIConfigObject {
 	server: {
-		host: string
 		dir: string
 		port: number
+		host: string
 	}
 	objects: {
+		hostname: string
 		json: {
-			dir: string[]
+			dir: string | string[]
 		}
 		yml: {
-			dir: string[]
+			dir: string | string[]
 		}
 	}
 }

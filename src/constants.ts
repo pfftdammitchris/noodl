@@ -1,10 +1,4 @@
-import path from 'path'
-
-function getFilePath(...s: string[]) {
-	return path.resolve(path.join(process.cwd(), ...s))
-}
-
-export const DEFAULT_BASE_URL = 'https://public.aitmed.com'
+export const DEFAULT_CONFIG_HOSTNAME = 'public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
 export const DEFAULT_CONFIG_PATH = 'noodl.json'
 export const DEFAULT_SERVER_URL = 'http://127.0.0.1'
