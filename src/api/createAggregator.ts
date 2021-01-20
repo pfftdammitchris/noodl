@@ -137,7 +137,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 				.setHost(host)
 				.setVersion(opts?.version || 'latest')
 				.build()
-			objects.yml[config] = objects.json[config]?.yml || ''
+			objects.yml[config] = api.rootConfig.yml || ''
 			_emit(c.aggregator.event.RETRIEVED_ROOT_CONFIG, {
 				name: config,
 				json: objects.json[config],
