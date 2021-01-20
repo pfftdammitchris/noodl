@@ -146,7 +146,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 			objects.json['cadlEndpoint'] = await api.appConfig
 				.setRootConfig(objects.json[config] as any)
 				.build()
-			objects.yml['cadlEndpoint'] = objects.json.cadlEndpoint?.yml || ''
+			objects.yml['cadlEndpoint'] = api.appConfig.yml || ''
 			_emit(c.aggregator.event.RETRIEVED_APP_CONFIG, {
 				name: 'cadlEndpoint',
 				json: objects.json.cadlEndpoint,
