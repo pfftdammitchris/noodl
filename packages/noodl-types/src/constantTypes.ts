@@ -43,6 +43,7 @@ export type ContentType =
 	| 'phone'
 	| 'tel'
 	| 'text'
+	| 'timer'
 	| 'videoSubStream'
 	| 'vidoeSubStream'
 
