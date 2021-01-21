@@ -16,12 +16,11 @@ const panels = {
 	[c.panelId.SELECT_ROUTE]: SelectRoute,
 	[c.panelId.RETRIEVE_OBJECTS]: RetrieveObjects,
 	[c.panelId.RETRIEVE_KEYWORDS]: RetrieveKeywords,
-	[c.panelId.START_SERVER]: StartServer,
+	[c.panelId.SERVER]: StartServer,
 }
 
 function App() {
 	const appCtx = useApp()
-
 	const Panel = panels[appCtx.panel.id as PanelId]
 
 	const defaultSettings = {

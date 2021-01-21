@@ -4,7 +4,7 @@ config()
 import React from 'react'
 import meow from 'meow'
 import { render } from 'ink'
-import App from './ui'
+import App from './App'
 // import pkg from '../package.json'
 
 // @ts-expect-error

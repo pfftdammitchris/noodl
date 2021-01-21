@@ -14,6 +14,7 @@ export type EventId = typeof aggregatorEvent.event[keyof typeof aggregatorEvent.
 
 export interface Context extends State {
 	aggregator: Aggregator
+	getConsumerConfig(): CLIConfigObject | undefined
 	setCaption(caption: string): void
 	setErrorCaption(caption: string | Error): void
 	setPanel(item: {
@@ -22,16 +23,13 @@ export interface Context extends State {
 		value?: string
 		highlightedId?: string
 	}): void
+	server: ServerOptions
 	toggleSpinner(type?: false | string): void
 }
 
 export interface CLIConfigObject {
-	server: {
-		dir: string
-		port: number
-		host: string
-		protocol: string
-	}
+	initialOption?: string
+	server: ServerOptions
 	objects: {
 		hostname: string
 		json: {
@@ -41,6 +39,13 @@ export interface CLIConfigObject {
 			dir: string | string[]
 		}
 	}
+}
+
+export interface ServerOptions {
+	dir: string
+	port: number
+	host: string
+	protocol: string
 }
 
 export interface AppConfig {

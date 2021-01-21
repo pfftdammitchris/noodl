@@ -5,6 +5,7 @@ import path from 'path'
 import { UncontrolledTextInput } from 'ink-text-input'
 import { Box, BoxProps } from 'ink'
 import produce, { Draft } from 'immer'
+import globby from 'globby'
 import createObjectScripts from '../api/createObjectScripts'
 import {
 	captioning,
@@ -15,14 +16,17 @@ import {
 	magenta,
 	newline,
 	red,
+	saveYml,
 } from '../utils/common'
 import scriptObjs, { id as scriptId, Store } from '../utils/scripts'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
 import StartServerDownloadAssets from './StartServerDownloadAssets'
 import StartServerLoadFiles from './StartServerLoadFiles'
+import cliConfig from '../cliConfig'
 import * as c from '../constants'
 import * as T from '../types/serverScriptTypes'
+import { ObjectResult } from 'types'
 
 const initialState: T.State = {
 	config: '',
@@ -65,40 +69,89 @@ const reducer = produce(
 function StartServer() {
 	const { current: scripts } = React.useRef(createObjectScripts<Store>())
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { aggregator, ownConfig, server, setCaption, toggleSpinner } = useCtx()
+	const { aggregator, setCaption, toggleSpinner } = useCtx()
 
 	const getAssetsFolder = (serverDir: string) => path.join(serverDir, 'assets')
 
-	const onSetConfig = React.useCallback(
-		(config: string) => {
-			if (!config) return
-			dispatch({ type: c.serverScript.action.SET_CONFIG, config })
+	const onSetConfig = React.useCallback(async (config: string) => {
+		// Search server dir for config file
+		if (!config) return
 
-			setCaption(`Config set to ${magenta(config)}`)
+		dispatch({ type: c.serverScript.action.SET_CONFIG, config })
+		setCaption(`Config set to ${magenta(config)}`)
 
-			const serverDir = getFilePath(server.dir)
-			const assetsDir = getAssetsFolder(server.dir)
+		const serverPath = getFilePath(cliConfig.server.dir)
+		const assetsPath = getAssetsFolder(cliConfig.server.dir)
+		const serverPathFound = fs.existsSync(serverPath)
+		const assetsPathFound = fs.existsSync(assetsPath)
 
-			if (!fs.existsSync(serverDir)) {
-				fs.ensureDirSync(serverDir)
-				setCaption(`Created server folder at ${magenta(serverDir)}`)
+		// Not found
+		if (!serverPathFound) {
+			fs.ensureDirSync(serverPath)
+			setCaption(`Created server folder at ${magenta(serverPath)}`)
+		}
+		if (!assetsPathFound) {
+			fs.ensureDirSync(magenta(assetsPath))
+			setCaption(`Created assets folder at ${magenta(assetsPath)}`)
+		}
+
+		// Found
+		const configFiles = await globby(
+			`${path.join(serverPath, `**/*/${config}.yml`)}`,
+		)
+
+		if (!configFiles.length) {
+			setCaption(
+				`No config files were found for config ${magenta(
+					config,
+				)}. Retrieving from remote...`,
+			)
+
+			const onRetrievedObject = ({
+				name,
+				yml,
+			}: ObjectResult & { name: string }) => {
+				const filename = name + '.yml'
+				const filepath = getFilePath(cliConfig.server.dir, filename)
+				setCaption(`Loaded ${magenta(filename)}`)
+				saveYml(filepath, yml)
 			}
-			if (!fs.existsSync(assetsDir)) {
-				fs.ensureDirSync(magenta(assetsDir))
-				setCaption(`Created assets folder at ${magenta(assetsDir)}`)
-			}
 
-			setStep(c.serverScript.step.LOAD_FILES)
-		},
-		[server],
-	)
+			await aggregator
+				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, onRetrievedObject)
+				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onRetrievedObject)
+				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, onRetrievedObject)
+				.setConfig(config)
+				.setHost(cliConfig.objects.hostname)
+				.init({ loadPages: true })
+		} else {
+			setCaption(
+				`Found ${magenta(configFiles.length)} files with ${magenta(
+					config,
+				)}.\nWould you like to load from this config?`,
+			)
+		}
+
+		setStep(c.serverScript.step.LOAD_FILES)
+	}, [])
+
+	/**
+	 * Parallel
+	 * 	1. Recursive through config + load pages/assets to dir
+	 *	2. Start server
+	 */
+	const onStart = async () => {
+		//
+	}
 
 	const onSetDataSource = React.useCallback(
 		(item: any) => {
 			setStep('')
 			setCaption(`Data source set to ${magenta(item.value)}`)
 			toggleSpinner()
-			setCaption(`Retrieving data from ${magenta(getFilePath(server.dir))}`)
+			setCaption(
+				`Retrieving data from ${magenta(getFilePath(cliConfig.server.dir))}`,
+			)
 			let currentCount = 0
 			let failedCount = 0
 			let totalPreloadPages = 0
@@ -196,11 +249,11 @@ function StartServer() {
 		let assetFiles = [] as string[]
 		if (serverFiles.includes('assets')) {
 			assetFiles = assetFiles.concat(
-				fs.readdirSync(getFilePath(server.dir, 'assets')),
+				fs.readdirSync(getFilePath(cliConfig.server.dir, 'assets')),
 			)
 		}
 		console.log('asset files', assetFiles)
-	}, [state, server])
+	}, [state])
 
 	const onCreateServerDir = React.useCallback(
 		async ({ value }) => {
@@ -224,9 +277,9 @@ function StartServer() {
 
 	React.useEffect(() => {
 		setCaption(`${deepOrange('STEP')}: ${magenta(state?.step)}`)
-		setCaption(`Server dir: ${magenta(server.dir)}`)
-		setCaption(`Server host: ${magenta(server.host)}`)
-		setCaption(`Server port: ${magenta(server.port)}`)
+		setCaption(`Server dir: ${magenta(getFilePath(cliConfig.server.dir))}`)
+		setCaption(`Server host: ${magenta(cliConfig.server.host)}`)
+		setCaption(`Server port: ${magenta(cliConfig.server.port)}`)
 	}, [])
 
 	const Container = React.memo(

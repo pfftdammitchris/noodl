@@ -10,8 +10,8 @@ export const DEFAULT_SERVER_PORT = 3000
 export const DEFAULT_SERVER_PROTOCOL = 'http'
 
 export const app = {
+	INITIAL_OPTION: 'retrieve.objects',
 	action: {
-		SET_OWN_CONFIG: 'set.own.config',
 		SET_CAPTION: 'set.caption',
 		SET_SERVER_OPTIONS: 'set.server.options',
 		SET_OBJECTS_JSON_OPTIONS: 'set.objects.json.options',
@@ -35,10 +35,29 @@ export const aggregator = {
 } as const
 
 export const panelId = {
-	SELECT_ROUTE: 'select-route',
-	RETRIEVE_OBJECTS: 'retrieve-objects',
-	RETRIEVE_KEYWORDS: 'retrieve-keywords',
-	START_SERVER: 'start-server',
+	SELECT_ROUTE: 'select.route',
+	RETRIEVE_OBJECTS: 'retrieve.objects',
+	RETRIEVE_KEYWORDS: 'retrieve.keywords',
+	SERVER: 'server',
+} as const
+
+export const panel = {
+	[panelId.RETRIEVE_OBJECTS]: {
+		id: panelId.RETRIEVE_OBJECTS,
+		label: 'Retrieve objects',
+	},
+	[panelId.RETRIEVE_KEYWORDS]: {
+		id: panelId.RETRIEVE_KEYWORDS,
+		label: 'Retrieve keywords',
+	},
+	[panelId.SELECT_ROUTE]: {
+		id: panelId.SELECT_ROUTE,
+		label: 'Select route',
+	},
+	[panelId.SERVER]: {
+		id: panelId.SERVER,
+		label: 'Start a server',
+	},
 } as const
 
 export const retrieveObjectsScript = {
@@ -51,11 +70,11 @@ export const retrieveObjectsScript = {
 	step: {
 		SET_EXT: 'set.ext',
 		SET_CONFIG: 'set.config',
-		FETCH_OBJECTS: 'fetch.objects',
+		RETRIEVE_OBJECTS: 'retrive.objects',
 	},
 	status: {
 		IDLE: 'idle',
-		FETCHING_OBJECTS: 'fetching.objects',
+		RETRIEVING_OBJECTS: 'retrieving.objects',
 	},
 } as const
 

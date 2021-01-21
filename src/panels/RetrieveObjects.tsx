@@ -53,7 +53,7 @@ const initialState: State = {
 	status: statusId.IDLE,
 	step: {
 		current: stepId.SET_EXT,
-		items: [stepId.SET_EXT, stepId.SET_CONFIG, stepId.FETCH_OBJECTS],
+		items: [stepId.SET_EXT, stepId.SET_CONFIG, stepId.RETRIEVE_OBJECTS],
 	},
 }
 
@@ -65,7 +65,7 @@ const reducer = produce((draft: WritableDraft<State>, action: Action): void => {
 			break
 		case actionId.SET_CONFIG:
 			draft.config = action.config
-			draft.step.current = stepId.FETCH_OBJECTS
+			draft.step.current = stepId.RETRIEVE_OBJECTS
 			break
 		case actionId.SET_CAPTION:
 			return void (
@@ -152,7 +152,10 @@ function RetrieveObjectsPanel() {
 			setCaption(`Config set to ${chalk.magentaBright(state.config)}\n`)
 
 			let savedPageCount = 0
-			dispatch({ type: actionId.SET_STATUS, status: statusId.FETCHING_OBJECTS })
+			dispatch({
+				type: actionId.SET_STATUS,
+				status: statusId.RETRIEVING_OBJECTS,
+			})
 			aggregator
 				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, async ({ json, yml }) => {
 					await onNOODLObject({ name: state.config, json, yml })
@@ -197,7 +200,7 @@ function RetrieveObjectsPanel() {
 					/>
 				) : null}
 			</Box>
-			{state.status === statusId.FETCHING_OBJECTS && (
+			{state.status === statusId.RETRIEVING_OBJECTS && (
 				<HighlightedText color="whiteBright">
 					<Spinner type="point" interval={80} />
 				</HighlightedText>

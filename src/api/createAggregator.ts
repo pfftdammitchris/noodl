@@ -49,9 +49,6 @@ const createAggregator = function (opts?: ConfigOptions) {
 	async function _loadPage(name: string, suffix: string = '') {
 		try {
 			const url = api.appConfig.getPageUrl(name + suffix)
-			console.log(url)
-			console.log(url)
-			console.log(url)
 			objects.yml[name] = (await axios.get(url)).data
 			objects.json[name] = yaml.parse(objects.yml[name] as string)
 

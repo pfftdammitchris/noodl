@@ -1,37 +1,55 @@
 import React from 'react'
 import { Box, Newline, Text } from 'ink'
-import { panelId } from '../constants'
+import { panel as panelMap, panelId } from '../constants'
+import { PanelId } from '../types'
 import Select from '../components/Select'
 import useCtx from '../useCtx'
 
+const panels = Object.values(panelMap).reduce((acc, obj) => {
+	if (obj.id === panelId.SELECT_ROUTE) return acc
+	return acc.concat({
+		id: obj.id,
+		label: obj.label,
+		value: obj.id,
+	} as any)
+}, [] as (typeof panelMap[keyof typeof panelMap] & { value: PanelId })[])
+
 function SelectRoute({ label = 'Select an option' }: any) {
-	const { setPanel } = useCtx()
+	const { getConsumerConfig, setPanel } = useCtx()
+	const [initialIndex, setInitialIndex] = React.useState<null | number>(null)
 
-	const items = [
-		{ label: 'Fetch objects', value: panelId.RETRIEVE_OBJECTS },
-		{ label: 'Fetch keywords', value: panelId.RETRIEVE_KEYWORDS },
-		{ label: 'Start server', value: panelId.START_SERVER },
-	]
+	React.useEffect(() => {
+		const consumerConfig = getConsumerConfig()
+		if (consumerConfig) {
+			if (consumerConfig.initialOption) {
+				if (panelMap[consumerConfig.initialOption as PanelId]) {
+					setInitialIndex(
+						panels.findIndex(
+							(p) => p.id === consumerConfig.initialOption,
+						) as any,
+					)
+					return
+				}
+			}
+		}
+		setInitialIndex(0)
+	}, [])
 
-	const onHighlightPanel = React.useCallback(
-		(item) => setPanel({ highlightedId: item.value }),
-		[],
-	)
-
-	const onSelectPanel = React.useCallback(
-		(item) => setPanel({ id: item.value, label: item.label }),
-		[],
-	)
+	if (initialIndex === null) return null
 
 	return (
 		<Box padding={1} flexDirection="column">
 			<Text color="yellow">{label}</Text>
 			<Newline />
 			<Select
-				initialIndex={2}
-				items={items}
-				onHighlight={onHighlightPanel}
-				onSelect={onSelectPanel}
+				items={panels}
+				initialIndex={initialIndex}
+				onHighlight={(item) =>
+					setPanel({ highlightedId: item.value as string })
+				}
+				onSelect={(item) =>
+					setPanel({ id: item.value, label: item.label } as any)
+				}
 			/>
 		</Box>
 	)
