@@ -104,7 +104,7 @@ function StartServer() {
 			setCaption(
 				`No config files were found for config ${magenta(
 					config,
-				)}. Retrieving from remote...`,
+				)}. Retrieving remotely...`,
 			)
 
 			const onRetrievedObject = ({
@@ -113,7 +113,9 @@ function StartServer() {
 			}: ObjectResult & { name: string }) => {
 				const filename = name + '.yml'
 				const filepath = getFilePath(cliConfig.server.dir, filename)
-				setCaption(`Loaded ${magenta(filename)}`)
+				setCaption(
+					`Saved ${magenta(filename)} to ${getFilePath(cliConfig.server.dir)}`,
+				)
 				saveYml(filepath, yml)
 			}
 
@@ -124,6 +126,9 @@ function StartServer() {
 				.setConfig(config)
 				.setHost(cliConfig.objects.hostname)
 				.init({ loadPages: true })
+
+			// Check assets
+			setCaption('Checking for missing assets...')
 		} else {
 			setCaption(
 				`Found ${magenta(configFiles.length)} files with ${magenta(

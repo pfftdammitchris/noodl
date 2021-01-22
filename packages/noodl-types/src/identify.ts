@@ -3,7 +3,7 @@ import * as T from '.'
 import * as u from './_internal'
 import { StyleObject } from './styleTypes'
 
-export const identify = (function () {
+export const Identify = (function () {
 	const o = {
 		action: {
 			any(v: unknown): v is T.ActionObject {
