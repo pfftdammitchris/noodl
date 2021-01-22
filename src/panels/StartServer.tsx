@@ -253,10 +253,12 @@ function StartServer() {
 							)} missing assets...\n`,
 						),
 					)
+
 					setStep(c.serverScript.step.DOWNLOAD_ASSETS, {
 						assets: missingAssets,
 					})
 					toggleSpinner()
+					import('../server')
 				})
 				.run()
 		}

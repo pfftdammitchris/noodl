@@ -4,3 +4,5 @@ data
 output
 server
 noodl.json
+introspection.json
+generated

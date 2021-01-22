@@ -1,0 +1,13 @@
+overwrite: true
+schema:
+  - 'src/server/graphql/**/*.graphql'
+generates:
+  introspection.json:
+    plugins:
+      - introspection
+    config:
+      minify: true
+  src/generated/index.d.ts:
+    overwrite: true
+    plugins:
+      - typescript
