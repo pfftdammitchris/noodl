@@ -3,7 +3,13 @@ import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
 import { withSuffix } from '../utils/common'
-import { AnyFn, EventId, ObjectResult } from '../types'
+import {
+	AnyFn,
+	EventId,
+	ObjectResult,
+	RootConfig as IRootConfig,
+	AppConfig as IAppConfig,
+} from '../types'
 import RootConfig from '../builders/RootConfig'
 import AppConfig from '../builders/AppConfig'
 import * as c from '../constants'
@@ -35,7 +41,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 		json: {},
 		yml: {},
 	} as {
-		json: { [name: string]: ObjectResult }
+		json: { [name: string]: any }
 		yml: { [name: string]: string }
 	}
 
@@ -76,6 +82,14 @@ const createAggregator = function (opts?: ConfigOptions) {
 		}
 	}
 
+	function _on(
+		event: typeof c.aggregator.event.RETRIEVED_ROOT_CONFIG,
+		fn: (opts: ObjectResult<IRootConfig> & { name: string }) => void,
+	): typeof o
+	function _on(
+		event: typeof c.aggregator.event.RETRIEVED_APP_CONFIG,
+		fn: (opts: ObjectResult<IAppConfig> & { name: string }) => void,
+	): typeof o
 	function _on(
 		event: EventId,
 		fn: (
@@ -156,7 +170,10 @@ const createAggregator = function (opts?: ConfigOptions) {
 					...(typeof opts.loadPages === 'object' ? opts.loadPages : undefined),
 				})
 			}
-			return [objects.json[config], objects.json['cadlEndpoint']]
+			return [objects.json[config], objects.json['cadlEndpoint']] as [
+				rootConfig: IRootConfig,
+				appConfig: IAppConfig,
+			]
 		},
 		async loadStartPage() {
 			return _loadPage(api.appConfig.startPage, withExt(withLocale('')))

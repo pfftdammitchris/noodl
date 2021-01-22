@@ -51,7 +51,8 @@ export interface ServerOptions {
 export interface AppConfig {
 	host: string
 	assetsUrl: string
-	languageSuffix: string | { [lang: string]: string }
+	baseUrl: string
+	languageSuffix: { [lang: string]: string }
 	fileSuffix: string
 	startPage: string
 	preload: string[]
@@ -65,20 +66,29 @@ export interface RootConfig {
 	appApiHost: string
 	connectiontimeout: string
 	loadingLevel: number
-	versionNumber: number
-	debug: string
+	versionNumber?: number
+	viewWidthHeightRatio?: {
+		min: number
+		max: number
+	}
+	debug?: string
 	web?: {
-		cadlVersion: { stable: number; test: number }
+		cadlVersion: { stable: string; test: string }
 	}
 	ios?: {
-		cadlVersion: { stable: number; test: number }
+		cadlVersion: { stable: string; test: string }
 	}
 	android?: {
-		cadlVersion: { stable: number; test: number }
+		cadlVersion: { stable: string; test: string }
 	}
 	cadlBaseUrl: string
 	cadlMain?: string
+	myBaseUrl?: string
+	bodyTopPplugin?: string
+	bodyTailPplugin?: string
+	headPlugin?: string
 	timestamp?: number
+	keywords?: string[]
 }
 
 export interface ObjectResult<T extends { [key: string]: any } = any> {

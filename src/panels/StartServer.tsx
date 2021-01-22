@@ -1,9 +1,10 @@
 import React from 'react'
 import yaml from 'yaml'
+import partition from 'lodash/partition'
 import fs from 'fs-extra'
 import path from 'path'
-import { UncontrolledTextInput } from 'ink-text-input'
 import { Box, BoxProps } from 'ink'
+import { UncontrolledTextInput } from 'ink-text-input'
 import produce, { Draft } from 'immer'
 import globby from 'globby'
 import createObjectScripts from '../api/createObjectScripts'
@@ -12,23 +13,27 @@ import {
 	deepOrange,
 	getFilePath,
 	groupAssets,
-	highlight,
 	magenta,
 	newline,
 	red,
 	saveYml,
+	yellow,
+	white,
+	isImg,
+	isJs,
+	isPdf,
+	isVid,
 } from '../utils/common'
-import scriptObjs, { id as scriptId, Store } from '../utils/scripts'
+import scriptObjs, { id as scriptId } from '../utils/scripts'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
-import StartServerDownloadAssets from './StartServerDownloadAssets'
-import StartServerLoadFiles from './StartServerLoadFiles'
+import DownloadAsset, { DownloadAssetProps } from '../components/DownloadAsset'
 import cliConfig from '../cliConfig'
 import * as c from '../constants'
-import * as T from '../types/serverScriptTypes'
-import { ObjectResult } from 'types'
+import * as ST from '../types/serverScriptTypes'
+import * as T from '../types'
 
-const initialState: T.State = {
+const initialState: ST.State = {
 	config: '',
 	dataSource: '',
 	dirFiles: [],
@@ -38,10 +43,10 @@ const initialState: T.State = {
 		(acc, key) => Object.assign(acc, { [key]: {} }),
 		{},
 	),
-} as T.State
+} as ST.State
 
 const reducer = produce(
-	(draft: Draft<T.State> = initialState, action: T.Action): void => {
+	(draft: Draft<ST.State> = initialState, action: ST.Action): void => {
 		switch (action.type) {
 			case c.serverScript.action.SET_CONFIG:
 				return void (draft.config = action.config)
@@ -55,7 +60,7 @@ const reducer = produce(
 				} else {
 					if (action.options) {
 						Object.assign(
-							draft.stepContext[action.step as Exclude<T.State['step'], ''>],
+							draft.stepContext[action.step as Exclude<ST.State['step'], ''>],
 							action.options,
 						)
 					}
@@ -67,21 +72,20 @@ const reducer = produce(
 )
 
 function StartServer() {
-	const { current: scripts } = React.useRef(createObjectScripts<Store>())
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { aggregator, setCaption, toggleSpinner } = useCtx()
+	const { aggregator, setCaption, setErrorCaption, toggleSpinner } = useCtx()
 
-	const getAssetsFolder = (serverDir: string) => path.join(serverDir, 'assets')
+	const getAssetsFolder = () => path.join(cliConfig.server.dir, 'assets')
 
 	const onSetConfig = React.useCallback(async (config: string) => {
 		// Search server dir for config file
 		if (!config) return
 
 		dispatch({ type: c.serverScript.action.SET_CONFIG, config })
-		setCaption(`Config set to ${magenta(config)}`)
+		setCaption(`\nConfig set to ${magenta(config)}`)
 
 		const serverPath = getFilePath(cliConfig.server.dir)
-		const assetsPath = getAssetsFolder(cliConfig.server.dir)
+		const assetsPath = getAssetsFolder()
 		const serverPathFound = fs.existsSync(serverPath)
 		const assetsPathFound = fs.existsSync(assetsPath)
 
@@ -102,15 +106,15 @@ function StartServer() {
 
 		if (!configFiles.length) {
 			setCaption(
-				`No config files were found for config ${magenta(
+				`\nNo config files were found for config ${magenta(
 					config,
-				)}. Retrieving remotely...`,
+				)}. Retrieving remotely...\n`,
 			)
 
 			const onRetrievedObject = ({
 				name,
 				yml,
-			}: ObjectResult & { name: string }) => {
+			}: T.ObjectResult & { name: string }) => {
 				const filename = name + '.yml'
 				const filepath = getFilePath(cliConfig.server.dir, filename)
 				setCaption(
@@ -119,7 +123,7 @@ function StartServer() {
 				saveYml(filepath, yml)
 			}
 
-			await aggregator
+			const configObjs = await aggregator
 				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, onRetrievedObject)
 				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onRetrievedObject)
 				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, onRetrievedObject)
@@ -127,8 +131,28 @@ function StartServer() {
 				.setHost(cliConfig.objects.hostname)
 				.init({ loadPages: true })
 
-			// Check assets
-			setCaption('Checking for missing assets...')
+			const rootConfig = configObjs[0]
+			const appConfig = configObjs[1]
+
+			setCaption(
+				`\nVersion is set to latest web (${yellow('TEST')}) (${magenta(
+					rootConfig.web?.cadlVersion?.test,
+				)})\n`,
+			)
+
+			rootConfig.cadlBaseUrl &&
+				setCaption(`cadlBaseUrl: ${magenta(rootConfig.cadlBaseUrl)}`)
+			rootConfig.cadlMain &&
+				setCaption(`cadlMain: ${magenta(rootConfig.cadlMain)}`)
+			rootConfig.cadlBaseUrl &&
+				setCaption(`myBaseUrl: ${magenta(rootConfig.cadlBaseUrl)}\n`)
+
+			appConfig.preload &&
+				setCaption(
+					`${yellow(appConfig.preload.length)} preload page objects found`,
+				)
+			appConfig.page &&
+				setCaption(`${yellow(appConfig.page.length)} pages objects found`)
 		} else {
 			setCaption(
 				`Found ${magenta(configFiles.length)} files with ${magenta(
@@ -137,108 +161,12 @@ function StartServer() {
 			)
 		}
 
-		setStep(c.serverScript.step.LOAD_FILES)
+		setCaption(captioning('\nChecking for missing assets...\n'))
+		setStep(c.serverScript.step.SCAN_ASSETS)
 	}, [])
 
-	/**
-	 * Parallel
-	 * 	1. Recursive through config + load pages/assets to dir
-	 *	2. Start server
-	 */
-	const onStart = async () => {
-		//
-	}
-
-	const onSetDataSource = React.useCallback(
-		(item: any) => {
-			setStep('')
-			setCaption(`Data source set to ${magenta(item.value)}`)
-			toggleSpinner()
-			setCaption(
-				`Retrieving data from ${magenta(getFilePath(cliConfig.server.dir))}`,
-			)
-			let currentCount = 0
-			let failedCount = 0
-			let totalPreloadPages = 0
-			let totalPages = 0
-			aggregator
-				.setConfig(state?.config as string)
-				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, ({ name, json }) => {
-					setCaption(`Retrieved ${magenta(name)} config`)
-				})
-				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, ({ name, json }) => {
-					setCaption(`Retrieved app ${magenta(name)} config`)
-					totalPreloadPages = json?.preload?.length || 0
-					totalPages = json?.page?.length || 0
-				})
-				.on(c.aggregator.event.RETRIEVE_APP_OBJECT_FAILED, (name) => {
-					failedCount++
-				})
-				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, ({ name }) => {
-					currentCount++
-					setCaption(
-						`Received page ${magenta(name)} (${highlight(
-							`${currentCount}/${totalPages}`,
-						)})`,
-					)
-				})
-				.init({ loadPages: true })
-				.then(([rootConfig, appConfig]) => {
-					newline()
-					setCaption(
-						`Finished with ${magenta(currentCount)} objects ${
-							failedCount
-								? `(${red(failedCount)} objects were unsuccessful)`
-								: ''
-						}`,
-					)
-					newline()
-					setCaption(captioning('Checking assets and urls...'))
-					newline()
-					const docNameMapper = new Map<yaml.Document, string>()
-					const ymlDocs = Object.entries(aggregator.get('yml')).reduce(
-						(acc, [name, yml]) => {
-							const doc = yaml.parseDocument(yml)
-							docNameMapper.set(doc, name)
-							return acc.concat(doc)
-						},
-						[] as yaml.Document[],
-					)
-					scripts.data(ymlDocs)
-					scripts
-						.use(scriptObjs[scriptId.RETRIEVE_URLS])
-						.on('start', (store) => {
-							if (!store.urls) store.urls = []
-						})
-						.on('end', (store) => {
-							store.urls = store.urls.sort()
-							const assets = groupAssets(store.urls)
-							const { images, other, pdfs, videos } = assets
-							setCaption(`Found ${magenta(images.length)} image links`)
-							setCaption(`Found ${magenta(pdfs.length)} pdf links`)
-							setCaption(`Found ${magenta(videos.length)} video links`)
-							setCaption(`Found ${magenta(other.length)} other asset links`)
-							newline()
-							setCaption(
-								`Total links: ${magenta(store.urls.length)} in config ${magenta(
-									state?.config,
-								)}`,
-							)
-							newline()
-							setCaption(captioning(`Downloading assets...`))
-							newline()
-							setStep(c.serverScript.step.DOWNLOAD_ASSETS, {
-								assets: store.urls,
-							})
-						})
-						.run()
-				})
-		},
-		[state],
-	)
-
 	const setStep = React.useCallback(
-		(step: T.State['step'], stepContext?: any) => {
+		(step: ST.State['step'], stepContext?: any) => {
 			dispatch({
 				type: c.serverScript.action.SET_STEP,
 				step,
@@ -249,43 +177,119 @@ function StartServer() {
 		[],
 	)
 
-	const onConfirmUseServerDirFiles = React.useCallback(() => {
-		let serverFiles = state?.dirFiles || []
-		let assetFiles = [] as string[]
-		if (serverFiles.includes('assets')) {
-			assetFiles = assetFiles.concat(
-				fs.readdirSync(getFilePath(cliConfig.server.dir, 'assets')),
-			)
-		}
-		console.log('asset files', assetFiles)
-	}, [state])
-
-	const onCreateServerDir = React.useCallback(
-		async ({ value }) => {
-			if (value === 'no') {
-				setCaption('Starting server from memory...')
-				setStep('')
-			} else {
-				await fs.ensureDir(c.DEFAULT_SERVER_PATH)
-				setCaption(`Server dir created at ${magenta(c.DEFAULT_SERVER_PATH)}`)
-				await fs.ensureDir(getAssetsFolder(c.DEFAULT_SERVER_PATH))
-				setCaption(
-					`Assets folder created at ${magenta(
-						getAssetsFolder(c.DEFAULT_SERVER_PATH),
-					)}`,
-				)
-				setCaption(`Fetching contents from "${magenta(state?.config)}" config`)
-			}
-		},
-		[state],
-	)
-
 	React.useEffect(() => {
-		setCaption(`${deepOrange('STEP')}: ${magenta(state?.step)}`)
+		setCaption(`${deepOrange('STEP')}: ${magenta(state?.step)}\n`)
 		setCaption(`Server dir: ${magenta(getFilePath(cliConfig.server.dir))}`)
 		setCaption(`Server host: ${magenta(cliConfig.server.host)}`)
 		setCaption(`Server port: ${magenta(cliConfig.server.port)}`)
 	}, [])
+
+	React.useEffect(() => {
+		if (state?.step === c.serverScript.step.SCAN_ASSETS) {
+			const docNameMapper = new Map<yaml.Document, string>()
+			const ymlDocs = Object.entries(aggregator.get('yml')).reduce(
+				(acc, [name, yml]) => {
+					const doc = yaml.parseDocument(yml)
+					docNameMapper.set(doc, name)
+					return acc.concat(doc)
+				},
+				[] as yaml.Document[],
+			)
+			const scripts = createObjectScripts()
+			scripts.data(ymlDocs)
+			scripts
+				.use(scriptObjs[scriptId.RETRIEVE_URLS])
+				.on('start', (store) => {
+					if (!store.urls) store.urls = []
+				})
+				.on('end', (store) => {
+					store.urls = store.urls.sort()
+					const assets = groupAssets(store.urls)
+					const { images, other, pdfs, videos } = assets
+					newline()
+					setCaption(`Found ${magenta(images.length)} image assets`)
+					setCaption(`Found ${magenta(pdfs.length)} pdf assets`)
+					setCaption(`Found ${magenta(videos.length)} video assets`)
+					setCaption(`Found ${magenta(other.length)} other assets`)
+					setCaption(
+						`\n${magenta(store.urls.length)} overall assets in config ${magenta(
+							state?.config,
+						)}\n`,
+					)
+					const rootConfig = aggregator.get(state.config)
+					const myBaseUrl = rootConfig?.myBaseUrl || ''
+					const dirAssets = fs.readdirSync(getAssetsFolder())
+					const [existentAssets, missingAssets] = store.urls.reduce(
+						(acc: [string[], string[]], asset = '') => {
+							if (asset.startsWith('http') && !/aitmed/i.test(asset)) {
+								return acc
+							}
+							if (asset.includes('~/') && myBaseUrl) {
+								if (asset.startsWith('~/')) {
+									asset = asset.replace('~/', myBaseUrl)
+								} else {
+									asset = myBaseUrl + asset.substring(asset.indexOf('~/') + 2)
+								}
+							}
+							const pathname = asset.substring(asset.lastIndexOf('/') + 1)
+							if (dirAssets.includes(encodeURIComponent(pathname))) {
+								acc[0].push(asset)
+							} else {
+								acc[1].push(asset)
+							}
+							return acc
+						},
+						[[], []],
+					)
+					setCaption(
+						`You have ${yellow(existentAssets.length)} of ${yellow(
+							store.urls.length,
+						)} assets`,
+					)
+					setCaption(
+						captioning(
+							`\nDownloading ${yellow(
+								missingAssets.length,
+							)} missing assets...\n`,
+						),
+					)
+					setStep(c.serverScript.step.DOWNLOAD_ASSETS, {
+						assets: missingAssets,
+					})
+					toggleSpinner()
+				})
+				.run()
+		}
+	}, [state?.step])
+
+	const getAssetType = (url: string) => {
+		if (isImg(url)) return 'image'
+		else if (isVid(url)) return 'video'
+		else if (isPdf(url)) return 'pdf'
+		else if (isJs(url)) return 'javascript'
+		else if (url.endsWith('.html')) return 'html'
+		else if (url.endsWith('.yml')) return 'yaml'
+		else if (url.endsWith('.json')) return 'json'
+		else return ''
+	}
+
+	const onDownloadStart = React.useCallback(
+		async ({
+			asset,
+			link,
+			to,
+		}: Parameters<DownloadAssetProps['onDownload']>[0]) => {
+			setCaption(`Downloading ${yellow(getAssetType(link))}: ${magenta(link)}`)
+		},
+		[],
+	)
+
+	const onDownloadError = React.useCallback(
+		async ({ error, asset }: Parameters<DownloadAssetProps['onError']>[0]) => {
+			setCaption(`[${red(error.name)}]: ${yellow(error.message)} (${asset})`)
+		},
+		[],
+	)
 
 	const Container = React.memo(
 		({
@@ -301,6 +305,7 @@ function StartServer() {
 	)
 
 	const currentStep = state?.step || ''
+	const assetsDir = getAssetsFolder()
 
 	switch (currentStep) {
 		case c.serverScript.step.CONFIG:
@@ -308,18 +313,22 @@ function StartServer() {
 				<Container label="Which config should we use?">
 					<UncontrolledTextInput
 						onSubmit={onSetConfig}
-						placeholder="Enter the config here"
+						placeholder={`Enter the config here ${white('(example: meet2d)')}`}
 					/>
 				</Container>
 			)
 		case c.serverScript.step.DOWNLOAD_ASSETS:
 			return (
-				<StartServerDownloadAssets
-					{...state?.stepContext[c.serverScript.step.DOWNLOAD_ASSETS]}
+				<DownloadAsset
+					urls={
+						state?.stepContext[c.serverScript.step.DOWNLOAD_ASSETS]
+							?.assets as string[]
+					}
+					to={assetsDir}
+					onDownload={onDownloadStart}
+					onError={onDownloadError}
 				/>
 			)
-		case c.serverScript.step.LOAD_FILES:
-			return <StartServerLoadFiles config={state?.config} />
 	}
 
 	return null

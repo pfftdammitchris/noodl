@@ -89,6 +89,7 @@ export const serverScript = {
 	step: {
 		CONFIG: 'config',
 		LOAD_FILES: 'load.files',
+		SCAN_ASSETS: 'scan.assets',
 		DOWNLOAD_ASSETS: 'download.assets',
 	},
 } as const

@@ -13,7 +13,7 @@ function Settings({ defaults }: SettingsProps) {
 	React.useEffect(() => {
 		const consumerConfig = getConsumerConfig()
 		cliConfig.merge({ ...defaults, ...consumerConfig })
-		setCaption('Initialized')
+		setCaption('\nInitialized\n')
 	}, [])
 
 	return null

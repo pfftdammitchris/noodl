@@ -4,6 +4,7 @@ import download from 'download'
 import produce, { Draft } from 'immer'
 import uniq from 'lodash/uniq'
 import { WritableDraft } from 'immer/dist/internal'
+import Progress from 'ink-progress-bar'
 import { Box, Static } from 'ink'
 import {
 	isImg,
@@ -122,7 +123,7 @@ function StartServerDownloadAssets({ assets = [] }: { assets: string[] }) {
 		}
 	}, [state.pending, state.downloading])
 
-	return null
+	return <Progress />
 }
 
 export default StartServerDownloadAssets
