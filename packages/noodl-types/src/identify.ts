@@ -1,39 +1,46 @@
-import { minimalStyleKeys, minimalBorderStyleKeys } from './_internal/constants'
+import {
+	componentTypes,
+	minimalStyleKeys,
+	minimalBorderStyleKeys,
+} from './_internal/constants'
+import { ComponentType } from './constantTypes'
+import { StyleObject } from './styleTypes'
 import * as T from '.'
 import * as u from './_internal'
-import { StyleObject } from './styleTypes'
 
 export const Identify = (function () {
+	const identity = <V = any>(x: V): V => x
+	const composeSomes = (...fns: any[]) => (arg: any) =>
+		fns.some((fn) => fn(arg))
+
 	const o = {
 		action: {
 			any(v: unknown): v is T.ActionObject {
-				return u.isPlainObject(v) && 'actionType' in v
+				return u.isObj(v) && 'actionType' in v
 			},
 			builtIn(v: unknown): v is T.BuiltInActionObject {
-				return (
-					u.isPlainObject(v) && ('funcName' in v || v.actionType === 'builtIn')
-				)
+				return u.isObj(v) && ('funcName' in v || v.actionType === 'builtIn')
 			},
 			evalObject(v: unknown): v is T.EvalActionObject {
-				return u.isPlainObject(v) && v.actionType === 'evalObject'
+				return u.isObj(v) && v.actionType === 'evalObject'
 			},
 			pageJump(v: unknown): v is T.PageJumpActionObject {
-				return u.isPlainObject(v) && v.actionType === 'pageJump'
+				return u.isObj(v) && v.actionType === 'pageJump'
 			},
 			popUp(v: unknown): v is T.PopupActionObject {
-				return u.isPlainObject(v) && v.actionType === 'popUp'
+				return u.isObj(v) && v.actionType === 'popUp'
 			},
 			popUpDismiss(v: unknown): v is T.PopupDismissActionObject {
-				return u.isPlainObject(v) && v.actionType === 'popUpDismiss'
+				return u.isObj(v) && v.actionType === 'popUpDismiss'
 			},
 			refresh(v: unknown): v is T.RefreshActionObject {
-				return u.isPlainObject(v) && v.actionType === 'refresh'
+				return u.isObj(v) && v.actionType === 'refresh'
 			},
 			saveObject(v: unknown): v is T.SaveActionObject {
-				return u.isPlainObject(v) && v.actionType === 'saveObject'
+				return u.isObj(v) && v.actionType === 'saveObject'
 			},
 			updateObject(v: unknown): v is T.UpdateActionObject {
-				return u.isPlainObject(v) && v.actionType === 'updateObject'
+				return u.isObj(v) && v.actionType === 'updateObject'
 			},
 		},
 		actionChain(v: unknown) {
@@ -58,71 +65,71 @@ export const Identify = (function () {
 		},
 		component: {
 			button(value: unknown): value is T.ButtonComponentObject {
-				return u.isPlainObject(value) && value.type === 'button'
+				return u.isObj(value) && value.type === 'button'
 			},
 			divider(value: unknown): value is T.DividerComponentObject {
-				return u.isPlainObject(value) && value.type === 'divider'
+				return u.isObj(value) && value.type === 'divider'
 			},
 			footer(value: unknown): value is T.FooterComponentObject {
-				return u.isPlainObject(value) && value.type === 'footer'
+				return u.isObj(value) && value.type === 'footer'
 			},
 			header(value: unknown): value is T.HeaderComponentObject {
-				return u.isPlainObject(value) && value.type === 'header'
+				return u.isObj(value) && value.type === 'header'
 			},
 			image(value: unknown): value is T.ImageComponentObject {
-				return u.isPlainObject(value) && value.type === 'image'
+				return u.isObj(value) && value.type === 'image'
 			},
 			label(value: unknown): value is T.LabelComponentObject {
-				return u.isPlainObject(value) && value.type === 'label'
+				return u.isObj(value) && value.type === 'label'
 			},
 			list(value: unknown): value is T.ListComponentObject {
-				return u.isPlainObject(value) && value.type === 'list'
+				return u.isObj(value) && value.type === 'list'
 			},
 			listItem(value: unknown): value is T.ListItemComponentObject {
-				return u.isPlainObject(value) && value.type === 'listItem'
+				return u.isObj(value) && value.type === 'listItem'
 			},
 			plugin(value: unknown): value is T.PluginComponentObject {
-				return u.isPlainObject(value) && value.type === 'plugin'
+				return u.isObj(value) && value.type === 'plugin'
 			},
 			pluginHead(value: unknown): value is T.PluginHeadComponentObject {
-				return u.isPlainObject(value) && value.type === 'pluginHead'
+				return u.isObj(value) && value.type === 'pluginHead'
 			},
 			pluginBodyTail(value: unknown): value is T.PluginBodyTailComponentObject {
-				return u.isPlainObject(value) && value.type === 'pluginBodyTail'
+				return u.isObj(value) && value.type === 'pluginBodyTail'
 			},
 			popUp(value: unknown): value is T.PopUpComponentObject {
-				return u.isPlainObject(value) && value.type === 'popUp'
+				return u.isObj(value) && value.type === 'popUp'
 			},
 			register(value: unknown): value is T.RegisterComponentObject {
-				return u.isPlainObject(value) && value.type === 'register'
+				return u.isObj(value) && value.type === 'register'
 			},
 			select(value: unknown): value is T.SelectComponentObject {
-				return u.isPlainObject(value) && value.type === 'select'
+				return u.isObj(value) && value.type === 'select'
 			},
 			scrollView(value: unknown): value is T.ScrollViewComponentObject {
-				return u.isPlainObject(value) && value.type === 'scrollView'
+				return u.isObj(value) && value.type === 'scrollView'
 			},
 			textField(value: unknown): value is T.TextFieldComponentObject {
-				return u.isPlainObject(value) && value.type === 'textField'
+				return u.isObj(value) && value.type === 'textField'
 			},
 			textView(value: unknown): value is T.TextViewComponentObject {
-				return u.isPlainObject(value) && value.type === 'textView'
+				return u.isObj(value) && value.type === 'textView'
 			},
 			video(value: unknown): value is T.VideoComponentObject {
-				return u.isPlainObject(value) && value.type === 'video'
+				return u.isObj(value) && value.type === 'video'
 			},
 			view(value: unknown): value is T.ViewComponentObject {
-				return u.isPlainObject(value) && value.type === 'view'
+				return u.isObj(value) && value.type === 'view'
 			},
 		},
 		emit(v: unknown): v is T.EmitObject {
-			return u.isPlainObject(v) && 'emit' in v
+			return u.isObj(v) && 'emit' in v
 		},
 		goto(v: unknown): v is T.GotoObject {
-			return u.isPlainObject(v) && 'goto' in v
+			return u.isObj(v) && 'goto' in v
 		},
 		if(v: unknown): v is T.IfObject {
-			return u.isPlainObject(v) && 'if' in v
+			return u.isObj(v) && 'if' in v
 		},
 		reference(value: unknown): value is string {
 			if (typeof value !== 'string') return false
@@ -141,11 +148,11 @@ export const Identify = (function () {
 		},
 		style: {
 			any(v: unknown): v is StyleObject {
-				return u.isPlainObject(v) && u.hasAnyKeys(minimalStyleKeys, v)
+				return u.isObj(v) && u.hasAnyKeys(minimalStyleKeys, v)
 			},
 			border(v: unknown) {
 				return (
-					u.isPlainObject(v) &&
+					u.isObj(v) &&
 					u.hasAnyKeys(['color', 'style', 'width'], v) &&
 					!u.hasAnyKeys(
 						u.excludeKeys(minimalStyleKeys, minimalBorderStyleKeys),
@@ -155,39 +162,72 @@ export const Identify = (function () {
 			},
 		},
 		toast(value: unknown): value is { toast: T.ToastObject } {
-			return u.isPlainObject(value) && 'message' in value
+			return u.isObj(value) && 'message' in value
 		},
 	}
 
-	const paths = {
-		actionChain() {},
-		component: {
-			any() {},
-			button() {},
+	const folds = {
+		actionChain(
+			v: unknown,
+		): v is (T.ActionObject | T.EmitObject | T.GotoObject)[] {
+			return u.isArr(v) && v.some(composeSomes(o.action.any, o.emit, o.goto))
 		},
+		component: Object.assign(
+			{
+				any(v: unknown): v is T.AnyComponentObject {
+					return (
+						u.isObj(v) &&
+						'type' in v &&
+						componentTypes.some((t) => v.type === t)
+					)
+				},
+			},
+			Object.assign(
+				{} as {
+					[K in ComponentType]: <K extends T.ComponentType>(
+						v: unknown,
+					) => v is Omit<T.AnyComponentObject, 'type'> & { type: K }
+				},
+				componentTypes.reduce(
+					(acc, type) =>
+						Object.assign(acc, {
+							[type](v: unknown) {
+								return u.isObj(v) && v['type'] === type
+							},
+						}),
+					{},
+				),
+			),
+		),
 		emit(value: unknown): value is { emit: T.EmitObject } {
-			return u.isPlainObject(value) && 'emit' in value
+			return u.isObj(value) && 'emit' in value
 		},
 		goto(value: unknown): value is { goto: T.GotoUrl | T.GotoObject } {
-			return u.isPlainObject(value) && 'goto' in value
+			return u.isObj(value) && 'goto' in value
 		},
 		path(value: unknown): value is { path: T.Path } {
-			return u.isPlainObject(value) && 'path' in value
+			return u.isObj(value) && 'path' in value
 		},
 		style: {
 			any() {},
 			border() {},
 		},
 		textFunc(value: unknown): value is { path: T.Path } {
-			return u.isPlainObject(value) && 'path' in value
+			return u.isObj(value) && 'path' in value
 		},
 		toast(value: unknown): value is { toast: T.ToastObject } {
-			return u.isPlainObject(value) && 'toast' in value
+			return u.isObj(value) && 'toast' in value
 		},
+	}
+
+	const a = {} as any
+
+	if (folds.component.button(a)) {
+		// a.type = 'divider'
 	}
 
 	return {
 		...o,
-		paths,
+		folds,
 	}
 })()

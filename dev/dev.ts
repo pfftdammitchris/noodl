@@ -9,6 +9,7 @@ import { getFilePath, loadFiles } from '../src/utils/common'
 enablePatches()
 
 const pathToDataFile = getFilePath('packages/noodl-types/src/data.json')
+let dataFile = {}
 
 const o = createObjectScripts({
 	pathToDataFile: getFilePath('packages/noodl-types/src/data.json'),
@@ -18,20 +19,21 @@ const o = createObjectScripts({
 	}),
 })
 
-Object.values(scriptId).forEach((id) => o.use(scripts[id]))
+Object.values({
+	actionTypes: scriptId.ACTION_TYPES,
+	componentTypes: scriptId.COMPONENT_TYPES,
+	componentKeys: scriptId.COMPONENT_KEYS,
+	styleKeys: scriptId.STYLE_PROPERTIES,
+} as const).forEach((id) => o.use(scripts[id]))
 
 o.on('start', (store) => {
 	fs.ensureFileSync(pathToDataFile as string)
 	try {
-		_internal.dataFile = JSON.parse(
-			fs.readFileSync(pathToDataFile as string, 'utf8'),
-		)
+		dataFile = JSON.parse(fs.readFileSync(pathToDataFile as string, 'utf8'))
 	} catch (error) {
-		fs.writeJsonSync(
-			pathToDataFile as string,
-			(_internal.dataFile = {} as Store),
-			{ spaces: 2 },
-		)
+		fs.writeJsonSync(pathToDataFile as string, (dataFile = {} as Store), {
+			spaces: 2,
+		})
 	}
 	// Temp do a fresh start everytime for now
 	Object.keys(store).forEach((key) => delete store[key])

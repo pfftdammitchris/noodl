@@ -6,3 +6,5 @@ server
 noodl.json
 introspection.json
 generated
+dev/compiler.ts
+dev/ymlDoc.ts

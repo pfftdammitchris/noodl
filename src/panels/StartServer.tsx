@@ -73,7 +73,7 @@ const reducer = produce(
 
 function StartServer() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { aggregator, setCaption, setErrorCaption, toggleSpinner } = useCtx()
+	const { aggregator, setCaption, toggleSpinner } = useCtx()
 
 	const getAssetsFolder = () => path.join(cliConfig.server.dir, 'assets')
 
@@ -84,27 +84,28 @@ function StartServer() {
 		dispatch({ type: c.serverScript.action.SET_CONFIG, config })
 		setCaption(`\nConfig set to ${magenta(config)}`)
 
-		const serverPath = getFilePath(cliConfig.server.dir)
-		const assetsPath = getAssetsFolder()
-		const serverPathFound = fs.existsSync(serverPath)
-		const assetsPathFound = fs.existsSync(assetsPath)
+		const serverFolder = getFilePath(cliConfig.server.dir)
+		const assetsFolder = getAssetsFolder()
+		const serverFolderExists = fs.existsSync(serverFolder)
+		const assetsFolderExists = fs.existsSync(assetsFolder)
 
 		// Not found
-		if (!serverPathFound) {
-			fs.ensureDirSync(serverPath)
-			setCaption(`Created server folder at ${magenta(serverPath)}`)
+		if (!serverFolderExists) {
+			fs.ensureDirSync(serverFolder)
+			setCaption(`Created server folder at ${magenta(serverFolder)}`)
 		}
-		if (!assetsPathFound) {
-			fs.ensureDirSync(magenta(assetsPath))
-			setCaption(`Created assets folder at ${magenta(assetsPath)}`)
+		if (!assetsFolderExists) {
+			fs.ensureDirSync(assetsFolder)
+			setCaption(`Created assets folder at ${magenta(assetsFolder)}`)
 		}
 
 		// Found
 		const configFiles = await globby(
-			`${path.join(serverPath, `**/*/${config}.yml`)}`,
+			`${path.join(serverFolder, `**/*/${config}.yml`)}`,
 		)
 
 		if (!configFiles.length) {
+			newline()
 			setCaption(
 				`\nNo config files were found for config ${magenta(
 					config,
@@ -258,7 +259,7 @@ function StartServer() {
 						assets: missingAssets,
 					})
 					toggleSpinner()
-					import('../server')
+					// import('../server')
 				})
 				.run()
 		}

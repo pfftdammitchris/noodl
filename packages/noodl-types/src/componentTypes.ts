@@ -1,6 +1,28 @@
 import { ActionObject } from './actionTypes'
 import { StyleObject } from './styleTypes'
 
+export type AnyComponentObject =
+	| ButtonComponentObject
+	| DividerComponentObject
+	| FooterComponentObject
+	| HeaderComponentObject
+	| ImageComponentObject
+	| LabelComponentObject
+	| ListComponentObject
+	| ListItemComponentObject
+	| PageComponentObject
+	| PluginComponentObject
+	| PluginHeadComponentObject
+	| PluginBodyTailComponentObject
+	| PopUpComponentObject
+	| RegisterComponentObject
+	| SelectComponentObject
+	| ScrollViewComponentObject
+	| TextFieldComponentObject
+	| TextViewComponentObject
+	| VideoComponentObject
+	| ViewComponentObject
+
 export interface ComponentObject<T extends string = any> {
 	type: T
 	style?: StyleObject

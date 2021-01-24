@@ -1,3 +1,26 @@
+export const componentTypes = [
+	'button',
+	'divider',
+	'footer',
+	'header',
+	'image',
+	'label',
+	'list',
+	'listItem',
+	'page',
+	'plugin',
+	'pluginHead',
+	'pluginBodyTail',
+	'popUp',
+	'register',
+	'select',
+	'scrollView',
+	'textField',
+	'textView',
+	'video',
+	'view',
+] as const
+
 export const minimalStyleKeys = [
 	'backgroundColor',
 	'border',
