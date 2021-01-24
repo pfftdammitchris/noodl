@@ -1,6 +1,6 @@
 {
 	"name": "chai-noodl",
-	"version": "1.0.15",
+	"version": "1.0.16",
 	"description": "Chai unit test plugin for the noodl-ui library",
 	"keywords": [
 		"noodl",
