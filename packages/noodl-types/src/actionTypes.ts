@@ -1,34 +1,51 @@
-import { IfObject } from './uncategorizedTypes'
-
-export interface ActionObject<T extends string = any> {
-	actionType: T
+export interface UncommonActionObjectProps {
+	contentType?: string // ex: "messageHidden"
 	dataKey?: any
 	dataObject?: any
+	destination?: string
+	funcName: string
+	object?: any
+	popUpView?: string
 	reload?: boolean
 	viewTag?: string
 	wait?: boolean | number
+}
+
+export type AnyActionObject =
+	| BuiltInActionObject
+	| EvalActionObject
+	| PageJumpActionObject
+	| PopupActionObject
+	| PopupDismissActionObject
+	| RefreshActionObject
+	| SaveActionObject
+
+export interface ActionObject<T extends string = any> {
+	actionType: T
 	[key: string]: any
 }
 
-export interface BuiltInActionObject<FuncName extends string = any>
-	extends ActionObject {
+export interface BuiltInActionObject
+	extends ActionObject,
+		Pick<
+			UncommonActionObjectProps,
+			'contentType' | 'funcName' | 'reload' | 'viewTag'
+		> {
 	actionType: 'builtIn'
-	funcName: FuncName
-	contentType?: string // ex: "messageHidden"
-	viewTag?: string
 	[key: string]: any
 }
 
-export interface EvalActionObject extends ActionObject {
+export interface EvalActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'object'> {
 	actionType: 'evalObject'
-	object?: Function | IfObject
 	[key: string]: any
 }
 
-export interface PageJumpActionObject<D extends string = any>
-	extends ActionObject {
+export interface PageJumpActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'destination'> {
 	actionType: 'pageJump'
-	destination: D
 	[key: string]: any
 }
 
@@ -39,10 +56,10 @@ export interface PopupActionObject<V extends string = any>
 	[key: string]: any
 }
 
-export interface PopupDismissActionObject<V extends string = any>
-	extends ActionObject {
+export interface PopupDismissActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'popUpView'> {
 	actionType: 'popUpDismiss'
-	popUpView: V
 	[key: string]: any
 }
 
@@ -51,21 +68,19 @@ export interface RefreshActionObject extends ActionObject {
 	[key: string]: any
 }
 
-export interface SaveActionObject extends ActionObject {
+export interface SaveActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'object'> {
 	actionType: 'saveObject'
-	object?: [string | ((...args: any[]) => any)] | ((...args: any[]) => any)
 	[key: string]: any
 }
 
-export type UpdateActionObject<T = any> =
-	| {
+export type UpdateActionObject =
+	| ({
 			actionType: 'updateObject'
-			dataObject?: string // ex: "BLOB"
-			dataKey?: string
 			[key: string]: any
-	  }
-	| {
+	  } & Pick<UncommonActionObjectProps, 'dataObject' | 'dataKey'>)
+	| ({
 			actionType: 'updateObject'
-			object?: T
 			[key: string]: any
-	  }
+	  } & Pick<UncommonActionObjectProps, 'object'>)

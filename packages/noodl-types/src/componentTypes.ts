@@ -1,5 +1,13 @@
 import { ActionObject } from './actionTypes'
-import { StyleObject } from './styleTypes'
+import { EventType } from './constantTypes'
+import { StyleObject, StyleTextAlign, StyleTextAlignObject } from './styleTypes'
+import {
+	ActionChain,
+	EmitObject,
+	GotoObject,
+	IfObject,
+	TextBoardObject,
+} from './uncategorizedTypes'
 
 export type AnyComponentObject =
 	| ButtonComponentObject
@@ -23,6 +31,33 @@ export type AnyComponentObject =
 	| VideoComponentObject
 	| ViewComponentObject
 
+export type UncommonComponentObjectProps = {
+	[key in EventType]: ActionChain
+} & {
+	actions?: (ActionObject | EmitObject | GotoObject)[]
+	contentType?: string
+	dataKey?: string
+	isEditable?: boolean
+	iteratorVar?: string
+	listObject?: '' | any[]
+	onEvent?: string
+	optionKey?: string
+	options?: any[]
+	path?: string | IfObject | EmitObject
+	pathSelected?: string
+	placeholder?: string | EmitObject
+	popUpView?: string
+	poster?: string
+	refresh?: boolean
+	required?: boolean
+	text?: string
+	textBoard?: TextBoardObject
+	textAlign?: StyleTextAlign | StyleTextAlignObject
+	'text=func'?: string
+	viewTag?: string
+	videoFormat?: string
+}
+
 export interface ComponentObject<T extends string = any> {
 	type: T
 	style?: StyleObject
@@ -30,7 +65,9 @@ export interface ComponentObject<T extends string = any> {
 	[key: string]: any
 }
 
-export interface ButtonComponentObject extends ComponentObject {
+export interface ButtonComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'contentType' | 'text'> {
 	type: 'button'
 	[key: string]: any
 }
@@ -50,21 +87,30 @@ export interface HeaderComponentObject extends ComponentObject {
 	[key: string]: any
 }
 
-export interface ImageComponentObject extends ComponentObject {
+export interface ImageComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'path'> {
 	type: 'image'
-	path: string
 	[key: string]: any
 }
 
-export interface LabelComponentObject extends ComponentObject {
+export interface LabelComponentObject
+	extends ComponentObject,
+		Pick<
+			UncommonComponentObjectProps,
+			'contentType' | 'dataKey' | 'text' | 'textBoard' | 'text=func'
+		> {
 	type: 'label'
 	[key: string]: any
 }
 
-export interface ListComponentObject extends ComponentObject {
+export interface ListComponentObject
+	extends ComponentObject,
+		Pick<
+			UncommonComponentObjectProps,
+			'contentType' | 'iteratorVar' | 'listObject'
+		> {
 	type: 'list'
-	iteratorVar: String
-	listObject: any[]
 	[key: string]: any
 }
 
@@ -73,39 +119,51 @@ export interface ListItemComponentObject extends ComponentObject {
 	[key: string]: any
 }
 
-export interface PageComponentObject extends ComponentObject {
+export interface PageComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'path'> {
 	type: 'page'
 	[key: string]: any
 }
 
-export interface PluginComponentObject extends ComponentObject {
+export interface PluginComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'path'> {
 	type: 'plugin'
 	[key: string]: any
 }
 
-export interface PluginHeadComponentObject extends ComponentObject {
+export interface PluginHeadComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'path'> {
 	type: 'pluginHead'
 	[key: string]: any
 }
 
-export interface PluginBodyTailComponentObject extends ComponentObject {
+export interface PluginBodyTailComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'path'> {
 	type: 'pluginBodyTail'
 	[key: string]: any
 }
 
-export interface PopUpComponentObject extends ComponentObject {
+export interface PopUpComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'popUpView'> {
 	type: 'popUp'
 	[key: string]: any
 }
 
-export interface RegisterComponentObject extends ComponentObject {
+export interface RegisterComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'actions' | 'onEvent'> {
 	type: 'register'
-	onEvent?: string
-	actions?: ActionObject[]
 	[key: string]: any
 }
 
-export interface SelectComponentObject extends ComponentObject {
+export interface SelectComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'optionKey' | 'options'> {
 	type: 'select'
 	[key: string]: any
 }
@@ -115,7 +173,9 @@ export interface ScrollViewComponentObject extends ComponentObject {
 	[key: string]: any
 }
 
-export interface TextFieldComponentObject extends ComponentObject {
+export interface TextFieldComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'dataKey' | 'placeholder'> {
 	type: 'textField'
 	[key: string]: any
 }
@@ -125,7 +185,9 @@ export interface TextViewComponentObject extends ComponentObject {
 	[key: string]: any
 }
 
-export interface VideoComponentObject extends ComponentObject {
+export interface VideoComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'path' | 'poster' | 'videoFormat'> {
 	type: 'video'
 	[key: string]: any
 }

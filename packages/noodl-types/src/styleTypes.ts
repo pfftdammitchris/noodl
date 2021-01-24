@@ -17,6 +17,8 @@ export interface StyleObject {
 		height?: string
 	}
 	display?: string // TODO - check if handling
+	flex?: string
+	flexFlow?: any
 	fontColor?: string // TODO - check if handling
 	fontSize?: string
 	fontFamily?: string
@@ -24,8 +26,12 @@ export interface StyleObject {
 	fontWeight?: string // TODO - check if handling
 	height?: string
 	isHidden?: boolean
+	justifyContent?: string
 	left?: string
+	letterSpacing?: string
 	lineHeight?: string
+	marginLeft?: string
+	marginTop?: string
 	outline?: string
 	padding?: string // TODO - check if handling
 	paddingLeft?: string // TODO - check if handling
@@ -35,6 +41,7 @@ export interface StyleObject {
 	shadow?: string // ex: "false"
 	textAlign?: StyleTextAlign
 	textColor?: string
+	textDecoration?: string
 	textIndent?: string // TODO - check if handling
 	top?: string
 	width?: string

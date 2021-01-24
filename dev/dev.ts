@@ -21,8 +21,10 @@ const o = createObjectScripts({
 
 Object.values({
 	actionTypes: scriptId.ACTION_TYPES,
+	// actionObjects: scriptId.ACTION_OBJECTS,
 	componentTypes: scriptId.COMPONENT_TYPES,
 	componentKeys: scriptId.COMPONENT_KEYS,
+	// componentObjects: scriptId.COMPONENT_OBJECTS,
 	styleKeys: scriptId.STYLE_PROPERTIES,
 } as const).forEach((id) => o.use(scripts[id]))
 
