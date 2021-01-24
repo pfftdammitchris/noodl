@@ -139,6 +139,14 @@ export const Identify = (function () {
 			if (value.endsWith('@')) return true
 			return false
 		},
+		textBoard(v: unknown) {
+			return u.isArr(v) && v.some((o) => o.textBoardItem)
+		},
+		textBoardItem(v: unknown) {
+			if (u.isObj(v)) return 'br' in v
+			if (u.isStr(v)) return v === 'br'
+			return false
+		},
 		url(v: unknown): v is string {
 			return (
 				typeof v === 'string' &&

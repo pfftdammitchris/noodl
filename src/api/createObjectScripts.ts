@@ -81,6 +81,7 @@ const createObjectScripts = function <Store = any>({
 			} else if (event === 'end') {
 				if (!cbs.end.includes(fn)) cbs.end.push(fn)
 			}
+
 			return o
 		},
 		run() {
