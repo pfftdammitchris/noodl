@@ -31,9 +31,16 @@ class RootConfigBuilder extends NOODLObject implements RootConfig {
 		baseUrl += this.#hostname + '/config'
 		baseUrl += '/'
 		baseUrl += withExt(this.config || this.#defaultConfig)
-		const { data: yml } = await axios.get(baseUrl)
-		this.yml = yml
-		this.json = yaml.parse(yml)
+
+		try {
+			this.yml = (await axios.get(baseUrl)).data
+		} catch (error) {
+			const urlArr = baseUrl.split('/')
+			urlArr.pop()
+			this.yml = (await axios.get(`${urlArr.join('/')}/aitmed.yml`)).data
+		}
+
+		this.json = yaml.parse(this.yml)
 		this.json = Object.entries(this.json || {}).reduce(
 			(acc, [key, value]: [string, any]) => {
 				acc[key] =
@@ -60,7 +67,7 @@ class RootConfigBuilder extends NOODLObject implements RootConfig {
 		return this
 	}
 
-	setConfig(configName: string) {
+	setConfigId(configName: string) {
 		this.config = configName
 		return this
 	}

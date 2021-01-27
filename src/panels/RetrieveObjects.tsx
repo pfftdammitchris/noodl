@@ -101,7 +101,7 @@ function RetrieveObjectsPanel() {
 	)
 
 	const onSubmitConfig = React.useCallback((config) => {
-		aggregator.setConfig(config)
+		aggregator.setConfigId(config)
 		dispatch({ type: stepId.SET_CONFIG, config })
 	}, [])
 

@@ -128,7 +128,7 @@ function StartServer() {
 				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, onRetrievedObject)
 				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onRetrievedObject)
 				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, onRetrievedObject)
-				.setConfig(config)
+				.setConfigId(config)
 				.setHost(cliConfig.objects.hostname)
 				.init({ loadPages: true })
 
@@ -259,7 +259,7 @@ function StartServer() {
 						assets: missingAssets,
 					})
 					toggleSpinner()
-					// import('../server')
+					import('../server')
 				})
 				.run()
 		}

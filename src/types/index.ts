@@ -9,6 +9,39 @@ export interface AnyFn {
 
 export type Aggregator = ReturnType<typeof createAggregator>
 
+export interface EcosGRPC {
+	_credentials: {}
+	hostname: string // https://ecostest.aitmed.com
+	options_: { format: 'text' }
+	methodInfoce: {
+		MethodInfo: EcosGRPCMethodInfo
+	}
+	methodInfore: {
+		MethodInfo: EcosGRPCMethodInfo
+	}
+	methodInfodx: {
+		MethodInfo: EcosGRPCMethodInfo
+	}
+	methodInfocv: {
+		MethodInfo: EcosGRPCMethodInfo
+	}
+	methodInforv: {
+		MethodInfo: EcosGRPCMethodInfo
+	}
+	methodInfocd: {
+		MethodInfo: EcosGRPCMethodInfo
+	}
+	methodInford: {
+		MethodInfo: EcosGRPCMethodInfo
+	}
+}
+
+export interface EcosGRPCMethodInfo {
+	name: string | undefined
+	a: AnyFn
+	b: AnyFn
+}
+
 export type PanelId = typeof panelId[keyof typeof panelId]
 export type EventId = typeof aggregatorEvent.event[keyof typeof aggregatorEvent.event]
 
@@ -62,6 +95,7 @@ export interface AppConfig {
 export interface RootConfig {
 	apiHost: string
 	apiPort: string
+	designSuffix?: string
 	webApiHost: string
 	appApiHost: string
 	connectiontimeout: string

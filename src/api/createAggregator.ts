@@ -30,8 +30,9 @@ const createAggregator = function (opts?: ConfigOptions) {
 		appConfig: null as any,
 	} as { rootConfig: RootConfig; appConfig: AppConfig }
 
-	let config = opts?.config || 'aitmed'
+	let configId = opts?.config || 'aitmed'
 	let host = opts?.host || 'public.aitmed.com'
+	let port = 443
 	let initialized = false
 
 	const cbIds = [] as string[]
@@ -109,6 +110,9 @@ const createAggregator = function (opts?: ConfigOptions) {
 		return o
 	}
 
+	function _get(key: 'port'): typeof port
+	function _get(key: 'configId'): typeof configId
+	function _get(key: 'host'): string
 	function _get(ext: 'json'): typeof objects.json
 	function _get(ext: 'yml'): typeof objects.yml
 	function _get(
@@ -129,13 +133,16 @@ const createAggregator = function (opts?: ConfigOptions) {
 			return initialized
 		},
 		get: _get,
-		setConfig(value: string) {
-			config = value
+		setConfigId(value: string) {
+			configId = value
 			return o
 		},
 		setHost(value: string) {
 			host = value
 			return o
+		},
+		set port(value: number) {
+			port = value
 		},
 		async init(opts?: {
 			loadPages?: boolean | { includePreloadPages?: boolean; onPage?: OnPage }
@@ -143,19 +150,19 @@ const createAggregator = function (opts?: ConfigOptions) {
 		}) {
 			api.rootConfig = new RootConfig()
 			api.appConfig = new AppConfig()
-			objects.json[config] = await api.rootConfig
-				.setConfig(config)
+			objects.json[configId] = await api.rootConfig
+				.setConfigId(configId)
 				.setHost(host)
 				.setVersion(opts?.version || 'latest')
 				.build()
-			objects.yml[config] = api.rootConfig.yml || ''
+			objects.yml[configId] = api.rootConfig.yml || ''
 			_emit(c.aggregator.event.RETRIEVED_ROOT_CONFIG, {
-				name: config,
-				json: objects.json[config],
-				yml: objects.yml[config],
+				name: configId,
+				json: objects.json[configId],
+				yml: objects.yml[configId],
 			})
 			objects.json['cadlEndpoint'] = await api.appConfig
-				.setRootConfig(objects.json[config] as any)
+				.setRootConfig(objects.json[configId] as any)
 				.build()
 			objects.yml['cadlEndpoint'] = api.appConfig.yml || ''
 			_emit(c.aggregator.event.RETRIEVED_APP_CONFIG, {
@@ -170,7 +177,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 					...(typeof opts.loadPages === 'object' ? opts.loadPages : undefined),
 				})
 			}
-			return [objects.json[config], objects.json['cadlEndpoint']] as [
+			return [objects.json[configId], objects.json['cadlEndpoint']] as [
 				rootConfig: IRootConfig,
 				appConfig: IAppConfig,
 			]

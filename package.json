@@ -14,7 +14,7 @@
 		"lib:build": "lerna exec --scope noodl-types \"npm run build\"",
 		"prestart": "rm -rf dist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
-		"start:server": "npm run codegen && ts-node-dev --respawn --transpile-only src/server/index.ts",
+		"server": "npm run codegen && ts-node-dev --respawn --transpile-only src/server/index.ts",
 		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts",
 		"dev:file": "ts-node-dev --respawn --transpile-only",
 		"test": "cross-env NODE_ENV=test ts-node-dev --respawn --transpile-only dev/runTests.ts",
@@ -27,11 +27,13 @@
 		"dist"
 	],
 	"dependencies": {
-		"apollo-server": "^2.19.2",
+		"apollo-server-express": "^2.19.2",
+		"apollo-server-plugin-base": "^0.10.4",
 		"axios": "^0.21.1",
 		"chalk": "^4.1.0",
 		"dotenv": "^8.2.0",
 		"download": "^8.0.0",
+		"express": "^4.17.1",
 		"fs-extra": "^9.1.0",
 		"globby": "^11.0.2",
 		"graphql": "^15.4.0",
@@ -51,6 +53,7 @@
 		"yaml": "^1.10.0"
 	},
 	"devDependencies": {
+		"@aitmed/ecos-lvl2-sdk": "^1.4.120",
 		"@graphql-codegen/add": "^2.0.2",
 		"@graphql-codegen/cli": "^1.19.3",
 		"@graphql-codegen/core": "^1.17.9",
