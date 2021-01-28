@@ -161,7 +161,7 @@ function RetrieveObjectsPanel() {
 					await onNOODLObject({ name: state.config, json, yml })
 				})
 				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onNOODLObject)
-				// .on(c.aggregator.event.RETRIEVED_APP_OBJECT)
+				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, onNOODLObject)
 				.init({
 					version: 'latest',
 					loadPages: {
