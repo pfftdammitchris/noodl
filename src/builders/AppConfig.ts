@@ -1,6 +1,6 @@
 import axios from 'axios'
 import yaml from 'yaml'
-import { AppConfig } from '../types'
+import { AppConfig, ServerOptions } from '../types'
 import NOODLObject from '../api/Object'
 import { replaceBaseUrlPlaceholder } from '../utils/common'
 
@@ -8,7 +8,8 @@ class AppConfigBuilder extends NOODLObject implements AppConfig {
 	assetsUrl = ''
 	baseUrl = ''
 	fileSuffix = '.yml'
-	languageSuffix = '_en'
+	server = {} as ServerOptions
+	languageSuffix = { en: '_en' }
 	preload: string[] = []
 	page: string[] = []
 	startPage = ''

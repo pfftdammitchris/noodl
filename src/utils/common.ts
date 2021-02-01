@@ -7,7 +7,7 @@ import chalk from 'chalk'
 import yaml from 'yaml'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import globby from 'globby'
-import { PlainObject } from '../types'
+import { CLIConfigObject, PlainObject } from '../types'
 
 // chalk helpers
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
@@ -53,11 +53,12 @@ export function createPlaceholderReplacer(
 	return replace
 }
 
-export function entriesDeepKeyValue(cb, obj) {
-	const result = {}
+export function entriesDeepKeyValue(cb: any, obj: any) {
+	const result = {} as any
 	if (Array.isArray(obj)) {
 		obj.forEach((o) => Object.assign(result, entriesDeepKeyValue(cb, o)))
 	} else if (isPlainObject(obj)) {
+		// @ts-expect-error
 		Object.entries(obj).forEach(([key, value], index, collection) => {
 			result[key] = cb(key, value, collection) || {}
 			if (isPlainObject(value)) {
@@ -91,6 +92,10 @@ export function forEachDeepKeyValue<O = any>(
 
 export function getFilePath(...paths: string[]) {
 	return path.normalize(path.resolve(path.join(process.cwd(), ...paths)))
+}
+
+export function getCliConfig() {
+	return yaml.parse(getFilePath('noodl.yml')) as CLIConfigObject
 }
 
 export function groupAssets(urls: string[]) {

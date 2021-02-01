@@ -56,12 +56,11 @@ export interface Context extends State {
 		value?: string
 		highlightedId?: string
 	}): void
-	server: ServerOptions
 	toggleSpinner(type?: false | string): void
 }
 
 export interface CLIConfigObject {
-	initialOption?: string
+	initialOption?: PanelId
 	server: ServerOptions
 	objects: {
 		hostname: string

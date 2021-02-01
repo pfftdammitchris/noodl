@@ -1,6 +1,5 @@
 import React from 'react'
 import yaml from 'yaml'
-import partition from 'lodash/partition'
 import fs from 'fs-extra'
 import path from 'path'
 import { Box, BoxProps } from 'ink'
@@ -32,6 +31,7 @@ import cliConfig from '../cliConfig'
 import * as c from '../constants'
 import * as ST from '../types/serverScriptTypes'
 import * as T from '../types'
+import { YAMLMap } from 'yaml/types'
 
 const initialState: ST.State = {
 	config: '',
@@ -116,6 +116,13 @@ function StartServer() {
 				name,
 				yml,
 			}: T.ObjectResult & { name: string }) => {
+				if (name === config) {
+					const doc = yaml.parseDocument(yml)
+					const contents = doc.contents as YAMLMap
+					contents.set('cadlBaseUrl', 'http://127.0.0.1:3001/')
+					contents.set('myBaseUrl', 'http://127.0.0.1:3001/')
+					yml = yaml.stringify(contents)
+				}
 				const filename = name + '.yml'
 				const filepath = getFilePath(cliConfig.server.dir, filename)
 				setCaption(
@@ -276,18 +283,13 @@ function StartServer() {
 		else return ''
 	}
 
-	const onDownloadStart = React.useCallback(
-		async ({
-			asset,
-			link,
-			to,
-		}: Parameters<DownloadAssetProps['onDownload']>[0]) => {
-			setCaption(`Downloading ${yellow(getAssetType(link))}: ${magenta(link)}`)
-		},
-		[],
-	)
+	const onDownloadStart = React.useCallback(async ({ link }: // @ts-expect-error
+	Parameters<DownloadAssetProps['onDownload']>[0]) => {
+		setCaption(`Downloading ${yellow(getAssetType(link))}: ${magenta(link)}`)
+	}, [])
 
 	const onDownloadError = React.useCallback(
+		// @ts-expect-error
 		async ({ error, asset }: Parameters<DownloadAssetProps['onError']>[0]) => {
 			setCaption(`[${red(error.name)}]: ${yellow(error.message)} (${asset})`)
 		},

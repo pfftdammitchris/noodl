@@ -1,6 +1,6 @@
 export const DEFAULT_CONFIG_HOSTNAME = 'public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
-export const DEFAULT_CONFIG_FILEPATH = 'noodl.json'
+export const DEFAULT_CONFIG_FILEPATH = 'noodl.yml'
 export const DEFAULT_GENERATED_DIR = 'generated'
 export const DEFAULT_JSON_OBJECTS_DIR = `${DEFAULT_GENERATED_DIR}/json`
 export const DEFAULT_YML_OBJECTS_DIR = `${DEFAULT_GENERATED_DIR}/yml`

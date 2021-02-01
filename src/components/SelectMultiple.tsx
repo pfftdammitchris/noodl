@@ -1,8 +1,7 @@
 import React from 'react'
-import InkSelectMultiple, { MultiSelectProps } from 'ink-multi-select'
+import InkSelectMultiple from 'ink-multi-select'
 
-// @ts-expect-error
-function SelectMultiple({ options, selected, ...rest }: MultiSelectProps) {
+function SelectMultiple({ options, selected, ...rest }: any) {
 	return (
 		<InkSelectMultiple
 			selected={selected}

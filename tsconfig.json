@@ -3,6 +3,7 @@
 		"allowSyntheticDefaultImports": true,
 		"baseUrl": "src",
 		"esModuleInterop": true,
+		"suppressImplicitAnyIndexErrors": true,
 		"jsx": "react",
 		"noEmitOnError": false,
 		"outDir": "dist",

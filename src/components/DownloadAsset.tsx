@@ -3,7 +3,6 @@ import produce from 'immer'
 import debounce from 'lodash/debounce'
 import { WritableDraft } from 'immer/dist/internal'
 import download from 'download'
-import { Static } from 'ink'
 import useCtx from '../useCtx'
 
 interface AssetObject {
