@@ -95,7 +95,9 @@ export function getFilePath(...paths: string[]) {
 }
 
 export function getCliConfig() {
-	return yaml.parse(getFilePath('noodl.yml')) as CLIConfigObject
+	return yaml.parse(
+		fs.readFileSync(getFilePath('noodl.yml'), 'utf8'),
+	) as CLIConfigObject
 }
 
 export function groupAssets(urls: string[]) {
