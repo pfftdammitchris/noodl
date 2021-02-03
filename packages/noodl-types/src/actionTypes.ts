@@ -22,6 +22,7 @@ export type AnyActionObject =
 	| PopupDismissActionObject
 	| RefreshActionObject
 	| SaveActionObject
+	| UpdateActionObject
 
 export interface ActionObject<T extends string = any> {
 	actionType: T

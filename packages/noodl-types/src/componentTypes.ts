@@ -58,7 +58,7 @@ export type UncommonComponentObjectProps = {
 }
 
 export interface ComponentObject<T extends string = any>
-	extends Record<EventType, ActionChain> {
+	extends Partial<Record<EventType, ActionChain>> {
 	type: T
 	style?: StyleObject
 	children?: any[]

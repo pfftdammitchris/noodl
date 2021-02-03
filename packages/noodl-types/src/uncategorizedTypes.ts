@@ -1,7 +1,7 @@
-import { ActionObject } from './actionTypes'
+import { AnyActionObject } from './actionTypes'
 import { StyleObject } from './styleTypes'
 
-export type ActionChain = (ActionObject | EmitObject | GotoObject)[]
+export type ActionChain = (AnyActionObject | EmitObject | GotoObject)[]
 
 export interface EmitObject {
 	emit: {
