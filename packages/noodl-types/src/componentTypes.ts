@@ -37,6 +37,7 @@ export type UncommonComponentObjectProps = {
 	actions?: (ActionObject | EmitObject | GotoObject)[]
 	contentType?: ContentType
 	dataKey?: string
+	emit?: EmitObject
 	isEditable?: boolean
 	iteratorVar?: string
 	listObject?: any[]
@@ -165,7 +166,7 @@ export interface PopUpComponentObject
 
 export interface RegisterComponentObject
 	extends ComponentObject,
-		Pick<UncommonComponentObjectProps, 'actions' | 'onEvent'> {
+		Pick<UncommonComponentObjectProps, 'emit' | 'onEvent'> {
 	type: 'register'
 	[key: string]: any
 }
