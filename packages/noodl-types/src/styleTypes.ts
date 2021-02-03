@@ -5,11 +5,11 @@ export interface StyleObject {
 	background?: string // TODO - check if handling
 	backgroundColor?: string // TODO - check if handling
 	border?: StyleBorderObject
-	borderWidth?: string // TODO - check if handling
 	borderColor?: string // TODO - check if handling
 	borderRadius?: string // TODO - check if handling
-	boxSizing?: string // TODO - check if handling
+	borderWidth?: string // TODO - check if handling
 	boxShadow?: string // TODO - check if handling
+	boxSizing?: string // TODO - check if handling
 	color?: string
 	contentSize?: {
 		// TODO - check if handling
@@ -34,8 +34,10 @@ export interface StyleObject {
 	marginTop?: string
 	outline?: string
 	padding?: string // TODO - check if handling
+	paddingTop?: string // TODO - check if handling
 	paddingLeft?: string // TODO - check if handling
 	paddingRight?: string // TODO - check if handling
+	paddingBottom?: string // TODO - check if handling
 	position?: string
 	required?: string
 	shadow?: string // ex: "false"

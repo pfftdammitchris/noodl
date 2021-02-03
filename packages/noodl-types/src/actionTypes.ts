@@ -3,10 +3,13 @@ export interface UncommonActionObjectProps {
 	dataKey?: any
 	dataObject?: any
 	destination?: string
+	dismissOnTouchOutside?: boolean
+	evolve?: boolean
 	funcName: string
 	object?: any
 	popUpView?: string
 	reload?: boolean
+	timer?: number
 	viewTag?: string
 	wait?: boolean | number
 }
@@ -29,7 +32,7 @@ export interface BuiltInActionObject
 	extends ActionObject,
 		Pick<
 			UncommonActionObjectProps,
-			'contentType' | 'funcName' | 'reload' | 'viewTag'
+			'contentType' | 'dataKey' | 'evolve' | 'funcName' | 'reload' | 'viewTag'
 		> {
 	actionType: 'builtIn'
 	[key: string]: any
@@ -37,7 +40,7 @@ export interface BuiltInActionObject
 
 export interface EvalActionObject
 	extends ActionObject,
-		Pick<UncommonActionObjectProps, 'object'> {
+		Pick<UncommonActionObjectProps, 'dataKey' | 'dataObject' | 'object'> {
 	actionType: 'evalObject'
 	[key: string]: any
 }
@@ -49,16 +52,22 @@ export interface PageJumpActionObject
 	[key: string]: any
 }
 
-export interface PopupActionObject<V extends string = any>
-	extends ActionObject {
+export interface PopupActionObject
+	extends ActionObject,
+		Pick<
+			UncommonActionObjectProps,
+			'dismissOnTouchOutside' | 'popUpView' | 'wait'
+		> {
 	actionType: 'popUp'
-	popUpView: V
 	[key: string]: any
 }
 
 export interface PopupDismissActionObject
 	extends ActionObject,
-		Pick<UncommonActionObjectProps, 'popUpView'> {
+		Pick<
+			UncommonActionObjectProps,
+			'dismissOnTouchOutside' | 'popUpView' | 'wait'
+		> {
 	actionType: 'popUpDismiss'
 	[key: string]: any
 }
@@ -75,12 +84,6 @@ export interface SaveActionObject
 	[key: string]: any
 }
 
-export type UpdateActionObject =
-	| ({
-			actionType: 'updateObject'
-			[key: string]: any
-	  } & Pick<UncommonActionObjectProps, 'dataObject' | 'dataKey'>)
-	| ({
-			actionType: 'updateObject'
-			[key: string]: any
-	  } & Pick<UncommonActionObjectProps, 'object'>)
+export interface UpdateActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'dataObject' | 'dataKey'> {}

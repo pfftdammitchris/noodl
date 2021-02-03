@@ -5,7 +5,12 @@ import fs from 'fs-extra'
 import chalk from 'chalk'
 import path from 'path'
 import createObjectScripts from '../src/api/createObjectScripts'
-import scripts, { id as scriptId, Store } from '../src/utils/scripts'
+import scripts, {
+	createActionPropComboScripts,
+	createComponentPropComboScripts,
+	id as scriptId,
+	Store,
+} from '../src/utils/scripts'
 import { getFilePath, loadFiles } from '../src/utils/common'
 
 enablePatches()
@@ -23,12 +28,13 @@ const o = createObjectScripts({
 
 Object.values({
 	actionTypes: scriptId.ACTION_TYPES,
-	// actionObjects: scriptId.ACTION_OBJECTS,
 	componentTypes: scriptId.COMPONENT_TYPES,
 	componentKeys: scriptId.COMPONENT_KEYS,
-	// componentObjects: scriptId.COMPONENT_OBJECTS,
 	styleKeys: scriptId.STYLE_PROPERTIES,
 } as const).forEach((id) => o.use(scripts[id]))
+
+createActionPropComboScripts().forEach((obj) => o.use(obj))
+createComponentPropComboScripts().forEach((obj) => o.use(obj))
 
 o.on('start', (store) => {
 	try {
@@ -50,6 +56,7 @@ o.on('start', (store) => {
 	if (!store.components) store.components = {}
 	if (!store.emit) store.emit = []
 	if (!store.funcNames) store.funcNames = []
+	if (!store.propCombos) store.propCombos = { actions: {}, components: {} }
 	if (!store.styles) store.styles = {} as Store['styles']
 	if (!store.styles.border) store.styles.border = []
 	if (!store.containedKeys) store.containedKeys = {}

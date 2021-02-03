@@ -7,10 +7,11 @@ import {
 	IfObject,
 	StyleBorderObject,
 } from 'noodl-types'
-import { Pair } from 'yaml/types'
+import { Pair, YAMLMap } from 'yaml/types'
 import { NOODLTypesObserver } from '../api/createObjectScripts'
+import { isScalar, isYAMLMap } from './common'
+import pageParts from '../../data/generated/page-parts.json'
 import Utils from '../api/Utils'
-import { isYAMLMap } from './common'
 
 export const id = {
 	ACTION_TYPES: 'action.types',
@@ -26,6 +27,28 @@ export const id = {
 	RETRIEVE_URLS: 'retrieve.urls',
 	STYLE_BORDER_OBJECTS: 'style.border.objects',
 	STYLE_PROPERTIES: 'style.properties',
+	// Action object props
+	BUILTIN_ACTION_PROPS: 'builtIn.action.props',
+	EVALOBJECTACTION_PROPS: 'evalObject.action.props',
+	PAGEJUMP_ACTION_PROPS: 'pageJump.action.props',
+	POPUP_ACTION_PROPS: 'popUp.action.props',
+	POPUPDISMISS_ACTION_PROPS: 'popUpDismiss.action.props',
+	REFRESH_ACTION_PROPS: 'refresh.action.props',
+	SAVEOBJECT_ACTION_PROPS: 'saveObject.action.props',
+	UPDATEOBJECT_ACTION_PROPS: 'updateObject.action.props',
+	// Component object props
+	BUTTON_COMPONENT_PROPS: 'button.component.props',
+	DIVIDER_COMPONENT_PROPS: 'divider.component.props',
+	IMAGE_COMPONENT_PROPS: 'image.component.props',
+	LABEL_COMPONENT_PROPS: 'label.component.props',
+	LIST_COMPONENT_PROPS: 'list.component.props',
+	LISTITEM_COMPONENT_PROPS: 'listItem.component.props',
+	POPUP_COMPONENT_PROPS: 'popUp.component.props',
+	SCROLLVIEW_COMPONENT_PROPS: 'scrollView.component.props',
+	SELECT_COMPONENT_PROPS: 'select.component.props',
+	TEXTFIELD_COMPONENT_PROPS: 'textField.component.props',
+	TEXTVIEW_COMPONENT_PROPS: 'textView.component.props',
+	VIEW_COMPONENT_PROPS: 'view.component.props',
 } as const
 
 export interface Store {
@@ -43,6 +66,14 @@ export interface Store {
 		border: StyleBorderObject[]
 	}
 	urls: string[]
+	propCombos: {
+		actions: {
+			[K in ActionType]: { [key: string]: any[] }
+		}
+		components: {
+			[K in ComponentType]: { [key: string]: any[] }
+		}
+	}
 	containedKeys: {
 		[keyword: string]: any[]
 	}
@@ -215,6 +246,79 @@ scripts[id.STYLE_PROPERTIES] = {
 			}
 		}
 	},
+}
+
+export function createActionPropComboScripts() {
+	return [
+		'builtIn',
+		'evalObject',
+		'pageJump',
+		'popUp',
+		'popUpDismiss',
+		'refresh',
+		'saveObject',
+		'updateObject',
+	].map((actionType) => ({
+		id: id[`${actionType.toUpperCase()}_ACTION_PROPS`],
+		label: `Retrieve props that may exist on ${actionType} action objects`,
+		fn(node, store: Store) {
+			if (Utils.identify.action[actionType](node)) {
+				;(node as YAMLMap).items.forEach((pair: Pair) => {
+					if (!Utils.identify.scalar.reference(pair.key)) {
+						const actions = store.propCombos.actions
+						if (!actions[actionType]) actions[actionType] = {}
+						if (!actions[actionType][pair.key.value]) {
+							actions[actionType][pair.key.value] = []
+						}
+						if (
+							!actions[actionType][pair.key.value]?.includes(pair.value.value)
+						) {
+							actions[actionType][pair.key.value]?.push(pair.value.value)
+						}
+					}
+				})
+			}
+		},
+	})) as NOODLTypesObserver[]
+}
+export function createComponentPropComboScripts() {
+	return [
+		'button',
+		'divider',
+		'image',
+		'label',
+		'lael',
+		'list',
+		'listItem',
+		'popUp',
+		'scrollView',
+		'select',
+		'textField',
+		'textView',
+		'view',
+		'chatList',
+	].map((type) => ({
+		id: id[`${type.toUpperCase()}_ACTION_PROPS`],
+		label: `Retrieve props that may exist on ${type} action objects`,
+		fn(node, store: Store) {
+			if (Utils.identify.component[type]?.(node)) {
+				;(node as YAMLMap).items.forEach((pair: Pair) => {
+					if (!Utils.identify.scalar.reference(pair.key)) {
+						const components = store.propCombos.components
+						if (!components[type]) components[type] = {}
+						if (!components[type][pair.key?.value]) {
+							components[type][pair.key.value] = []
+						}
+						if (
+							!components[type][pair.key?.value]?.includes(pair.value?.value)
+						) {
+							components[type][pair.key.value]?.push(pair.value?.value)
+						}
+					}
+				})
+			}
+		},
+	})) as NOODLTypesObserver[]
 }
 
 export default scripts
