@@ -277,11 +277,9 @@ export function traverse(
 			walk(contents.value)
 		} else if (contents instanceof YAMLMap) {
 			cb(contents)
-			contents.items.forEach((pair) => walk(pair))
+			contents.items.forEach(walk)
 		} else if (contents instanceof YAMLSeq) {
-			contents.items.forEach((node) => {
-				walk(node)
-			})
+			contents.items.forEach(walk)
 		}
 	}
 	const numDocs = docsList.length

@@ -61,6 +61,9 @@ const createObjectScripts = function <Store = any>({
 	}
 
 	const o = {
+		get observers() {
+			return _internal.observers
+		},
 		set pathToDataFile(filepath: string) {
 			pathToDataFile = filepath
 			onPathToDataFile()

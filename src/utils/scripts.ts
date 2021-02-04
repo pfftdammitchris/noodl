@@ -98,7 +98,7 @@ scripts[id.ACTION_TYPES] = {
 	label: 'Retrieve all action types',
 	fn(node, store) {
 		if (Utils.identify.keyValue.actionType(node)) {
-			if (!store.actionTypes.includes(node.value.value)) {
+			if (!store.actionTypes?.includes(node.value.value)) {
 				store.actionTypes.push(node.value.value)
 			}
 		}
@@ -121,7 +121,7 @@ scripts[id.BUILTIN_FUNC_NAMES] = {
 	label: 'Retrieve all builtIn action funcNames',
 	fn(node, store) {
 		if (Utils.identify.keyValue.funcName(node)) {
-			if (!store.funcNames.includes(node.value.value)) {
+			if (!store.funcNames?.includes(node.value.value)) {
 				store.funcNames.push(node.value.value)
 			}
 		}
@@ -134,7 +134,7 @@ scripts[id.COMPONENT_KEYS] = {
 	fn(node, store) {
 		if (Utils.identify.component.any(node)) {
 			node.items.forEach((pair) => {
-				if (!store.componentKeys.includes(pair.key.value)) {
+				if (!store.componentKeys?.includes(pair.key.value)) {
 					store.componentKeys.push(pair.key.value)
 				}
 			})
