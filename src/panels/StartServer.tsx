@@ -268,7 +268,14 @@ function StartServer() {
 					})
 					toggleSpinner()
 					setCaption(cyan('Server not implemented yet--TBD'))
-					// import('../server')
+					import('../server').then(({ default: createServer }) => {
+						createServer({
+							dir: cliConfig.server.dir,
+							host: cliConfig.server.host,
+							port: cliConfig.server.port,
+							protocol: cliConfig.server.protocol,
+						})
+					})
 				})
 				.run()
 		}

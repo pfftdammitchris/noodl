@@ -1,6 +1,6 @@
 import axios from 'axios'
 import chalk from 'chalk'
-import { gql, ApolloError } from 'apollo-server'
+import { gql, ApolloError } from 'apollo-server-express'
 
 async function start() {
 	const { data } = await axios.get('http://127.0.0.1:4000', {
@@ -21,7 +21,7 @@ async function start() {
 
 start().catch((err) => {
 	console.log('')
-	if (err.response.data) {
+	if (err.response.data?.errors) {
 		const errors: ApolloError[] = err.response.data.errors
 		errors.forEach((apolloErr) => {
 			console.log(
@@ -32,5 +32,6 @@ start().catch((err) => {
 		})
 	} else {
 		console.log(`[${chalk.red(err.name)}]: ${chalk.yellow(err.message)}`)
+		console.error(err.toJSON())
 	}
 })

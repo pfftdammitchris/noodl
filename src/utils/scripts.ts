@@ -9,8 +9,7 @@ import {
 } from 'noodl-types'
 import { Pair, YAMLMap } from 'yaml/types'
 import { NOODLTypesObserver } from '../api/createObjectScripts'
-import { isScalar, isYAMLMap } from './common'
-import pageParts from '../../data/generated/page-parts.json'
+import { isYAMLMap } from './common'
 import Utils from '../api/Utils'
 
 export const id = {
