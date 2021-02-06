@@ -15,7 +15,6 @@ import {
 	magenta,
 	newline,
 	red,
-	cyan,
 	saveYml,
 	yellow,
 	white,
@@ -176,11 +175,7 @@ function StartServer() {
 
 	const setStep = React.useCallback(
 		(step: ST.State['step'], stepContext?: any) => {
-			dispatch({
-				type: c.serverScript.action.SET_STEP,
-				step,
-				...stepContext,
-			})
+			dispatch({ type: c.serverScript.action.SET_STEP, step, ...stepContext })
 			console.log(`${deepOrange('STEP')}: ` + magenta(step || '<none>'))
 		},
 		[],
@@ -267,7 +262,6 @@ function StartServer() {
 						assets: missingAssets,
 					})
 					toggleSpinner()
-					setCaption(cyan('Server not implemented yet--TBD'))
 					import('../server').then(({ default: createServer }) => {
 						createServer({
 							serverDir: cliConfig.server.dir,
