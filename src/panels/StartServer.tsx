@@ -24,6 +24,7 @@ import {
 	isPdf,
 	isVid,
 } from '../utils/common'
+import { YAMLMap } from 'yaml/types'
 import scriptObjs, { id as scriptId } from '../utils/scripts'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
@@ -32,7 +33,6 @@ import cliConfig from '../cliConfig'
 import * as c from '../constants'
 import * as ST from '../types/serverScriptTypes'
 import * as T from '../types'
-import { YAMLMap } from 'yaml/types'
 
 const initialState: ST.State = {
 	config: '',
@@ -270,7 +270,8 @@ function StartServer() {
 					setCaption(cyan('Server not implemented yet--TBD'))
 					import('../server').then(({ default: createServer }) => {
 						createServer({
-							dir: cliConfig.server.dir,
+							serverDir: cliConfig.server.dir,
+							docsDir: 'src/server/graphql/**/*.graphql',
 							host: cliConfig.server.host,
 							port: cliConfig.server.port,
 							protocol: cliConfig.server.protocol,

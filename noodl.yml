@@ -1,13 +1,13 @@
 initialOption: retrieve.objects
 server:
   host: localhost
-  dir: server
-  port: 3000
-  url: http://localhost:3000/
+  dir: output/server
+  port: 3001
+  url: http://localhost:3001/
 objects:
   json:
     dir:
-      - data/generated/json
+      - output/json
   yml:
     dir:
-      - data/generated/yml
+      - output/yml

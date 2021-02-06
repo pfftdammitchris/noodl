@@ -2,7 +2,7 @@ import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
-import { withSuffix } from '../utils/common'
+import { promiseAllSafe, withSuffix } from '../utils/common'
 import {
 	AnyFn,
 	EventId,
@@ -186,8 +186,8 @@ const createAggregator = function (opts?: ConfigOptions) {
 			return _loadPage(api.appConfig.startPage, withExt(withLocale('')))
 		},
 		async loadPreloadPages({ onPage }: { onPage?: OnPage } = {}) {
-			await Promise.all(
-				api.appConfig.preload.map(async (page) => {
+			await promiseAllSafe(
+				...api.appConfig.preload.map(async (page) => {
 					const result = await _loadPage(page, withExt(withLocale('')))
 					_emit(c.aggregator.event.RETRIEVED_APP_OBJECT, {
 						name: page,
@@ -226,7 +226,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 				chunks,
 			)
 			// Flatten out the promises for parallel reqs
-			await Promise.all(chunkedPageReqs.map((o) => Promise.all(o)))
+			await promiseAllSafe(...chunkedPageReqs.map((o) => promiseAllSafe(...o)))
 		},
 		on: _on,
 	}

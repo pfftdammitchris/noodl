@@ -70,6 +70,41 @@ export function entriesDeepKeyValue(cb: any, obj: any) {
 }
 
 /**
+ * Resolves an array of promises safely, inserting each result to the list
+ * including errors that occurred inbetween.
+ * @param { Promise[] } promises - Array of promises
+ */
+export async function promiseAllSafe(...promises: Promise<any>[]) {
+	const results = []
+	for (let promise of promises) {
+		try {
+			results.push(await promise)
+		} catch (error) {
+			results.push(error)
+		}
+	}
+	return results
+}
+
+/**
+ * This function is like promiseAllSafe except that it returns a tuple,
+ * where the first index is an array of passed promises and the second is
+ * an array of any error objects that occurred
+ * @param { Promise[] } promises
+ */
+export async function promiseAllSafelySplit(...promises: Promise<any>[]) {
+	const results = [[], []] as [passed: any[], failed: any[]]
+	for (let promise of promises) {
+		try {
+			results[0].push(await promise)
+		} catch (error) {
+			results[1].push(error)
+		}
+	}
+	return results
+}
+
+/**
  * Recursively traverses each key/value, calling the callback on each iteration
  * @param { function } fn - Callback function
  * @param { object | array } obj
