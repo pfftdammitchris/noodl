@@ -225,21 +225,28 @@ const configureServer = (function () {
 		const graphqlServer = new ApolloServer(options)
 		const app = express()
 
-		app.get('/HomePageUrl', (req, res) => res.send(''))
-		app.get('/cadlEndpoint', (req, res) =>
-			res.send(o.loadFile(path.join(serverDir, 'cadlEndpoint.yml'))),
+		app.get(
+			['/HomePageUrl', '/HomePageUrl_en.yml', '/HomePageUrl.yml'],
+			(req, res) => res.send(''),
+		)
+		app.get(
+			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
+			(req, res) =>
+				res.send(o.loadFile(path.join(serverDir, 'cadlEndpoint.yml'))),
 		)
 
 		ymlMetadataObjects.forEach(({ assetType, filepath, route }) => {
 			log(u.yellow(`Registering ${u.magenta(assetType)} route: ${route}`))
-			app.get(route, (req, res) => res.send(o.loadFile(filepath)))
+			const routes = [route, `${route}.yml`, `${route}_en.yml`]
+			app.get(routes, (req, res) => res.send(o.loadFile(filepath)))
 		})
 
 		assetsMetadataObjects.forEach(({ assetType, ext, filepath, route }) => {
 			if (route.startsWith('/')) route = route.replace('/', '')
 			route = `/assets/${route}.${ext}`
 			log(u.yellow(`Registering ${u.magenta(assetType)} route: ${route}`))
-			app.get(route, (req, res) => {
+			const routes = [route, `${route}_en.yml`, `${route}.yml`]
+			app.get(routes, (req, res) => {
 				res.sendFile(path.resolve(path.join(process.cwd(), filepath)))
 			})
 		})

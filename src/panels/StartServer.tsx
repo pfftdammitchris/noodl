@@ -23,7 +23,7 @@ import {
 	isPdf,
 	isVid,
 } from '../utils/common'
-import { YAMLMap } from 'yaml/types'
+import { Pair, YAMLMap, YAMLSeq } from 'yaml/types'
 import scriptObjs, { id as scriptId } from '../utils/scripts'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
@@ -121,6 +121,17 @@ function StartServer() {
 					const contents = doc.contents as YAMLMap
 					contents.set('cadlBaseUrl', 'http://127.0.0.1:3001/')
 					contents.set('myBaseUrl', 'http://127.0.0.1:3001/')
+					yml = yaml.stringify(contents)
+				} else if (name === 'cadlEndpoint') {
+					const homePageUrlId = '~/HomePageUrl'
+					const doc = yaml.parseDocument(yml)
+					const contents = doc.contents as YAMLMap
+					const preloadPages = contents.get('preload') as YAMLSeq
+					const js = preloadPages.toJSON()
+					if (js.includes(homePageUrlId)) {
+						js.splice(js.indexOf(homePageUrlId), 1)
+					}
+					contents.set('preload', js)
 					yml = yaml.stringify(contents)
 				}
 				const filename = name + '.yml'
