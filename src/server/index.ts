@@ -1,7 +1,11 @@
 import express from 'express'
 import path from 'path'
 import fs from 'fs-extra'
-import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
+import {
+	gql,
+	ApolloServer,
+	ApolloServerExpressConfig,
+} from 'apollo-server-express'
 import { ApolloServerPlugin } from 'apollo-server-plugin-base'
 import { loadFilesSync } from '@graphql-tools/load-files'
 import emitResolvers from './resolvers/emit.resolvers'
@@ -140,7 +144,6 @@ const configureServer = (function () {
 
 	return async function createServer({
 		serverDir = MISSING_SERVER_DIR,
-		docsDir = 'src/server/graphql/**/*',
 		host = 'localhost',
 		port = 4000,
 		protocol = 'http',
@@ -151,7 +154,9 @@ const configureServer = (function () {
 
 		const serverUrl = `${protocol}://${host}:${port}`
 		const assetsDir = path.join(serverDir, 'assets')
-		const typeDefs = loadFilesSync(docsDir, { extensions: ['.graphql'] })
+		const typeDefs = loadFilesSync('src/server/graphql/**/*', {
+			extensions: ['.graphql'],
+		})
 		const imgReducer = createImageReducer(assetsDir)
 		const ymlReducer = createYmlReducer(serverDir)
 
@@ -170,7 +175,24 @@ const configureServer = (function () {
 		log(`Found ${u.magenta(assetsMetadataObjects.length)} asset files`)
 
 		const options: ApolloServerExpressConfig = {
-			typeDefs,
+			typeDefs: gql`
+				type Query {
+					goto(page: String!): String
+				}
+
+				type Mutation {
+					sendEmit(value: String): String
+				}
+
+				input SendEmitInput {
+					trigger: String!
+					keys: [String]
+				}
+
+				input DataKeyObject {
+					keys: [String]
+				}
+			`,
 			resolvers: {
 				Query: { ...emitResolvers.Query },
 				Mutation: { ...emitResolvers.Mutation },

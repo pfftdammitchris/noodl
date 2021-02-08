@@ -2,7 +2,8 @@ overwrite: true
 schema:
   - 'src/server/graphql/**/*.graphql'
 generates:
-  introspection.json:
+  src/generated/introspection.json:
+    overwrite: true
     plugins:
       - introspection
     config:
@@ -12,3 +13,9 @@ generates:
     plugins:
       - typescript
       - typescript-operations
+  src/generated/schema.graphql:
+    overwrite: true
+    schema:
+      - 'src/server/**/*.graphql'
+    plugins:
+      - schema-ast
