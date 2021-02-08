@@ -1,0 +1,16 @@
+type Query {
+	goto(page: String!): String
+}
+
+type Mutation {
+	sendEmit(value: String): String
+}
+
+input SendEmitInput {
+	trigger: String!
+	keys: [String]
+}
+
+input DataKeyObject {
+	keys: [String]
+}
