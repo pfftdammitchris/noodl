@@ -23,11 +23,12 @@ import {
 	isPdf,
 	isVid,
 } from '../utils/common'
-import { Pair, YAMLMap, YAMLSeq } from 'yaml/types'
+import { YAMLMap, YAMLSeq } from 'yaml/types'
 import scriptObjs, { id as scriptId } from '../utils/scripts'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
 import DownloadAsset, { DownloadAssetProps } from '../components/DownloadAsset'
+import RunServer from '../panels/RunServer'
 import cliConfig from '../cliConfig'
 import * as c from '../constants'
 import * as ST from '../types/serverScriptTypes'
@@ -38,7 +39,11 @@ const initialState: ST.State = {
 	dataSource: '',
 	dirFiles: [],
 	step: c.serverScript.step.CONFIG,
-	steps: [c.serverScript.step.CONFIG, c.serverScript.step.DOWNLOAD_ASSETS],
+	steps: [
+		c.serverScript.step.CONFIG,
+		c.serverScript.step.DOWNLOAD_ASSETS,
+		c.serverScript.step.RUN_SERVER,
+	],
 	stepContext: Object.values(c.serverScript.step).reduce(
 		(acc, key) => Object.assign(acc, { [key]: {} }),
 		{},
@@ -73,7 +78,7 @@ const reducer = produce(
 
 function StartServer() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { aggregator, setCaption, toggleSpinner } = useCtx()
+	const { aggregator, setCaption, setPanel, toggleSpinner } = useCtx()
 
 	const getAssetsFolder = () => path.join(cliConfig.server.dir, 'assets')
 
@@ -273,15 +278,7 @@ function StartServer() {
 						assets: missingAssets,
 					})
 					toggleSpinner()
-					import('../server').then(({ default: createServer }) => {
-						createServer({
-							serverDir: cliConfig.server.dir,
-							docsDir: 'src/server/graphql/**/*.graphql',
-							host: cliConfig.server.host,
-							port: cliConfig.server.port,
-							protocol: cliConfig.server.protocol,
-						})
-					})
+					setPanel({ id: c.panelId.RUN_SERVER, value: c.panelId.RUN_SERVER })
 				})
 				.run()
 		}

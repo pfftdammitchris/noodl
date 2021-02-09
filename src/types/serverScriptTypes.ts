@@ -16,6 +16,9 @@ export type Action =
 			step: typeof serverScript.step.DOWNLOAD_ASSETS
 			assets: string[]
 	  }
+	| {
+			type: typeof serverScript.step.RUN_SERVER
+	  }
 
 // export type Step
 

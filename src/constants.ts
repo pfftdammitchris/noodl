@@ -39,6 +39,7 @@ export const panelId = {
 	RETRIEVE_OBJECTS: 'retrieve.objects',
 	RETRIEVE_KEYWORDS: 'retrieve.keywords',
 	SERVER: 'server',
+	RUN_SERVER: 'run.server',
 } as const
 
 export const panel = {
@@ -57,6 +58,10 @@ export const panel = {
 	[panelId.SERVER]: {
 		id: panelId.SERVER,
 		label: 'Start a server',
+	},
+	[panelId.RUN_SERVER]: {
+		id: panelId.RUN_SERVER,
+		label: 'Run the server',
 	},
 } as const
 
@@ -91,5 +96,6 @@ export const serverScript = {
 		LOAD_FILES: 'load.files',
 		SCAN_ASSETS: 'scan.assets',
 		DOWNLOAD_ASSETS: 'download.assets',
+		RUN_SERVER: 'run.server',
 	},
 } as const

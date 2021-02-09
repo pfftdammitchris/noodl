@@ -229,6 +229,7 @@ const configureServer = (function () {
 			['/HomePageUrl', '/HomePageUrl_en.yml', '/HomePageUrl.yml'],
 			(req, res) => res.send(''),
 		)
+
 		app.get(
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
 			(req, res) =>

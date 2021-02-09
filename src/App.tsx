@@ -6,6 +6,7 @@ import { PanelId } from './types'
 import Settings from './panels/Settings'
 import SelectRoute from './panels/SelectRoute'
 import StartServer from './panels/StartServer'
+import RunServer from './panels/RunServer'
 import RetrieveObjects from './panels/RetrieveObjects'
 import RetrieveKeywords from './panels/RetrieveKeywords'
 import HighlightedText from './components/HighlightedText'
@@ -17,6 +18,7 @@ const panels = {
 	[c.panelId.RETRIEVE_OBJECTS]: RetrieveObjects,
 	[c.panelId.RETRIEVE_KEYWORDS]: RetrieveKeywords,
 	[c.panelId.SERVER]: StartServer,
+	[c.panelId.RUN_SERVER]: RunServer,
 }
 
 function App() {
