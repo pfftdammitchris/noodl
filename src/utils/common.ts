@@ -58,7 +58,6 @@ export function entriesDeepKeyValue(cb: any, obj: any) {
 	if (Array.isArray(obj)) {
 		obj.forEach((o) => Object.assign(result, entriesDeepKeyValue(cb, o)))
 	} else if (isPlainObject(obj)) {
-		// @ts-expect-error
 		Object.entries(obj).forEach(([key, value], index, collection) => {
 			result[key] = cb(key, value, collection) || {}
 			if (isPlainObject(value)) {

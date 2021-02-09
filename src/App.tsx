@@ -1,15 +1,15 @@
 import React from 'react'
-import Spinner from 'ink-spinner'
 import { Newline, Static, Text } from 'ink'
 import { Provider } from './useCtx'
 import { PanelId } from './types'
 import Settings from './panels/Settings'
 import SelectRoute from './panels/SelectRoute'
-import StartServer from './panels/StartServer'
+import ServerFiles from './panels/ServerFiles'
 import RunServer from './panels/RunServer'
 import RetrieveObjects from './panels/RetrieveObjects'
 import RetrieveKeywords from './panels/RetrieveKeywords'
 import HighlightedText from './components/HighlightedText'
+import Spinner from './components/Spinner'
 import useApp from './useApp'
 import * as c from './constants'
 
@@ -17,7 +17,7 @@ const panels = {
 	[c.panelId.SELECT_ROUTE]: SelectRoute,
 	[c.panelId.RETRIEVE_OBJECTS]: RetrieveObjects,
 	[c.panelId.RETRIEVE_KEYWORDS]: RetrieveKeywords,
-	[c.panelId.SERVER]: StartServer,
+	[c.panelId.SERVER_FILES]: ServerFiles,
 	[c.panelId.RUN_SERVER]: RunServer,
 }
 

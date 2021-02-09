@@ -2,16 +2,21 @@
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
 		"baseUrl": "src",
+		"declaration": true,
 		"esModuleInterop": true,
 		"suppressImplicitAnyIndexErrors": true,
 		"jsx": "react",
+		"lib": ["es2018"],
+		"module": "commonjs",
+		"moduleResolution": "node",
 		"noEmitOnError": false,
 		"outDir": "dist",
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
-		"sourceMap": true
+		"strict": true,
+		"sourceMap": true,
+		"target": "es2018"
 	},
-	"extends": "@sindresorhus/tsconfig",
 	"include": ["src"],
-	"exclude": ["src/**/*.test.ts"]
+	"exclude": ["node_modules", "src/**/*.test.ts"]
 }

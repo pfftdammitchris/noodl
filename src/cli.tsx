@@ -7,7 +7,6 @@ import { render } from 'ink'
 import App from './App'
 // import pkg from '../package.json'
 
-// @ts-expect-error
 const cli = meow(
 	`
 	Usage

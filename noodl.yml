@@ -3,7 +3,7 @@ server:
   host: localhost
   dir: output/server
   port: 3001
-  url: http://localhost:3001/
+  config: testpage
 objects:
   json:
     dir:

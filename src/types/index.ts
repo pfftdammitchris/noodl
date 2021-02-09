@@ -78,10 +78,11 @@ export interface ServerOptions {
 	port: number
 	host: string
 	protocol: string
+	config?: string
 }
 
 export interface AppConfig {
-	host: string
+	host?: string
 	assetsUrl: string
 	baseUrl: string
 	languageSuffix: { [lang: string]: string }

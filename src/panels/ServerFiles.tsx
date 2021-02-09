@@ -25,10 +25,11 @@ import {
 } from '../utils/common'
 import { YAMLMap, YAMLSeq } from 'yaml/types'
 import scriptObjs, { id as scriptId } from '../utils/scripts'
+import useServerFiles from '../hooks/useServerFiles'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
 import DownloadAsset, { DownloadAssetProps } from '../components/DownloadAsset'
-import RunServer from '../panels/RunServer'
+import RunServer from './RunServer'
 import cliConfig from '../cliConfig'
 import * as c from '../constants'
 import * as ST from '../types/serverScriptTypes'
@@ -79,130 +80,13 @@ const reducer = produce(
 function StartServer() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
 	const { aggregator, setCaption, setPanel, toggleSpinner } = useCtx()
-
-	const getAssetsFolder = () => path.join(cliConfig.server.dir, 'assets')
-
-	const onSetConfig = React.useCallback(async (config: string) => {
-		// Search server dir for config file
-		if (!config) return
-
-		dispatch({ type: c.serverScript.action.SET_CONFIG, config })
-		setCaption(`\nConfig set to ${magenta(config)}`)
-
-		const serverFolder = getFilePath(cliConfig.server.dir)
-		const assetsFolder = getAssetsFolder()
-		const serverFolderExists = fs.existsSync(serverFolder)
-		const assetsFolderExists = fs.existsSync(assetsFolder)
-
-		// Not found
-		if (!serverFolderExists) {
-			fs.ensureDirSync(serverFolder)
-			setCaption(`Created server folder at ${magenta(serverFolder)}`)
-		}
-		if (!assetsFolderExists) {
-			fs.ensureDirSync(assetsFolder)
-			setCaption(`Created assets folder at ${magenta(assetsFolder)}`)
-		}
-
-		// Found
-		const configFiles = await globby(
-			`${path.join(serverFolder, `**/*/${config}.yml`)}`,
-		)
-
-		if (!configFiles.length) {
-			newline()
-			setCaption(
-				`\nNo config files were found for config ${magenta(
-					config,
-				)}. Retrieving remotely...\n`,
-			)
-
-			const onRetrievedObject = ({
-				name,
-				yml,
-			}: T.ObjectResult & { name: string }) => {
-				if (name === config) {
-					const doc = yaml.parseDocument(yml)
-					const contents = doc.contents as YAMLMap
-					contents.set('cadlBaseUrl', 'http://127.0.0.1:3001/')
-					contents.set('myBaseUrl', 'http://127.0.0.1:3001/')
-					yml = yaml.stringify(contents)
-				} else if (name === 'cadlEndpoint') {
-					const homePageUrlId = '~/HomePageUrl'
-					const doc = yaml.parseDocument(yml)
-					const contents = doc.contents as YAMLMap
-					const preloadPages = contents.get('preload') as YAMLSeq
-					const js = preloadPages.toJSON()
-					if (js.includes(homePageUrlId)) {
-						js.splice(js.indexOf(homePageUrlId), 1)
-					}
-					contents.set('preload', js)
-					yml = yaml.stringify(contents)
-				}
-				const filename = name + '.yml'
-				const filepath = getFilePath(cliConfig.server.dir, filename)
-				setCaption(
-					`Saved ${magenta(filename)} to ${getFilePath(cliConfig.server.dir)}`,
-				)
-				saveYml(filepath, yml)
-			}
-
-			const configObjs = await aggregator
-				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, onRetrievedObject)
-				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onRetrievedObject)
-				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, onRetrievedObject)
-				.setConfigId(config)
-				.setHost(cliConfig.objects.hostname)
-				.init({ loadPages: true })
-
-			const rootConfig = configObjs[0]
-			const appConfig = configObjs[1]
-
-			setCaption(
-				`\nVersion is set to latest web (${yellow('TEST')}) (${magenta(
-					rootConfig.web?.cadlVersion?.test,
-				)})\n`,
-			)
-
-			rootConfig.cadlBaseUrl &&
-				setCaption(`cadlBaseUrl: ${magenta(rootConfig.cadlBaseUrl)}`)
-			rootConfig.cadlMain &&
-				setCaption(`cadlMain: ${magenta(rootConfig.cadlMain)}`)
-			rootConfig.cadlBaseUrl &&
-				setCaption(`myBaseUrl: ${magenta(rootConfig.cadlBaseUrl)}\n`)
-
-			appConfig.preload &&
-				setCaption(
-					`${yellow(appConfig.preload.length)} preload page objects found`,
-				)
-			appConfig.page &&
-				setCaption(`${yellow(appConfig.page.length)} pages objects found`)
-		} else {
-			setCaption(
-				`Found ${magenta(configFiles.length)} files with ${magenta(
-					config,
-				)}.\nWould you like to load from this config?`,
-			)
-		}
-
-		setCaption(captioning('\nChecking for missing assets...\n'))
-		setStep(c.serverScript.step.SCAN_ASSETS)
-	}, [])
-
-	const setStep = React.useCallback(
-		(step: ST.State['step'], stepContext?: any) => {
-			dispatch({ type: c.serverScript.action.SET_STEP, step, ...stepContext })
-			console.log(`${deepOrange('STEP')}: ` + magenta(step || '<none>'))
-		},
-		[],
-	)
-
-	React.useEffect(() => {
-		setCaption(`${deepOrange('STEP')}: ${magenta(state?.step)}\n`)
-		setCaption(`Server dir: ${magenta(getFilePath(cliConfig.server.dir))}`)
-		setCaption(`Server host: ${magenta(cliConfig.server.host)}`)
-		setCaption(`Server port: ${magenta(cliConfig.server.port)}`)
-	}, [])
+	const {
+		assets,
+		yml,
+		getAssetsFolder,
+		setConfigId,
+		setServerDir,
+	} = useServerFiles()
 
 	React.useEffect(() => {
 		if (state?.step === c.serverScript.step.SCAN_ASSETS) {
@@ -329,7 +213,7 @@ function StartServer() {
 			return (
 				<Container label="Which config should we use?">
 					<UncontrolledTextInput
-						onSubmit={onSetConfig}
+						onSubmit={setConfigId}
 						placeholder={`Enter the config here ${white('(example: meet2d)')}`}
 					/>
 				</Container>

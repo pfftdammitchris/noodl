@@ -6,9 +6,9 @@ import path from 'path'
 import fs from 'fs-extra'
 import chalk from 'chalk'
 import TextInput from 'ink-text-input'
-import Spinner from 'ink-spinner'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
+import Spinner from '../components/Spinner'
 import Select from '../components/Select'
 import {
 	getFilePath,
@@ -201,7 +201,7 @@ function RetrieveObjectsPanel() {
 			</Box>
 			{state.status === statusId.RETRIEVING_OBJECTS && (
 				<HighlightedText color="whiteBright">
-					<Spinner type="point" interval={80} />
+					<Spinner />
 				</HighlightedText>
 			)}
 		</Box>

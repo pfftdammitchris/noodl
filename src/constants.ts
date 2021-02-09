@@ -38,7 +38,7 @@ export const panelId = {
 	SELECT_ROUTE: 'select.route',
 	RETRIEVE_OBJECTS: 'retrieve.objects',
 	RETRIEVE_KEYWORDS: 'retrieve.keywords',
-	SERVER: 'server',
+	SERVER_FILES: 'server.files',
 	RUN_SERVER: 'run.server',
 } as const
 
@@ -90,6 +90,9 @@ export const serverScript = {
 		SET_DIR_FILES: 'set.dir.files',
 		SET_PENDING: 'set.pending',
 		DOWNLOAD_ASSET: 'download.asset',
+		// useServerFiles constants
+		SET_ASSET_METADATA_OBJECTS: 'set.asset.metadata.objects',
+		SET_YML_METADATA_OBJECTS: 'set.yml.metadata.objects',
 	},
 	step: {
 		CONFIG: 'config',

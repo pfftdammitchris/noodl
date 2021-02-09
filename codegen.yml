@@ -16,6 +16,9 @@ generates:
   src/generated/schema.graphql:
     overwrite: true
     schema:
-      - 'src/server/**/*.graphql'
+      - 'src/server/graphql/**/*.graphql'
     plugins:
       - schema-ast
+    hooks:
+      afterOneFileWrite:
+        - node scripts/post-codegen.js

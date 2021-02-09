@@ -9,6 +9,7 @@ function RunServer() {
 				host: cliConfig.server.host,
 				port: cliConfig.server.port,
 				protocol: cliConfig.server.protocol,
+				config: cliConfig.server.config,
 			})
 		})
 	}, [])

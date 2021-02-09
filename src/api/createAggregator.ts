@@ -53,6 +53,36 @@ const createAggregator = function (opts?: ConfigOptions) {
 		cbs[event]?.forEach?.((fn) => fn(...args))
 	}
 
+	async function _getRootConfig() {
+		if (!api.rootConfig) api.rootConfig = new RootConfig()
+		objects.json[configId] = await api.rootConfig
+			.setConfigId(configId)
+			.setHost(host)
+			.setVersion(opts?.version || 'latest')
+			.build()
+		objects.yml[configId] = api.rootConfig.yml || ''
+
+		_emit(c.aggregator.event.RETRIEVED_ROOT_CONFIG, {
+			name: configId,
+			json: objects.json[configId],
+			yml: objects.yml[configId],
+		})
+
+		return api.rootConfig
+	}
+
+	async function _getAppConfig() {
+		if (!api.rootConfig) throw new Error('Root config is not loaded')
+		if (!api.appConfig) api.appConfig = new AppConfig()
+		api.appConfig.setRootConfig(api.rootConfig.json)
+		_emit(c.aggregator.event.RETRIEVED_APP_CONFIG, {
+			name: 'cadlEndpoint',
+			json: (objects.json.cadlEndpoint = await api.appConfig.build()),
+			yml: (objects.yml.cadlEndpoint = api.appConfig.yml || ''),
+		})
+		return api.appConfig
+	}
+
 	async function _loadPage(name: string, suffix: string = '') {
 		try {
 			const url = api.appConfig.getPageUrl(name + suffix)
@@ -123,14 +153,24 @@ const createAggregator = function (opts?: ConfigOptions) {
 		if (typeof ext === 'string') {
 			if (ext === 'json') return objects.json
 			if (ext === 'yml') return objects.yml
+			if (ext === 'cadlEndpoint') return objects.json.cadlEndpoint
 			else return objects.json[ext as string]
 		}
 		return objects
 	}
 
 	const o = {
+		builder: {
+			rootConfig: api.rootConfig,
+			appConfig: api.appConfig,
+		},
 		get initialized() {
 			return initialized
+		},
+		set(ext: 'json' | 'yml', key: string, value: any) {
+			if (ext === 'json') objects.json[key] = value
+			else if (ext === 'yml') objects.yml[key] = value
+			return this
 		},
 		get: _get,
 		setConfigId(value: string) {
@@ -148,34 +188,15 @@ const createAggregator = function (opts?: ConfigOptions) {
 			loadPages?: boolean | { includePreloadPages?: boolean; onPage?: OnPage }
 			version?: string | number | 'latest'
 		}) {
-			api.rootConfig = new RootConfig()
-			api.appConfig = new AppConfig()
-			objects.json[configId] = await api.rootConfig
-				.setConfigId(configId)
-				.setHost(host)
-				.setVersion(opts?.version || 'latest')
-				.build()
-			objects.yml[configId] = api.rootConfig.yml || ''
-			_emit(c.aggregator.event.RETRIEVED_ROOT_CONFIG, {
-				name: configId,
-				json: objects.json[configId],
-				yml: objects.yml[configId],
-			})
-			objects.json['cadlEndpoint'] = await api.appConfig
-				.setRootConfig(objects.json[configId] as any)
-				.build()
-			objects.yml['cadlEndpoint'] = api.appConfig.yml || ''
-			_emit(c.aggregator.event.RETRIEVED_APP_CONFIG, {
-				name: 'cadlEndpoint',
-				json: objects.json.cadlEndpoint,
-				yml: objects.yml.cadlEndpoint,
-			})
+			api.rootConfig = await _getRootConfig()
+			api.appConfig = await _getAppConfig()
 			initialized = true
 			if (opts?.loadPages) {
-				await o.loadPages({
-					includePreloadPages: true,
-					...(typeof opts.loadPages === 'object' ? opts.loadPages : undefined),
-				})
+				const params = { includePreloadPages: true }
+				if (typeof opts.loadPages === 'object') {
+					Object.assign(params, opts.loadPages)
+				}
+				await o.loadPages(params)
 			}
 			return [objects.json[configId], objects.json['cadlEndpoint']] as [
 				rootConfig: IRootConfig,

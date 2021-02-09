@@ -3,12 +3,13 @@ import { CLIConfigObject } from '../types'
 import { getFilePath } from '../utils/common'
 import * as c from '../constants'
 
-class CLIConfig {
+class CLIConfig implements CLIConfigObject {
 	server = {
 		host: c.DEFAULT_SERVER_HOSTNAME,
 		dir: c.DEFAULT_SERVER_PATH,
 		port: c.DEFAULT_SERVER_PORT,
 		protocol: c.DEFAULT_SERVER_PROTOCOL,
+		config: '',
 	}
 	objects = {
 		hostname: c.DEFAULT_CONFIG_HOSTNAME,
