@@ -51,7 +51,7 @@ const NOODL = (function () {
 			return aggregator.get('config')
 		},
 		set config(cfg: string) {
-			aggregator.setConfigId(cfg)
+			aggregator.config = cfg
 		},
 		get host() {
 			return aggregator.get('host')

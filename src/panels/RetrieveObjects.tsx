@@ -19,7 +19,6 @@ import {
 	withJsonExt,
 	withYmlExt,
 } from '../utils/common'
-import cliConfig from '../cliConfig'
 import * as c from '../constants'
 import { ObjectResult } from '../types'
 
@@ -82,7 +81,7 @@ const reducer = produce((draft: WritableDraft<State>, action: Action): void => {
 function RetrieveObjectsPanel() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
 	const [configInput, setConfigInput] = React.useState('')
-	const { aggregator, setCaption, setErrorCaption } = useCtx()
+	const { aggregator, cliConfig, setCaption, setErrorCaption } = useCtx()
 
 	const items = [
 		{ label: 'JSON + YML', value: 'json-yml' },
@@ -101,7 +100,7 @@ function RetrieveObjectsPanel() {
 	)
 
 	const onSubmitConfig = React.useCallback((config) => {
-		aggregator.setConfigId(config)
+		aggregator.config = config
 		dispatch({ type: stepId.SET_CONFIG, config })
 	}, [])
 
@@ -157,9 +156,12 @@ function RetrieveObjectsPanel() {
 				status: statusId.RETRIEVING_OBJECTS,
 			})
 			aggregator
-				.on(c.aggregator.event.RETRIEVED_ROOT_CONFIG, async ({ json, yml }) => {
-					await onNOODLObject({ name: state.config, json, yml })
-				})
+				.on(
+					c.aggregator.event.RETRIEVED_ROOT_CONFIG,
+					async ({ json, yml }: { json: any; yml: string }) => {
+						await onNOODLObject({ name: state.config, json, yml })
+					},
+				)
 				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onNOODLObject)
 				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, onNOODLObject)
 				.init({

@@ -13,7 +13,7 @@ export const app = {
 	INITIAL_OPTION: 'retrieve.objects',
 	action: {
 		SET_CAPTION: 'set.caption',
-		SET_SERVER_OPTIONS: 'set.server.options',
+		SET_SERVER_OPTIONS: 'set.servefr.options',
 		SET_OBJECTS_JSON_OPTIONS: 'set.objects.json.options',
 		SET_OBJECTS_YML_OPTIONS: 'set.obects.yml.options',
 		SET_PANEL: 'set.panel',
@@ -55,9 +55,9 @@ export const panel = {
 		id: panelId.SELECT_ROUTE,
 		label: 'Select route',
 	},
-	[panelId.SERVER]: {
-		id: panelId.SERVER,
-		label: 'Start a server',
+	[panelId.SERVER_FILES]: {
+		id: panelId.SERVER_FILES,
+		label: 'Retrieve all necessary files referenced in a config',
 	},
 	[panelId.RUN_SERVER]: {
 		id: panelId.RUN_SERVER,
@@ -83,22 +83,39 @@ export const retrieveObjectsScript = {
 	},
 } as const
 
-export const serverScript = {
-	action: {
-		SET_CONFIG: 'set.config',
-		SET_STEP: 'set.step',
-		SET_DIR_FILES: 'set.dir.files',
-		SET_PENDING: 'set.pending',
-		DOWNLOAD_ASSET: 'download.asset',
-		// useServerFiles constants
-		SET_ASSET_METADATA_OBJECTS: 'set.asset.metadata.objects',
-		SET_YML_METADATA_OBJECTS: 'set.yml.metadata.objects',
-	},
-	step: {
-		CONFIG: 'config',
-		LOAD_FILES: 'load.files',
-		SCAN_ASSETS: 'scan.assets',
-		DOWNLOAD_ASSETS: 'download.assets',
-		RUN_SERVER: 'run.server',
-	},
+export const action = {
+	BUILTIN: 'builtIn',
+	EVALOBJECT: 'evalObject',
+	PAGEJUMP: 'pageJump',
+	POPUP: 'popUp',
+	POPUPDISMISS: 'popUpDismiss',
+	REFRESH: 'refresh',
+	SAVEOBJECT: 'saveObject',
+	UPDATEOBJECT: 'updateObject',
+} as const
+
+export const EMIT = 'emit'
+export const GOTO = 'goto'
+export const TOAST = 'toast'
+
+export const component = {
+	BUTTON: 'button',
+	DIVIDER: 'divider',
+	FOOTER: 'footer',
+	HEADER: 'header',
+	IMAGE: 'image',
+	LABEL: 'label',
+	LIST: 'list',
+	LISTITEM: 'listItem',
+	PLUGIN: 'plugin',
+	PLUGINHEAD: 'pluginHead',
+	PLUGINBODYTAIL: 'pluginBodyTail',
+	POPUP: 'popUp',
+	REGISTER: 'register',
+	SELECT: 'select',
+	SCROLLVIEW: 'scrollView',
+	TEXTFIELD: 'textField',
+	TEXTVIEW: 'textView',
+	VIDEO: 'video',
+	VIEW: 'view',
 } as const

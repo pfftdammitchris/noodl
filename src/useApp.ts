@@ -1,36 +1,15 @@
 import React from 'react'
-import fs from 'fs-extra'
+import { WritableDraft } from 'immer/dist/internal'
 import chalk from 'chalk'
 import produce from 'immer'
-import { WritableDraft } from 'immer/dist/internal'
-import * as c from './constants'
-import { CLIConfigObject, Context, PanelId } from './types'
+import useCliConfig from './hooks/useCliConfig'
 import createAggregator from './api/createAggregator'
-import { getFilePath } from './utils/common'
-
-export type Action =
-	| { type: typeof c.app.action.SET_CAPTION; caption: string }
-	| {
-			type: typeof c.app.action.SET_PANEL
-			panel: { id?: PanelId; label?: string; [key: string]: any }
-	  }
-	| { type: typeof c.app.action.SET_SPINNER; spinner: false | string }
-
-export interface State {
-	caption: string[]
-	panel: {
-		id: PanelId
-		label: string
-		value?: string
-		highlightedId?: string
-		[key: string]: any
-	}
-	spinner?: false | string
-}
+import { AppAction, AppState, AppContext } from './types'
+import * as c from './constants'
 
 let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
-const initialState: State = {
+const initialState: AppState = {
 	caption: [],
 	panel: {
 		id: c.panelId.SELECT_ROUTE,
@@ -40,7 +19,7 @@ const initialState: State = {
 }
 
 const reducer = produce(
-	(draft: WritableDraft<State> = initialState, action: Action): void => {
+	(draft: WritableDraft<AppState> = initialState, action: AppAction): void => {
 		switch (action.type) {
 			case c.app.action.SET_CAPTION:
 				return void draft.caption.push(action.caption)
@@ -56,19 +35,7 @@ const reducer = produce(
 
 function useApp() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-
-	const getConsumerConfig = React.useCallback(():
-		| CLIConfigObject
-		| undefined => {
-		const configPath = getFilePath(c.DEFAULT_CONFIG_FILEPATH)
-		let configObj: any
-		try {
-			configObj = fs.readJsonSync(configPath)
-		} catch (error) {
-			setErrorCaption(error)
-		}
-		return configObj
-	}, [])
+	const cliConfig = useCliConfig()
 
 	const setCaption = React.useCallback((caption: string) => {
 		dispatch({ type: c.app.action.SET_CAPTION, caption })
@@ -97,15 +64,15 @@ function useApp() {
 		[],
 	)
 
-	const ctx: Context = {
-		...(state as State),
+	const ctx = {
+		...state,
 		aggregator,
-		getConsumerConfig,
+		cliConfig,
 		setPanel,
 		setCaption,
 		setErrorCaption,
 		toggleSpinner,
-	}
+	} as AppContext
 
 	return ctx
 }

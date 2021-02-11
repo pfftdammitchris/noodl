@@ -15,27 +15,12 @@ const panels = Object.values(panelMap).reduce((acc, obj) => {
 }, [] as (typeof panelMap[keyof typeof panelMap] & { value: PanelId })[])
 
 function SelectRoute({ label = 'Select an option' }: any) {
-	const { getConsumerConfig, setPanel } = useCtx()
-	const [initialIndex, setInitialIndex] = React.useState<null | number>(null)
+	const { cliConfig, setPanel } = useCtx()
 
-	React.useEffect(() => {
-		const consumerConfig = getConsumerConfig()
-		if (consumerConfig) {
-			if (consumerConfig.initialOption) {
-				if (panelMap[consumerConfig.initialOption as PanelId]) {
-					setInitialIndex(
-						panels.findIndex(
-							(p) => p.id === consumerConfig.initialOption,
-						) as any,
-					)
-					return
-				}
-			}
-		}
-		setInitialIndex(0)
-	}, [])
-
-	if (initialIndex === null) return null
+	const initialIndex =
+		(panelMap[cliConfig.defaultOption] &&
+			panels.findIndex((p) => p.id === cliConfig.defaultOption)) ||
+		0
 
 	return (
 		<Box padding={1} flexDirection="column">
@@ -43,7 +28,7 @@ function SelectRoute({ label = 'Select an option' }: any) {
 			<Newline />
 			<Select
 				items={panels}
-				initialIndex={initialIndex}
+				initialIndex={initialIndex === -1 ? 0 : initialIndex}
 				onHighlight={(item) =>
 					setPanel({ highlightedId: item.value as string })
 				}

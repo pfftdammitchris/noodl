@@ -1,22 +1,31 @@
 import axios from 'axios'
 import yaml from 'yaml'
-import { AppConfig, ServerOptions } from '../types'
 import NOODLObject from '../api/Object'
+import { AppConfig, CliConfigObject, RootConfig } from '../types'
 import { replaceBaseUrlPlaceholder } from '../utils/common'
 
-class AppConfigBuilder extends NOODLObject implements AppConfig {
+class AppConfigBuilder extends NOODLObject<AppConfig> implements AppConfig {
+	#rootConfig = {} as RootConfig
 	assetsUrl = ''
 	baseUrl = ''
 	fileSuffix = '.yml'
-	server = {} as ServerOptions
+	server = {} as CliConfigObject['server']
 	languageSuffix = { en: '_en' }
 	preload: string[] = []
 	page: string[] = []
 	startPage = ''
-	rootConfig: any = null
+	initialized = false
 
 	constructor(arg?: any) {
 		super(arg)
+	}
+
+	get rootConfig() {
+		return this.#rootConfig
+	}
+
+	set rootConfig(rootConfig) {
+		this.#rootConfig = rootConfig
 	}
 
 	async build() {
@@ -24,7 +33,7 @@ class AppConfigBuilder extends NOODLObject implements AppConfig {
 		appBaseUrl += this.rootConfig.cadlMain
 		const { data: yml } = await axios.get(appBaseUrl)
 		this.yml = yml
-		this.json = yaml.parse(yml)
+		this.json = yaml.parse(yml) as AppConfig
 		this.json = Object.entries(this.json).reduce(
 			(acc, [key, value]: [string, any]) => {
 				acc[key] =
@@ -36,20 +45,16 @@ class AppConfigBuilder extends NOODLObject implements AppConfig {
 			},
 			{} as any,
 		)
-		return this.json
+		this.initialized = true
+		return this.json as AppConfig
 	}
 
 	get pages() {
-		return this.json.page
-	}
-
-	setRootConfig(rootConfig: { [key: string]: any }) {
-		this.rootConfig = rootConfig
-		return this
+		return this.json?.page
 	}
 
 	getPageUrl(pagePath: string) {
-		return `${this.json.baseUrl}${pagePath}`
+		return `${this.json?.baseUrl}${pagePath}`
 	}
 }
 

@@ -2,6 +2,7 @@ import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
+import isPlainObject from 'lodash/isPlainObject'
 import { promiseAllSafe, withSuffix } from '../utils/common'
 import {
 	AnyFn,
@@ -9,9 +10,10 @@ import {
 	ObjectResult,
 	RootConfig as IRootConfig,
 	AppConfig as IAppConfig,
+	RootConfig,
 } from '../types'
-import RootConfig from '../builders/RootConfig'
-import AppConfig from '../builders/AppConfig'
+import RootConfigBuilder from '../builders/RootConfig'
+import AppConfigBuilder from '../builders/AppConfig'
 import * as c from '../constants'
 
 export interface ConfigOptions {
@@ -25,15 +27,10 @@ export interface OnPage {
 }
 
 const createAggregator = function (opts?: ConfigOptions) {
-	const api = {
-		rootConfig: null as any,
-		appConfig: null as any,
-	} as { rootConfig: RootConfig; appConfig: AppConfig }
-
-	let configId = opts?.config || 'aitmed'
-	let host = opts?.host || 'public.aitmed.com'
-	let port = 443
-	let initialized = false
+	const builder = {
+		rootConfig: new RootConfigBuilder(),
+		appConfig: new AppConfigBuilder(),
+	}
 
 	const cbIds = [] as string[]
 	const cbs = {} as Record<EventId, AnyFn[]>
@@ -53,39 +50,34 @@ const createAggregator = function (opts?: ConfigOptions) {
 		cbs[event]?.forEach?.((fn) => fn(...args))
 	}
 
-	async function _getRootConfig() {
-		if (!api.rootConfig) api.rootConfig = new RootConfig()
-		objects.json[configId] = await api.rootConfig
-			.setConfigId(configId)
-			.setHost(host)
-			.setVersion(opts?.version || 'latest')
-			.build()
-		objects.yml[configId] = api.rootConfig.yml || ''
-
+	async function _getRootConfig(configId: string = builder.rootConfig.id) {
+		if (builder.rootConfig.id !== configId) builder.rootConfig.id = configId
 		_emit(c.aggregator.event.RETRIEVED_ROOT_CONFIG, {
 			name: configId,
-			json: objects.json[configId],
-			yml: objects.yml[configId],
+			json: (objects.json[configId] = await builder.rootConfig.build()),
+			yml: (objects.yml[configId] = builder.rootConfig.yml),
 		})
-
-		return api.rootConfig
+		builder.appConfig.rootConfig = builder.rootConfig.json as RootConfig
+		return builder.rootConfig.json
 	}
 
 	async function _getAppConfig() {
-		if (!api.rootConfig) throw new Error('Root config is not loaded')
-		if (!api.appConfig) api.appConfig = new AppConfig()
-		api.appConfig.setRootConfig(api.rootConfig.json)
+		if (!builder.appConfig.rootConfig) {
+			throw new Error(
+				'Cannot initiate app config before initializing the root config',
+			)
+		}
 		_emit(c.aggregator.event.RETRIEVED_APP_CONFIG, {
 			name: 'cadlEndpoint',
-			json: (objects.json.cadlEndpoint = await api.appConfig.build()),
-			yml: (objects.yml.cadlEndpoint = api.appConfig.yml || ''),
+			json: (objects.json.cadlEndpoint = await builder.appConfig.build()),
+			yml: (objects.yml.cadlEndpoint = builder.appConfig.yml || ''),
 		})
-		return api.appConfig
+		return builder.appConfig.json
 	}
 
 	async function _loadPage(name: string, suffix: string = '') {
 		try {
-			const url = api.appConfig.getPageUrl(name + suffix)
+			const url = builder.appConfig.getPageUrl(name + suffix)
 			objects.yml[name] = (await axios.get(url)).data
 			objects.json[name] = yaml.parse(objects.yml[name] as string)
 
@@ -140,9 +132,6 @@ const createAggregator = function (opts?: ConfigOptions) {
 		return o
 	}
 
-	function _get(key: 'port'): typeof port
-	function _get(key: 'configId'): typeof configId
-	function _get(key: 'host'): string
 	function _get(ext: 'json'): typeof objects.json
 	function _get(ext: 'yml'): typeof objects.yml
 	function _get(
@@ -161,11 +150,24 @@ const createAggregator = function (opts?: ConfigOptions) {
 
 	const o = {
 		builder: {
-			rootConfig: api.rootConfig,
-			appConfig: api.appConfig,
+			get rootConfig() {
+				return builder.rootConfig
+			},
+			set rootConfig(inst) {
+				builder.rootConfig = inst
+			},
+			get appConfig() {
+				return builder.appConfig
+			},
+			set appConfig(inst) {
+				builder.appConfig = inst
+			},
 		},
-		get initialized() {
-			return initialized
+		get config() {
+			return builder.rootConfig.id
+		},
+		set config(config: string) {
+			builder.rootConfig.id = config
 		},
 		set(ext: 'json' | 'yml', key: string, value: any) {
 			if (ext === 'json') objects.json[key] = value
@@ -173,42 +175,25 @@ const createAggregator = function (opts?: ConfigOptions) {
 			return this
 		},
 		get: _get,
-		setConfigId(value: string) {
-			configId = value
-			return o
-		},
-		setHost(value: string) {
-			host = value
-			return o
-		},
-		set port(value: number) {
-			port = value
-		},
 		async init(opts?: {
 			loadPages?: boolean | { includePreloadPages?: boolean; onPage?: OnPage }
 			version?: string | number | 'latest'
 		}) {
-			api.rootConfig = await _getRootConfig()
-			api.appConfig = await _getAppConfig()
-			initialized = true
+			await _getRootConfig()
+			await _getAppConfig()
 			if (opts?.loadPages) {
 				const params = { includePreloadPages: true }
-				if (typeof opts.loadPages === 'object') {
-					Object.assign(params, opts.loadPages)
-				}
+				isPlainObject(opts.loadPages) && Object.assign(params, opts.loadPages)
 				await o.loadPages(params)
 			}
-			return [objects.json[configId], objects.json['cadlEndpoint']] as [
+			return [objects.json[o.config], objects.json['cadlEndpoint']] as [
 				rootConfig: IRootConfig,
 				appConfig: IAppConfig,
 			]
 		},
-		async loadStartPage() {
-			return _loadPage(api.appConfig.startPage, withExt(withLocale('')))
-		},
 		async loadPreloadPages({ onPage }: { onPage?: OnPage } = {}) {
 			await promiseAllSafe(
-				...api.appConfig.preload.map(async (page) => {
+				...builder.appConfig.preload.map(async (page) => {
 					const result = await _loadPage(page, withExt(withLocale('')))
 					_emit(c.aggregator.event.RETRIEVED_APP_OBJECT, {
 						name: page,
@@ -231,7 +216,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 		} = {}) {
 			if (includePreloadPages) await o.loadPreloadPages({ onPage })
 			const chunkedPageReqs = chunk(
-				(api.appConfig.json.page as string[]).map(
+				(builder.appConfig.json?.page as string[]).map(
 					async (page: string): Promise<void> => {
 						const result = await _loadPage(
 							page as string,

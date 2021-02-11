@@ -2,7 +2,6 @@ import React from 'react'
 import { Newline, Static, Text } from 'ink'
 import { Provider } from './useCtx'
 import { PanelId } from './types'
-import Settings from './panels/Settings'
 import SelectRoute from './panels/SelectRoute'
 import ServerFiles from './panels/ServerFiles'
 import RunServer from './panels/RunServer'
@@ -25,24 +24,9 @@ function App() {
 	const appCtx = useApp()
 	const Panel = panels[appCtx.panel.id as PanelId]
 
-	const defaultSettings = {
-		server: {
-			dir: c.DEFAULT_SERVER_PATH,
-			host: c.DEFAULT_SERVER_HOSTNAME,
-			port: c.DEFAULT_SERVER_PORT,
-			protocol: c.DEFAULT_SERVER_PROTOCOL,
-		},
-		objects: {
-			hostname: c.DEFAULT_CONFIG_HOSTNAME,
-			json: { dir: [] },
-			yml: { dir: [] },
-		},
-	}
-
 	return (
 		<Provider value={appCtx}>
 			<Newline />
-			<Settings defaults={defaultSettings} />
 			{appCtx.spinner ? (
 				<HighlightedText color="whiteBright">
 					<Spinner type={appCtx.spinner as any} />
@@ -50,7 +34,7 @@ function App() {
 			) : null}
 			<Panel />
 			<Static items={appCtx.caption as string[]}>
-				{(caption) => <Text key={caption}>{caption}</Text>}
+				{(caption, index) => <Text key={index}>{caption}</Text>}
 			</Static>
 		</Provider>
 	)

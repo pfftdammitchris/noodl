@@ -1,13 +1,13 @@
 import curry from 'lodash/curry'
-import { AxiosError } from 'axios'
 import fs from 'fs-extra'
 import isPlainObject from 'lodash/isPlainObject'
 import path from 'path'
 import chalk from 'chalk'
 import yaml from 'yaml'
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import globby from 'globby'
-import { CLIConfigObject, PlainObject } from '../types'
+import { AxiosError } from 'axios'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { CliConfigObject, IdentifyFn, PlainObject } from '../types'
 
 // chalk helpers
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
@@ -131,7 +131,7 @@ export function getFilePath(...paths: string[]) {
 export function getCliConfig() {
 	return yaml.parse(
 		fs.readFileSync(getFilePath('noodl.yml'), 'utf8'),
-	) as CLIConfigObject
+	) as CliConfigObject
 }
 
 export function groupAssets(urls: string[]) {
@@ -150,6 +150,10 @@ export function groupAssets(urls: string[]) {
 			videos: [] as string[],
 		},
 	)
+}
+
+export function hasCliConfig() {
+	return fs.existsSync(getFilePath('noodl.yml'))
 }
 
 export function hasAllKeys(keys: string | string[]) {
@@ -202,7 +206,7 @@ export function loadFiles({
 }
 
 export function isImg(s: string) {
-	return /([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))/i.test(s)
+	return /([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif|bmp|tif))/i.test(s)
 }
 
 export function isPdf(s: string) {
@@ -245,20 +249,20 @@ export function isScalar(v: unknown): v is Scalar {
 	return v instanceof Scalar
 }
 
-export function onYAMLMap(fn: (node: YAMLMap) => any) {
-	return (v: unknown): v is YAMLMap => (isYAMLMap(v) ? fn(v) : false)
+export function onYAMLMap(fn: IdentifyFn<YAMLMap>) {
+	return (v: unknown) => isYAMLMap(v) && fn(v)
 }
 
-export function onYAMLSeq(fn: (node: YAMLSeq) => any) {
-	return (v: unknown): v is YAMLSeq => (isYAMLSeq(v) ? fn(v) : false)
+export function onYAMLSeq(fn: IdentifyFn<YAMLSeq>) {
+	return (v: unknown) => isYAMLSeq(v) && fn(v)
 }
 
-export function onPair(fn: (node: Pair) => any) {
-	return (v: unknown): v is Pair => (isPair(v) ? fn(v) : false)
+export function onPair(fn: IdentifyFn<Pair>) {
+	return (v: unknown) => isPair(v) && fn(v)
 }
 
-export function onScalar(fn: (node: Scalar) => any) {
-	return (v: unknown): v is Scalar => (isScalar(v) ? fn(v) : false)
+export function onScalar(fn: IdentifyFn<Scalar>) {
+	return (v: unknown) => isScalar(v) && fn(v)
 }
 
 export function prettifyErr(err: AxiosError | Error) {
@@ -272,6 +276,11 @@ export function prettifyErr(err: AxiosError | Error) {
 
 export const replaceBaseUrlPlaceholder = createPlaceholderReplacer(
 	'\\${cadlBaseUrl}',
+	'g',
+)
+
+export const replaceDesignSuffixPlaceholder = createPlaceholderReplacer(
+	'\\${designSuffix}',
 	'g',
 )
 

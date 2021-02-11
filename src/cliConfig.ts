@@ -1,5 +1,3 @@
-import CLIConfig from './builders/CLIConfig'
-
-const cliConfig = new CLIConfig()
-
+import CliConfig from './builders/CliConfig'
+const cliConfig = new CliConfig()
 export default cliConfig

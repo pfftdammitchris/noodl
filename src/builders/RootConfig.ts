@@ -1,13 +1,17 @@
 import axios from 'axios'
 import yaml from 'yaml'
-import { RootConfig } from '../types'
 import NOODLObject from '../api/Object'
-import { withSuffix } from '../utils/common'
+import { RootConfig } from '../types'
+import {
+	replaceDesignSuffixPlaceholder,
+	replaceVersionPlaceholder,
+	withSuffix,
+} from '../utils/common'
 
-class RootConfigBuilder extends NOODLObject implements RootConfig {
-	#defaultConfig = 'aitmed'
-	#protocol = 'https'
+class RootConfigBuilder extends NOODLObject<RootConfig> implements RootConfig {
+	#id = 'aitmed'
 	#hostname: string = 'public.aitmed.com'
+	#protocol = 'https'
 	apiHost = ''
 	apiPort = ''
 	webApiHost: string = ''
@@ -16,13 +20,40 @@ class RootConfigBuilder extends NOODLObject implements RootConfig {
 	connectiontimeout: string = ''
 	loadingLevel: number = 0
 	cadlMain = ''
-	config = ''
 	debug: string = ''
 	version: string | number = ''
 	versionNumber: number = 0
 
+	static parsePlaceholders(rootConfig: any) {
+		if (!rootConfig) return rootConfig
+		return Object.entries(rootConfig).reduce(
+			(acc, [key, value]: [string, any]) => {
+				acc[key] =
+					typeof value === 'string'
+						? replaceVersionPlaceholder(
+								replaceDesignSuffixPlaceholder(value, ''),
+								String(
+									rootConfig?.web?.cadlVersion?.test ||
+										rootConfig?.versionNumber,
+								),
+						  )
+						: value
+				return acc
+			},
+			{} as any,
+		)
+	}
+
 	constructor(arg?: any) {
 		super(arg)
+	}
+
+	get id() {
+		return this.#id
+	}
+
+	set id(id) {
+		this.#id = id
 	}
 
 	async build() {
@@ -30,7 +61,7 @@ class RootConfigBuilder extends NOODLObject implements RootConfig {
 		let baseUrl = this.#protocol + '://'
 		baseUrl += this.#hostname + '/config'
 		baseUrl += '/'
-		baseUrl += withExt(this.config || this.#defaultConfig)
+		baseUrl += withExt(this.id)
 
 		try {
 			this.yml = (await axios.get(baseUrl)).data
@@ -41,51 +72,8 @@ class RootConfigBuilder extends NOODLObject implements RootConfig {
 		}
 
 		this.json = yaml.parse(this.yml)
-		this.json = Object.entries(this.json || {}).reduce(
-			(acc, [key, value]: [string, any]) => {
-				acc[key] =
-					typeof value === 'string'
-						? this.#replaceVersionPlaceholder(
-								this.#replaceDesignSuffixPlaceholder(value, ''),
-								this.version,
-						  )
-						: value
-				return acc
-			},
-			{} as any,
-		)
-		return this.json || {}
-	}
-
-	setProtocol(protocol: string) {
-		this.#protocol = protocol
-		return this
-	}
-
-	setHost(hostname: string = 'public.aitmed.com') {
-		this.#hostname = hostname
-		return this
-	}
-
-	setConfigId(configName: string) {
-		this.config = configName
-		return this
-	}
-
-	setVersion(version: string | number) {
-		this.version = version
-		return this
-	}
-
-	#replaceDesignSuffixPlaceholder = (str: string, value: any) =>
-		str.replace(/\${designSuffix}/gi, String(value))
-
-	#replaceVersionPlaceholder = (str: string, value: any) => {
-		if (value === 'latest') {
-			this.version = value =
-				this.json.web?.cadlVersion?.test || this.json.version
-		}
-		return str.replace(/\${cadlVersion}/gi, String(value))
+		this.json = RootConfigBuilder.parsePlaceholders(this.json)
+		return (this.json || {}) as RootConfig
 	}
 }
 

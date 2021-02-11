@@ -17,8 +17,9 @@
 		"server": "npm run codegen && ts-node-dev --respawn --transpile-only src/server/index.ts",
 		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts",
 		"dev:file": "ts-node-dev --respawn --transpile-only",
-		"test": "cross-env NODE_ENV=test ts-node-dev --respawn --transpile-only dev/runTests.ts",
-		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files \"dev/**/*.ts\""
+		"test": "ava",
+		"test:mocha": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src \"src/**/*test.ts\"",
+		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files \"src/**/*.ts\""
 	},
 	"bin": {
 		"noodl": "dist/cli.js"
@@ -27,6 +28,7 @@
 		"dist"
 	],
 	"dependencies": {
+		"@graphql-tools/load-files": "^6.2.5",
 		"apollo-server-express": "^2.19.2",
 		"apollo-server-plugin-base": "^0.10.4",
 		"axios": "^0.21.1",
@@ -51,12 +53,12 @@
 		"yaml": "^2.0.0-3"
 	},
 	"devDependencies": {
+		"@ava/typescript": "^1.1.1",
 		"@graphql-codegen/cli": "^1.20.1",
 		"@graphql-codegen/introspection": "^1.18.1",
 		"@graphql-codegen/schema-ast": "^1.18.1",
 		"@graphql-codegen/typescript": "^1.18.1",
 		"@graphql-codegen/typescript-operations": "^1.17.13",
-		"@graphql-tools/load-files": "^6.2.5",
 		"@types/chai": "^4.2.14",
 		"@types/download": "^6.2.4",
 		"@types/fs-extra": "^9.0.6",
@@ -68,19 +70,24 @@
 		"@types/transducers-js": "^0.4.4",
 		"@typescript-eslint/eslint-plugin": "^4.1.1",
 		"@typescript-eslint/parser": "^4.1.1",
+		"ava": "^3.15.0",
 		"chai": "^4.2.0",
 		"chai-noodl": "file:packages/chai-noodl",
 		"cross-env": "^7.0.3",
+		"eslint-config-xo-react": "^0.23.0",
+		"eslint-plugin-ava": "^11.0.0",
 		"eslint-plugin-react": "^7.21.5",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"fast-xml-parser": "^3.17.6",
+		"ink-testing-library": "^2.1.0",
 		"lerna": "^3.22.1",
 		"mocha": "^8.2.1",
 		"noodl-building-blocks": "file:packages/noodl-building-blocks",
 		"ts-mocha": "^8.0.0",
 		"ts-node": "^9.1.1",
 		"ts-node-dev": "^1.1.1",
-		"typescript": "^4.1.3"
+		"typescript": "^4.1.3",
+		"xo": "^0.37.1"
 	},
 	"repository": {
 		"type": "git",
@@ -121,7 +128,8 @@
 			"import/resolver": {
 				"node": {
 					"moduleDirectory": [
-						"node_modules"
+						"node_modules",
+						"src"
 					]
 				}
 			}
@@ -129,6 +137,26 @@
 		"rules": {
 			"no-template-curly-in-string": "off",
 			"eqeqeq": 0
+		}
+	},
+	"ava": {
+		"typescript": {
+			"extensions": [
+				"ts",
+				"tsx"
+			],
+			"rewritePaths": {
+				"src/": "dist/"
+			}
+		},
+		"require": [
+			"ts-node/register"
+		]
+	},
+	"xo": {
+		"extends": "xo-react",
+		"rules": {
+			"react/prop-types": "off"
 		}
 	},
 	"nodemonConfig": {

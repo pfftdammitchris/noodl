@@ -1,9 +1,10 @@
-initialOption: retrieve.objects
+defaultOption: select.route
 server:
-  host: localhost
   dir: output/server
+  host: localhost
   port: 3001
-  config: testpage
+  protocol: ""
+  config: ""
 objects:
   json:
     dir:
@@ -11,3 +12,4 @@ objects:
   yml:
     dir:
       - output/yml
+initialOption: retrieve.objects
