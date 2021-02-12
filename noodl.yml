@@ -1,11 +1,11 @@
 defaultOption: server.files
-defaultPanel: server.files
+# defaultPanel: server.files
 server:
   dir: output/server
-  host: '127.0.0.1'
+  host: localhost
   port: 3001
-  protocol: ''
-  config: 'testpage'
+  protocol: http
+  config: 'meet2'
 objects:
   json:
     dir:

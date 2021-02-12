@@ -3,10 +3,11 @@ import path from 'path'
 import fs from 'fs-extra'
 import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
 import { ApolloServerPlugin } from 'apollo-server-plugin-base'
+import globby from 'globby'
 import createAggregator from '../api/createAggregator'
 import emitResolvers from './resolvers/emit.resolvers'
 import typeDefs from '../generated/typeDefs'
-import loadNoodlAppDir from '../scripts/loadNoodlAppFiles'
+import { MetadataObject } from '../panels/ServerFiles/types'
 import * as u from '../utils/common'
 
 const log = console.log
@@ -76,17 +77,30 @@ const configureServer = (function () {
 		port = 3001,
 		protocol = 'http',
 	}: Options) {
+		console.log('arguments', arguments)
 		if (!config) throw new Error('A config (name) must be set')
 		if (!serverDir) throw new Error(`Please provide a directory for the server`)
 
-		const aggregator = createAggregator({ config })
+		const aggregator = createAggregator()
+		aggregator.config = config
 		const serverUrl = `${protocol}://${host}:${port}`
 
-		const { rootConfig, appConfig, metadata } = await loadNoodlAppDir({
-			aggregator,
-			config,
-			serverDir,
-		})
+		const localFiles = globby.sync(serverDir)
+
+		const metadata = localFiles.reduce(
+			(acc, filepath) => {
+				const stat = fs.statSync(filepath)
+				if (stat.isFile()) {
+					if (filepath.includes('/assets')) {
+						acc.assets.push(u.getFilepathMetadata(filepath))
+					} else {
+						acc.yml.push(u.getFilepathMetadata(filepath))
+					}
+				}
+				return acc
+			},
+			{ assets: [] as MetadataObject[], yml: [] as MetadataObject[] },
+		)
 
 		const options: ApolloServerExpressConfig = {
 			typeDefs,
@@ -129,34 +143,54 @@ const configureServer = (function () {
 
 		app.get(
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
-			(req, res) =>
-				res.send(o.loadFile(path.join(serverDir, 'cadlEndpoint.yml'))),
+			(req, res) => res.sendFile(u.getFilepath(serverDir, 'cadlEndpoint.yml')),
 		)
 
-		metadata.yml.forEach(({ assetType, filepath, pathname }) => {
-			log(u.yellow(`Registering ${u.magenta(assetType)} pathname: ${pathname}`))
-			const routes = [pathname, `${pathname}.yml`, `${pathname}_en.yml`]
-			app.get(routes, (req, res) => res.send(o.loadFile(filepath)))
+		metadata.yml.forEach(({ group, filepath, filename }) => {
+			filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
+			group = 'page' as any
+			log(
+				u.white(
+					`Registering ${u.yellow(group)} pathname: ${u.magenta(
+						filename,
+					)} filepath: ${filepath}`,
+				),
+			)
+			const routes = [filename, `${filename}.yml`, `${filename}_en.yml`]
+			app.get(routes, (req, res) => {
+				res.send(o.loadFile(filepath))
+			})
 		})
 
-		metadata.assets.forEach(({ assetType, ext, filepath, pathname }) => {
-			if (pathname.startsWith('/')) pathname = pathname.replace('/', '')
-			pathname = `/assets/${pathname}.${ext}`
-			log(u.yellow(`Registering ${u.magenta(assetType)} pathname: ${pathname}`))
-			const routes = [pathname, `${pathname}_en.yml`, `${pathname}.yml`]
+		metadata.assets.forEach(({ group, filepath, filename }) => {
+			if (filename.startsWith('/')) filename = filename.replace('/', '')
+			log(
+				u.white(
+					`Registering ${u.yellow(group)} pathname: ${u.magenta(
+						filename,
+					)} filepath: ${filepath}`,
+				),
+			)
+			const routes = [filename, `assets/${filename}`]
 			app.get(routes, (req, res) => {
-				res.sendFile(path.resolve(path.join(process.cwd(), filepath)))
+				res.sendFile(filepath)
 			})
 		})
 
 		graphqlServer.applyMiddleware({ app })
 
-		app.listen({ cors: { origin: '*', credentials: true }, port }, () => {
+		app.listen({ cors: { origin: '*' }, port }, () => {
 			log(
 				`\n🚀 Server ready at ${u.cyan(
 					`${serverUrl}${graphqlServer.graphqlPath}`,
 				)} ${config ? `using config ${u.magenta(config)}` : ''}`,
 			)
+			app._router.stack.forEach(function ({ route }: any) {
+				if (route) {
+					const { methods, path, stack } = route
+					// console.log(path)
+				}
+			})
 		})
 	}
 })()
