@@ -2,6 +2,7 @@ import React from 'react'
 import { WritableDraft } from 'immer/dist/internal'
 import chalk from 'chalk'
 import produce from 'immer'
+import invert from 'lodash/invert'
 import useCliConfig from './hooks/useCliConfig'
 import createAggregator from './api/createAggregator'
 import { AppAction, AppState, AppContext } from './types'
@@ -73,6 +74,12 @@ function useApp() {
 		setErrorCaption,
 		toggleSpinner,
 	} as AppContext
+
+	React.useEffect(() => {
+		if (cliConfig.defaultPanel && c.panel[cliConfig.defaultPanel]) {
+			setPanel(c.panel[cliConfig.defaultPanel])
+		}
+	}, [])
 
 	return ctx
 }

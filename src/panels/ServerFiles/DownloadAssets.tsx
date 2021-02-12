@@ -1,61 +1,30 @@
 import React from 'react'
-import debounce from 'lodash/debounce'
-import fs from 'fs-extra'
-import path from 'path'
 import produce from 'immer'
 import download from 'download'
 import useCtx from '../../useCtx'
 import useServerFilesCtx from './useServerFilesCtx'
-import { createMetadataReducer } from './helpers'
 import * as u from '../../utils/common'
 import * as c from './constants'
 import * as T from './types'
-
-const createImageReducer = createMetadataReducer(
-	(stat, filepath) =>
-		stat.isFile() &&
-		(u.isImg(filepath) || u.isHtml(filepath) || u.isJs(filepath)),
-)
-const createYmlReducer = createMetadataReducer(
-	(stat, filepath) => stat.isFile() && u.isYml(filepath),
-)
 
 export type Action =
 	| {
 			type: typeof c.action.DOWNLOAD
 			file: T.ServerFilesFile | T.ServerFilesFile[]
 	  }
-	| { type: 'downloading'; url: string | string[] }
-	| { type: 'downloaded'; url: string | string[] }
+	| { type: typeof c.action.DOWNLOADED; link: string }
+	| { type: typeof c.action.DOWNLOAD_FAILED; link: string; error: Error }
 
 export interface State {
-	pending: string[]
-	downloading: string[]
-	downloaded: string[]
+	downloading: { [link: string]: T.ServerFilesFile }
+	downloaded: { [link: string]: T.ServerFilesFile }
+	failed: { [link: string]: T.ServerFilesFile }
 }
-
-export interface DownloadAssetsProps {
-	onDownload?(opts: { url: string } & State): void
-	onProgress?(
-		opts: { url: string } & State & {
-				percent: number
-				transferred: number
-				total: number
-			},
-	): void
-	onError?(args: { error: Error; url: string } & State): void
-}
-
-const createDownloadProgressObject = () => ({
-	pending: [],
-	downloading: [],
-	downloaded: [],
-})
 
 const initialState: State = {
-	pending: [],
-	downloading: [],
-	downloaded: [],
+	downloading: {},
+	downloaded: {},
+	failed: {},
 }
 
 function reducer(state: State = initialState, action: Action) {
@@ -64,104 +33,64 @@ function reducer(state: State = initialState, action: Action) {
 			case c.action.DOWNLOAD: {
 				const files = Array.isArray(action.file) ? action.file : [action.file]
 				return void files.forEach((file) => {
-					draft[file.link] = {
+					draft.downloading[file.link as string] = {
 						...file,
 						status: c.file.status.DOWNLOADING,
 					}
 				})
 			}
-			case 'downloading':
-				const urls = Array.isArray(action.url) ? action.url : [action.url]
-				return void draft.downloading.push(...urls)
-			case 'downloaded': {
-				const urls = Array.isArray(action.url) ? action.url : [action.url]
-				return void (draft.downloading = draft.downloading.filter(
-					(url) => !urls.includes(url),
-				))
+			case c.action.DOWNLOADED: {
+				break
+			}
+			case c.action.DOWNLOAD_FAILED: {
+				break
 			}
 		}
 	})
 }
 
-function DownloadAssets({
-	onDownload,
-	onProgress,
-	onError,
-}: DownloadAssetsProps) {
+function DownloadAssets() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { setCaption, spinner, toggleSpinner } = useCtx()
-	const { files, consumeMissingFiles } = useServerFilesCtx()
-
-	const imgReducer = createImageReducer(assetsDir)
-	const ymlReducer = createYmlReducer(serverDir)
-
-	const ymlMetadataObjects = fs
-		.readdirSync(serverDir, 'utf8')
-		.reduce(ymlReducer, [] as T.MetadataObject[])
-
-	const assetsMetadataObjects = fs
-		.readdirSync(assetsDir)
-		.reduce(imgReducer, [] as T.MetadataObject[])
-
-	setCaption(
-		`\nLoaded ${u.magenta(
-			ymlMetadataObjects.length,
-		)} yml files in your server folder`,
-	)
-	setCaption(
-		`Loaded ${u.magenta(
-			assetsMetadataObjects.length,
-		)} asset files in your server folder\n`,
-	)
-
-	setCaption(u.captioning(`Scanning for missing assets...`))
-
-	setCaption(
-		u.captioning(
-			`\nDownloading ${u.yellow(missingAssets.length)} missing assets...\n`,
-		),
-	)
+	const { cliConfig, setCaption, spinner, toggleSpinner } = useCtx()
+	const { files } = useServerFilesCtx()
 
 	React.useEffect(() => {
-		const add = (file: T.ServerFilesFile) => {
-			dispatch({ type: c.action.DOWNLOAD, file })
-		}
+		const isNew = (link: string) =>
+			!state.downloading[link] && !state.downloaded[link] && !state.failed[link]
 
-		for (const obj of Object.values(files.missing)) {
-			const links = Object.keys(obj)
-
-			links.forEach((link) => {
-				if (!state[link]) {
-					const file = obj[link] as T.ServerFilesFile
-					add(file)
-				}
-			})
+		for (const metadataObjs of Object.values(files.missing)) {
+			for (const file of Object.values(metadataObjs)) {
+				file?.link &&
+					isNew(file.link) &&
+					dispatch({ type: c.action.DOWNLOAD, file })
+			}
 		}
 	}, [files.missing])
 
 	React.useEffect(() => {
-		if (state.pending.length) {
-			async function downloadAsset(url: string) {
-				onDownload?.({ url, ...state })
-				const result = download(url)
-				const fn = debounce((args) => {
-					onProgress?.({ ...args, ...state, url })
-				}, 1000)
-				result.on('downloadProgress', fn)
-				try {
-					await result
-					dispatch({ type: 'downloaded', url })
-				} catch (error) {
-					onError?.({ error, url, ...state })
+		const pendingLinks = Object.keys(state.downloading)
+
+		if (pendingLinks.length) {
+			async function downloadAsset(file: T.ServerFilesFile) {
+				setCaption(
+					`[${u.magenta(file.group)}] Downloading ${u.white(file.link)}`,
+				)
+				if (file?.link) {
+					try {
+						await download(
+							file.link,
+							u.getFilepath(cliConfig.server.dir, 'assets'),
+						)
+					} catch (error) {
+						setCaption(`[${u.red(file.filename)}]: ${u.yellow(error.message)}`)
+					}
 				}
 			}
-
-			state.pending.forEach((url) => {
-				downloadAsset(url)
-				dispatch({ type: 'downloading', url })
+			pendingLinks.forEach((link) => {
+				state.downloading[link] && downloadAsset(state.downloading[link])
 			})
 		}
-	}, [state.pending, state.downloading, state.downloaded])
+	}, [state.downloading])
 
 	React.useEffect(() => {
 		if (state.downloading.length && !spinner) toggleSpinner()

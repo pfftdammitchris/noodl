@@ -1,4 +1,9 @@
 export const action = {
+	CONSUME_MISSING_FILES: 'consume.files',
+	DOWNLOAD: 'download',
+	DOWNLOADED: 'downloaded',
+	DOWNLOAD_FAILED: 'download.failed',
+	INSERT_MISSING_FILES: 'set.files',
 	SET_ROOT_CONFIG: 'set.root.config',
 	SET_APP_CONFIG: 'set.app.config',
 	SET_SERVER_DIR: 'set.server.dir',
@@ -6,9 +11,6 @@ export const action = {
 	SET_DIR_FILES: 'set.dir.files',
 	SET_PENDING: 'set.pending',
 	SET_FILE_STATUS: 'set.file.status',
-	INSERT_MISSING_FILES: 'set.files',
-	CONSUME_MISSING_FILES: 'consume.files',
-	DOWNLOAD: 'download',
 	SET_ASSET_METADATA_OBJECTS: 'set.asset.metadata.objects',
 	SET_YML_METADATA_OBJECTS: 'set.yml.metadata.objects',
 } as const

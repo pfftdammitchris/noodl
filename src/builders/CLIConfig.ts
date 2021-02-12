@@ -3,6 +3,7 @@ import * as c from '../constants'
 
 class CLIConfig implements CliConfigObject {
 	defaultOption = null
+	defaultPanel = null
 	server = {
 		host: c.DEFAULT_SERVER_HOSTNAME,
 		dir: c.DEFAULT_SERVER_PATH,
@@ -22,6 +23,7 @@ class CLIConfig implements CliConfigObject {
 	toJS() {
 		return {
 			defaultOption: this.defaultOption,
+			defaultPanel: this.defaultPanel,
 			objects: this.objects,
 			server: this.server,
 		}

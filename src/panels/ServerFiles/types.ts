@@ -1,4 +1,5 @@
 import useServerFiles from './useServerFiles'
+import { MetadataGroup } from '../../types'
 import * as c from './constants'
 
 export type ServerFilesAction =
@@ -18,12 +19,12 @@ export type ServerFilesAction =
 	  }
 	| {
 			type: typeof c.action.INSERT_MISSING_FILES
-			files: GroupedMetadataObjects
+			files: MetadataObject[]
 	  }
 	| { type: typeof c.action.CONSUME_MISSING_FILES }
 	| ({ type: typeof c.action.SET_FILE_STATUS } & Pick<
 			ServerFilesFile,
-			'group' | 'link' | 'status'
+			'group' | 'raw' | 'status'
 	  >)
 
 export interface ServerFilesState {
@@ -40,11 +41,10 @@ export type ServerFilesContext = ServerFilesState &
 		'consumeMissingFiles' | 'insertMissingFiles' | 'setStep'
 	>
 
-export interface ServerFilesGroupedFiles {
-	documents: { [url: string]: ServerFilesFile }
-	images: { [url: string]: ServerFilesFile }
-	videos: { [url: string]: ServerFilesFile }
-}
+export type ServerFilesGroupedFiles = Record<
+	MetadataGroup,
+	{ [raw: string]: ServerFilesFile }
+>
 
 export type GroupedMetadataObjects = Record<
 	keyof ServerFilesGroupedFiles,
@@ -52,13 +52,15 @@ export type GroupedMetadataObjects = Record<
 >
 
 export interface ServerFilesFile extends MetadataObject {
-	status: null | typeof c.file.status[keyof typeof c.file.status]
+	status: typeof c.file.status[keyof typeof c.file.status]
 }
 
 export interface MetadataObject {
 	ext: string
+	filename: string
 	filepath?: any
-	link: string
-	group: 'image' | 'document' | 'script' | 'video'
+	link?: string
+	group: MetadataGroup
 	pathname: string
+	raw: string
 }

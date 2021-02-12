@@ -191,17 +191,11 @@ const createAggregator = function (opts?: ConfigOptions) {
 				appConfig: IAppConfig,
 			]
 		},
-		async loadPreloadPages({ onPage }: { onPage?: OnPage } = {}) {
+		async loadPreloadPages() {
 			await promiseAllSafe(
-				...builder.appConfig.preload.map(async (page) => {
-					const result = await _loadPage(page, withExt(withLocale('')))
-					_emit(c.aggregator.event.RETRIEVED_APP_OBJECT, {
-						name: page,
-						json: result.json,
-						yml: result.yml,
-					})
-					await onPage?.({ name: page, ...result } as any)
-				}),
+				...(builder.appConfig.json?.preload.map((page) =>
+					_loadPage(page, withExt(withLocale(''))),
+				) || []),
 			)
 		},
 		loadPage: _loadPage,
@@ -214,7 +208,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 			includePreloadPages?: boolean
 			onPage?: OnPage
 		} = {}) {
-			if (includePreloadPages) await o.loadPreloadPages({ onPage })
+			if (includePreloadPages) await o.loadPreloadPages()
 			const chunkedPageReqs = chunk(
 				(builder.appConfig.json?.page as string[]).map(
 					async (page: string): Promise<void> => {

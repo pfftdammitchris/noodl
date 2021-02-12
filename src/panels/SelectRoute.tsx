@@ -18,7 +18,7 @@ function SelectRoute({ label = 'Select an option' }: any) {
 	const { cliConfig, setPanel } = useCtx()
 
 	const initialIndex =
-		(panelMap[cliConfig.defaultOption] &&
+		(panelMap[cliConfig.defaultOption as string] &&
 			panels.findIndex((p) => p.id === cliConfig.defaultOption)) ||
 		0
 

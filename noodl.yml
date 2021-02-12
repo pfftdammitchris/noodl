@@ -1,10 +1,11 @@
-defaultOption: select.route
+defaultOption: server.files
+defaultPanel: server.files
 server:
   dir: output/server
-  host: localhost
+  host: '127.0.0.1'
   port: 3001
-  protocol: ""
-  config: ""
+  protocol: ''
+  config: 'testpage'
 objects:
   json:
     dir:
@@ -12,4 +13,5 @@ objects:
   yml:
     dir:
       - output/yml
+      - output/server/yml
 initialOption: retrieve.objects

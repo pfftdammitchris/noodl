@@ -1,9 +1,18 @@
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
-import useCliConfig from 'hooks/useCliConfig'
 import { aggregator as aggregatorEvent, panelId } from './constants'
+import useCliConfig from './hooks/useCliConfig'
 import createAggregator from './api/createAggregator'
 import * as c from './constants'
 
+/* -------------------------------------------------------
+	---- CONSTANTS
+-------------------------------------------------------- */
+
+export type MetadataGroup = 'documents' | 'images' | 'scripts' | 'videos'
+
+/* -------------------------------------------------------
+	---- OTHER
+-------------------------------------------------------- */
 export interface AnyFn {
 	(...args: any[]): any
 }
@@ -126,6 +135,7 @@ export type EventId = typeof aggregatorEvent.event[keyof typeof aggregatorEvent.
 
 export interface CliConfigObject {
 	defaultOption: PanelId | null
+	defaultPanel: PanelId | null
 	server: {
 		config?: string
 		dir: string

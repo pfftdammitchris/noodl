@@ -4,14 +4,15 @@ import yaml from 'yaml'
 import produce, { Draft } from 'immer'
 import merge from 'lodash/merge'
 import CliConfigBuilder from '../builders/CliConfig'
-import { getFilePath, getCliConfig, hasCliConfig } from '../utils/common'
+import { getFilepath, getCliConfig, hasCliConfig } from '../utils/common'
 import { CliConfigObject, PanelId } from '../types'
 import * as c from '../constants'
 
 type State = typeof initialState
 
 const initialState = {
-	defaultOption: c.panelId.SELECT_ROUTE as PanelId,
+	defaultOption: c.panelId.SELECT_ROUTE as PanelId | null,
+	defaultPanel: null as PanelId | null,
 	server: {
 		dir: '',
 		host: '',
@@ -26,7 +27,7 @@ const initialState = {
 }
 
 function useCliConfig() {
-	const { current: configPath } = React.useRef<string>(getFilePath('noodl.yml'))
+	const { current: configPath } = React.useRef<string>(getFilepath('noodl.yml'))
 	const [state, setState] = React.useState<State>(() => {
 		if (hasCliConfig()) return merge({}, initialState, getCliConfig())
 		else return new CliConfigBuilder().toJS()
@@ -66,6 +67,8 @@ function useCliConfig() {
 		(dir: string) => _setState((draft) => void (draft.server.dir = dir)),
 		[],
 	)
+
+	React.useEffect(() => {}, [])
 
 	return {
 		...state,

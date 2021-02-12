@@ -7,7 +7,12 @@ import yaml from 'yaml'
 import globby from 'globby'
 import { AxiosError } from 'axios'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
-import { CliConfigObject, IdentifyFn, PlainObject } from '../types'
+import {
+	MetadataObject,
+	GroupedMetadataObjects,
+} from '../panels/ServerFiles/types'
+import * as T from '../types'
+import { URL } from 'url'
 
 // chalk helpers
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
@@ -24,6 +29,18 @@ export const red = (...s: any[]) => chalk.redBright(...s)
 export const white = (...s: any[]) => chalk.whiteBright(...s)
 export const yellow = (...s: any[]) => chalk.yellow(...s)
 export const newline = () => console.log('')
+
+export function createGroupedMetadataObjects(
+	init?: Partial<GroupedMetadataObjects>,
+): GroupedMetadataObjects & {} {
+	return {
+		documents: [],
+		images: [],
+		scripts: [],
+		videos: [],
+		...init,
+	}
+}
 
 export function createPlaceholderReplacer(
 	placeholders: string | string[],
@@ -44,7 +61,7 @@ export function createPlaceholderReplacer(
 	) {
 		if (typeof str === 'string') {
 			return str.replace(regexp, String(value))
-		} else if (str && typeof str === 'object') {
+		} else if (isPlainObject(str)) {
 			const stringified = JSON.stringify(str).replace(regexp, String(value))
 			return JSON.parse(stringified)
 		}
@@ -77,7 +94,8 @@ export async function promiseAllSafe(...promises: Promise<any>[]) {
 	const results = []
 	for (let promise of promises) {
 		try {
-			results.push(await promise)
+			const result = await promise
+			results.push(result)
 		} catch (error) {
 			results.push(error)
 		}
@@ -124,36 +142,131 @@ export function forEachDeepKeyValue<O = any>(
 	}
 }
 
-export function getFilePath(...paths: string[]) {
+export function getExt(str: string) {
+	return hasDot(str) ? str.substring(str.lastIndexOf('.') + 1) : ''
+}
+
+export function getPathname(str: string) {
+	return hasSlash(str) ? str.substring(str.lastIndexOf('/') + 1) : ''
+}
+
+export function getFilename(str: string) {
+	if (!hasSlash(str)) return str
+	return str.substring(str.lastIndexOf('/') + 1)
+}
+
+export function getFilepath(...paths: string[]) {
 	return path.normalize(path.resolve(path.join(process.cwd(), ...paths)))
 }
 
 export function getCliConfig() {
 	return yaml.parse(
-		fs.readFileSync(getFilePath('noodl.yml'), 'utf8'),
-	) as CliConfigObject
+		fs.readFileSync(getFilepath('noodl.yml'), 'utf8'),
+	) as T.CliConfigObject
 }
 
-export function groupAssets(urls: string[]) {
+export function createMetadataExtractor(type: 'filepath' | 'link') {
+	type GetMetadataObjectArgsObject = Partial<{ [K in typeof type]: string }> & {
+		baseUrl?: string
+		prefix?: string
+		tilde?: string
+	}
+
+	function getMetadataObject(args: GetMetadataObjectArgsObject): MetadataObject
+	function getMetadataObject(str: string): MetadataObject
+	function getMetadataObject(s: GetMetadataObjectArgsObject | string) {
+		const metadata = {} as MetadataObject
+
+		let value = (typeof s === 'string' ? s : s[type]) as string
+
+		metadata.raw = value as string
+		metadata.ext = getExt(value)
+		metadata.filename = getFilename(value)
+
+		if (value.startsWith('http')) {
+			const url = new URL(value)
+			metadata.pathname = url.pathname
+		} else {
+			metadata.pathname = value.startsWith('/') ? value : `/${value}`
+		}
+
+		if (typeof s === 'string') {
+			if (type === 'link') {
+				if (value.startsWith('http')) metadata.link = value
+				// The link is a pathname, so we need to construct the protocol/hostname
+				// TODO - Find a way to get the hostname here?
+				else metadata.link = value
+			} else {
+				metadata.filepath = getFilepath(value)
+			}
+		} else {
+			if (type === 'link') {
+				const { baseUrl = '', prefix = '', tilde } = s
+				metadata.link = baseUrl
+				prefix && (metadata.link += `${prefix}`)
+				metadata.link += metadata.pathname.startsWith('/')
+					? metadata.pathname
+					: `/${metadata.pathname}`
+			} else {
+				metadata.filepath = s.prefix
+					? getFilepath(path.join(s.prefix, s[type] as string))
+					: getFilepath(s[type] as string)
+			}
+		}
+
+		if (isImg(value)) {
+			metadata.group = 'images'
+		} else if (isPdf(value)) {
+			metadata.group = 'documents'
+		} else if (isVid(value)) {
+			metadata.group = 'videos'
+		} else if (isHtml(value) || isJs(value)) {
+			metadata.group = 'scripts'
+		}
+
+		return metadata
+	}
+
+	return getMetadataObject
+}
+
+export const getFilepathMetadata = createMetadataExtractor('filepath')
+export const getLinkMetadata = createMetadataExtractor('link')
+
+/**
+ * Expects a list of URLs and groups them according to their file type
+ * This can also expect values from the "path" in noodl objects as well
+ * as file paths
+ * @param { string[] } urls
+ */
+export function groupAssetUrls(urls: string[]) {
 	return urls.reduce(
 		(acc, url) => {
 			if (isImg(url)) acc.images.push(url)
 			else if (isVid(url)) acc.videos.push(url)
-			else if (isPdf(url)) acc.pdfs.push(url)
-			else acc.other.push(url)
+			else if (isPdf(url)) acc.documents.push(url)
+			else if (isJs(url) || isHtml(url)) acc.scripts.push(url)
 			return acc
 		},
 		{
 			images: [] as string[],
-			other: [] as string[],
-			pdfs: [] as string[],
+			documents: [] as string[],
+			scripts: [] as string[],
 			videos: [] as string[],
 		},
 	)
 }
 
+export function hasDot(s: string) {
+	return !!s?.includes('.')
+}
+
+export function hasSlash(s: string) {
+	return !!s?.includes('/')
+}
+
 export function hasCliConfig() {
-	return fs.existsSync(getFilePath('noodl.yml'))
+	return fs.existsSync(getFilepath('noodl.yml'))
 }
 
 export function hasAllKeys(keys: string | string[]) {
@@ -182,8 +295,8 @@ export function loadFiles(opts: {
 export function loadFiles(opts: {
 	dir: string
 	ext: 'json'
-	onFile?(args: { file: PlainObject; filename: string }): void
-}): PlainObject[]
+	onFile?(args: { file: T.PlainObject; filename: string }): void
+}): T.PlainObject[]
 export function loadFiles({
 	dir,
 	ext = 'json',
@@ -191,10 +304,13 @@ export function loadFiles({
 }: {
 	dir: string
 	ext?: 'json' | 'yml'
-	onFile?(args: { file?: PlainObject | yaml.Document; filename: string }): void
+	onFile?(args: {
+		file?: T.PlainObject | yaml.Document
+		filename: string
+	}): void
 }) {
 	return globby
-		.sync(path.resolve(getFilePath(dir), `**/*.${ext}`))
+		.sync(path.resolve(getFilepath(dir), `**/*.${ext}`))
 		.reduce((acc, filename) => {
 			const file =
 				ext === 'json'
@@ -249,19 +365,19 @@ export function isScalar(v: unknown): v is Scalar {
 	return v instanceof Scalar
 }
 
-export function onYAMLMap(fn: IdentifyFn<YAMLMap>) {
+export function onYAMLMap(fn: T.IdentifyFn<YAMLMap>) {
 	return (v: unknown) => isYAMLMap(v) && fn(v)
 }
 
-export function onYAMLSeq(fn: IdentifyFn<YAMLSeq>) {
+export function onYAMLSeq(fn: T.IdentifyFn<YAMLSeq>) {
 	return (v: unknown) => isYAMLSeq(v) && fn(v)
 }
 
-export function onPair(fn: IdentifyFn<Pair>) {
+export function onPair(fn: T.IdentifyFn<Pair>) {
 	return (v: unknown) => isPair(v) && fn(v)
 }
 
-export function onScalar(fn: IdentifyFn<Scalar>) {
+export function onScalar(fn: T.IdentifyFn<Scalar>) {
 	return (v: unknown) => isScalar(v) && fn(v)
 }
 
@@ -283,6 +399,8 @@ export const replaceDesignSuffixPlaceholder = createPlaceholderReplacer(
 	'\\${designSuffix}',
 	'g',
 )
+
+export const replaceTildePlaceholder = createPlaceholderReplacer('~/')
 
 export const replaceVersionPlaceholder = createPlaceholderReplacer(
 	'\\${cadlVersion}',
@@ -335,3 +453,7 @@ export const withSuffix = (suffix: string) => (str: string) => `${str}${suffix}`
 export const withEngLocale = withSuffix('_en')
 export const withJsonExt = withSuffix('.json')
 export const withYmlExt = withSuffix('.yml')
+
+export function withoutExt(str: string) {
+	return hasDot(str) ? str.substring(str.lastIndexOf('.')) : str
+}

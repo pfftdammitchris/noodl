@@ -6,8 +6,8 @@ import yaml from 'yaml'
 import produce from 'immer'
 import useCtx from '../../useCtx'
 import RootConfigBuilder from '../../builders/RootConfig'
-import { createGroupedObject } from './helpers'
 import { AppConfig, RootConfig, ObjectResult } from '../../types'
+import { createInitialGroupedFiles } from './helpers'
 import {
 	aggregator as aggregatorConst,
 	DEFAULT_CONFIG_HOSTNAME,
@@ -34,54 +34,55 @@ import * as T from './types'
 
 const initialState: T.ServerFilesState = {
 	files: {
-		contained: createGroupedObject(),
-		missing: createGroupedObject(),
+		contained: createInitialGroupedFiles(),
+		missing: createInitialGroupedFiles(),
 	},
 	step: c.step.INITIALIZING,
 }
 
 function reducer(
-	state: T.ServerFilesState,
+	state: T.ServerFilesState = initialState,
 	action: T.ServerFilesAction,
 ): T.ServerFilesState {
-	return produce(state, (draft = initialState) => {
+	return produce(state, (draft) => {
 		switch (action.type) {
 			case c.action.CONSUME_MISSING_FILES:
-				return void (draft.files.missing = createGroupedObject())
+				return void (draft.files.missing = createInitialGroupedFiles())
 			case c.action.INSERT_MISSING_FILES: {
-				for (const [group, metadataObjs] of Object.entries(action.files)) {
-					metadataObjs.forEach((metadata) => {
-						if (
-							!draft.files.contained[group][metadata.link] &&
-							!draft.files.missing[group][metadata.link]
-						) {
-							draft.files.missing[group][metadata.link] = {
+				for (const metadata of action.files) {
+					const group = metadata.group
+					if (
+						!draft.files.contained[group][metadata.raw] &&
+						!draft.files.missing[group][metadata.raw]
+					) {
+						Object.assign(draft.files.missing[group], {
+							[metadata.raw]: {
 								...metadata,
-								status: null,
-							}
-						}
-					})
+								status: c.file.status.PENDING,
+							},
+						})
+					}
 				}
 				break
 			}
 			case c.action.SET_FILE_STATUS: {
-				const { group, link, status } = action
+				const { group, raw, status } = action
 				const { contained, missing } = draft.files
 
 				let files:
 					| T.ServerFilesGroupedFiles[keyof T.ServerFilesGroupedFiles]
 					| undefined
 
-				if (contained[group]?.[link]) files = contained[group]
-				else if (missing[group]?.[link]) files = missing[group]
+				if (contained[group]?.[raw]) files = contained[group]
+				else if (missing[group]?.[raw]) files = missing[group]
 
 				if (files) {
-					files[link].status = status
+					files[raw].status = status
 					// Move it to the contained state after we are done processing it
 					if (status === c.file.status.DOWNLOADED) {
-						const file = files[link]
-						delete files[link]
-						contained[group][link] = file
+						const file = files[raw]
+						delete files[raw]
+						contained[group][raw] = file
 					}
 				}
 				break
@@ -97,7 +98,7 @@ function useServerFiles() {
 	const { aggregator, cliConfig, setCaption, spinner, toggleSpinner } = useCtx()
 
 	const setFileStatus = React.useCallback(
-		async (args: Pick<T.ServerFilesFile, 'group' | 'link' | 'status'>) =>
+		async (args: Pick<T.ServerFilesFile, 'group' | 'raw' | 'status'>) =>
 			dispatch({ type: c.action.SET_FILE_STATUS, ...args }),
 		[],
 	)
@@ -109,7 +110,7 @@ function useServerFiles() {
 	}, [state])
 
 	const insertMissingFiles = React.useCallback(
-		(files: T.GroupedMetadataObjects) =>
+		(files: T.MetadataObject[]) =>
 			dispatch({ type: c.action.INSERT_MISSING_FILES, files }),
 		[],
 	)
@@ -124,21 +125,21 @@ function useServerFiles() {
 
 	const runConfig = React.useCallback(
 		async (config: string) => {
-			setCaption(u.captioning(`Running ${u.italic(config)} config...`))
+			setCaption(u.captioning(`\nRunning ${u.italic(config)} config...`))
 
 			if (!spinner) toggleSpinner()
 			if (state.step) setStep('')
 
 			const serverDir = cliConfig.server.dir
 			const assetsDir = path.join(serverDir, 'assets')
-			const configPath = path.join(serverDir, `${cliConfig.server.config}.yml`)
+			const configPath = path.join(serverDir, `${config}.yml`)
 
 			if (aggregator.config !== config) aggregator.config = config
 			if (cliConfig.server.config !== config) cliConfig.setServerConfig(config)
 
 			if (!fs.existsSync(serverDir)) {
 				fs.ensureDirSync(serverDir)
-				setCaption(`\nCreated server dir at ${u.magenta(serverDir)}`)
+				setCaption(`Created server dir at ${u.magenta(serverDir)}`)
 			}
 
 			if (!fs.existsSync(assetsDir)) {
@@ -148,9 +149,9 @@ function useServerFiles() {
 
 			if (!fs.existsSync(configPath)) {
 				setCaption(
-					`Missing config file in your server dir. Fetching ${u.magenta(
-						cliConfig.server.config,
-					)} config from remote now`,
+					`\nMissing config file in your server dir. Fetching ${u.magenta(
+						config,
+					)} config from remote now\n`,
 				)
 				const url = `https://${DEFAULT_CONFIG_HOSTNAME}/config/${config}.yml`
 				setCaption(`Remote config url: ${u.magenta(url)}`)
@@ -219,7 +220,7 @@ function useServerFiles() {
 					const filepath = path.join(cliConfig.server.dir, config + '.yml')
 					u.saveYml(filepath, yml)
 					setCaption(
-						`Loaded and saved ${u.yellow(config + '.yml')} to ${u.magenta(
+						`Loaded and saved ${u.white(config + '.yml')} to ${u.magenta(
 							cliConfig.server.dir,
 						)}\n`,
 					)
@@ -237,7 +238,7 @@ function useServerFiles() {
 					const filepath = path.join(cliConfig.server.dir, name + '.yml')
 					u.saveYml(filepath, yml)
 					setCaption(
-						`Loaded and saved ${u.magenta('cadlEndpoint.yml')} to ${u.magenta(
+						`Loaded and saved ${u.white('cadlEndpoint.yml')} to ${u.magenta(
 							filepath,
 						)}`,
 					)
@@ -245,7 +246,7 @@ function useServerFiles() {
 					const filename = name + '.yml'
 					const filepath = path.join(cliConfig.server.dir, filename)
 					u.saveYml(filepath, yml)
-					setCaption(`Saved ${u.yellow(filename)} to ${u.magenta(filepath)}`)
+					setCaption(`Saved ${u.white(filename)} to ${u.magenta(filepath)}`)
 				}
 			}
 
@@ -265,7 +266,7 @@ function useServerFiles() {
 
 	React.useEffect(() => {
 		setCaption(`${u.deepOrange('STEP')}: ${u.magenta(state.step)}\n`)
-		setCaption(`Server dir: ${u.magenta(u.getFilePath(cliConfig.server.dir))}`)
+		setCaption(`Server dir: ${u.magenta(u.getFilepath(cliConfig.server.dir))}`)
 		setCaption(`Server host: ${u.magenta(cliConfig.server.host)}`)
 		setCaption(`Server port: ${u.magenta(cliConfig.server.port)}`)
 	}, [])

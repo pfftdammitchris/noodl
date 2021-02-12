@@ -11,7 +11,7 @@ import HighlightedText from '../components/HighlightedText'
 import Spinner from '../components/Spinner'
 import Select from '../components/Select'
 import {
-	getFilePath,
+	getFilepath,
 	magenta,
 	yellow,
 	saveJson,
@@ -123,7 +123,7 @@ function RetrieveObjectsPanel() {
 								let dir = cliConfig.objects[ext].dir[index]
 								let filepath: string
 								if (dir) {
-									dir = getFilePath(dir)
+									dir = getFilepath(dir)
 									filepath = withExt(path.join(dir, name))
 									const save = saveFn(filepath)
 
