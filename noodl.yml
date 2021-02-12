@@ -1,5 +1,5 @@
 defaultOption: server.files
-# defaultPanel: server.files
+defaultPanel: run.server
 server:
   dir: output/server
   host: localhost
@@ -14,4 +14,3 @@ objects:
     dir:
       - output/yml
       - output/server/yml
-initialOption: retrieve.objects

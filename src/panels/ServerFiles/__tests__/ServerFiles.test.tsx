@@ -10,6 +10,6 @@ test('fsafasffdasdasdsadssafasfas', (t) => {
 
 	rerender(<ServerFiles />)
 	lastFrame() === 'Count: 1' //=> true
-
+	console.log('hellos')
 	t.fail()
 })

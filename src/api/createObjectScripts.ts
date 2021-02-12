@@ -1,5 +1,9 @@
 import { config } from 'dotenv'
+import wrap from 'lodash/wrap'
+import partial from 'lodash/partial'
+import partialRight from 'lodash/partialRight'
 config()
+import t from 'transducers-js'
 import chunk from 'lodash/chunk'
 import fs from 'fs-extra'
 import yaml from 'yaml'

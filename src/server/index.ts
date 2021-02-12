@@ -147,6 +147,7 @@ const configureServer = (function () {
 		)
 
 		metadata.yml.forEach(({ group, filepath, filename }) => {
+			!filename.startsWith('/') && (filename = `/${filename}`)
 			filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
 			group = 'page' as any
 			log(
@@ -157,13 +158,14 @@ const configureServer = (function () {
 				),
 			)
 			const routes = [filename, `${filename}.yml`, `${filename}_en.yml`]
+			console.log(routes)
 			app.get(routes, (req, res) => {
 				res.send(o.loadFile(filepath))
 			})
 		})
 
 		metadata.assets.forEach(({ group, filepath, filename }) => {
-			if (filename.startsWith('/')) filename = filename.replace('/', '')
+			if (!filename.startsWith('/')) filename = `/${filename}`
 			log(
 				u.white(
 					`Registering ${u.yellow(group)} pathname: ${u.magenta(
