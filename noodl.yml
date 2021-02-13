@@ -1,5 +1,5 @@
 defaultOption: server.files
-defaultPanel: run.server
+# defaultPanel: run.server
 server:
   dir: output/server
   host: localhost

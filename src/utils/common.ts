@@ -366,19 +366,27 @@ export function isScalar(v: unknown): v is Scalar {
 }
 
 export function onYAMLMap(fn: T.IdentifyFn<YAMLMap>) {
-	return (v: unknown) => isYAMLMap(v) && fn(v)
+	return function (v: unknown) {
+		return isYAMLMap(v) && fn(v)
+	}
 }
 
 export function onYAMLSeq(fn: T.IdentifyFn<YAMLSeq>) {
-	return (v: unknown) => isYAMLSeq(v) && fn(v)
+	return function (v: unknown) {
+		return isYAMLSeq(v) && fn(v)
+	}
 }
 
 export function onPair(fn: T.IdentifyFn<Pair>) {
-	return (v: unknown) => isPair(v) && fn(v)
+	return function (v: unknown) {
+		return isPair(v) && fn(v)
+	}
 }
 
 export function onScalar(fn: T.IdentifyFn<Scalar>) {
-	return (v: unknown) => isScalar(v) && fn(v)
+	return function (v: unknown) {
+		return isScalar(v) && fn(v)
+	}
 }
 
 export function prettifyErr(err: AxiosError | Error) {
@@ -449,7 +457,11 @@ export function traverse(
 	}
 }
 
-export const withSuffix = (suffix: string) => (str: string) => `${str}${suffix}`
+export function withSuffix(suffix: string) {
+	return function (str: string) {
+		return `${str}${suffix}`
+	}
+}
 export const withEngLocale = withSuffix('_en')
 export const withJsonExt = withSuffix('.json')
 export const withYmlExt = withSuffix('.yml')

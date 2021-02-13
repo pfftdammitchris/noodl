@@ -1,5 +1,4 @@
 import express from 'express'
-import path from 'path'
 import fs from 'fs-extra'
 import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
 import { ApolloServerPlugin } from 'apollo-server-plugin-base'

@@ -9,7 +9,6 @@ import * as T from '.'
 import * as u from './_internal'
 
 export const Identify = (function () {
-	const identity = <V = any>(x: V): V => x
 	const composeSomes = (...fns: any[]) => (arg: any) =>
 		fns.some((fn) => fn(arg))
 
@@ -226,12 +225,6 @@ export const Identify = (function () {
 		toast(value: unknown): value is { toast: T.ToastObject } {
 			return u.isObj(value) && 'toast' in value
 		},
-	}
-
-	const a = {} as any
-
-	if (folds.component.button(a)) {
-		// a.type = 'divider'
 	}
 
 	return {
