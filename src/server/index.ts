@@ -158,7 +158,6 @@ const configureServer = (function () {
 				),
 			)
 			const routes = [filename, `${filename}.yml`, `${filename}_en.yml`]
-			console.log(routes)
 			app.get(routes, (req, res) => {
 				res.send(o.loadFile(filepath))
 			})
