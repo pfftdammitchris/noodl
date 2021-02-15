@@ -171,7 +171,7 @@ const configureServer = (function () {
 					)} filepath: ${filepath}`,
 				),
 			)
-			const routes = [filename, `assets/${filename}`]
+			const routes = [filename, `/assets/${filename.replace('/', '')}`]
 			app.get(routes, (req, res) => {
 				res.sendFile(filepath)
 			})

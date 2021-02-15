@@ -1,5 +1,5 @@
 {
-	"packages": ["packages/*"],
+	"packages": ["packages/noodl-types"],
 	"version": "independent",
 	"command": {
 		"publishChanges": {}
