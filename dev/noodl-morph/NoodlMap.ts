@@ -1,8 +1,8 @@
 import { YAMLMap } from 'yaml/types'
-import Identify from './Identify'
+import Identify from './utils/Identify'
 
 class NoodlMap extends YAMLMap {
-	constructor(args) {
+	constructor() {
 		super()
 	}
 
@@ -61,6 +61,10 @@ class NoodlMap extends YAMLMap {
 	/* -------------------------------------------------------
 		---- COMPONENTS
 	-------------------------------------------------------- */
+
+	isComponentLike() {
+		return Identify.component.any(this)
+	}
 
 	isButtonComponent() {
 		return Identify.component.button(this)

@@ -103,3 +103,21 @@ export function isHtml(s: string = '') {
 export function isStr(v: unknown): v is string {
 	return typeof v === 'string'
 }
+
+export const Regex = (function () {
+	const o = {
+		reference: {
+			dot: {
+				single: {
+					root: /(^\.[A-Z])/,
+					localRoot: /(^\.[a-z])/,
+				},
+				double: {
+					root: /(^\.\.[A-Z])/,
+					localRoot: /(^\.\.[a-z])/,
+				},
+			},
+		},
+	}
+	return o
+})()

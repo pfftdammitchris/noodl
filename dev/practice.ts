@@ -3,30 +3,32 @@ import yaml from 'yaml'
 import { Alias, Collection, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import fs from 'fs-extra'
 import path from 'path'
+import NoodlPage from './noodl-morph/NoodlPage'
+import NoodlScalar from './noodl-morph/NoodlScalar'
+import NoodlPair from './noodl-morph/NoodlPair'
+import NoodlMap from './noodl-morph/NoodlMap'
+import NoodlSeq from './noodl-morph/NoodlSeq'
+import PageResolverMixin from './noodl-morph/mixins/PageResolverMixin'
+import { Mixin, mix } from './noodl-morph/Mixin/mix'
 
-const project = new Project({
-	compilerOptions: {
-		module: ts.ModuleKind.CommonJS,
-		target: ts.ScriptTarget.ESNext,
-	},
-})
+const doc = yaml.parseDocument(
+	fs.readFileSync('output/server/VideoChat.yml', 'utf8'),
+)
 
-project.getSourceFiles('dev/runServer.ts')
+const page = new NoodlPage(doc)
 
-const src = `
-  const two = 2;
-  const four = 4;
-`
+// console.log(page.getActionChains())
 
-function noodlTransformer<T extends ts.Node>(): ts.TransformerFactory<T> {
-	return (context) => {
-		const visit: ts.Visitor = (node) => {
-			if (ts.isStringLiteral(node)) {
-				console.log(node.getText())
-			}
-			return ts.visitEachChild(node, (child) => visit(child), context)
-		}
+// const project = new Project({
+// 	compilerOptions: {
+// 		module: ts.ModuleKind.CommonJS,
+// 		target: ts.ScriptTarget.ESNext,
+// 	}
+// })
 
-		return (node) => ts.visitNode(node, visit)
-	}
-}
+// project.getSourceFiles('dev/runServer.ts')
+
+// const src = `
+//   const two = 2;
+//   const four = 4;
+// `

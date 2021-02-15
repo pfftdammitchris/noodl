@@ -1,13 +1,8 @@
 import { config } from 'dotenv'
-import wrap from 'lodash/wrap'
-import partial from 'lodash/partial'
-import partialRight from 'lodash/partialRight'
+import yaml from 'yaml'
 config()
-import t from 'transducers-js'
 import chunk from 'lodash/chunk'
 import fs from 'fs-extra'
-import yaml from 'yaml'
-import { traverse } from '../utils/common'
 import { YAMLNode } from '../types'
 
 export interface NOODLTypesObserver<Store = any> {
@@ -103,7 +98,9 @@ const createObjectScripts = function <Store = any>({
 				const docs = chunkedDocs[index]
 				const numDocs = docs?.length || 0
 				for (let i = 0; i < numDocs; i++) {
-					traverse(processFns, docs?.[i] as yaml.Document)
+					yaml.visit(docs?.[i] as yaml.Document, (key, node, path) => {
+						processFns(node)
+					})
 				}
 			}
 			cbs.end.forEach((fn) => fn(_internal.dataFile))

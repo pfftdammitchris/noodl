@@ -1,8 +1,8 @@
 import { YAMLSeq } from 'yaml/types'
-import Identify from './Identify'
+import Identify from './utils/Identify'
 
 class NoodlSeq extends YAMLSeq {
-	constructor(args) {
+	constructor() {
 		super()
 	}
 

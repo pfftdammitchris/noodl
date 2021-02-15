@@ -1,5 +1,5 @@
 import { Scalar } from 'yaml/types'
-import Identify from './Identify'
+import Identify from './utils/Identify'
 
 class NoodlScalar extends Scalar {
 	constructor(args) {
@@ -24,6 +24,18 @@ class NoodlScalar extends Scalar {
 
 	isReference() {
 		return Identify.reference(this)
+	}
+
+	isLocalReference() {
+		return Identify.localReference(this)
+	}
+
+	isRootReference() {
+		return Identify.rootReference(this)
+	}
+
+	isTraverseReference() {
+		return Identify.traverseReference(this)
 	}
 }
 

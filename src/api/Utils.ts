@@ -1,21 +1,24 @@
 import { isReference } from 'noodl-utils'
+import partialRight from 'lodash/partialRight'
 import {
 	forEachDeepKeyValue,
-	hasAllKeys,
-	hasAnyKeys,
-	hasKey,
-	hasKeyEqualTo,
 	isImg,
 	isJs,
 	isHtml,
 	isPdf,
 	isVid,
+	sortObjPropsByKeys,
+} from '../utils/common'
+import {
+	hasAllKeys,
+	hasAnyKeys,
+	hasKey,
+	hasKeyEqualTo,
 	onPair,
 	onScalar,
 	onYAMLMap,
 	onYAMLSeq,
-	sortObjPropsByKeys,
-} from '../utils/common'
+} from '../utils/doc'
 
 export const identify = (function () {
 	function composeFilters<N>(...fns: ((node: N) => boolean)[]) {
@@ -25,58 +28,93 @@ export const identify = (function () {
 
 	const o = {
 		action: {
-			any: onYAMLMap(composeFilters(hasKey('actionType'))),
+			any: onYAMLMap(composeFilters(partialRight(hasKey, 'actionType'))),
 			builtIn: onYAMLMap(
 				composeFilters(
-					hasAllKeys(['actionType', 'funcName']),
-					hasKeyEqualTo('actionType', 'builtIn'),
+					partialRight(hasAllKeys, ['actionType', 'funcName']),
+					partialRight(hasKeyEqualTo, 'actionType', 'builtIn'),
 				),
 			),
 			evalObject: onYAMLMap(
-				composeFilters(hasKeyEqualTo('actionType', 'evalObject')),
+				composeFilters(partialRight(hasKeyEqualTo, 'actionType', 'evalObject')),
 			),
 			pageJump: onYAMLMap(
-				composeFilters(hasKeyEqualTo('actionType', 'pageJump')),
+				composeFilters(partialRight(hasKeyEqualTo, 'actionType', 'pageJump')),
 			),
-			popUp: onYAMLMap(composeFilters(hasKeyEqualTo('actionType', 'popUp'))),
+			popUp: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'actionType', 'popUp')),
+			),
 			popUpDismiss: onYAMLMap(
-				composeFilters(hasKeyEqualTo('actionType', 'popUpDismiss')),
+				composeFilters(
+					partialRight(hasKeyEqualTo, 'actionType', 'popUpDismiss'),
+				),
 			),
 			refresh: onYAMLMap(
-				composeFilters(hasKeyEqualTo('actionType', 'refresh')),
+				composeFilters(partialRight(hasKeyEqualTo, 'actionType', 'refresh')),
 			),
 			saveObject: onYAMLMap(
-				composeFilters(hasKeyEqualTo('actionType', 'saveObject')),
+				composeFilters(partialRight(hasKeyEqualTo, 'actionType', 'saveObject')),
 			),
 			updateObject: onYAMLMap(
-				composeFilters(hasKeyEqualTo('actionType', 'updateObject')),
+				composeFilters(
+					partialRight(hasKeyEqualTo, 'actionType', 'updateObject'),
+				),
 			),
 		},
 		actionChain: onYAMLSeq((node) =>
-			node.items.some(onYAMLMap(hasAnyKeys(['actionType', 'emit', 'goto']))),
+			node.items.some(
+				onYAMLMap(partialRight(hasAnyKeys, ['actionType', 'emit', 'goto'])),
+			),
 		),
 		component: {
 			any: onYAMLMap(
-				composeFilters(hasAnyKeys(['style', 'children']), hasKey('type')),
+				composeFilters(
+					partialRight(hasAnyKeys, ['style', 'children']),
+					partialRight(hasKey, 'type'),
+				),
 			),
-			button: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'button'))),
-			divider: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'divider'))),
-			image: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'image'))),
-			label: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'label'))),
-			list: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'list'))),
-			listItem: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'listItem'))),
-			page: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'page'))),
-			popUp: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'popUp'))),
+			button: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'button')),
+			),
+			divider: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'divider')),
+			),
+			image: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'image')),
+			),
+			label: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'label')),
+			),
+			list: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'list')),
+			),
+			listItem: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'listItem')),
+			),
+			page: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'page')),
+			),
+			popUp: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'popUp')),
+			),
 			scrollView: onYAMLMap(
-				composeFilters(hasKeyEqualTo('type', 'scrollView')),
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'scrollView')),
 			),
-			select: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'select'))),
-			textField: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'textField'))),
-			textView: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'textView'))),
-			view: onYAMLMap(composeFilters(hasKeyEqualTo('type', 'view'))),
+			select: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'select')),
+			),
+			textField: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'textField')),
+			),
+			textView: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'textView')),
+			),
+			view: onYAMLMap(
+				composeFilters(partialRight(hasKeyEqualTo, 'type', 'view')),
+			),
 		},
-		emit: onYAMLMap(composeFilters(hasKey('emit'))),
-		if: onYAMLMap(composeFilters(hasKey('if'))),
+		emit: onYAMLMap(composeFilters(partialRight(hasKey, 'emit'))),
+		if: onYAMLMap(composeFilters(partialRight(hasKey, 'if'))),
 		keyValue: {
 			actionType: onPair((node) => node.key.value === 'actionType'),
 			funcName: onPair((node) => node.key.value === 'funcName'),
@@ -97,7 +135,7 @@ export const identify = (function () {
 		style: {
 			any: onYAMLMap(
 				composeFilters(
-					hasAnyKeys([
+					partialRight(hasAnyKeys, [
 						'align',
 						'axis',
 						'backgroundColor',

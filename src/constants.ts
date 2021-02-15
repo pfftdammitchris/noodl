@@ -100,6 +100,7 @@ export const TOAST = 'toast'
 
 export const component = {
 	BUTTON: 'button',
+	CHART: 'chart',
 	DIVIDER: 'divider',
 	FOOTER: 'footer',
 	HEADER: 'header',
@@ -107,6 +108,7 @@ export const component = {
 	LABEL: 'label',
 	LIST: 'list',
 	LISTITEM: 'listItem',
+	PAGE: 'page',
 	PLUGIN: 'plugin',
 	PLUGINHEAD: 'pluginHead',
 	PLUGINBODYTAIL: 'pluginBodyTail',

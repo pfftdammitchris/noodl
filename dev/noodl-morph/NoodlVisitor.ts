@@ -1,64 +1,72 @@
 import yaml from 'yaml'
-import { Alias, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
-import NoodlScalar from './NoodlScalar'
-import NoodlPair from './NoodlPair'
-import NoodlMap from './NoodlMap'
-import NoodlSeq from './NoodlSeq'
+import { Node } from 'yaml/types'
+import { isScalar, isPair, isYAMLMap, isYAMLSeq } from '../../src/utils/doc'
+import * as docUtil from './utils/doc'
+import * as scalarUtil from './utils/scalar'
+import * as seqUtil from './utils/seq'
+import * as mapUtil from './utils/map'
 
-export interface Visitor {
-	visit: {
-		Alias?: yaml.visitor<Alias>
-		Map?: yaml.visitor<NoodlMap>
-		Pair?: yaml.visitor<NoodlPair>
-		Scalar?: yaml.visitor<NoodlScalar>
-		Seq?: yaml.visitor<NoodlSeq>
-	}
+export type OrigVisitorArgs = [
+	key: number | 'key' | 'value',
+	node: Node,
+	path: Node[],
+]
+
+export interface OrigVisitorArgsAsObject {
+	key: OrigVisitorArgs[0]
+	node: OrigVisitorArgs[1]
+	path: OrigVisitorArgs[2]
 }
 
-function wrapScalarVisitor(
-	scalarVisitor: yaml.visitor<Scalar>,
-): yaml.visitor<Scalar> {
-	return function (key, node, path) {
-		return scalarVisitor?.(key, new NoodlScalar(node.value), path)
-	}
+export type OrigVisitorReturnType = number | symbol | void | Node
+
+export interface NoodlVisitorFn {
+	(
+		args: OrigVisitorArgsAsObject & { doc: yaml.Document },
+		util: NoodlVisitorUtilsArg,
+	): OrigVisitorReturnType
 }
 
-function wrapPairVisitor(pairVisitor: yaml.visitor<Pair>): yaml.visitor<Pair> {
-	return function (key, node, path) {
-		return pairVisitor?.(key, new NoodlPair(node.value), path)
+export type NoodlVisitorUtilsArg = typeof docUtil &
+	typeof scalarUtil &
+	typeof mapUtil &
+	typeof seqUtil & {
+		isScalar: typeof isScalar
+		isPair: typeof isPair
+		isMap: typeof isYAMLMap
+		isSeq: typeof isYAMLSeq
 	}
-}
-
-function wrapYAMLMapVisitor(
-	mapVisitor: yaml.visitor<YAMLMap>,
-): yaml.visitor<YAMLMap> {
-	return function (key, node, path) {
-		const noodlMap = new NoodlMap(node)
-		noodlMap.items = node.items
-		return mapVisitor?.(key, noodlMap, path)
-	}
-}
-
-function wrapYAMLSeqVisitor(
-	seqVisitor: yaml.visitor<YAMLSeq>,
-): yaml.visitor<YAMLSeq> {
-	return function (key, node, path) {
-		const noodlSeq = new NoodlSeq(node)
-		noodlSeq.items = node.items
-		return seqVisitor?.(key, noodlSeq, path)
-	}
-}
 
 const NoodlVisitor = (function () {
+	const util: NoodlVisitorUtilsArg = {
+		isScalar,
+		isPair,
+		isMap: isYAMLMap,
+		isSeq: isYAMLSeq,
+		...docUtil,
+		...scalarUtil,
+		...mapUtil,
+		...seqUtil,
+	}
+
+	function enhanceOriginalVisitor({
+		doc,
+		visitor,
+	}: {
+		doc: yaml.Document
+		visitor: (
+			args: Parameters<NoodlVisitorFn>[0],
+			utils: Parameters<NoodlVisitorFn>[1],
+		) => ReturnType<yaml.visit>
+	}) {
+		return (...[key, node, path]: OrigVisitorArgs) => {
+			return visitor({ doc, key, node, path }, util)
+		}
+	}
+
 	return {
-		visit(doc: yaml.Document, visitor: Visitor) {
-			return yaml.visit(doc, {
-				Alias: undefined,
-				Scalar: wrapScalarVisitor(visitor.visit.Scalar as yaml.visitor<Scalar>),
-				Pair: wrapPairVisitor(visitor.visit.Pair as yaml.visitor<Pair>),
-				Map: wrapYAMLMapVisitor(visitor.visit.Map as yaml.visitor<YAMLMap>),
-				Seq: wrapYAMLSeqVisitor(visitor.visit.Seq as yaml.visitor<YAMLSeq>),
-			})
+		visit(doc: yaml.Document, visitor: NoodlVisitorFn) {
+			yaml.visit(doc, enhanceOriginalVisitor({ doc, visitor }))
 		},
 	}
 })()
