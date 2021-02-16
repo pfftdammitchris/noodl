@@ -1,31 +1,31 @@
 import { Scalar } from 'yaml/types'
 import regex from '../utils/regex'
 
-export function getValue(node: any) {
+export function getScalarValue(node: any) {
 	return node instanceof Scalar ? node.value : node
 }
 
 export function isBoolean(node: any) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	return [isBooleanTrue, isBooleanFalse].some((fn) => fn(value))
 }
 
 export function isBooleanTrue(node: any) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	return value === 'true' || value === true
 }
 
 export function isBooleanFalse(node: any) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	return value === 'false' || value === false
 }
 
 export function isContinue(node: Scalar) {
-	return getValue(node) === 'continue'
+	return getScalarValue(node) === 'continue'
 }
 
 export function isReference(node: string | Scalar) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	if (typeof value !== 'string') return false
 	return (
 		['.', '=', '@'].some((symb) => value.startsWith(symb)) ||
@@ -34,13 +34,13 @@ export function isReference(node: string | Scalar) {
 }
 
 export function isEvalReference(node: string | Scalar) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	if (typeof value !== 'string') return false
 	return regex.reference.eq.eval.test(value)
 }
 
 export function isLocalReference(node: string | Scalar) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	if (typeof value !== 'string') return false
 	return (
 		regex.reference.dot.single.localRoot.test(value) ||
@@ -49,13 +49,13 @@ export function isLocalReference(node: string | Scalar) {
 }
 
 export function isPopulateReference(node: string | Scalar) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	if (typeof value !== 'string') return false
 	return regex.reference.at.populate.test(value)
 }
 
 export function isRootReference(node: string | Scalar) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	if (typeof value !== 'string') return false
 	return (
 		regex.reference.dot.single.root.test(value) ||
@@ -64,25 +64,25 @@ export function isRootReference(node: string | Scalar) {
 }
 
 export function isTraverseReference(node: string | Scalar) {
-	const value = getValue(node)
+	const value = getScalarValue(node)
 	if (typeof value !== 'string') return false
 	return regex.reference.underline.traverse.test(value)
 }
 
 export function startsWith(value: string, node: string | Scalar) {
-	const val = getValue(node)
+	const val = getScalarValue(node)
 	if (typeof val !== 'string') return false
 	return val.startsWith(value)
 }
 
 export function endsWith(value: string, node: string | Scalar) {
-	const val = getValue(node)
+	const val = getScalarValue(node)
 	if (typeof val !== 'string') return false
 	return val.endsWith(value)
 }
 
 export function getPreparedKeyForDereference(node: string | Scalar) {
-	let value = getValue(node)
+	let value = getScalarValue(node)
 	if (typeof value !== 'string') return false
 	if (isLocalReference(value) || isRootReference(value)) {
 		value = value.trim()

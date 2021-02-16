@@ -166,7 +166,10 @@ export interface PopUpComponentObject
 
 export interface RegisterComponentObject
 	extends ComponentObject,
-		Pick<UncommonComponentObjectProps, 'dataKey' | 'emit' | 'onEvent'> {
+		Pick<
+			UncommonComponentObjectProps,
+			'actions' | 'dataKey' | 'emit' | 'onEvent'
+		> {
 	type: 'register'
 	[key: string]: any
 }

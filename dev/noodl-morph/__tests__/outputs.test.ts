@@ -7,7 +7,6 @@ import partialRight from 'lodash/partialRight'
 import yaml from 'yaml'
 import path from 'path'
 import NoodlMorph from '../NoodlMorph'
-import internalVisitors from '../internal/visitors'
 import { createDocWithJsObject } from '../utils/test-utils'
 import { NoodlVisitorFn, NoodlVisitorUtilsArgs } from '../NoodlVisitor'
 import { isScalar, isPair, isYAMLMap, isYAMLSeq } from '../../../src/utils/doc'
@@ -52,13 +51,6 @@ describe(commonUtil.coolGold('outputs'), () => {
 	})
 
 	it(`should resolve ${commonUtil.fadedBlue('.SignInCheck')}`, () => {
-		// NoodlMorph.visit(({ root, doc, key, node, path }, util) => {
-		// 	if (node instanceof Scalar) {
-		// 		if (util.isReference(node)) {
-		// 			util.transform.reference({ doc, root }, node)
-		// 		}
-		// 	}
-		// })
 		let util: NoodlVisitorUtilsArgs = {
 			isScalar,
 			isPair,
