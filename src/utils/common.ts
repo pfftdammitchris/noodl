@@ -283,6 +283,37 @@ export function loadFileAsDoc(filepath: string) {
 	return yaml.parseDocument(fs.readFileSync(filepath, 'utf8'))
 }
 
+export function loadFilesAsDocs(opts: {
+	as: 'doc'
+	dir: string
+	recursive: boolean
+}): yaml.Document.Parsed[]
+export function loadFilesAsDocs(opts: {
+	as: 'metadataDocs'
+	dir: string
+	recursive: boolean
+}): { name: string; doc: yaml.Document.Parsed }[]
+export function loadFilesAsDocs({
+	as = 'doc',
+	dir,
+	recursive = true,
+}: {
+	as?: 'doc' | 'metadataDocs'
+	dir: string
+	recursive?: boolean
+}) {
+	const xform =
+		as === 'metadataDocs'
+			? (obj: any) => ({ doc: loadFileAsDoc(obj.path), name: obj.name })
+			: (fpath: string) => loadFileAsDoc(fpath)
+	return globby
+		.sync(path.join(dir, recursive ? '**/*.yml' : '*.yml'), {
+			objectMode: as === 'metadataDocs',
+			onlyFiles: true,
+		})
+		.map((fpath) => xform(fpath))
+}
+
 export function loadFiles(opts: {
 	dir: string
 	ext: 'yml'

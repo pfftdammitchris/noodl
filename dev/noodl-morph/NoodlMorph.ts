@@ -3,6 +3,7 @@ import yaml from 'yaml'
 import flowRight from 'lodash/flowRight'
 import partialRight from 'lodash/partialRight'
 import BuiltInCache from './cache/BuiltInCache'
+import NoodlGlobal from './NoodlGlobal'
 import NoodlPage from './NoodlPage'
 import { isScalar, isPair, isYAMLMap, isYAMLSeq } from '../../src/utils/doc'
 import internalVisitors from './internal/visitors'
@@ -12,7 +13,7 @@ import * as seqUtil from './utils/seq'
 import * as mapUtil from './utils/map'
 import * as u from './utils/internal'
 
-export type Root = { Global: yaml.Document; builtIn: BuiltInCache } & {
+export type Root = { builtIn: BuiltInCache } & {
 	[key: string]: any
 }
 
@@ -38,6 +39,7 @@ export interface NoodlVisitorFn {
 }
 
 export interface NoodlVisitorNodeArgs extends OrigVisitorArgsAsObject {
+	pages: Map<string, NoodlPage>
 	root: Root
 	doc: yaml.Document
 }
@@ -52,6 +54,9 @@ export type NoodlVisitorUtilsArgs = typeof docUtil &
 		isPair: typeof isPair
 		isMap: typeof isYAMLMap
 		isSeq: typeof isYAMLSeq
+		getNodeAtLocalOrRoot(
+			path: string,
+		): Node | YAMLMap | yaml.Document | yaml.Document.Parsed | NoodlPage
 	}
 
 export function wrapVisitor(visitor: NoodlVisitorFn) {
@@ -61,7 +66,7 @@ export function wrapVisitor(visitor: NoodlVisitorFn) {
 const NoodlMorph = (function () {
 	let pages = new Map<string, NoodlPage>()
 	let root: Root = {
-		Global: new yaml.Document(),
+		Global: new NoodlGlobal(),
 		builtIn: new BuiltInCache(),
 	}
 
@@ -74,6 +79,38 @@ const NoodlMorph = (function () {
 		...scalarUtil,
 		...mapUtil,
 		...seqUtil,
+		getNodeAtLocalOrRoot(
+			nodePath: string | Scalar,
+		): Node | NoodlPage | yaml.Document.Parsed {
+			nodePath = scalarUtil.getPreparedKeyForDereference(
+				scalarUtil.getValue(nodePath),
+			) as string
+
+			let [firstKey, ...rest] = nodePath.split('.')
+			let result: any
+
+			if (scalarUtil.isLocalReference(nodePath)) {
+				if (pages.has(firstKey)) result = pages.get(firstKey).getIn(rest)
+			} else if (scalarUtil.isRootReference(nodePath)) {
+				result = root[firstKey]
+				if (rest.length) {
+					if (
+						result instanceof NoodlPage ||
+						result instanceof yaml.Document ||
+						result instanceof YAMLMap
+					) {
+						result = result.getIn(rest)
+					} else if (result instanceof YAMLSeq) {
+						result = result.getIn(rest)
+					}
+				}
+			} else if (scalarUtil.isPopulateReference(nodePath)) {
+				//
+			} else if (scalarUtil.isTraverseReference(nodePath)) {
+			}
+
+			return result
+		},
 	}
 
 	function composeVisitors(...vs: NoodlVisitorFn[]) {
@@ -106,7 +143,7 @@ const NoodlMorph = (function () {
 		) => ReturnType<yaml.visit>
 	}) {
 		return (...[key, node, path]: OrigVisitorArgs) => {
-			return visitor({ root: rootProp, doc, key, node, path }, util)
+			return visitor({ pages, root: rootProp, doc, key, node, path }, util)
 		}
 	}
 
@@ -130,10 +167,33 @@ const NoodlMorph = (function () {
 		},
 		set root(value) {
 			root = {
-				Global: new yaml.Document(),
 				builtIn: new BuiltInCache(),
 				...value,
 			}
+		},
+		insertToRoot({
+			key,
+			value,
+			spread,
+		}: {
+			key: string
+			value: Node | yaml.Document.Parsed | { [key: string]: any }
+			spread?: boolean
+		}) {
+			if (spread) {
+				try {
+					Object.entries(docUtil.flattenMap(value as YAMLMap)).forEach(
+						([k, v]) => {
+							root[k] = v
+						},
+					)
+				} catch (error) {
+					console.error(`[${error.name} | Spread Error]: ${error.message}`)
+				}
+			} else {
+				root[key] = value
+			}
+			return this
 		},
 		createPage({ name, doc }: { name: string; doc: yaml.Document }) {
 			if (name && pages.has(name)) return pages.get(name)

@@ -255,7 +255,7 @@ function useServerFiles() {
 				.on(aggregatorConst.event.RETRIEVED_ROOT_CONFIG, onRetrievedObject)
 				.on(aggregatorConst.event.RETRIEVED_APP_CONFIG, onRetrievedObject)
 				.on(aggregatorConst.event.RETRIEVED_APP_OBJECT, onRetrievedObject)
-				.loadPages({ includePreloadPages: true })
+				.init({ loadPages: { includePreloadPages: true } })
 
 			setStep(c.step.SCAN_ASSETS)
 

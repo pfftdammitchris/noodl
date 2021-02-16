@@ -1,0 +1,143 @@
+EditProfile:
+  pageNumber: '310'
+  title: 'Edit Profile'
+  init:
+    - .SignInCheck
+    - if:
+        - =.DisplayProfile.docProfile.doc.0.name.type
+        - ..tar@: .DisplayProfile.docDetail.document.name.data
+        - ..tar@: drImg.png
+  profileObject: .DisplayProfile.profileObject
+  tar: ''
+  save:
+    - .Global.currentUser.vertex.name.firstName@: =..profileObject.name.data.firstName
+    - .Global.currentUser.vertex.name.lastName@: =..profileObject.name.data.lastName
+    - actionType: evalObject
+      object:
+        =.builtIn.string.concat:
+          dataIn:
+            - =.Global.currentUser.vertex.name.firstName
+            - ' '
+            - =.Global.currentUser.vertex.name.lastName
+          dataOut: Global.currentUser.vertex.name.fullName
+    - =.EditProfile.profile.docAPI.store: ''
+  update:
+    - =.EditProfile.uploadProfile.docAPI.store: ''
+  uploadProfile:
+    document: #DOC
+      .Document: ''
+      subtype:
+        isEncrypted: '1'
+        isOnServer: '0'
+      type: .DocType.UploadProfile
+      name:
+        title: ''
+        type: ..uploadProfile.docAPI.store.subtype.mediaType
+        data: binFile
+      deat:
+        sig: ''
+        url: ''
+      eid: .Global.rootNotebookID
+    docAPI:
+      store:
+        api: cd
+        dataKey: uploadProfile.document
+        subtype:
+          mediaType: '' # mediaType : "image/jpeg"
+  profile:
+    # Austin removed document: ".DisplayProfile.profile.document"
+    docAPI:
+      store:
+        api: cd
+        dataKey: EditProfile.profileObject
+  components:
+    - type: view
+      children:
+        - .BaseHeader3:
+        - .HeaderLeftButton2:
+          text: Cancel
+          onClick:
+            - goto: DisplayProfile
+        - type: image
+          path: ..tar
+          contentType: file
+          viewTag: avatarTag
+        - type: button
+          text: Change Image
+          onClick:
+            - actionType: openPhotoLibrary
+              dataObject: BLOB
+              dataKey: EditProfile.uploadProfile.document.name.data
+            - actionType: updateObject
+              dataObject: BLOB
+              dataKey: EditProfile.uploadProfile.document.name.data
+            - actionType: popUpDismiss
+              popUpView: selectView
+            - actionType: builtIn
+              funcName: redraw
+              viewTag: avatarTag
+            - actionType: evalObject
+              object: ..update
+        - type: view
+          children:
+            - type: label
+              textBoard:
+                - text: 'First name'
+                - text: '*'
+                  color: '0xD53C42'
+              style:
+                fontSize: '18'
+                fontWeight: '400'
+            - type: textField
+              placeholder: .Global.currentUser.vertex.name.firstName
+            - type: label
+              textBoard:
+                - text: 'Last name'
+                - text: '*'
+                  color: '0xD53C42'
+              style:
+                top: '0.1'
+                height: '0.04'
+            - type: textField
+              placeholder: .Global.currentUser.vertex.name.lastName
+              dataKey: profileObject.name.data.lastName
+        - type: view
+          children:
+            - type: view
+              style:
+                height: '0.05'
+                backgroundColor: '0x388FCD'
+              children:
+                - type: label
+                  text: 'Contact Information'
+                  style:
+                    color: '0xffffff'
+                    fontWeight: '400'
+                    textAlign:
+                      x: center
+            - type: label
+              text: Phone number
+            - type: label
+              placeholder: .Global.currentUser.vertex.uid
+              dataKey: profileObject.name.data.phone
+              isEdit: false
+            - type: textField
+              placeholder: 'example@domain.com'
+              dataKey: profileObject.name.data.email
+            - type: textField
+              placeholder: 'Line 1'
+              dataKey: profileObject.name.data.line1
+        - type: button
+          text: Save
+          onClick:
+            - actionType: evalObject
+              object: ..save
+            - actionType: evalObject
+              object:
+                .Global._nonce@:
+                  =.builtIn.math.random: ''
+            - goto: DisplayProfile
+          style:
+            backgroundColor: '0x398FCD'
+            textAlign:
+              x: center

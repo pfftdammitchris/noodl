@@ -1,7 +1,7 @@
 import yaml, { Document } from 'yaml'
 import { userEvent } from 'noodl-types'
 import { findPair } from 'yaml/util'
-import { Pair, Scalar } from 'yaml/types'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import Identify from './Identify'
 import * as s from './scalar'
 import * as u from './internal'
@@ -9,7 +9,10 @@ import NoodlPage from '../NoodlPage'
 
 export const transform = (function () {
 	const _transformScalar = {
-		reference(args: { doc: Document; root?: any }, node: Scalar) {
+		reference(
+			args: { doc: Document; pages: Map<string, NoodlPage>; root?: any },
+			node: Scalar,
+		) {
 			node.value = getReference(args, node)
 		},
 	}
@@ -27,6 +30,27 @@ export const transform = (function () {
 	}
 	return o
 })()
+
+export function flattenMap(
+	doc: YAMLMap | yaml.Document | yaml.Document.Parsed,
+) {
+	const result = {} as { [key: string]: Node }
+	if (doc instanceof YAMLMap) {
+		doc.items.forEach((pair) => (result[pair.key] = pair.value))
+	} else if (doc.contents instanceof YAMLMap) {
+		doc.contents.items.forEach((node) => {
+			if (node instanceof Pair) result[node.key] = node.value
+		})
+	} else if (doc.items) {
+		doc.items.forEach((node) => {
+			if (node instanceof Pair) result[node.key] = node.value
+			else if (node instanceof YAMLMap) {
+				node.items.forEach((n) => (result[n.key] = n.value))
+			}
+		})
+	}
+	return result
+}
 
 export function getReference(
 	args: { doc: Document; root?: any },
@@ -51,11 +75,14 @@ export function getReference(
 				const formattedKey = s.getPreparedKeyForDereference(node)
 				const [rootKey, ...path] = formattedKey.split('.')
 
-				if (path) {
-					if (u.isFnc(args.root[rootKey]?.doc?.getIn)) {
-						result = args.root[rootKey].doc.getIn(path)
-					} else if (u.isFnc(args.root[rootKey]?.getIn))
+				console.log([rootKey, ...path])
+
+				if (path.length) {
+					if (u.isFnc(args.root[rootKey]?.getIn)) {
 						result = args.root[rootKey].getIn(path)
+					} else if (u.isFnc(args.root[rootKey]?.doc?.getIn)) {
+						result = args.root[rootKey].doc.getIn(path)
+					}
 				} else {
 					result = args.root[rootKey]
 				}
@@ -68,9 +95,9 @@ export function getReference(
 	}
 
 	if (result instanceof Scalar && s.isReference(result)) {
-		return getReference.call(args.doc, result)
+		return getReference.call(args, result)
 	} else if (u.isStr(result) && s.isReference(new Scalar(result))) {
-		return getReference.call(args.doc, result)
+		return getReference.call(args, result)
 	}
 
 	return result
