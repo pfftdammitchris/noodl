@@ -23,11 +23,11 @@ export type OrigVisitorReturnType = number | symbol | void | Node
 export interface NoodlVisitorFn {
 	(
 		args: OrigVisitorArgsAsObject & { doc: yaml.Document },
-		util: NoodlVisitorUtilsArg,
+		util: NoodlVisitorUtilsArgs,
 	): OrigVisitorReturnType
 }
 
-export type NoodlVisitorUtilsArg = typeof docUtil &
+export type NoodlVisitorUtilsArgs = typeof docUtil &
 	typeof scalarUtil &
 	typeof mapUtil &
 	typeof seqUtil & {
@@ -38,7 +38,7 @@ export type NoodlVisitorUtilsArg = typeof docUtil &
 	}
 
 const NoodlVisitor = (function () {
-	const util: NoodlVisitorUtilsArg = {
+	const util: NoodlVisitorUtilsArgs = {
 		isScalar,
 		isPair,
 		isMap: isYAMLMap,

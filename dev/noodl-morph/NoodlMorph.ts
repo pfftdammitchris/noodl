@@ -1,8 +1,11 @@
 import { Node, Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml/types'
 import yaml from 'yaml'
+import flowRight from 'lodash/flowRight'
+import partialRight from 'lodash/partialRight'
 import BuiltInCache from './cache/BuiltInCache'
 import NoodlPage from './NoodlPage'
 import { isScalar, isPair, isYAMLMap, isYAMLSeq } from '../../src/utils/doc'
+import internalVisitors from './internal/visitors'
 import * as docUtil from './utils/doc'
 import * as scalarUtil from './utils/scalar'
 import * as seqUtil from './utils/seq'
@@ -29,12 +32,19 @@ export type OrigVisitorReturnType = number | symbol | void | Node
 
 export interface NoodlVisitorFn {
 	(
-		args: OrigVisitorArgsAsObject & { root: Root; doc: yaml.Document },
-		util: NoodlVisitorUtilsArg,
+		args: NoodlVisitorNodeArgs,
+		util: NoodlVisitorUtilsArgs,
 	): OrigVisitorReturnType
 }
 
-export type NoodlVisitorUtilsArg = typeof docUtil &
+export interface NoodlVisitorNodeArgs extends OrigVisitorArgsAsObject {
+	root: Root
+	doc: yaml.Document
+}
+
+export type NoodlVisitorArgs = Parameters<NoodlVisitorFn>
+
+export type NoodlVisitorUtilsArgs = typeof docUtil &
 	typeof scalarUtil &
 	typeof mapUtil &
 	typeof seqUtil & {
@@ -44,6 +54,10 @@ export type NoodlVisitorUtilsArg = typeof docUtil &
 		isSeq: typeof isYAMLSeq
 	}
 
+export function wrapVisitor(visitor: NoodlVisitorFn) {
+	return (step: any) => step()
+}
+
 const NoodlMorph = (function () {
 	let pages = new Map<string, NoodlPage>()
 	let root: Root = {
@@ -51,7 +65,7 @@ const NoodlMorph = (function () {
 		builtIn: new BuiltInCache(),
 	}
 
-	let util: NoodlVisitorUtilsArg = {
+	let util: NoodlVisitorUtilsArgs = {
 		isScalar,
 		isPair,
 		isMap: isYAMLMap,
@@ -60,6 +74,23 @@ const NoodlMorph = (function () {
 		...scalarUtil,
 		...mapUtil,
 		...seqUtil,
+	}
+
+	function composeVisitors(...vs: NoodlVisitorFn[]) {
+		const hofVisitors = vs.map((visitor) => partialRight(visitor, util))
+
+		function composeStepToVisitors(
+			step: (acc: any, val: any) => any,
+		): NoodlVisitorFn {
+			return hofVisitors.reduceRight(
+				(acc, visitor) => {
+					return step(acc, visitor(acc))
+				},
+				(x) => x as any,
+			)
+		}
+
+		return composeStepToVisitors
 	}
 
 	function enhanceOriginalVisitor({
@@ -83,7 +114,17 @@ const NoodlMorph = (function () {
 		yaml.visit(doc, enhanceOriginalVisitor({ root, doc, visitor }))
 	}
 
+	console.log(Object.values(internalVisitors))
+
+	const composedVisitors = composeVisitors(
+		flowRight(...Object.values(internalVisitors)),
+	)
+
 	const o = {
+		clearRoot(init?: { [key: string]: any }) {
+			o.root = init as typeof root
+			return o
+		},
 		get root() {
 			return root
 		},

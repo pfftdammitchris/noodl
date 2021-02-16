@@ -59,7 +59,6 @@ export function getReference(
 				} else {
 					result = args.root[rootKey]
 				}
-				console.log({ rootKey, path, result })
 			}
 		} else if (s.isPopulateReference(node)) {
 			//

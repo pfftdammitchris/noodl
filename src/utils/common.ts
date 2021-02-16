@@ -279,6 +279,10 @@ export function hasCliConfig() {
 	return fs.existsSync(getFilepath('noodl.yml'))
 }
 
+export function loadFileAsDoc(filepath: string) {
+	return yaml.parseDocument(fs.readFileSync(filepath, 'utf8'))
+}
+
 export function loadFiles(opts: {
 	dir: string
 	ext: 'yml'
