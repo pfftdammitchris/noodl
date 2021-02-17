@@ -21,7 +21,7 @@
 		"test": "ava --watch",
 		"test:mocha": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src \"src/**/*test.ts\"",
 		"test:mocha:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src",
-		"test:mocha:dev": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files dev",
+		"test:mocha:dev": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file dev/noodl-morph/setupTests.ts --watch --watch-files dev",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files \"src/**/*.ts\""
 	},
 	"bin": {
@@ -128,8 +128,7 @@
 			"import/resolver": {
 				"node": {
 					"moduleDirectory": [
-						"node_modules",
-						"src"
+						"node_modules"
 					]
 				}
 			}

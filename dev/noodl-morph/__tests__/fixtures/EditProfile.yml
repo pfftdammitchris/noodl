@@ -1,6 +1,6 @@
 EditProfile:
   pageNumber: '310'
-  title: 'Edit Profile'
+  title: 'title123'
   init:
     - .SignInCheck
     - if:
@@ -43,7 +43,7 @@ EditProfile:
         api: cd
         dataKey: uploadProfile.document
         subtype:
-          mediaType: '' # mediaType : "image/jpeg"
+          mediaType: 'image/png' # mediaType : "image/jpeg"
   profile:
     # Austin removed document: ".DisplayProfile.profile.document"
     docAPI:
@@ -92,7 +92,7 @@ EditProfile:
               placeholder: .Global.currentUser.vertex.name.firstName
             - type: label
               textBoard:
-                - text: 'Last name'
+                - text: ..title
                 - text: '*'
                   color: '0xD53C42'
               style:

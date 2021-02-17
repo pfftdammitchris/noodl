@@ -46,12 +46,6 @@ describe(u.coolGold('NoodlMorph'), () => {
 	it(`should transform local references `, () => {
 		NoodlMorph.visit(({ root, doc, key, node, path }, util) => {
 			if (util.isScalar(node)) {
-				if (util.isRootReference(node)) {
-					const result = { before: node.toJSON() } as any
-					util.transform.reference({ root, doc }, node)
-					result.after = node.toJSON()
-					// console.log(result)
-				}
 			}
 		})
 

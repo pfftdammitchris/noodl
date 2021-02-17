@@ -1,70 +1,46 @@
 import { Node, Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml/types'
 import yaml from 'yaml'
 import NoodlPage from './NoodlPage'
+import NoodlRoot from './NoodlRoot'
 import getInternalTransformers from './internal/transformers'
+import getPathUtils from './utils/path'
+import getVisitorUtils from './utils/visitor'
+import { YAMLNode } from '../../src/types'
+import { NoodlVisitorFn } from './NoodlVisitor'
 import * as baseUtils from './utils'
 import * as u from './utils/internal'
 import * as T from './types'
-import { YAMLNode } from '../../src/types'
 
 const NoodlMorph = (function () {
 	const pages = new Map<string, NoodlPage>()
-	const root: T.Root = {}
-	const local = { page: '' }
-	const visitorUtils: T.NoodlVisitorUtils = {
+	const root = new NoodlRoot()
+	const visitorUtils = {
 		...baseUtils,
-		local,
-		transform: getInternalTransformers({
-			pages,
-			root,
-		}),
-	}
+		...getPathUtils({ pages, root }),
+		...getVisitorUtils({ pages, root }),
+		transform: getInternalTransformers({ pages, root }),
+	} as T.NoodlVisitorUtils
 
-	function enhanceOriginalVisitor({
-		root: rootProp,
-		doc,
-		visitor,
-	}: {
-		root: T.Root
-		doc: yaml.Document
-		visitor: (
-			args: T.NoodlVisitorNodeArgs,
-			utils: T.NoodlVisitorUtils,
-		) => ReturnType<yaml.visit>
-	}) {
-		return (...[key, node, path]: T.OrigVisitorArgs) => {
-			return visitor(
-				{ pages, root: rootProp, doc, key, node, path },
-				visitorUtils,
-			)
-		}
-	}
+	function _visitRoot(visitor: T.NoodlVisitorFn) {
+		for (const rootNode of Object.values(root)) {
+			let page: NoodlPage
+			let visitorNode =
+				rootNode instanceof NoodlPage
+					? rootNode.doc
+					: rootNode instanceof Node
+					? rootNode
+					: undefined
 
-	function visit(node: YAMLNode): T.OrigVisitorReturnType
-	function visit(page: NoodlPage): T.OrigVisitorReturnType
-	function visit(doc: yaml.Document.Parsed): T.OrigVisitorReturnType
-	function visit(root: T.Root): T.OrigVisitorReturnType
-	function visit(arg: never): T.OrigVisitorReturnType
-	function visit(
-		page:
-			| never
-			| NoodlPage
-			| YAMLNode
-			| yaml.Document.Parsed
-			| T.NoodlVisitorFn
-			| T.Root,
-		visitor?: T.NoodlVisitorFn,
-	) {
-		if (page) {
-			if (page instanceof NoodlPage) {
-				yaml.visit(page.doc, enhanceOriginalVisitor({ root, page, visitor }))
-			} else if (page instanceof yaml.Document) {
-				// TODO : get doc
-				yaml.visit(page, enhanceOriginalVisitor({ root, page, visitor }))
-			} else if (page === root) {
-				//
-			} else if (u.isFnc(page)) {
-				//
+			if (rootNode instanceof NoodlPage) {
+				page = rootNode
+			} else {
+				// TODO - Find the NoodlPage
+			}
+
+			if (visitorNode) {
+				yaml.visit(visitorNode, (key, node, path) => {
+					visitor({ page, pages, root, key, node, path }, visitorUtils)
+				})
 			}
 		}
 	}
@@ -76,41 +52,6 @@ const NoodlMorph = (function () {
 		get root() {
 			return root
 		},
-		set root(value) {
-			for (const val of Object.keys(root)) {
-				delete root[val]
-			}
-			Object.assign(root, value)
-		},
-		clearRoot(init?: Partial<T.Root>) {
-			o.root = init as typeof root
-			return o
-		},
-		insertToRoot({
-			key,
-			value,
-			spread,
-		}: {
-			key: string
-			value: Node | yaml.Document.Parsed | { [key: string]: any }
-			spread?: boolean
-		}) {
-			if (spread) {
-				try {
-					Object.entries(visitorUtils.flattenMap(value as YAMLMap)).forEach(
-						([k, v]) => {
-							root[k] = v
-						},
-					)
-				} catch (error) {
-					console.error(`[${error.name} | Spread Error]: ${error.message}`)
-				}
-			} else {
-				root[key] = value
-			}
-			return this
-		},
-
 		createPage({
 			name,
 			doc,
@@ -125,19 +66,18 @@ const NoodlMorph = (function () {
 			const page = new NoodlPage(name, doc)
 			pages.set(name, page)
 
-			Object.defineProperty(root, name, {
-				enumerable: true,
-				configurable: true,
-				get() {
-					return pages.get(name)
-				},
-				set(value) {
-					if (!(value instanceof NoodlPage)) {
-						throw new Error(
-							`Cannot set the value for page "${name}" because the value is not a page`,
-						)
+			root.set({
+				enumerable: !spread,
+				key: name,
+				get: () => page,
+				set: (v) => {
+					if (!(v instanceof NoodlPage)) {
+						const errMsg =
+							`Cannot set the value for page "${name}" because the ` +
+							`value is not a page`
+						throw new Error(errMsg)
 					}
-					pages.set(name, value)
+					pages.set(name, v)
 				},
 			})
 
@@ -147,16 +87,18 @@ const NoodlMorph = (function () {
 					if (node instanceof YAMLMap) {
 						node.items?.forEach((pair) => {
 							const rootKey = baseUtils.getScalarValue(pair.key)
-							Object.defineProperty(root, rootKey, {
-								configurable: true,
-								enumerable: true,
-								get() {
-									return pair.value
-								},
-								set(value) {
-									root[rootKey] = value
-								},
+							root.set({
+								key: rootKey,
+								get: () => pair.value,
+								set: (v) => (root[rootKey] = v),
 							})
+						})
+					} else if (node instanceof Pair) {
+						const rootKey = baseUtils.getScalarValue(node.key)
+						root.set({
+							key: rootKey,
+							get: () => node.value,
+							set: (v) => (root[rootKey] = v),
 						})
 					}
 				})
@@ -164,23 +106,46 @@ const NoodlMorph = (function () {
 
 			return page
 		},
-		visit(
-			this: typeof T.visit,
-			page: NoodlPage | T.NoodlVisitorFn,
-			visitor?: T.NoodlVisitorFn,
-		) {
-			if (page) {
-				if (page instanceof NoodlPage) {
-					yaml.visit(page.doc, enhanceOriginalVisitor({ root, page, visitor }))
-				} else if (page instanceof yaml.Document) {
-					// TODO : get doc
-					yaml.visit(page, enhanceOriginalVisitor({ root, page, visitor }))
-				} else if (page === root) {
-					//
-				} else if (u.isFnc(page)) {
-					//
-				}
+		/**
+		 * @NOTE --> Use only NoodlPage or no args (root) for now.
+		 * TODO --> Figure out how to find a node's NoodlPage when
+		 */
+		visit<
+			N extends
+				| NoodlPage
+				| YAMLNode
+				| yaml.Document.Parsed
+				| NoodlVisitorFn
+				| T.NoodlRoot
+		>(node: N, visitor: T.NoodlVisitorFn): N {
+			const visit = (page?: NoodlPage) => (
+				key: T.OrigVisitorArgs[0],
+				node: T.OrigVisitorArgs[1],
+				path: T.OrigVisitorArgs[2],
+			) => {
+				if (!page) page = visitorUtils.getPageWithPath(path)
+				if (!page) throw new Error('No page was found for this node')
+				visitor(
+					{ page, pages, root, key, node: node as YAMLNode, path },
+					visitorUtils,
+				)
 			}
+
+			if (node) {
+				if (node instanceof NoodlPage) {
+					yaml.visit(node.doc.contents, visit(node))
+				} else if (node instanceof yaml.Document) {
+					yaml.visit(node.contents, visit())
+				} else if (node instanceof Node) {
+					yaml.visit(node, visit())
+				} else if (u.isFnc(node)) {
+					_visitRoot(visitor)
+				}
+			} else {
+				_visitRoot(visitor)
+			}
+
+			return node
 		},
 	}
 

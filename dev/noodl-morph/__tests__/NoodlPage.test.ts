@@ -6,37 +6,23 @@ import fs from 'fs-extra'
 import path from 'path'
 import NoodlPage from '../NoodlPage'
 import NoodlMorph from '../NoodlMorph'
-import { createDocWithJsObject } from '../utils/test-utils'
 import * as u from '../../../src/utils/common'
 
-let page: NoodlPage
-let yml = fs.readFileSync(
-	path.resolve(path.join(__dirname, './fixtures/VideoChat.yml')),
-	'utf8',
-)
-
-beforeEach(() => {
-	page = new NoodlPage(yaml.parseDocument(yml))
-})
-
 describe(u.coolGold('NoodlPage'), () => {
-	describe(u.italic('transform'), () => {
-		it(`should parse local references`, () => {
-			page = new NoodlPage(
-				createDocWithJsObject({
-					object: {
-						roomInfo: { response: { edge: { id: 'myid123' } } },
-						components: [
-							{ type: 'label', text: '..roomInfo.response.edge.id' },
-							{ type: 'button', placeholder: '..hello' },
-						],
-					},
-				}),
-			)
-			page.name = 'VideoChat'
-			const references = page.getReferences()
-			page.transform()
-			console.log(JSON.stringify(page, null, 2))
-		})
-	})
+	it(
+		`deeply nested nodes should be able to find out their page name ` +
+			`they are associated with`,
+		() => {
+			const { EditProfile } = NoodlMorph.root
+			NoodlMorph.visit(EditProfile, (args, util) => {
+				if (util.isScalar(args.node)) {
+					if (args.node.value === 'Contact Information') {
+						const nodeAtPath = util.getPageWithPath(args.path)
+						expect(nodeAtPath).to.be.instanceOf(NoodlPage)
+						expect(nodeAtPath).to.have.property('name', 'EditProfile')
+					}
+				}
+			})
+		},
+	)
 })

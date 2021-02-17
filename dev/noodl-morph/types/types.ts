@@ -1,16 +1,26 @@
 import { Node, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import yaml from 'yaml'
 import NoodlPage from '../NoodlPage'
-import { isScalar, isPair, isYAMLMap, isYAMLSeq } from '../../../src/utils/doc'
+import NoodlRoot from '../NoodlRoot'
+import { YAMLNode } from '../../../src/types'
+import {
+	hasAllKeys,
+	hasAnyKeys,
+	hasKey,
+	hasKeyEqualTo,
+	isScalar,
+	isPair,
+	isYAMLMap,
+	isYAMLSeq,
+} from '../../../src/utils/doc'
+import getPathUtils from '../utils/path'
+import getVisitorUtils from '../utils/visitor'
 import * as docUtil from '../utils/doc'
 import * as scalarUtil from '../utils/scalar'
 import * as seqUtil from '../utils/seq'
 import * as mapUtil from '../utils/map'
-import { YAMLNode } from '../../../src/types'
 
-export interface Root {
-	[key: string]: any
-}
+export { NoodlRoot, NoodlPage }
 
 export type OrigVisitorArgs = [
 	key: number | 'key' | 'value',
@@ -28,38 +38,45 @@ export type OrigVisitorReturnType = number | symbol | void | Node
 
 export type NoodlPages = Map<string, NoodlPage>
 
+export type NoodlVisitNodeArg =
+	| NoodlPage
+	| YAMLNode
+	| yaml.Document.Parsed
+	| NoodlVisitorFn
+
+export interface NoodlVisit<N extends YAMLNode> {
+	(node?: N | never): OrigVisitorReturnType
+}
+
 export interface NoodlVisitorFn {
 	(args: NoodlVisitorNodeArgs, util: NoodlVisitorUtils): OrigVisitorReturnType
 }
 
 export interface NoodlVisitorNodeArgs extends OrigVisitorArgsAsObject {
+	node: YAMLNode
 	page: NoodlPage
 	pages: NoodlPages
-	root: Root
+	root: NoodlRoot
 }
 
-export type NoodlVisitorArgs = Parameters<NoodlVisitorFn>
+export type NoodlVisitorUtils = NoodlVisitorBaseUtils &
+	ReturnType<typeof getPathUtils> &
+	ReturnType<typeof getVisitorUtils> & {
+		transform<N extends Scalar | Pair | YAMLMap | YAMLSeq>(node: N): N
+	}
 
 export type NoodlVisitorBaseUtils = typeof docUtil &
 	typeof scalarUtil &
 	typeof mapUtil &
 	typeof seqUtil & {
+		hasAllKeys: typeof hasAllKeys
+		hasAnyKeys: typeof hasAnyKeys
+		hasKey: typeof hasKey
+		hasKeyEqualTo: typeof hasKeyEqualTo
 		isScalar: typeof isScalar
 		isPair: typeof isPair
 		isMap: typeof isYAMLMap
 		isSeq: typeof isYAMLSeq
 	}
 
-export type NoodlVisitorUtils = NoodlVisitorBaseUtils & {
-	getNodeAtLocalOrRoot(
-		path: string,
-	): Node | YAMLMap | yaml.Document | yaml.Document.Parsed | NoodlPage
-	transform<N extends Scalar | Pair | YAMLMap | YAMLSeq>(node: N): N
-}
-
-export declare function visit(page: NoodlPage): OrigVisitorReturnType
-export declare function visit(node: YAMLNode): OrigVisitorReturnType
-export declare function visit(doc: yaml.Document.Parsed): OrigVisitorReturnType
-export declare function visit(visit: NoodlVisitorFn): OrigVisitorReturnType
-export declare function visit(root: Root): OrigVisitorReturnType
-export declare function visit(arg: never): OrigVisitorReturnType
+export type NoodlVisitorArgs = Parameters<NoodlVisitorFn>

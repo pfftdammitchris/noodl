@@ -4,6 +4,7 @@ import path from 'path'
 import getVisitorUtils from '../../utils/visitor'
 import NoodlMorph from '../../NoodlMorph'
 import * as u from '../../../../src/utils/common'
+import { YAMLMap } from 'yaml/types'
 
 let v: ReturnType<typeof getVisitorUtils>
 
@@ -30,10 +31,23 @@ after(() => {
 })
 
 describe(u.coolGold('visitor utils'), () => {
-	describe(u.italic('getNodeAtLocalOrRoot'), () => {
-		it(`should get the node from local root`, () => {
-			const result = v.getNodeAtLocalOrRoot('')
-			console.log(result)
+	describe(u.italic('getNodeFromRoot'), () => {
+		it(`should get values from root`, () => {
+			const style = v.getNodeFromRoot('Style') as YAMLMap
+			expect(style).to.be.instanceOf(YAMLMap)
+			const textAlign = v.getNodeFromRoot('Style.textAlign') as YAMLMap
+			const textAlignJs = textAlign.toJSON()
+			expect(textAlignJs).to.have.property('x', 'center')
+			expect(textAlignJs).to.have.property('y', 'center')
+			expect(textAlign.items).to.have.lengthOf(2)
+			expect(v.getNodeFromRoot('Style.textAlign.y')).to.have.property(
+				'value',
+				'center',
+			)
+			expect(v.getNodeFromRoot('Style.textAlign.x')).to.have.property(
+				'value',
+				'center',
+			)
 		})
 
 		xit(`should get the node from root`, () => {

@@ -2,8 +2,6 @@ import { userEvent } from 'noodl-types'
 import { Document } from 'yaml'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import NoodlVisitor from './NoodlVisitor'
-import * as docHelpers from '../../src/utils/doc'
-import * as d from './utils/doc'
 import * as u from './utils/internal'
 
 export interface NoodlPageOptions {
@@ -37,41 +35,31 @@ class NoodlPage {
 		this.#name = name
 	}
 
-	transform() {
-		return this.doc
+	has(key: Parameters<Document['has']>[0]) {
+		return this.doc.has(key)
 	}
 
-	get(key: Parameters<Document['get']>[0]) {
-		return this.doc.get(key, true)
+	hasIn(args: Parameters<Document['hasIn']>[0]) {
+		return this.doc.hasIn(args)
 	}
 
-	getIn(args: Parameters<Document['getIn']>[0]) {
-		return this.doc.getIn(args, true)
+	get(key: Parameters<Document['get']>[0], keepScalar: boolean = false) {
+		return this.doc.get(key, keepScalar)
 	}
 
-	getActions(opts?: { actionType?: string }): any[]
-	getActions(actionType?: string): any[]
-	getActions(opts?: never): any[]
-	getActions(opts?: unknown) {
+	getIn(args: Parameters<Document['getIn']>[0], keepScalar: boolean = false) {
+		return this.doc.getIn(args, keepScalar)
+	}
+
+	getActions() {
 		const actions = []
-		const fns = []
-
-		if (u.isObj(opts)) {
-			//
-		} else if (u.isStr(opts)) {
-			//
-		}
-
-		const composedFns = docHelpers.composeMapFns(...fns)
-
-		NoodlVisitor.visit(this.doc, ({ key, node, path }, util) => {
+		NoodlVisitor.visit(this.doc, ({ node }, util) => {
 			if (node instanceof YAMLMap) {
 				if (util.isActionLike(node)) {
 					actions.push(node.toJSON())
 				}
 			}
 		})
-
 		return actions
 	}
 
@@ -96,11 +84,9 @@ class NoodlPage {
 
 	getBuiltIns() {
 		const builtIns = []
-		NoodlVisitor.visit(this.doc, ({ key, node, path }, util) => {
+		NoodlVisitor.visit(this.doc, ({ node }, util) => {
 			if (node instanceof YAMLMap) {
-				if (util.isBuiltInAction(node)) {
-					builtIns.push(node.toJSON())
-				}
+				if (util.isBuiltInAction(node)) builtIns.push(node.toJSON())
 			}
 		})
 		return builtIns
@@ -108,11 +94,9 @@ class NoodlPage {
 
 	getComponents() {
 		const components = []
-		NoodlVisitor.visit(this.doc, ({ key, node, path }, util) => {
+		NoodlVisitor.visit(this.doc, ({ node }, util) => {
 			if (node instanceof YAMLMap) {
-				if (util.isComponentLike(node)) {
-					components.push(node.toJSON())
-				}
+				if (util.isComponentLike(node)) components.push(node.toJSON())
 			}
 		})
 		return components
@@ -120,11 +104,9 @@ class NoodlPage {
 
 	getReferences({ scalar = true }: { scalar?: boolean } = {}) {
 		const references = []
-		NoodlVisitor.visit(this.doc, ({ key, node, path }, util) => {
+		NoodlVisitor.visit(this.doc, ({ node }, util) => {
 			if (node instanceof Scalar) {
-				if (util.isReference(node)) {
-					references.push(scalar ? node : node.value)
-				}
+				if (util.isReference(node)) references.push(scalar ? node : node.value)
 			}
 		})
 		return references
