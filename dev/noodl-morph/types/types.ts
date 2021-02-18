@@ -14,7 +14,7 @@ import {
 	isYAMLSeq,
 } from '../../../src/utils/doc'
 import getPathUtils from '../utils/path'
-import getVisitorUtils from '../utils/visitor'
+import getVisitorUtils from '../internal/getVisitorUtils'
 import * as docUtil from '../utils/doc'
 import * as scalarUtil from '../utils/scalar'
 import * as seqUtil from '../utils/seq'
@@ -22,15 +22,15 @@ import * as mapUtil from '../utils/map'
 
 export { NoodlRoot, NoodlPage }
 
-export type OrigVisitorArgs = [
+export type OrigVisitorArgs<N extends Node = Node> = [
 	key: number | 'key' | 'value',
-	node: Node,
+	node: N,
 	path: Node[],
 ]
 
-export interface OrigVisitorArgsAsObject {
+export interface OrigVisitorArgsAsObject<N extends Node = Node> {
 	key: OrigVisitorArgs[0]
-	node: OrigVisitorArgs[1]
+	node: OrigVisitorArgs<N>[1]
 	path: OrigVisitorArgs[2]
 }
 

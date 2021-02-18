@@ -16,7 +16,7 @@ before(() => {
 })
 
 describe(u.coolGold('transformers'), () => {
-	describe(u.italic('when parsing local references'), () => {
+	describe(u.italic('dereferencing'), () => {
 		it(`should set the correct value grabbed from local root`, (done) => {
 			const page = NoodlMorph.root.get('EditProfile')
 			NoodlMorph.visit(page, (args, util) => {
@@ -31,9 +31,7 @@ describe(u.coolGold('transformers'), () => {
 				}
 			})
 		})
-	})
 
-	describe(`when parsing root references`, () => {
 		it(`should set the correct value grabbed from root`, (done) => {
 			const page = NoodlMorph.root.get('EditProfile')
 			NoodlMorph.visit(page, (args, util) => {

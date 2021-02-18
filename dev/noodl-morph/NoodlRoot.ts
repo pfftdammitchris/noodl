@@ -47,6 +47,10 @@ class NoodlRoot<K extends keyof RootItems = keyof RootItems> {
 		}
 	}
 
+	has(key: string) {
+		return key in this.#items
+	}
+
 	set(opts: { key: string } & PropertyDescriptor, value?: never): this
 	set(key: string, value: any): this
 	set(opts: string | ({ key: string } & PropertyDescriptor), value?: any) {
