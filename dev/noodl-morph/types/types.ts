@@ -13,7 +13,7 @@ import {
 	isYAMLMap,
 	isYAMLSeq,
 } from '../../../src/utils/doc'
-import getPathUtils from '../utils/path'
+import getTransformer from '../internal/transformers'
 import getVisitorUtils from '../internal/getVisitorUtils'
 import * as docUtil from '../utils/doc'
 import * as scalarUtil from '../utils/scalar'
@@ -60,9 +60,8 @@ export interface NoodlVisitorNodeArgs extends OrigVisitorArgsAsObject {
 }
 
 export type NoodlVisitorUtils = NoodlVisitorBaseUtils &
-	ReturnType<typeof getPathUtils> &
 	ReturnType<typeof getVisitorUtils> & {
-		transform<N extends Scalar | Pair | YAMLMap | YAMLSeq>(node: N): N
+		transform: ReturnType<typeof getTransformer>
 	}
 
 export type NoodlVisitorBaseUtils = typeof docUtil &

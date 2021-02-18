@@ -12,7 +12,7 @@ import * as u from '../../utils/common'
 import * as c from './constants'
 
 /**
- * This expects the serverDir to have been populated with files either from a previous script
+ * This expects the serverDir to have been applyd with files either from a previous script
  * or manually. The aggregator should also have its rootConfig and appConfig loaded
  */
 function ScanAssets() {

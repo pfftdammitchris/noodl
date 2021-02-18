@@ -48,10 +48,10 @@ export function isLocalReference(node: string | Scalar) {
 	)
 }
 
-export function isPopulateReference(node: string | Scalar) {
+export function isApplyReference(node: string | Scalar) {
 	const value = getScalarValue(node)
 	if (typeof value !== 'string') return false
-	return regex.reference.at.populate.test(value)
+	return regex.reference.at.apply.test(value)
 }
 
 export function isRootReference(node: string | Scalar) {
@@ -91,7 +91,7 @@ export function getPreparedKeyForDereference(node: string | Scalar) {
 		} else if (value.startsWith('.')) {
 			return value === '.' ? '' : value.substring(1)
 		}
-	} else if (isPopulateReference(node)) {
+	} else if (isApplyReference(node)) {
 		//
 	} else if (isTraverseReference(node)) {
 		//

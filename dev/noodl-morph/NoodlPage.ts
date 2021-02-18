@@ -1,7 +1,7 @@
-import { userEvent } from 'noodl-types'
-import { Document } from 'yaml'
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
-import NoodlVisitor from './NoodlVisitor'
+import yaml, { Document } from 'yaml'
+import { Node } from 'yaml/types'
+import { isScalar, isPair, isYAMLMap, isYAMLSeq } from '../../src/utils/doc'
+import { YAMLNode } from '../../src/types'
 import * as u from './utils/internal'
 
 export interface NoodlPageOptions {
@@ -35,6 +35,48 @@ class NoodlPage {
 		this.#name = name
 	}
 
+	contains(node: Node) {
+		let result: boolean | undefined
+
+		if (u.isNode(node)) {
+			const key = (isScalar(node)
+				? 'Scalar'
+				: isPair(node)
+				? 'Pair'
+				: isYAMLMap(node)
+				? 'Map'
+				: isYAMLSeq(node)
+				? 'Seq'
+				: undefined) as 'Scalar' | 'Pair' | 'Map' | 'Seq'
+
+			if (key) {
+				yaml.visit(this.doc, {
+					[key](_, n) {
+						if (n === node) {
+							result = true
+							return yaml.visit.BREAK
+						}
+					},
+				})
+			}
+		}
+
+		return !!result
+	}
+
+	find(fn: (node: YAMLNode) => boolean) {
+		let result: YAMLNode | null = null
+
+		yaml.visit(this.doc, (key, node, path) => {
+			if (fn(node)) {
+				result = node
+				return yaml.visit.BREAK
+			}
+		})
+
+		return result
+	}
+
 	has(key: Parameters<Document['has']>[0]) {
 		return this.doc.has(key)
 	}
@@ -49,67 +91,6 @@ class NoodlPage {
 
 	getIn(args: Parameters<Document['getIn']>[0], keepScalar: boolean = false) {
 		return this.doc.getIn(args, keepScalar)
-	}
-
-	getActions() {
-		const actions = []
-		NoodlVisitor.visit(this.doc, ({ node }, util) => {
-			if (node instanceof YAMLMap) {
-				if (util.isActionLike(node)) {
-					actions.push(node.toJSON())
-				}
-			}
-		})
-		return actions
-	}
-
-	getActionChains() {
-		const actionChains = []
-		NoodlVisitor.visit(this.doc, ({ key, node, path }, util) => {
-			if (node instanceof YAMLSeq) {
-				if (util.isActionChain(node)) {
-					const nodeBefore = path[path.length - 1]
-					if (nodeBefore instanceof Pair) {
-						if (typeof nodeBefore.key.value === 'string') {
-							if (userEvent.includes(nodeBefore.key.value)) {
-								actionChains.push(node.toJSON())
-							}
-						}
-					}
-				}
-			}
-		})
-		return actionChains
-	}
-
-	getBuiltIns() {
-		const builtIns = []
-		NoodlVisitor.visit(this.doc, ({ node }, util) => {
-			if (node instanceof YAMLMap) {
-				if (util.isBuiltInAction(node)) builtIns.push(node.toJSON())
-			}
-		})
-		return builtIns
-	}
-
-	getComponents() {
-		const components = []
-		NoodlVisitor.visit(this.doc, ({ node }, util) => {
-			if (node instanceof YAMLMap) {
-				if (util.isComponentLike(node)) components.push(node.toJSON())
-			}
-		})
-		return components
-	}
-
-	getReferences({ scalar = true }: { scalar?: boolean } = {}) {
-		const references = []
-		NoodlVisitor.visit(this.doc, ({ node }, util) => {
-			if (node instanceof Scalar) {
-				if (util.isReference(node)) references.push(scalar ? node : node.value)
-			}
-		})
-		return references
 	}
 }
 

@@ -1,6 +1,7 @@
 data
-babel
 dev
-temp
-package-lock.json
+dist
+output
+scripts
+codegen.yml
 readme

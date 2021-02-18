@@ -1,7 +1,7 @@
 export default {
 	reference: {
 		at: {
-			populate: /[a-zA-Z0-9]+@$/,
+			apply: /[a-zA-Z0-9]+@$/,
 		},
 		dot: {
 			single: {

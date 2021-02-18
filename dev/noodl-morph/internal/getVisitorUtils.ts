@@ -2,8 +2,7 @@
  * All utilities in this file eventually get composed to form a single utilies
  * object passed to all visitors
  */
-import yaml from 'yaml'
-import { Node, Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Node, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
 import { YAMLNode } from '../../../src/types'
 import { NoodlPage, NoodlRoot } from '../types'
 import * as baseUtils from '../utils'
@@ -15,6 +14,12 @@ function getVisitorUtils({ pages, root }: T.InternalComposerBaseArgs) {
 			return (
 				node && typeof node === 'object' && typeof node.getIn === 'function'
 			)
+		},
+		findPage(node: Node): null | NoodlPage {
+			for (const page of pages.values()) {
+				if (page.contains(node)) return page
+			}
+			return null
 		},
 		getValueFromRoot(
 			keyPath: string | Scalar,

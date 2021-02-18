@@ -57,7 +57,7 @@ describe(u.coolGold('YAML Document utils'), () => {
 			})
 		})
 
-		describe(`populateReference`, () => {
+		describe(`applyReference`, () => {
 			xit(``, () => {
 				//
 			})

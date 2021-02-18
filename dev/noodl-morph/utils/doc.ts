@@ -87,7 +87,7 @@ export function getReference(
 					result = args.root[rootKey]
 				}
 			}
-		} else if (s.isPopulateReference(node)) {
+		} else if (s.isApplyReference(node)) {
 			//
 		} else if (s.isTraverseReference(node)) {
 			//

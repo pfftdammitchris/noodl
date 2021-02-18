@@ -10,7 +10,6 @@ import NoodlPage from '../NoodlPage'
 import * as baseUtils from '../utils'
 import * as u from '../utils/internal'
 import * as T from '../types'
-import { partialRight } from 'lodash'
 
 function getTransformer({ pages, root }: InternalComposerBaseArgs) {
 	const _dereference = ({
@@ -31,8 +30,9 @@ function getTransformer({ pages, root }: InternalComposerBaseArgs) {
 			}
 		} else if (util.isRootReference(node)) {
 			node.value = util.getValueFromRoot(node)
-		} else if (util.isPopulateReference(node)) {
-			//
+		} else if (util.isApplyReference(node)) {
+			// The value (or incoming value) at the right side of the key/value pair
+			// is also applied to the referenced value before the @ symbol
 		} else if (util.isTraverseReference(node)) {
 			//
 		}
@@ -45,14 +45,9 @@ function getTransformer({ pages, root }: InternalComposerBaseArgs) {
 		const { page, key, node, path } = args
 		const { isReference, isScalar } = util
 
-		let result: any
-
 		if (isScalar(node)) {
-			if (isReference(node)) _dereference({ node, page, util })
-			if (result instanceof Scalar && isReference(result)) {
-				// return getReference.call(args, result)
-			} else if (u.isStr(result) && isReference(new Scalar(result))) {
-				// return getReference.call(args, result)
+			if (isReference(node)) {
+				_dereference({ node, page, util })
 			}
 		}
 	}

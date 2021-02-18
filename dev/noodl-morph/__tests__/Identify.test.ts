@@ -130,16 +130,16 @@ describe(u.coolGold('Identify'), () => {
 			const invalid = ['..@.', '@', 'hello@_']
 
 			valid.forEach((s) => {
-				it(`should consider "${s}" as a populate reference`, () => {
+				it(`should consider "${s}" as a apply reference`, () => {
 					const node = new Scalar(s)
-					expect(Identify.populateReference(node)).to.be.true
+					expect(Identify.applyReference(node)).to.be.true
 				})
 			})
 
 			invalid.forEach((s) => {
-				it(`should not consider "${s}" as a populate reference`, () => {
+				it(`should not consider "${s}" as a apply reference`, () => {
 					const node = new Scalar(s)
-					expect(Identify.populateReference(node)).to.be.false
+					expect(Identify.applyReference(node)).to.be.false
 				})
 			})
 		})

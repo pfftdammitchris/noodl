@@ -51,7 +51,7 @@ const Identify = (function () {
 		reference: d.composeScalarFns(scalarUtil.isReference),
 		evalReference: d.composeScalarFns(scalarUtil.isEvalReference),
 		localReference: d.composeScalarFns(scalarUtil.isLocalReference),
-		populateReference: d.composeScalarFns(scalarUtil.isPopulateReference),
+		applyReference: d.composeScalarFns(scalarUtil.isApplyReference),
 		rootReference: d.composeScalarFns(scalarUtil.isRootReference),
 		traverseReference: d.composeScalarFns(scalarUtil.isTraverseReference),
 		emit: d.composeMapFns(mapUtil.isEmitObject),
