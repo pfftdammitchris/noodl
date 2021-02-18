@@ -35,12 +35,14 @@ export function getDescendantNode(
 	opts2?: { withVisitorArgs?: boolean },
 ): D.YAMLNode | null {
 	let value: D.YAMLNode | null = null
+	let args: T.Noodl
+	let visitorUtils: T.NoodlVisitorUtils
 
 	yaml.visit(node instanceof NoodlPage ? node.doc : node, (key, node, path) => {
 		if (typeof opts === 'function') {
 			if (opts({ key, node, path })) {
 				value = node
-				return yaml.visit.BREAK
+				if (opts2?.withVisitorArgs) return yaml.visit.BREAK
 			}
 		} else if (opts && typeof opts === 'object') {
 			if ('scalar' in opts) {
@@ -52,5 +54,5 @@ export function getDescendantNode(
 		}
 	})
 
-	return value
+	return args ? [args[0], args[1]] : value
 }

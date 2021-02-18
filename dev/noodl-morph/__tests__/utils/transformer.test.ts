@@ -4,6 +4,7 @@ import path from 'path'
 import getTransformer from '../../internal/transformers'
 import NoodlMorph from '../../NoodlMorph'
 import NoodlRoot from '../../NoodlRoot'
+import { getDescendantNode } from '../../utils/test-utils'
 import * as u from '../../../../src/utils/common'
 
 let transform: ReturnType<typeof getTransformer>
@@ -17,8 +18,12 @@ before(() => {
 
 describe(u.coolGold('transformers'), () => {
 	describe(u.italic('dereferencing'), () => {
-		it(`should set the correct value grabbed from local root`, (done) => {
+		it(`should set the correct value grabbed from local root`, () => {
 			const page = NoodlMorph.root.get('EditProfile')
+			const node = getDescendantNode(page, {
+				scalar: ({ node }) => node.value === '..title',
+			})
+
 			NoodlMorph.visit(page, (args, util) => {
 				if (util.isScalar(args.node)) {
 					if (util.isLocalReference(args.node)) {
