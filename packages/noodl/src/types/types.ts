@@ -1,5 +1,4 @@
 import { Node } from 'yaml/types'
-import yaml from 'yaml'
 import NoodlPage from '../NoodlPage'
 import NoodlRoot from '../NoodlRoot'
 import getTransformer from '../internal/transformers'
@@ -8,8 +7,6 @@ import { YAMLNode } from './internalTypes'
 import * as scalarUtil from '../utils/scalar'
 import * as seqUtil from '../utils/seq'
 import * as mapUtil from '../utils/map'
-
-export { NoodlRoot, NoodlPage }
 
 export type OrigVisitorArgs<N extends Node = Node> = [
 	key: null | number | 'key' | 'value',
@@ -27,12 +24,6 @@ export type OrigVisitorReturnType = number | symbol | void | Node
 
 export type NoodlPages = Map<string, NoodlPage>
 
-export type NoodlVisitNodeArg =
-	| NoodlPage
-	| YAMLNode
-	| yaml.Document.Parsed
-	| NoodlVisitorFn
-
 export interface NoodlVisit<N extends YAMLNode> {
 	(node?: N | never): OrigVisitorReturnType
 }
@@ -42,19 +33,16 @@ export interface NoodlVisitorFn {
 }
 
 export interface NoodlVisitorNodeArgs extends OrigVisitorArgsAsObject {
-	node: YAMLNode
-	page: NoodlPage
+	node: Node
 	pages: NoodlPages
 	root: NoodlRoot
 }
 
-export type NoodlVisitorUtils = NoodlVisitorBaseUtils &
+export type NoodlVisitorUtils = typeof scalarUtil &
+	typeof mapUtil &
+	typeof seqUtil &
 	ReturnType<typeof getVisitorUtils> & {
 		transform: ReturnType<typeof getTransformer>
 	}
-
-export type NoodlVisitorBaseUtils = typeof scalarUtil &
-	typeof mapUtil &
-	typeof seqUtil
 
 export type NoodlVisitorArgs = Parameters<NoodlVisitorFn>

@@ -171,7 +171,7 @@ function RetrieveObjectsPanel() {
 					},
 				})
 				.then(() => {
-					setCaption(`\nSaved ${chalk.yellow(savedPageCount)} objects`)
+					setCaption(`\nSaved ${chalk.yellow(String(savedPageCount))} objects`)
 				})
 				.catch(setErrorCaption)
 				.finally(() =>

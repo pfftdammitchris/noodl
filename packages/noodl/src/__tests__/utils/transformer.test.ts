@@ -1,26 +1,27 @@
 import { expect } from 'chai'
-import { Scalar } from 'yaml/types'
-import { NoodlPage } from '../../types'
+import { coolGold, italic } from 'noodl-common'
+import { visitor } from '../../utils/test-utils'
+import NoodlPage from '../../NoodlPage'
 
-describe(u.coolGold('transformers'), () => {
-	describe(u.italic('dereferencing'), () => {
+describe(coolGold('transformers'), () => {
+	describe(italic('dereferencing'), () => {
 		describe(`local references`, () => {
 			it(`should dereference values from local root`, () => {
-				const page = NoodlMorph.root.get('EditProfile') as NoodlPage
+				const page = visitor.root.get('EditProfile') as NoodlPage
 				const node = page.find((node: any) => node?.value === '..title')
-				NoodlMorph.visit(node, NoodlMorph.util.transform)
+				visitor.visit(node, visitor.utils().transform)
 				expect(node).to.have.property('value').to.eq('title123')
 			})
 		})
 
 		describe(`root references`, () => {
 			it(`should dereference values from root`, () => {
-				const page = NoodlMorph.root.get('EditProfile') as NoodlPage
-				const node = page.find(
+				const page = visitor.root.get('EditProfile') as NoodlPage
+				const node: any = page.find(
 					(node: any) =>
 						node?.value === '.Global.currentUser.vertex.name.lastName',
-				) as Scalar
-				NoodlMorph.visit(node, NoodlMorph.util.transform)
+				)
+				visitor.visit(node, visitor.utils().transform)
 				expect(node.value).to.eq('gonzalez')
 			})
 		})

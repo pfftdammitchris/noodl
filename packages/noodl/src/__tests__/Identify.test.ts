@@ -1,12 +1,13 @@
 import { expect } from 'chai'
 import { Scalar } from 'yaml/types'
+import { coolGold, italic } from 'noodl-common'
 import Identify from '../utils/Identify'
 
-describe(u.coolGold('Identify'), () => {
-	describe(u.italic('references'), () => {
+describe(coolGold('Identify'), () => {
+	describe(italic('references'), () => {
 		describe('dot (.)', () => {
 			describe('..formData.password', () => {
-				const node = new NoodlScalar('..formData.password')
+				const node = new Scalar('..formData.password')
 
 				it(`should be considered a local reference`, () => {
 					expect(Identify.localReference(node)).to.be.true
@@ -18,7 +19,7 @@ describe(u.coolGold('Identify'), () => {
 			})
 
 			describe('.formData.password', () => {
-				const node = new NoodlScalar('.formData.password')
+				const node = new Scalar('.formData.password')
 
 				it(`should be considered as a local reference`, () => {
 					expect(Identify.localReference(node)).to.be.true
@@ -30,7 +31,7 @@ describe(u.coolGold('Identify'), () => {
 			})
 
 			describe('.Formdata.password', () => {
-				const node = new NoodlScalar('.Formdata.password')
+				const node = new Scalar('.Formdata.password')
 
 				it(`should not be considered as a root reference`, () => {
 					expect(Identify.localReference(node)).to.be.false
@@ -42,7 +43,7 @@ describe(u.coolGold('Identify'), () => {
 			})
 
 			describe('..Formdata.password', () => {
-				const node = new NoodlScalar('..FormData.password')
+				const node = new Scalar('..FormData.password')
 
 				it(`should not be considered as a local reference`, () => {
 					expect(Identify.localReference(node)).to.be.false

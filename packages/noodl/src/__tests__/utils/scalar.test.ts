@@ -1,10 +1,10 @@
 import { expect } from 'chai'
+import { coolGold, italic } from 'noodl-common'
 import { Scalar } from 'yaml/types'
-import * as u from '../../../../src/utils/common'
 import * as util from '../../utils/scalar'
 
-describe(u.coolGold('Scalar utils'), () => {
-	describe(u.italic('getPreparedKeyForDereference'), () => {
+describe(coolGold('Scalar utils'), () => {
+	describe(italic('getPreparedKeyForDereference'), () => {
 		const combos = [
 			['..save', 'save'],
 			['.builtIn.Hello,.abac1!@#f  a', 'builtIn.Hello,.abac1!@#f  a'],

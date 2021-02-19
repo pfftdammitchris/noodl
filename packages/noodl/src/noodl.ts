@@ -1,5 +1,5 @@
 export { default as NoodlPage } from './NoodlPage'
 export { default as NoodlRoot } from './NoodlRoot'
+export { default as NoodlVisitor } from './NoodlVisitor'
 export { default as Identify } from './utils/Identify'
-export { default as visit } from './visit'
 export * from './types/types'

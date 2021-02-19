@@ -1,8 +1,8 @@
-import fs from 'fs-extra'
 import yaml from 'yaml'
+import fs from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
-// import NoodlMorph from './noodl'
+import { visitor } from './utils/test-utils'
 
 const ymlFiles = globby
 	.sync(
@@ -14,17 +14,17 @@ const ymlFiles = globby
 		yml: fs.readFileSync(file.path, 'utf8'),
 	})) as { name: string; yml: string }[]
 
-before(() => {
+beforeEach(() => {
 	ymlFiles.map(({ name, yml }) => {
 		name = name.substring(0, name.indexOf('.'))
-		// NoodlMorph.createPage({
-		// 	name,
-		// 	doc: yaml.parseDocument(yml),
-		// 	spread: /(BaseCSS|BaseDataModel)/.test(name),
-		// })
+		visitor.createPage({
+			name,
+			doc: yaml.parseDocument(yml),
+			spread: /(BaseCSS|BaseDataModel)/.test(name),
+		})
 	})
 })
 
-after(() => {
-	// NoodlMorph.root.clear()
+afterEach(() => {
+	visitor.root.clear()
 })

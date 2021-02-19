@@ -1,10 +1,18 @@
 import { expect } from 'chai'
+import { coolGold, italic } from 'noodl-common'
+import NoodlVisitor from '../NoodlVisitor'
 
-describe(u.coolGold('NoodlRoot'), () => {
-	describe(u.italic('when iterating using the "for of" loop'), () => {
+let visitor: NoodlVisitor
+
+beforeEach(() => {
+	visitor = new NoodlVisitor()
+})
+
+describe(coolGold('NoodlRoot'), () => {
+	describe(italic('when iterating using the "for of" loop'), () => {
 		it(`should pass the value in each loop as the top level property of the root cache`, () => {
-			for (const [name, node] of NoodlMorph.root) {
-				expect(node).to.eq(NoodlMorph.root.get(name))
+			for (const [name, node] of visitor.root) {
+				expect(node).to.eq(visitor.root.get(name))
 			}
 		})
 	})

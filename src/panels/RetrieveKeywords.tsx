@@ -19,7 +19,7 @@ function RetrieveKeywords() {
 
 	return (
 		<Box padding={1} flexDirection="column">
-			<Text>{chalk.yellow(keywords.length)} keywords entered</Text>
+			<Text>{chalk.yellow(String(keywords.length))} keywords entered</Text>
 			{keywords.length ? (
 				<>
 					<Newline />

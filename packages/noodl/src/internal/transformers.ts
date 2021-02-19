@@ -2,9 +2,9 @@
  * All transformers in this file eventually become composed as a single
  * transformer passed to all visitors as a util function
  */
-import flowRight from 'lodash/flowRight'
 import { Node, Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml/types'
 import { InternalComposerBaseArgs } from '../types/internalTypes'
+import flowRight from 'lodash/flowRight'
 import yaml from 'yaml'
 import NoodlPage from '../NoodlPage'
 import {
@@ -31,7 +31,7 @@ function getTransformer({ pages, root }: InternalComposerBaseArgs) {
 			return node
 		}
 
-		static rootReference({ node }) {
+		static rootReference({ node }: { node: YAMLMap }) {
 			getVisitorUtils({ pages, root }).getValueFromRoot(node)
 		}
 

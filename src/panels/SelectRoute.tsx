@@ -29,10 +29,10 @@ function SelectRoute({ label = 'Select an option' }: any) {
 			<Select
 				items={panels}
 				initialIndex={initialIndex === -1 ? 0 : initialIndex}
-				onHighlight={(item) =>
+				onHighlight={(item: any) =>
 					setPanel({ highlightedId: item.value as string })
 				}
-				onSelect={(item) =>
+				onSelect={(item: any) =>
 					setPanel({ id: item.value, label: item.label } as any)
 				}
 			/>
