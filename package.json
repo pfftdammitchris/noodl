@@ -1,6 +1,6 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.31",
+	"version": "0.0.32",
 	"scripts": {
 		"app": "node dist/cli.js",
 		"prebuild": "rm -rf dist && npm run codegen",
