@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "src",
+		"declaration": true,
+		"esModuleInterop": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"lib": ["esnext"],
+		"module": "esnext",
+		"moduleResolution": "node",
+		"noEmitOnError": false,
+		"outDir": "dist",
+		"resolveJsonModule": false,
+		"skipLibCheck": true,
+		"strict": true,
+		"sourceMap": true,
+		"target": "esnext"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules/**/*"]
+}

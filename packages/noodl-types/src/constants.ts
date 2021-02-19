@@ -1,16 +1,39 @@
-export const actionTypes = [
-	'builtIn',
-	'evalObject',
-	'openCamera',
-	'openDocumentManager',
-	'openPhotoLibrary',
-	'pageJump',
-	'popUp',
-	'popUpDismiss',
-	'refresh',
-	'saveObject',
-	'updateObject',
-] as const
+export const action = {
+	BUILTIN: 'builtIn',
+	EVALOBJECT: 'evalObject',
+	PAGEJUMP: 'pageJump',
+	POPUP: 'popUp',
+	POPUPDISMISS: 'popUpDismiss',
+	REFRESH: 'refresh',
+	SAVEOBJECT: 'saveObject',
+	UPDATEOBJECT: 'updateObject',
+} as const
+
+export const actionTypes = Object.values(action)
+
+export const component = {
+	BUTTON: 'button',
+	CHART: 'chart',
+	DIVIDER: 'divider',
+	FOOTER: 'footer',
+	HEADER: 'header',
+	IMAGE: 'image',
+	LABEL: 'label',
+	LIST: 'list',
+	LISTITEM: 'listItem',
+	PAGE: 'page',
+	PLUGIN: 'plugin',
+	PLUGINHEAD: 'pluginHead',
+	PLUGINBODYTAIL: 'pluginBodyTail',
+	POPUP: 'popUp',
+	REGISTER: 'register',
+	SELECT: 'select',
+	SCROLLVIEW: 'scrollView',
+	TEXTFIELD: 'textField',
+	TEXTVIEW: 'textView',
+	VIDEO: 'video',
+	VIEW: 'view',
+} as const
 
 export const componentKeys = [
 	'backgroundColor',
@@ -48,30 +71,7 @@ export const componentKeys = [
 	'chatItem',
 ] as const
 
-export const componentTypes = [
-	'button',
-	'chart',
-	'divider',
-	'footer',
-	'header',
-	'image',
-	'label',
-	'list',
-	'listItem',
-	'page',
-	'plugin',
-	'pluginHead',
-	'pluginBodyTail',
-	'popUp',
-	'register',
-	'scrollView',
-	'select',
-	'textField',
-	'textView',
-	'video',
-	'view',
-	'chatList',
-] as const
+export const componentTypes = Object.values(component)
 
 export const contentTypes = [
 	'countryCode',

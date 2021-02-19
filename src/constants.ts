@@ -94,10 +94,6 @@ export const action = {
 	UPDATEOBJECT: 'updateObject',
 } as const
 
-export const EMIT = 'emit'
-export const GOTO = 'goto'
-export const TOAST = 'toast'
-
 export const component = {
 	BUTTON: 'button',
 	CHART: 'chart',

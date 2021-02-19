@@ -5,7 +5,10 @@ import path from 'path'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import globby from 'globby'
-import * as T from '../types'
+
+interface PlainObject {
+	[key: string]: any
+}
 
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
 export const highlight = (...s: any[]) => chalk.yellow(...s)
@@ -87,6 +90,10 @@ export function hasSlash(s: string) {
 	return !!s?.includes('/')
 }
 
+export function hasCliConfig() {
+	return fs.existsSync(getFilepath('noodl.yml'))
+}
+
 export function loadFileAsDoc(filepath: string) {
 	return yaml.parseDocument(fs.readFileSync(filepath, 'utf8'))
 }
@@ -130,8 +137,8 @@ export function loadFiles(opts: {
 export function loadFiles(opts: {
 	dir: string
 	ext: 'json'
-	onFile?(args: { file: T.PlainObject; filename: string }): void
-}): T.PlainObject[]
+	onFile?(args: { file: PlainObject; filename: string }): void
+}): PlainObject[]
 export function loadFiles({
 	dir,
 	ext = 'json',
@@ -139,10 +146,7 @@ export function loadFiles({
 }: {
 	dir: string
 	ext?: 'json' | 'yml'
-	onFile?(args: {
-		file?: T.PlainObject | yaml.Document
-		filename: string
-	}): void
+	onFile?(args: { file?: PlainObject | yaml.Document; filename: string }): void
 }) {
 	return globby
 		.sync(path.resolve(getFilepath(dir), `**/*.${ext}`))

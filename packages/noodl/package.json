@@ -2,6 +2,25 @@
 	"name": "noodl",
 	"version": "0.0.2",
 	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
+	"module": "dist/noodl.js",
+	"main": "dist/noodl.js",
+	"types": "dist/noodl.d.ts",
+	"scripts": {
+		"build": "rm -rf dist && rollup -c --environment INCLUDE_DEPS,BUILD:production",
+		"start": "rm -rf dist && rollup -c -w --environment INCLUDE_DEPS,BUILD:development",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
+	},
+	"devDependencies": {
+		"@babel/core": "^7.12.17",
+		"@babel/preset-env": "^7.12.17",
+		"@rollup/plugin-babel": "^5.3.0",
+		"@rollup/plugin-node-resolve": "^11.2.0",
+		"@rollup/plugin-typescript": "^8.2.0",
+		"noodl-common": "file:../noodl-common",
+		"rollup-plugin-filesize": "^9.1.0",
+		"rollup-plugin-peer-deps-external": "^2.2.4",
+		"rollup-plugin-progress": "^1.1.2"
+	},
 	"keywords": [
 		"noodl",
 		"javascript",
@@ -17,15 +36,9 @@
 		"syntax",
 		"tree"
 	],
-	"scripts": {
-		"build": "rm -rf dist && tsc",
-		"start": "rm -rf dist && tsc --watch",
-		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
-	},
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"license": "ISC",
-	"main": "dist/noodl.js",
 	"directories": {
 		"dist": "dist",
 		"test": "__tests__"
@@ -39,5 +52,15 @@
 	},
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
-	}
+	},
+	"prettier": {
+		"arrowParens": "always",
+		"endOfLine": "lf",
+		"printWidth": 80,
+		"semi": false,
+		"singleQuote": true,
+		"tabWidth": 2,
+		"trailingComma": "all"
+	},
+	"dependencies": {}
 }

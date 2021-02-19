@@ -1,0 +1,13 @@
+{
+	"presets": [
+		"@babel/env"
+		// "@babel/typescript"
+	],
+	"plugins": [
+		// "module:lodash",
+		// "@babel/proposal-class-properties",
+		// "@babel/plugin-proposal-private-methods",
+		// "@babel/proposal-object-rest-spread",
+		// "@babel/plugin-transform-runtime"
+	]
+}
