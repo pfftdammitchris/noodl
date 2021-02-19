@@ -1,7 +1,15 @@
 {
-	"packages": ["packages/noodl-types"],
+	"packages": ["packages/noodl-types", "packages/noodl"],
+	"npmClient": "npm",
 	"version": "independent",
 	"command": {
+		"bootstrap": {
+			"npmClientArgs": []
+		},
+		"publish": {
+			"ignoreChanges": ["*.md", "dev"],
+			"message": "chore (release): publish"
+		},
 		"publishChanges": {}
 	}
 }
