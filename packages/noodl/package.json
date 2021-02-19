@@ -1,6 +1,6 @@
 {
 	"name": "noodl",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
 	"keywords": [
 		"noodl",
