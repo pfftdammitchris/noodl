@@ -7,50 +7,60 @@ import { Node, Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml/types'
 import { InternalComposerBaseArgs } from '../types/internalTypes'
 import yaml from 'yaml'
 import NoodlPage from '../NoodlPage'
-import * as baseUtils from '../utils'
+import {
+	getPreparedKeyForDereference,
+	isScalar,
+	isPair,
+	isMap,
+	isSeq,
+	isReference,
+	isLocalReference,
+	isRootReference,
+	isApplyReference,
+	isTraverseReference,
+} from '../utils'
+import getVisitorUtils from '../internal/getVisitorUtils'
 import * as u from '../utils/internal'
 import * as T from '../types'
 
 function getTransformer({ pages, root }: InternalComposerBaseArgs) {
-	const _dereference = ({
-		node,
-		page,
-		util,
-	}: {
-		node: Scalar
-		page: NoodlPage
-		util: T.NoodlVisitorUtils
-	}) => {
-		if (util.isLocalReference(node)) {
-			if (util.isScalar(node)) {
-				node.value = page.getIn(
-					util.getPreparedKeyForDereference(node).split('.'),
-					false,
-				)
-			}
-		} else if (util.isRootReference(node)) {
-			node.value = util.getValueFromRoot(node)
-		} else if (util.isApplyReference(node)) {
-			// The value (or incoming value) at the right side of the key/value pair
-			// is also applied to the referenced value before the @ symbol
-		} else if (util.isTraverseReference(node)) {
-			//
+	class Transform {
+		args: T.NoodlVisitorNodeArgs
+
+		static localReference({ node, page }: { node: Scalar; page: NoodlPage }) {
+			node.value = page.getIn(
+				getPreparedKeyForDereference(node).split('.'),
+				false,
+			)
+			return node
 		}
-	}
 
-	return function transform(
-		args: T.NoodlVisitorNodeArgs,
-		util: T.NoodlVisitorUtils,
-	) {
-		const { page, key, node, path } = args
-		const { isReference, isScalar } = util
+		static rootReference({ node }) {
+			getVisitorUtils({ pages, root }).getValueFromRoot(node)
+		}
 
-		if (isScalar(node)) {
-			if (isReference(node)) {
-				_dereference({ node, page, util })
+		transform(args: T.NoodlVisitorNodeArgs, util: T.NoodlVisitorUtils) {
+			const { page, key, node, path } = args
+			const { isReference, isScalar } = util
+
+			if (isScalar(node)) {
+				if (isReference(node)) {
+					if (isLocalReference(node)) {
+						Transform.localReference({ node, page })
+					} else if (isRootReference(node)) {
+						Transform.rootReference({ node })
+					} else if (isApplyReference(node)) {
+						// The value (or incoming value) at the right side of the key/value pair
+						// is also applied to the referenced value before the @ symbol
+					} else if (isTraverseReference(node)) {
+						//
+					}
+				}
 			}
 		}
 	}
+
+	return Transform
 }
 
 export default getTransformer

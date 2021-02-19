@@ -1,8 +1,8 @@
 import { expect } from 'chai'
+import { Scalar } from 'yaml/types'
 import Identify from '../utils/Identify'
 import NoodlScalar from '../NoodlScalar'
 import * as u from '../../../src/utils/common'
-import { Scalar } from 'yaml/types'
 
 describe(u.coolGold('Identify'), () => {
 	describe(u.italic('references'), () => {
