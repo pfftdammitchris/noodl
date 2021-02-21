@@ -2,26 +2,21 @@
 	"name": "noodl",
 	"version": "0.0.3",
 	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
-	"module": "dist/noodl.js",
-	"main": "dist/noodl.js",
-	"types": "dist/noodl.d.ts",
+	"module": "dist/index.js",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "rm -rf dist && rollup -c --environment INCLUDE_DEPS,BUILD:production",
 		"start": "rm -rf dist && rollup -c -w --environment INCLUDE_DEPS,BUILD:development",
+		"start:types": "tsc --emitDeclarationOnly --declarationDir dist --watch",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file src/setupTests.ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file src/setupTests.ts --watch --watch-files src"
 	},
-	"devDependencies": {
-		"@babel/core": "^7.12.17",
-		"@babel/preset-env": "^7.12.17",
-		"@rollup/plugin-babel": "^5.3.0",
-		"@rollup/plugin-node-resolve": "^11.2.0",
-		"@rollup/plugin-typescript": "^8.2.0",
+	"dependencies": {
 		"noodl-common": "file:../noodl-common",
-		"rollup-plugin-filesize": "^9.1.0",
-		"rollup-plugin-peer-deps-external": "^2.2.4",
-		"rollup-plugin-progress": "^1.1.2"
+		"noodl-types": "file:../noodl-types"
 	},
+	"devDependencies": {},
 	"keywords": [
 		"noodl",
 		"javascript",

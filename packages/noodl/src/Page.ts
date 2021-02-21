@@ -5,12 +5,12 @@ import * as u from './utils/internal'
 
 export interface NoodlPageOptions {
 	name?: string
-	doc?: Document
+	doc?: Document | Document.Parsed
 }
 
 class NoodlPage {
 	#name: string = ''
-	doc: Document
+	doc: Document | Document.Parsed
 
 	constructor(name: string | Document | NoodlPageOptions, doc?: Document) {
 		if (u.isStr(name) && doc instanceof Document) {

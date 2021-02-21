@@ -1,14 +1,8 @@
 import { YAMLMap } from 'yaml/types'
 import { expect } from 'chai'
 import path from 'path'
-import NoodlVisitor from '../../NoodlVisitor'
 import { coolGold, italic, loadFilesAsDocs } from 'noodl-common'
-
-let visitor: NoodlVisitor
-
-beforeEach(() => {
-	visitor = new NoodlVisitor()
-})
+import { noodl, visitor } from '../../utils/test-utils'
 
 before(() => {
 	loadFilesAsDocs({
@@ -19,7 +13,7 @@ before(() => {
 		recursive: false,
 	}).forEach((obj: any) => {
 		const name = obj.name.substring(0, obj.name.indexOf('.'))
-		visitor.createPage({
+		noodl.createPage({
 			name,
 			doc: obj.doc,
 			spread: /(BaseCSS|BaseDataModel)/.test(name),
@@ -30,7 +24,7 @@ before(() => {
 describe(coolGold('visitor utils'), () => {
 	describe(italic('getValueFromRoot'), () => {
 		it(`should get values from root`, () => {
-			const v = visitor.getUtils()
+			const v = visitor.utils()
 			const style = v.getValueFromRoot('Style') as YAMLMap
 			expect(style).to.be.instanceOf(YAMLMap)
 			const textAlign = v.getValueFromRoot('Style.textAlign') as YAMLMap

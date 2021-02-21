@@ -3,8 +3,8 @@ import { expect } from 'chai'
 import { Identify } from '../Identify'
 
 describe(chalk.keyword('orange')('Identify'), () => {
-	describe.only(`actionChain`, () => {
-		it.only(`should accept emit objects`, () => {
+	describe(`actionChain`, () => {
+		it(`should accept emit objects`, () => {
 			expect(
 				Identify.actionChain([
 					{ emit: { dataKey: { var1: 'itemObject' } }, actions: [] },

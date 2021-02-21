@@ -1,21 +1,16 @@
 import { expect } from 'chai'
 import { coolGold } from 'noodl-common'
 import { isScalar } from '../utils/internal'
-import NoodlPage from '../NoodlPage'
-import NoodlVisitor from '../NoodlVisitor'
-
-let visitor: NoodlVisitor
-
-beforeEach(() => {
-	visitor = new NoodlVisitor()
-})
+import NoodlPage from '../Page'
+import { noodl, visitor } from '../utils/test-utils'
 
 describe(coolGold('NoodlPage'), () => {
 	it(
 		`deeply nested nodes should be able to find out their page name ` +
 			`they are associated with`,
 		() => {
-			const EditProfile = visitor.root.get('EditProfile')
+			const EditProfile = noodl.root.get('EditProfile') as NoodlPage
+			console.info(EditProfile)
 			visitor.visit(EditProfile, (args, util) => {
 				if (isScalar(args.node)) {
 					if (args.node.value === 'Contact Information') {

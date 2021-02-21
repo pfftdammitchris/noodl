@@ -70,7 +70,7 @@ DocAPI:
 Message:
   avatar: 'https://public.aitmed.com/avatar/JohnDoe.jpg'
   to: ''
-  from: =.Global.currentUser.vertex.name.firstName # evaluate when access
+  from: =.Global.currentUser.name.firstName # evaluate when access
   createDate: ''
   createTime: ''
   subject: 'A Subject'

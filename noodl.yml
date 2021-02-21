@@ -5,7 +5,7 @@ server:
   host: localhost
   port: 3001
   protocol: http
-  config: 'meet2'
+  config: 'meet2d'
 objects:
   json:
     dir:

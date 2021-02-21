@@ -2,7 +2,7 @@ import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
-import { visitor } from './utils/test-utils'
+import { noodl } from './utils/test-utils'
 
 const ymlFiles = globby
 	.sync(
@@ -17,7 +17,7 @@ const ymlFiles = globby
 beforeEach(() => {
 	ymlFiles.map(({ name, yml }) => {
 		name = name.substring(0, name.indexOf('.'))
-		visitor.createPage({
+		noodl.createPage({
 			name,
 			doc: yaml.parseDocument(yml),
 			spread: /(BaseCSS|BaseDataModel)/.test(name),
@@ -26,5 +26,5 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-	visitor.root.clear()
+	noodl.clear()
 })

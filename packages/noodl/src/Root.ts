@@ -1,10 +1,10 @@
 import { YAMLMap, YAMLSeq } from 'yaml/types'
 import { YAMLNode } from './types/internalTypes'
-import NoodlPage from './NoodlPage'
+import Page from './Page'
 import * as u from './utils/internal'
 
 interface RootItems {
-	[key: string]: NoodlPage | YAMLNode
+	[key: string]: Page | YAMLNode
 }
 
 class NoodlRoot<K extends keyof RootItems = keyof RootItems> {
@@ -23,6 +23,14 @@ class NoodlRoot<K extends keyof RootItems = keyof RootItems> {
 		}
 	}
 
+	get Global() {
+		return this.#items.Global as YAMLMap | undefined
+	}
+
+	get userVertex() {
+		return this.Global?.getIn(['currentUser', 'vertex']) as YAMLMap | undefined
+	}
+
 	get(name?: never): RootItems
 	get<Key extends K>(name: Key): RootItems[K]
 	get<Key extends K>(name?: Key | never) {
@@ -32,7 +40,7 @@ class NoodlRoot<K extends keyof RootItems = keyof RootItems> {
 
 	getIn(path: string | string[]) {
 		if (!path) return
-		const paths = Array.isArray(path) ? path : path.split('.')
+		const paths = Array.isArray(path) ? path : path.split('.').filter(Boolean)
 		if (paths.length === 1) {
 			return this.get(paths[0] as K)
 		} else if (paths.length > 1) {
