@@ -2,6 +2,7 @@ import { Node, Pair, YAMLMap } from 'yaml/types'
 import yaml from 'yaml'
 import Page from './Page'
 import Root from './Root'
+import Utils from './Utils'
 import { getScalarValue } from './utils/index'
 import * as u from './utils/internal'
 import * as T from './types'
@@ -9,13 +10,16 @@ import * as T from './types'
 class Noodl implements T.InternalComposerBaseArgs {
 	#pages: T.InternalComposerBaseArgs['pages']
 	#root: T.InternalComposerBaseArgs['root']
+	#util: Utils
 
 	constructor({
 		root = new Root(),
 		pages = new Map(),
-	}: { root?: Root; pages?: T.Pages } = {}) {
+		util = new Utils({ pages, root }),
+	}: { root?: Root; pages?: T.Pages; util?: Utils } = {}) {
 		this.#root = root
 		this.#pages = pages
+		this.#util = util
 	}
 
 	get pages() {
@@ -24,6 +28,10 @@ class Noodl implements T.InternalComposerBaseArgs {
 
 	get root() {
 		return this.#root
+	}
+
+	get util() {
+		return this.#util
 	}
 
 	createPage({

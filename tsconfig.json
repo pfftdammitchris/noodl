@@ -10,6 +10,7 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"noEmitOnError": false,
+		"noImplicitAny": false,
 		"outDir": "dist",
 		"resolveJsonModule": true,
 		"skipLibCheck": true,

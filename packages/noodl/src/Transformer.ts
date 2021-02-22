@@ -1,65 +1,13 @@
 import yaml from 'yaml'
-import get from 'lodash/get'
 import { Node, Scalar } from 'yaml/types'
 import flowRight from 'lodash/flowRight'
 import NoodlRoot from './Root'
 import NoodlUtils from './Utils'
 import { isReference, isEvalReference, isLocalReference } from './utils/scalar'
-import { isApplyReference } from './utils/pair'
 import * as u from './utils/internal'
 import * as T from './types'
-import { Page } from '.'
 
 export const _noodlSpecTransformers = (function () {
-	// * Deeply finds the value to the reference and returns it (Does not mutate)
-	// TODO - Support apply references
-	const getReference = function _getReference(
-		this: Transformer,
-		node: Parameters<T.NoodlTransformer.Execute>[0],
-		util: Parameters<T.NoodlTransformer.Execute>[1],
-	): any {
-		let value: any
-
-		if (u.isScalar(node) && u.isStr(node.value)) {
-			let path = node.value
-
-			if (path.startsWith('..')) {
-				return getReference.call(this, new Scalar(path.substring(2)), util)
-			} else if (path.startsWith('.')) {
-				return getReference.call(this, new Scalar(path.substring(1)), util)
-			} else if (path.startsWith('=')) {
-				return getReference.call(this, new Scalar(path.substring(1)), util)
-			} else {
-				if (path[0] === path[0].toUpperCase()) {
-					return getRootReference.call(this, node, util)
-				} else if (path[0] === path[0].toLowerCase()) {
-					return getLocalReference.call(this, node, util)
-				}
-			}
-		}
-
-		return value
-	}
-
-	const getLocalReference: T.NoodlTransformer.Execute = function getLocalReference(
-		node,
-		util,
-	) {
-		return util.findPage(node)?.getIn?.(
-			u
-				.trimInitialDots(util.common.getScalarValue(node) as string)
-				.split('.')
-				.filter(Boolean),
-		)
-	}
-
-	const getRootReference: T.NoodlTransformer.Execute = function getRootReference(
-		node,
-		util,
-	) {
-		return util.getValueFromRoot(util.common.getScalarValue(node))
-	}
-
 	const createInternalTransformer = (
 		fn: T.NoodlTransformer.Execute,
 	): T.NoodlTransformer.Execute => {
@@ -107,7 +55,7 @@ export const _noodlSpecTransformers = (function () {
 						node.value = node.value.substring(1)
 						transformReference.call(this, node, util)
 					} else {
-						node.value = getReference.call(this, node, util)
+						// node.value = getReference.call(this, node, util)
 						// if (node.value[0] === node.value[0].toUpperCase()) {
 						// 	// If its in another object in the root, the funcs need to reference
 						// 	// their NoodlPage instead in order for getLocalReference to operate
@@ -157,9 +105,9 @@ export const _noodlSpecTransformers = (function () {
 
 class Transformer implements T.InternalComposerBaseArgs {
 	#transducer: (node: Node) => any = (node) => node
-	#util: T.NoodlVisitor.Utils
-	#pages: T.InternalComposerBaseArgs['pages']
-	#root: T.InternalComposerBaseArgs['root']
+	pages: T.InternalComposerBaseArgs['pages']
+	root: T.InternalComposerBaseArgs['root']
+	util: T.NoodlVisitor.Utils
 	transforms = [] as T.NoodlTransformer.Execute[]
 
 	constructor({
@@ -171,21 +119,9 @@ class Transformer implements T.InternalComposerBaseArgs {
 		root: NoodlRoot
 		util?: T.NoodlVisitor.Utils
 	}) {
-		this.#pages = pages
-		this.#root = root
-		this.#util = util
-	}
-
-	get pages() {
-		return this.#pages
-	}
-
-	get root() {
-		return this.#root
-	}
-
-	get util() {
-		return this.#util
+		this.pages = pages
+		this.root = root
+		this.util = util
 	}
 
 	get transform() {

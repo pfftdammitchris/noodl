@@ -6,20 +6,22 @@ import Utils from './Utils'
 import * as T from './types'
 
 class NoodlVisitor implements T.InternalComposerBaseArgs {
-	#pages: T.InternalComposerBaseArgs['pages']
-	#root: T.InternalComposerBaseArgs['root']
+	pages: T.InternalComposerBaseArgs['pages']
+	root: T.InternalComposerBaseArgs['root']
+	util: Utils
 
-	constructor({ pages, root }: { pages: T.Pages; root: Root }) {
-		this.#pages = pages
-		this.#root = root
-	}
-
-	get pages() {
-		return this.#pages
-	}
-
-	get root() {
-		return this.#root
+	constructor({
+		pages,
+		root,
+		util = new Utils({ pages, root }),
+	}: {
+		pages: T.Pages
+		root: Root
+		util?: Utils
+	}) {
+		this.pages = pages
+		this.root = root
+		this.util = util
 	}
 
 	visit<N extends Page>(node: N, visitor: T.NoodlVisitor.Visit): N
@@ -56,13 +58,9 @@ class NoodlVisitor implements T.InternalComposerBaseArgs {
 		return (key, node, path) => {
 			return visitor(
 				{ pages: this.pages, root: this.root, key, node, path },
-				this.utils() as T.NoodlVisitor.Utils,
+				this.util,
 			)
 		}
-	}
-
-	utils() {
-		return new Utils({ pages: this.pages, root: this.root })
 	}
 }
 
