@@ -311,7 +311,7 @@ export function prettifyErr(err: AxiosError | Error) {
  * @param { Promise[] } promises - Array of promises
  */
 export async function promiseAllSafe(...promises: Promise<any>[]) {
-	const results = []
+	const results = [] as any[]
 	for (let promise of promises) {
 		try {
 			const result = await promise

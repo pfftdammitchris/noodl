@@ -48,8 +48,8 @@ function ScanAssets() {
 				.on('end', (store: Store) => {
 					store.urls = store.urls.sort()
 
-					const contained = []
-					const missing = []
+					const contained = [] as T.MetadataObject[]
+					const missing = [] as T.MetadataObject[]
 
 					fs.ensureDirSync(assetsDir)
 
