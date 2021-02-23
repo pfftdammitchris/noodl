@@ -98,6 +98,7 @@
 		"xo": "^0.37.1",
 		"yaml": "^2.0.0-3"
 	},
+	"main": "dist/cli.js",
 	"bin": {
 		"noodl": "dist/cli.js"
 	},
