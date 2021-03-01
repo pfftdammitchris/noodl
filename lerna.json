@@ -1,8 +1,9 @@
 {
 	"packages": [
-		"packages/noodl-types",
 		"packages/noodl",
-		"packages/noodl-common"
+		"packages/noodl-action-chain",
+		"packages/noodl-common",
+		"packages/noodl-types"
 	],
 	"npmClient": "npm",
 	"version": "independent",

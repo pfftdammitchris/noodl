@@ -13,6 +13,7 @@
 	"dependencies": {
 		"noodl-types": "file:../noodl-types"
 	},
+	"devDependencies": {},
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"license": "ISC",
