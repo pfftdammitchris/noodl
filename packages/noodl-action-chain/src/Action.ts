@@ -1,6 +1,6 @@
 import { ActionObject } from 'noodl-types'
 import { IAction } from './types'
-import { createId, isArray, isFunction, isString } from './utils/common'
+import { createId, isArray, isFunction } from './utils/common'
 import AbortExecuteError from './AbortExecuteError'
 import * as c from './constants'
 

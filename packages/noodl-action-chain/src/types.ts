@@ -4,7 +4,7 @@ import ActionChain from './ActionChain'
 import Action from './Action'
 import * as c from './constants'
 
-export interface IActionChain {
+export interface IActionChain<Trig extends string = string> {
 	abort(reason?: string | string[]): Promise<ActionChainIteratorResult[]>
 	actions: ActionObject[]
 	current: Action | null
@@ -23,9 +23,9 @@ export interface IActionChain {
 		queue: IActionChain['queue']
 		results: any[]
 		status: ActionChainStatus
-		trigger: IActionChain['trigger']
+		trigger: Trig
 	}
-	trigger: Trigger
+	trigger: Trig
 }
 
 export type ActionChainStatus =
@@ -70,7 +70,7 @@ export interface IAction<A extends ActionObject = ActionObject> {
 	snapshot(): { original: Partial<A> } & { [key: string]: any }
 	status: null | ActionStatus
 	timeout: number
-	trigger: Trigger
+	trigger: string
 }
 
 export type ActionStatus =

@@ -1,24 +1,26 @@
 import { ActionObject } from 'noodl-types'
-import { Trigger } from '../types'
+import { IAction } from '../types'
 import { isString, isPlainObject } from '../utils/common'
 import Action from '../Action'
 
 function createAction(
-  args: Trigger | { action: ActionObject; trigger: Trigger },
-  args2?: ActionObject,
+	args:
+		| IAction['trigger']
+		| { action: ActionObject; trigger: IAction['trigger'] },
+	args2?: ActionObject,
 ) {
-  let trigger: Trigger | undefined
-  let object: ActionObject | undefined
+	let trigger: IAction['trigger'] | undefined
+	let object: ActionObject | undefined
 
-  if (isString(args)) {
-    trigger = args
-    object = args2 as ActionObject
-  } else if (isPlainObject(args)) {
-    trigger = args.trigger
-    object = args.action
-  }
+	if (isString(args)) {
+		trigger = args
+		object = args2 as ActionObject
+	} else if (isPlainObject(args)) {
+		trigger = args.trigger
+		object = args.action
+	}
 
-  return new Action(trigger as Trigger, object as ActionObject)
+	return new Action(trigger as string, object as ActionObject)
 }
 
 export default createAction
