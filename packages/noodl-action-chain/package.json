@@ -1,0 +1,33 @@
+{
+	"name": "noodl-action-chain",
+	"version": "0.0.6",
+	"main": "dist/index.js",
+	"jsnext:main": "dist/index.js",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"start": "tsc -w",
+		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json -r ts-node/register --file src/setupTests.ts --extensions ts --watch --watch-files \"src/**/*.ts\" \"src/**/*.test.ts\""
+	},
+	"dependencies": {
+		"noodl-types": "file:../noodl-types"
+	},
+	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
+	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
+	"license": "ISC",
+	"directories": {
+		"dist": "dist",
+		"test": "__tests__"
+	},
+	"files": [
+		"dist"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
+	},
+	"bugs": {
+		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
+	}
+}
