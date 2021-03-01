@@ -1,4 +1,4 @@
-import { ActionObject, Identify } from 'noodl-types'
+import { ActionObject } from 'noodl-types'
 import { IAction } from './types'
 import { createId, isArray, isFunction, isString } from './utils/common'
 import AbortExecuteError from './AbortExecuteError'
@@ -15,6 +15,7 @@ class Action<A extends ActionObject = ActionObject> implements IAction {
 	#timeout: NodeJS.Timeout | null = null
 	#trigger: IAction['trigger']
 	#interval: any | null = null
+	actionType: string
 	error: IAction['error'] = null
 	executed: IAction['executed'] = false
 	hasExecutor: boolean = false
@@ -26,15 +27,7 @@ class Action<A extends ActionObject = ActionObject> implements IAction {
 		this.#id = createId()
 		this.#original = action
 		this.#trigger = trigger
-	}
-
-	get actionType() {
-		if (isString(this.#original)) return 'goto'
-		if (Identify.emit(this.#original)) return 'emit'
-		if (Identify.goto(this.#original)) return 'goto'
-		if (Identify.toast(this.#original)) return 'toast'
-		if ('actionType' in this.#original) return this.#original['actionType']
-		return 'anonymous'
+		this.actionType = action.actionType
 	}
 
 	get executor() {
