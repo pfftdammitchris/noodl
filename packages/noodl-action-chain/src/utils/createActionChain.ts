@@ -2,6 +2,11 @@ import { ActionObject } from 'noodl-types'
 import { IActionChain, ActionChainInstancesLoader } from '../types'
 import ActionChain from '../ActionChain'
 
+function createActionChain<Trig extends string = string>(
+	trigger: Trig,
+	actions: ActionObject[],
+	loader?: ActionChainInstancesLoader,
+): ActionChain
 function createActionChain<
 	Trig extends IActionChain['trigger'] = string
 >(args: {
@@ -10,18 +15,13 @@ function createActionChain<
 	loader?: ActionChainInstancesLoader
 }): ActionChain
 function createActionChain<Trig extends string = string>(
-	trigger: Trig,
-	actions: ActionObject[],
-	loader?: ActionChainInstancesLoader,
-): ActionChain
-function createActionChain<Trig extends string = string>(
 	args:
-		| Trig
 		| {
 				actions: ActionObject[]
 				trigger: Trig
 				loader?: ActionChainInstancesLoader
-		  },
+		  }
+		| Trig,
 	actions?: ActionObject[] | ActionChainInstancesLoader,
 	loader?: ActionChainInstancesLoader,
 ) {
