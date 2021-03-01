@@ -26,6 +26,7 @@ program
 program.parse(process.argv)
 
 const options = program.opts()
+const files = [] // { name, filepath }[]
 
 console.log('-------------------------------------------------------')
 console.log(
@@ -35,38 +36,33 @@ console.log(`name: ${chalk.keyword('aquamarine')(program.name())}`)
 console.log('options', options)
 console.log('-------------------------------------------------------\n')
 
-const mocha = new Mocha({
-	// bail: false,
-	// checkLeaks: true,
-	color: true,
-	// parallel: true,
-	rootHooks: {
-		beforeAll: () => {},
-		beforeEach: () => {},
-		afterAll: () => {},
-		afterEach: () => {},
-	},
-})
-
+const mocha = new Mocha({ color: true })
 mocha.enableGlobalSetup(true)
 mocha.globalSetup(() => {
 	require(path.resolve(paths.noodlActionChain, 'src/setupTests.ts'))
 })
 
-const files = [] // { name, filepath }[]
-
-if (['ac', 'actionchain'].includes(options.tname)) {
-	globby
-		.sync(path.join(paths.noodlActionChain, 'src/**/*.test.ts'), {
-			onlyFiles: true,
-			stats: true,
-		})
-		.forEach(({ name, path: filepath }) => {
-			files.push({ name, filepath })
-			log(`Adding file: ${chalk.magenta(filepath)}`)
-			mocha.addFile(filepath)
-		})
+const getGlobbyPaths = (name) => {
+	switch (name) {
+		case 'ac':
+			return path.join(paths.noodlActionChain, 'src/**/*.test.ts')
+		case 'noodl':
+			return path.join(paths.noodl, 'src/**/*.test.ts')
+		default:
+			throw new Error('Invalid test name')
+	}
 }
+
+const globbedPaths = globby.sync(getGlobbyPaths(options.tname), {
+	onlyFiles: true,
+	stats: true,
+})
+
+globbedPaths.forEach(({ name, path: filepath }) => {
+	files.push({ name, filepath })
+	log(`Adding file: ${chalk.magenta(filepath)}`)
+	mocha.addFile(filepath)
+})
 
 const runner = mocha.run((failures) => {
 	process.on('exit', () => {
