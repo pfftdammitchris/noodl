@@ -55,10 +55,10 @@ export interface ActionChainCallbackArgs<A = Action> {
 }
 
 export interface ActionChainInstancesLoader<
-	A extends ActionObject,
+	A extends ActionObject = ActionObject,
 	RT = Action
 > {
-	(actions: A): RT
+	(actions: A[]): RT
 }
 
 export interface IAction<A extends ActionObject = ActionObject> {

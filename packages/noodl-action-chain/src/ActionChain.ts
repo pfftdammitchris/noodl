@@ -41,7 +41,7 @@ class ActionChain<Trig extends string = string> implements T.IActionChain {
 	constructor(
 		trigger: Trig,
 		actions: T.IActionChain['actions'],
-		loader?: (actions: ActionObject[]) => Action[],
+		loader?: T.ActionChainInstancesLoader,
 	) {
 		this.trigger = trigger
 		this.#actions = actions
@@ -208,8 +208,11 @@ class ActionChain<Trig extends string = string> implements T.IActionChain {
 	 * was provided in the constructor, it will use that function to load the queue
 	 */
 	loadQueue() {
-		const actions = this.#loader?.(this.actions) || []
-		actions.forEach((action, index) => (this.#queue[index] = action))
+		let actions = (this.#loader?.(this.actions) || []) as Action[]
+		if (!Array.isArray(actions)) actions = [actions]
+
+		actions.forEach((action, index, coll) => (this.#queue[index] = action))
+
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()
 		}
