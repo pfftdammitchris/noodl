@@ -4,22 +4,25 @@ import ActionChain from './ActionChain'
 import Action from './Action'
 import * as c from './constants'
 
-export interface IActionChain<Trig extends string = string> {
+export interface IActionChain<
+	A = ActionObject,
+	Trig = typeof userEvent[number]
+> {
 	abort(reason?: string | string[]): Promise<ActionChainIteratorResult[]>
-	actions: ActionObject[]
+	actions: A[]
 	current: Action | null
 	execute(args?: any): Promise<ActionChainIteratorResult[]>
-	inject(action: ActionObject | Action): Action
+	inject(action: A | Action): Action
 	queue: Action[]
-	load(actions: ActionObject): Action
-	load(actions: ActionObject[]): Action[]
+	load(actions: A): Action
+	load(actions: A[]): Action[]
 	loadQueue(): Action[]
 	snapshot(): {
 		abortReason?: string | string[]
 		actions: IActionChain['actions']
 		error: null | Error | AbortExecuteError
 		current: IActionChain['current']
-		injected: ActionObject[]
+		injected: A[]
 		queue: IActionChain['queue']
 		results: any[]
 		status: ActionChainStatus
@@ -54,10 +57,7 @@ export interface ActionChainCallbackArgs<A = Action> {
 	[key: string]: any
 }
 
-export interface ActionChainInstancesLoader<
-	A extends ActionObject = ActionObject,
-	RT = Action
-> {
+export interface ActionChainInstancesLoader<A = ActionObject, RT = Action> {
 	(actions: A[]): RT
 }
 
