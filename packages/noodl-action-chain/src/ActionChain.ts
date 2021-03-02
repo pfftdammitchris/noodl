@@ -31,7 +31,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 		let result: any
 
 		while (inst.queue.length) {
-			action = inst.#queue.shift() as Action
+			action = inst.queue.shift() as Action
 			result = await (yield action)
 			results.push({ action, result })
 		}
