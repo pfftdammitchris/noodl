@@ -1,6 +1,6 @@
 {
 	"name": "noodl-action-chain",
-	"version": "0.0.15",
+	"version": "0.0.16",
 	"main": "dist/index.js",
 	"jsnext:main": "dist/index.js",
 	"module": "dist/index.js",
@@ -13,7 +13,6 @@
 	"dependencies": {
 		"noodl-types": "file:../noodl-types"
 	},
-	"devDependencies": {},
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"license": "ISC",

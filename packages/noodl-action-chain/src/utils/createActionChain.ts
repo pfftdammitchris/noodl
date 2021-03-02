@@ -1,20 +1,18 @@
-import { ActionObject } from 'noodl-types'
-import { IActionChain, ActionChainInstancesLoader } from '../types'
+import { ActionObject, EventType } from 'noodl-types'
+import { ActionChainInstancesLoader } from '../types'
 import ActionChain from '../ActionChain'
 
-function createActionChain<Trig extends string = string>(
+function createActionChain<Trig = EventType>(
 	trigger: Trig,
 	actions: ActionObject[],
 	loader?: ActionChainInstancesLoader,
 ): ActionChain
-function createActionChain<
-	Trig extends IActionChain['trigger'] = string
->(args: {
+function createActionChain<Trig = EventType>(args: {
 	actions: ActionObject[]
 	trigger: Trig
 	loader?: ActionChainInstancesLoader
 }): ActionChain
-function createActionChain<Trig extends string = string>(
+function createActionChain<Trig extends EventType = EventType>(
 	args:
 		| {
 				actions: ActionObject[]

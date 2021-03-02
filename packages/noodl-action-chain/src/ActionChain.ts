@@ -1,4 +1,4 @@
-import { ActionObject } from 'noodl-types'
+import { ActionObject, EventType } from 'noodl-types'
 import { isArray, isPlainObject, isString } from './utils/common'
 import AbortExecuteError from './AbortExecuteError'
 import Action from './Action'
@@ -6,19 +6,20 @@ import createAction from './utils/createAction'
 import * as T from './types'
 import * as c from './constants'
 
-class ActionChain<Trig extends string = string> implements T.IActionChain {
-	#abortReason: string | string[] = ''
+class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
+	implements T.IActionChain {
+	#abortReason: ReturnType<T.IActionChain['snapshot']>['abortReason'] = ''
 	#actions: T.IActionChain['actions'] = []
 	#current: T.IActionChain['current'] = null
 	#error: null | Error | AbortExecuteError = null
 	#gen: AsyncGenerator<Action, T.ActionChainIteratorResult[], any>
-	#injected: Action[] = []
+	#injected: ReturnType<T.IActionChain['snapshot']>['actions'] = []
 	#loader: T.ActionChainInstancesLoader | undefined
 	#queue: T.IActionChain['queue'] = []
 	#results = [] as T.ActionChainIteratorResult[]
 	#status: T.ActionChainStatus = c.IDLE
 	#timeout: NodeJS.Timeout | null = null
-	trigger: Trig
+	trigger: T.IActionChain['trigger']
 
 	/**
 	 * Creates an asynchronous generator that generates the next immediate action
@@ -39,7 +40,7 @@ class ActionChain<Trig extends string = string> implements T.IActionChain {
 	}
 
 	constructor(
-		trigger: Trig,
+		trigger: EventType,
 		actions: T.IActionChain['actions'],
 		loader?: T.ActionChainInstancesLoader,
 	) {

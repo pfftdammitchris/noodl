@@ -1,12 +1,12 @@
-import { ActionObject, userEvent } from 'noodl-types'
+import { ActionObject, EventType } from 'noodl-types'
 import AbortExecuteError from './AbortExecuteError'
 import ActionChain from './ActionChain'
 import Action from './Action'
 import * as c from './constants'
 
 export interface IActionChain<
-	A = ActionObject,
-	Trig = typeof userEvent[number]
+	A extends ActionObject = ActionObject,
+	Trig = EventType
 > {
 	abort(reason?: string | string[]): Promise<ActionChainIteratorResult[]>
 	actions: A[]
@@ -19,7 +19,7 @@ export interface IActionChain<
 	loadQueue(): Action[]
 	snapshot(): {
 		abortReason?: string | string[]
-		actions: IActionChain['actions']
+		actions: A[]
 		error: null | Error | AbortExecuteError
 		current: IActionChain['current']
 		injected: A[]
@@ -83,4 +83,4 @@ export type ActionStatus =
 	| typeof c.RESOLVED
 	| typeof c.TIMED_OUT
 
-export type Trigger = typeof userEvent[number]
+export type Trigger = EventType
