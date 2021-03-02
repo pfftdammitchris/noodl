@@ -217,7 +217,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()
 		}
-		this.#gen = ActionChain.createGenerator(this.queue)
+		this.#gen = ActionChain.createGenerator(this.#queue)
 		return this.queue
 	}
 
