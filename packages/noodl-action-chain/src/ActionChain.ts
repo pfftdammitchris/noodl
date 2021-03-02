@@ -25,13 +25,13 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 	 * Creates an asynchronous generator that generates the next immediate action
 	 * when the previous has ended
 	 */
-	static async *createGenerator(queue: ActionChain['queue'] = []) {
+	static async *createGenerator(inst: ActionChain) {
 		let action: Action | undefined
 		let results: T.ActionChainIteratorResult[] = []
 		let result: any
 
-		while (queue.length) {
-			action = queue.shift() as Action
+		while (inst.queue.length) {
+			action = inst.#queue.shift() as Action
 			result = await (yield action)
 			results.push({ action, result })
 		}
