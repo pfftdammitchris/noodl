@@ -1,47 +1,62 @@
-import { ActionObject, EventType } from 'noodl-types'
-import { isArray, isPlainObject, isString } from './utils/common'
+import { ActionObject } from 'noodl-types'
 import AbortExecuteError from './AbortExecuteError'
 import Action from './Action'
 import createAction from './utils/createAction'
-import * as T from './types'
+import { isArray, isPlainObject, isString } from './utils/common'
+import {
+	IActionChain,
+	ActionChainInstancesLoader,
+	ActionChainIteratorResult,
+	ActionChainStatus,
+	IAction,
+} from './types'
 import * as c from './constants'
 
-class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
-	implements T.IActionChain {
-	#abortReason: ReturnType<T.IActionChain['snapshot']>['abortReason'] = ''
-	#actions: T.IActionChain['actions'] = []
-	#current: T.IActionChain['current'] = null
+class ActionChain<
+	A extends ActionObject = ActionObject,
+	T extends string = string
+> implements IActionChain {
+	#abortReason: string | string[] | undefined
+	#actions: A[]
+	#current: Action<A | ActionObject> | null = null
 	#error: null | Error | AbortExecuteError = null
-	#gen: AsyncGenerator<Action, T.ActionChainIteratorResult[], any>
-	#injected: ReturnType<T.IActionChain['snapshot']>['actions'] = []
-	#loader: T.ActionChainInstancesLoader | undefined
+	#gen: AsyncGenerator<
+		Action<A | ActionObject>,
+		ActionChainIteratorResult[],
+		any
+	>
+	#injected: Action<A | ActionObject>[] = []
+	#loader: ActionChainInstancesLoader | undefined
 	#obs: {
-		onAbortStart: (...args: any[]) => any
-		onAbortEnd: (...args: any[]) => any
-		onExecuteStart: (...args: any[]) => any
-		onExecuteEnd: (...args: any[]) => any
-		onExecuteResult: (...args: any[]) => any
-		onRefresh: (...args: any[]) => any
-		onBeforeInject: (...args: any[]) => any
-		onAfterInject: (...args: any[]) => any
-	}
-	#queue: T.IActionChain['queue'] = []
-	#results = [] as T.ActionChainIteratorResult[]
-	#status: T.ActionChainStatus = c.IDLE
+		onAbortStart?: (...args: any[]) => any
+		onAbortEnd?: (...args: any[]) => any
+		onExecuteStart?: (...args: any[]) => any
+		onExecuteEnd?: (...args: any[]) => any
+		onExecuteResult?: (result?: any) => any
+		onRefresh?: (...args: any[]) => any
+		onBeforeInject?: (action: A | ActionObject) => any
+		onAfterInject?: (
+			action: A | ActionObject,
+			instance: IAction<A | ActionObject>,
+		) => any
+	} = {}
+	#queue: Action<A | ActionObject>[] = []
+	#results = [] as ActionChainIteratorResult[]
+	#status: ActionChainStatus = c.IDLE
 	#timeout: NodeJS.Timeout | null = null
-	trigger: T.IActionChain['trigger']
+	trigger: T
 
 	/**
 	 * Creates an asynchronous generator that generates the next immediate action
 	 * when the previous has ended
 	 */
-	static async *createGenerator(inst: ActionChain) {
-		let action: Action | undefined
-		let results: T.ActionChainIteratorResult[] = []
+	static async *createGenerator<A extends ActionObject>(inst: ActionChain) {
+		let action: Action<A | ActionObject> | undefined
+		let results: ActionChainIteratorResult[] = []
 		let result: any
 
 		while (inst.queue.length) {
-			action = inst.queue.shift() as Action
+			action = inst.queue.shift() as Action<A | ActionObject>
 			result = await (yield action)
 			results.push({ action, result })
 		}
@@ -49,11 +64,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 		return results
 	}
 
-	constructor(
-		trigger: EventType,
-		actions: T.IActionChain['actions'],
-		loader?: T.ActionChainInstancesLoader,
-	) {
+	constructor(trigger: T, actions: A[], loader?: ActionChainInstancesLoader) {
 		this.trigger = trigger
 		this.#actions = actions
 		this.#loader = loader
@@ -71,7 +82,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 		return this.#queue
 	}
 
-	set loader(loader: T.ActionChainInstancesLoader | undefined) {
+	set loader(loader: ActionChainInstancesLoader | undefined) {
 		this.#loader = loader
 	}
 
@@ -80,7 +91,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 	 * @param { string | string[] | undefined } reason
 	 */
 	async abort(_reason?: string | string[]) {
-		// onAbortStart
+		this.#obs.onAbortEnd?.()
 
 		let reason: string | string[] | undefined
 
@@ -100,7 +111,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 
 		// Exhaust the remaining actions in the queue and abort them
 		while (this.#queue.length) {
-			const action = this.#queue.shift() as Action
+			const action = this.#queue.shift() as Action<A>
 			if (action && action.status !== 'aborted') {
 				// onBeforeAbortAction
 				try {
@@ -119,6 +130,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 		}
 		// await this.#gen.return({} as any)
 		this.#current = null
+		this.#obs.onAbortEnd?.()
 		return this.#results
 	}
 
@@ -126,15 +138,16 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 		try {
 			this.#results = []
 			this.#setStatus(c.IN_PROGRESS)
-			let action: Action | undefined
-			let iterator: IteratorResult<Action, T.ActionChainIteratorResult[]>
+			this.#obs.onExecuteStart?.()
+			let action: Action<A | ActionObject> | undefined
+			let iterator: IteratorResult<Action, ActionChainIteratorResult[]>
 			let result: any
 
 			// Initiates the generator (note: this first invocation does not execute
 			// any actions, it steps into it so the actual execution of actions
 			// begins at the second call to this.next)
 			iterator = await this.next()
-			action = iterator.value as Action
+			action = iterator.value as Action<A | ActionObject>
 
 			if (iterator) {
 				while (!iterator.done) {
@@ -155,11 +168,12 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 						}, timeout)
 
 						result = await action.execute(args)
+						this.#obs.onExecuteResult?.(result)
 						this.#results.push({ action, result })
 						iterator = await this.next(result)
 
 						if (!iterator.done) {
-							action = iterator.value as Action
+							action = iterator.value as Action<A | ActionObject>
 						}
 
 						if (isPlainObject(result) && 'wait' in result) {
@@ -181,14 +195,18 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 			throw new AbortExecuteError(error.message)
 		} finally {
 			this.#refresh()
+			this.#obs.onExecuteEnd?.()
 		}
 		return this.#results
 	}
 
-	inject(action: Action) {
-		this.#queue.unshift(action)
-		this.#injected.push(action)
-		return action
+	inject(action: A | ActionObject) {
+		this.#obs.onBeforeInject?.(action)
+		const inst = this.load(action)
+		this.#queue.unshift(inst)
+		this.#injected.push(inst)
+		this.#obs.onAfterInject?.(action, inst)
+		return inst
 	}
 
 	isAborted() {
@@ -201,9 +219,9 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 	 * If a loader was provided in the constructor, it will delegate to that function
 	 * to provide the instances
 	 */
-	load(action: ActionObject): Action
-	load(actions: ActionObject[]): Action[]
-	load(arg: ActionObject | ActionObject[]) {
+	load(action: A | ActionObject): Action<A | ActionObject>
+	load(actions: (A | ActionObject)[]): Action<A | ActionObject>[]
+	load(arg: A | ActionObject | (A | ActionObject)[]) {
 		if (isArray(arg)) {
 			return (
 				this.#loader?.(arg) || arg.map((o) => createAction(this.trigger, o))
@@ -227,7 +245,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()
 		}
-		this.#gen = ActionChain.createGenerator(this)
+		this.#gen = ActionChain.createGenerator<A>(this)
 		return this.queue
 	}
 
@@ -252,7 +270,7 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 		this.#timeout && clearTimeout(this.#timeout)
 		this.loadQueue()
 		this.#setStatus(c.IDLE)
-		// onRefresh
+		this.#obs.onRefresh?.()
 	}
 
 	#setStatus = (

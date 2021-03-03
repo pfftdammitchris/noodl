@@ -1,4 +1,4 @@
-import { ActionObject, ActionType, EventType } from 'noodl-types'
+import { ActionObject } from 'noodl-types'
 import { ActionStatus, IAction } from './types'
 import { createId, isArray, isFunction } from './utils/common'
 import AbortExecuteError from './AbortExecuteError'
@@ -8,30 +8,34 @@ const DEFAULT_TIMEOUT = 8000
 
 class Action<
 	A extends {} = ActionObject,
-	AType extends ActionType = ActionType,
-	T extends EventType = EventType
+	AType extends string = string,
+	T extends string = string
 > implements IAction {
 	#id: string
+	#actionType: AType
 	#executor: IAction['executor']
-	#original: IAction['original']
+	#original: IAction<A, AType>['original']
 	#remaining: number = Infinity
 	#status: ActionStatus | null = null
 	#timeout: NodeJS.Timeout | null = null
-	#trigger: T | EventType
-	#interval: any | null = null
-	actionType: AType | ActionType
+	#trigger: T
+	#interval: NodeJS.Timeout | null = null
 	error: AbortExecuteError | Error | null = null
-	executed: IAction['executed'] = false
-	hasExecutor: boolean = false
+	executed = false
+	hasExecutor = false
 	result: any
 	receivedResult = false
 	timeout = DEFAULT_TIMEOUT
 
-	constructor(trigger: T | EventType, action: IAction['original']) {
+	constructor(trigger: T, action: IAction<A, AType>['original']) {
 		this.#id = createId()
 		this.#original = action
 		this.#trigger = trigger
-		this.actionType = action.actionType
+		this.#actionType = action.actionType
+	}
+
+	get actionType() {
+		return this.#actionType
 	}
 
 	get executor() {
@@ -47,7 +51,6 @@ class Action<
 		return this.#id
 	}
 
-	// TODO - Deprecate this to only allow it in the snapshot result
 	get original() {
 		return this.#original
 	}
