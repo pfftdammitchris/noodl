@@ -36,6 +36,7 @@ export type UncommonComponentObjectProps = {
 } & {
 	actions?: (ActionObject | EmitObject | GotoObject)[]
 	contentType?: ContentType
+	chatItem?: Partial<ComponentObject>
 	dataKey?: string
 	emit?: EmitObject
 	isEditable?: boolean
@@ -64,6 +65,16 @@ export interface ComponentObject<T extends string = any>
 	style?: StyleObject
 	children?: any[]
 	viewTag?: string
+	[key: string]: any
+}
+
+export interface ChatListComponentObject
+	extends ComponentObject,
+		Pick<
+			UncommonComponentObjectProps,
+			'chatItem' | 'contentType' | 'iteratorVar' | 'listObject'
+		> {
+	type: 'chatList'
 	[key: string]: any
 }
 

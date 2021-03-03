@@ -84,6 +84,11 @@ export const Identify = (function () {
 			list(value: unknown): value is T.ListComponentObject {
 				return u.isObj(value) && value.type === 'list'
 			},
+			listLike(
+				value: unknown,
+			): value is T.ListComponentObject | T.ChatListComponentObject {
+				return u.isObj(value) && ['chatList', 'list'].includes(value.type)
+			},
 			listItem(value: unknown): value is T.ListItemComponentObject {
 				return u.isObj(value) && value.type === 'listItem'
 			},
