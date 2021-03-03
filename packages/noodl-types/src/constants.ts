@@ -5,6 +5,7 @@ export const action = {
 	POPUP: 'popUp',
 	POPUPDISMISS: 'popUpDismiss',
 	REFRESH: 'refresh',
+	REGISTER: 'register',
 	SAVEOBJECT: 'saveObject',
 	UPDATEOBJECT: 'updateObject',
 } as const
@@ -14,6 +15,7 @@ export const actionTypes = Object.values(action)
 export const component = {
 	BUTTON: 'button',
 	CHART: 'chart',
+	CHATLIST: 'chatList',
 	DIVIDER: 'divider',
 	FOOTER: 'footer',
 	HEADER: 'header',
@@ -38,6 +40,7 @@ export const component = {
 export const componentKeys = [
 	'backgroundColor',
 	'borderRadius',
+	'chatItem',
 	'children',
 	'contentType',
 	'dataId',
