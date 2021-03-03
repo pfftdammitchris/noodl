@@ -6,7 +6,7 @@ import createAction from './utils/createAction'
 import * as T from './types'
 import * as c from './constants'
 
-class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
+class ActionChain<A extends ActionObject = ActionObject, Trigger = EventType>
 	implements T.IActionChain {
 	#abortReason: ReturnType<T.IActionChain['snapshot']>['abortReason'] = ''
 	#actions: T.IActionChain['actions'] = []
