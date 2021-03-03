@@ -15,6 +15,16 @@ class ActionChain<A extends ActionObject = ActionObject, Trig = EventType>
 	#gen: AsyncGenerator<Action, T.ActionChainIteratorResult[], any>
 	#injected: ReturnType<T.IActionChain['snapshot']>['actions'] = []
 	#loader: T.ActionChainInstancesLoader | undefined
+	#obs: {
+		onAbortStart: (...args: any[]) => any
+		onAbortEnd: (...args: any[]) => any
+		onExecuteStart: (...args: any[]) => any
+		onExecuteEnd: (...args: any[]) => any
+		onExecuteResult: (...args: any[]) => any
+		onRefresh: (...args: any[]) => any
+		onBeforeInject: (...args: any[]) => any
+		onAfterInject: (...args: any[]) => any
+	}
 	#queue: T.IActionChain['queue'] = []
 	#results = [] as T.ActionChainIteratorResult[]
 	#status: T.ActionChainStatus = c.IDLE

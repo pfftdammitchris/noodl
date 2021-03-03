@@ -1,29 +1,33 @@
-import { ActionObject } from 'noodl-types'
-import { IAction } from './types'
+import { ActionObject, ActionType, EventType } from 'noodl-types'
+import { ActionStatus, IAction } from './types'
 import { createId, isArray, isFunction } from './utils/common'
 import AbortExecuteError from './AbortExecuteError'
 import * as c from './constants'
 
 const DEFAULT_TIMEOUT = 8000
 
-class Action<A extends ActionObject = ActionObject> implements IAction {
-	#id: IAction['id']
+class Action<
+	A extends {} = ActionObject,
+	AType extends ActionType = ActionType,
+	T extends EventType = EventType
+> implements IAction {
+	#id: string
 	#executor: IAction['executor']
-	#original: A
+	#original: IAction['original']
 	#remaining: number = Infinity
-	#status: IAction['status'] = null
+	#status: ActionStatus | null = null
 	#timeout: NodeJS.Timeout | null = null
-	#trigger: IAction['trigger']
+	#trigger: T | EventType
 	#interval: any | null = null
-	actionType: string
-	error: IAction['error'] = null
+	actionType: AType | ActionType
+	error: AbortExecuteError | Error | null = null
 	executed: IAction['executed'] = false
 	hasExecutor: boolean = false
-	result: IAction['result']
-	receivedResult: boolean = false
-	timeout: IAction['timeout'] = DEFAULT_TIMEOUT
+	result: any
+	receivedResult = false
+	timeout = DEFAULT_TIMEOUT
 
-	constructor(trigger: IAction['trigger'], action: A) {
+	constructor(trigger: T | EventType, action: IAction['original']) {
 		this.#id = createId()
 		this.#original = action
 		this.#trigger = trigger
@@ -56,7 +60,7 @@ class Action<A extends ActionObject = ActionObject> implements IAction {
 		return this.#status
 	}
 
-	set status(status: IAction['status']) {
+	set status(status) {
 		this.#status = status
 	}
 

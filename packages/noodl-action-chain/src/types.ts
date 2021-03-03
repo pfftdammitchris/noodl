@@ -1,15 +1,20 @@
-import { ActionObject, EventType } from 'noodl-types'
+import {
+	AnyActionObject,
+	ActionObject,
+	EventType,
+	ActionType,
+} from 'noodl-types'
 import AbortExecuteError from './AbortExecuteError'
 import ActionChain from './ActionChain'
 import Action from './Action'
 import * as c from './constants'
 
 export interface IActionChain<
-	A extends ActionObject = ActionObject,
-	Trig = EventType
+	A extends ActionObject = AnyActionObject,
+	E extends string = string
 > {
 	abort(reason?: string | string[]): Promise<ActionChainIteratorResult[]>
-	actions: A[]
+	actions: (A | AnyActionObject)[]
 	current: Action | null
 	execute(args?: any): Promise<ActionChainIteratorResult[]>
 	inject(action: A | Action): Action
@@ -26,10 +31,13 @@ export interface IActionChain<
 		queue: IActionChain['queue']
 		results: any[]
 		status: ActionChainStatus
-		trigger: Trig
+		trigger: E | EventType
 	}
-	trigger: Trig
+	trigger: E | EventType
 }
+
+// const s: IActionChain<GotoActionObject,ddd>
+// const t=  s.actions[0]
 
 export type ActionChainStatus =
 	| typeof c.IDLE
@@ -61,20 +69,24 @@ export interface ActionChainInstancesLoader<A = ActionObject, RT = Action> {
 	(actions: A[]): RT
 }
 
-export interface IAction<A extends ActionObject = ActionObject> {
-	id: string
-	actionType: string
+export interface IAction<
+	A extends {} = ActionObject,
+	AType extends string = ActionType,
+	T extends string = EventType
+> {
+	actionType: AType | ActionType
 	abort(reason?: string | string[]): void
-	error: null | Error | AbortExecuteError
 	execute(...args: any[]): Promise<any>
 	executor?(...args: any[]): Promise<any>
 	executed: boolean
+	original: Omit<A, 'actionType'> & { actionType: AType | ActionType }
 	result: any
-	snapshot(): { original: Partial<A> } & { [key: string]: any }
-	status: null | ActionStatus
-	timeout: number
-	trigger: string
+	trigger: T | EventType
 }
+
+// const g: IAction<EmitObject, 'emit', 'hello'>
+// g.actionType === 'emit'
+// g.trigger === 'hello'
 
 export type ActionStatus =
 	| typeof c.ABORTED
@@ -82,5 +94,3 @@ export type ActionStatus =
 	| typeof c.PENDING
 	| typeof c.RESOLVED
 	| typeof c.TIMED_OUT
-
-export type Trigger = EventType
