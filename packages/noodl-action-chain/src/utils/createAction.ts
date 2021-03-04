@@ -1,6 +1,5 @@
 import { ActionObject } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
-import { IAction } from '../types'
 import { isString, isPlainObject } from '../utils/common'
 import Action from '../Action'
 

@@ -1,29 +1,30 @@
 import { ActionObject, EventType } from 'noodl-types'
+import { LiteralUnion } from 'type-fest'
 import { ActionChainInstancesLoader } from '../types'
 import ActionChain from '../ActionChain'
 
-function createActionChain<Trig = EventType>(
-	trigger: Trig,
+function createActionChain<T extends string = string>(
+	trigger: LiteralUnion<T | EventType, string>,
 	actions: ActionObject[],
 	loader?: ActionChainInstancesLoader,
 ): ActionChain
-function createActionChain<Trig = EventType>(args: {
+function createActionChain<T extends string = string>(args: {
 	actions: ActionObject[]
-	trigger: Trig
+	trigger: LiteralUnion<T | EventType, string>
 	loader?: ActionChainInstancesLoader
 }): ActionChain
-function createActionChain<Trig extends EventType = EventType>(
+function createActionChain<T extends string = string>(
 	args:
 		| {
 				actions: ActionObject[]
-				trigger: Trig
+				trigger: LiteralUnion<T | EventType, string>
 				loader?: ActionChainInstancesLoader
 		  }
-		| Trig,
+		| T,
 	actions?: ActionObject[] | ActionChainInstancesLoader,
 	loader?: ActionChainInstancesLoader,
 ) {
-	let _trigger: Trig | undefined
+	let _trigger: LiteralUnion<T | EventType, string>
 	let _actions: ActionObject[] = []
 	let _loader: ActionChainInstancesLoader | undefined
 
