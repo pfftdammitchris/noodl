@@ -72,6 +72,7 @@ class Action<
 		if (isArray(reason)) reason = reason.join(', ')
 		this.clearTimeout()
 		this.status = c.ABORTED
+		this.result = new AbortExecuteError(reason)
 	}
 
 	clearTimeout() {

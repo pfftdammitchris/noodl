@@ -168,9 +168,13 @@ class ActionChain<
 							}
 						}, timeout)
 
-						result = await action.execute(args)
-						this.#obs.onExecuteResult?.(result)
-						this.#results.push({ action, result })
+						if (action.status !== 'aborted') {
+							result = await action.execute(args)
+							this.#obs.onExecuteResult?.(result)
+						}
+
+						this.#results.push({ action, result: action.result })
+
 						iterator = await this.next(result)
 
 						if (!iterator.done) {
