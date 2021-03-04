@@ -113,6 +113,7 @@ class Action<
 			this.result = await this.executor?.(...args)
 			if (this.result !== undefined) this['receivedResult'] = true
 			this.status = c.RESOLVED
+			this.executed = true
 
 			return this.result
 		} catch (error) {
@@ -122,7 +123,6 @@ class Action<
 		} finally {
 			this.clearTimeout()
 			this.clearInterval()
-			this.executed = true
 		}
 	}
 
