@@ -42,7 +42,7 @@ export type ActionChainIteratorResult<A extends ActionObject = ActionObject> = {
 }
 
 export interface ActionChainInstancesLoader<A = ActionObject, RT = IAction> {
-	(actions: A[]): RT
+	(actions: A[]): RT[]
 }
 
 export interface IAction<
