@@ -56,7 +56,7 @@ class ActionChain<
 		let results: ActionChainIteratorResult[] = []
 		let result: any
 
-		while (inst.queue.length) {
+		while (inst.queue.length && !inst.isAborted()) {
 			action = inst.queue.shift() as Action<A | ActionObject>
 			result = await (yield action)
 			results.push({ action, result })
