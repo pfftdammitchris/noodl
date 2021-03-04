@@ -21,7 +21,7 @@ function createAction<T extends string>(
 		object = args.action
 	}
 
-	return new Action(trigger, object as ActionObject)
+	return new Action(trigger as T, object as ActionObject)
 }
 
 export default createAction
