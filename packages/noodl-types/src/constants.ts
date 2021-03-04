@@ -149,8 +149,10 @@ export const styleKeys = [
 ] as const
 
 export const userEvent = [
+	'onBlur',
 	'onClick',
 	'onChange',
+	'onFocus',
 	'onHover',
 	'onMouseEnter',
 	'onMouseLeave',
