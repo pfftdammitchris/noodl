@@ -1,4 +1,5 @@
 import { ActionObject } from 'noodl-types'
+import { LiteralUnion } from 'type-fest'
 import AbortExecuteError from './AbortExecuteError'
 import * as c from './constants'
 
@@ -24,9 +25,9 @@ export interface IActionChain<
 		queue: IAction<A | ActionObject>[]
 		results: any[]
 		status: ActionChainStatus
-		trigger: T
+		trigger: LiteralUnion<T, string>
 	}
-	trigger: T
+	trigger: LiteralUnion<T, string>
 }
 
 export type ActionChainStatus =
@@ -49,14 +50,14 @@ export interface IAction<
 	AType extends string = string,
 	T extends string = string
 > {
-	actionType: AType
+	actionType: LiteralUnion<AType, string>
 	abort(reason?: string | string[]): void
 	execute(...args: any[]): Promise<any>
 	executor(...args: any[]): Promise<any>
 	executed: boolean
-	original: Omit<A, 'actionType'> & { actionType: AType }
+	original: Omit<A, 'actionType'> & { actionType: LiteralUnion<AType, string> }
 	result: any
-	trigger: T
+	trigger: LiteralUnion<T, string>
 }
 
 export type ActionStatus =

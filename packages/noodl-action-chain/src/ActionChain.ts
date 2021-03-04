@@ -1,4 +1,5 @@
 import { ActionObject } from 'noodl-types'
+import { LiteralUnion } from 'type-fest'
 import AbortExecuteError from './AbortExecuteError'
 import Action from './Action'
 import createAction from './utils/createAction'
@@ -44,7 +45,7 @@ class ActionChain<
 	#results = [] as ActionChainIteratorResult[]
 	#status: ActionChainStatus = c.IDLE
 	#timeout: NodeJS.Timeout | null = null
-	trigger: T
+	trigger: LiteralUnion<T, string>
 
 	/**
 	 * Creates an asynchronous generator that generates the next immediate action
@@ -240,7 +241,7 @@ class ActionChain<
 		let actions = (this.#loader?.(this.actions) || []) as Action[]
 		if (!Array.isArray(actions)) actions = [actions]
 
-		actions.forEach((action, index, coll) => (this.#queue[index] = action))
+		actions.forEach((action, index) => (this.#queue[index] = action))
 
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()

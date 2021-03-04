@@ -1,15 +1,16 @@
 import { ActionObject } from 'noodl-types'
+import { LiteralUnion } from 'type-fest'
 import { IAction } from '../types'
 import { isString, isPlainObject } from '../utils/common'
 import Action from '../Action'
 
-function createAction(
+function createAction<T extends string>(
 	args:
-		| IAction['trigger']
-		| { action: ActionObject; trigger: IAction['trigger'] },
+		| LiteralUnion<T, string>
+		| { action: ActionObject; trigger: LiteralUnion<T, string> },
 	args2?: ActionObject,
 ) {
-	let trigger: IAction['trigger'] | undefined
+	let trigger: LiteralUnion<T, string> | undefined
 	let object: ActionObject | undefined
 
 	if (isString(args)) {
@@ -20,7 +21,7 @@ function createAction(
 		object = args.action
 	}
 
-	return new Action(trigger as string, object as ActionObject)
+	return new Action(trigger, object as ActionObject)
 }
 
 export default createAction

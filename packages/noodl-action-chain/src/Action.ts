@@ -1,4 +1,5 @@
 import { ActionObject } from 'noodl-types'
+import { LiteralUnion } from 'type-fest'
 import { ActionStatus, IAction } from './types'
 import { createId, isArray, isFunction } from './utils/common'
 import AbortExecuteError from './AbortExecuteError'
@@ -12,13 +13,13 @@ class Action<
 	T extends string = string
 > implements IAction {
 	#id: string
-	#actionType: AType
+	#actionType: LiteralUnion<AType, string>
 	#executor: IAction['executor']
 	#original: IAction<A, AType>['original']
 	#remaining: number = Infinity
 	#status: ActionStatus | null = null
 	#timeout: NodeJS.Timeout | null = null
-	#trigger: T
+	#trigger: LiteralUnion<T, string>
 	#interval: NodeJS.Timeout | null = null
 	error: AbortExecuteError | Error | null = null
 	executed = false
