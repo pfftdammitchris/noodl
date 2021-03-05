@@ -9,7 +9,7 @@ import {
 	ActionChainInstancesLoader,
 	ActionChainIteratorResult,
 	ActionChainStatus,
-	IAction,
+	ActionChainObserver,
 } from './types'
 import * as c from './constants'
 
@@ -28,19 +28,7 @@ class ActionChain<
 	>
 	#injected: Action<A | ActionObject>[] = []
 	#loader: ActionChainInstancesLoader | undefined
-	#obs: {
-		onAbortStart?: (...args: any[]) => any
-		onAbortEnd?: (...args: any[]) => any
-		onExecuteStart?: (...args: any[]) => any
-		onExecuteEnd?: (...args: any[]) => any
-		onExecuteResult?: (result?: any) => any
-		onRefresh?: (...args: any[]) => any
-		onBeforeInject?: (action: A | ActionObject) => any
-		onAfterInject?: (
-			action: A | ActionObject,
-			instance: IAction<A | ActionObject>,
-		) => any
-	} = {}
+	#obs: ActionChainObserver = {}
 	#queue: Action<A | ActionObject>[] = []
 	#results = [] as ActionChainIteratorResult[]
 	#status: ActionChainStatus = c.IDLE

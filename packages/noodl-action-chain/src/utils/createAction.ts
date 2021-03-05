@@ -1,26 +1,45 @@
 import { ActionObject } from 'noodl-types'
-import { LiteralUnion } from 'type-fest'
 import { isString, isPlainObject } from '../utils/common'
 import Action from '../Action'
 
-function createAction<T extends string>(
-	args:
-		| LiteralUnion<T, string>
-		| { action: ActionObject; trigger: LiteralUnion<T, string> },
-	args2?: ActionObject,
-) {
-	let trigger: LiteralUnion<T, string> | undefined
-	let object: ActionObject | undefined
+function createAction<AType extends string, T extends string>(
+	args: {
+		action: ActionObject<AType>
+		trigger: T
+	},
+	_?: never,
+): Action<AType, T>
 
-	if (isString(args)) {
+function createAction<AType extends string, T extends string>(
+	action: ActionObject<AType>,
+): Action<AType, T>
+
+function createAction<AType extends string, T extends string>(
+	trigger: T,
+	action: ActionObject<AType>,
+): Action<AType, T>
+
+function createAction<AType extends string, T extends string>(
+	args: T | ActionObject<AType> | { action: ActionObject<AType>; trigger: T },
+	args2?: ActionObject<AType> | T,
+) {
+	let trigger: T | undefined
+	let object: ActionObject<AType> | undefined
+
+	if (isString(args) && !isString(args2) && isPlainObject(args2)) {
 		trigger = args
-		object = args2 as ActionObject
+		object = args2
 	} else if (isPlainObject(args)) {
-		trigger = args.trigger
-		object = args.action
+		if (!isString(args) && !('actionType' in args) && 'action' in args) {
+			trigger = args.trigger
+			object = args.action
+		} else if ('actionType' in args) {
+			trigger = args.trigger
+			object = args
+		}
 	}
 
-	return new Action(trigger as T, object as ActionObject)
+	return new Action(trigger || '', object as ActionObject<AType>)
 }
 
 export default createAction

@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import chalk from 'chalk'
 import sinon from 'sinon'
 import Action from '../Action'
 import ActionChain from '../ActionChain'
@@ -10,7 +11,10 @@ import {
 	getEvalObjectAction,
 	getPopUpAction,
 	getPopUpDismissAction,
+	getSaveObjectAction,
+	getUpdateObjectAction,
 } from './helpers'
+import createAction from '../utils/createAction'
 
 describe('ActionChain', () => {
 	describe('Generator', () => {
@@ -28,6 +32,7 @@ describe('ActionChain', () => {
 				actions: [getBuiltInAction(), getEvalObjectAction(), getPopUpAction()],
 				trigger: 'onChange',
 			})
+
 			await ac.execute()
 			const results = ac.snapshot().results
 			expect(results).to.have.lengthOf(3)
@@ -185,6 +190,38 @@ describe('ActionChain', () => {
 				expect(ac.snapshot().injected[0])
 					.to.have.property('original')
 					.eq(injectee)
+			})
+
+			describe(`When the action injecting is a popUp using "${chalk.magenta(
+				'wait',
+			)}"`, () => {
+				it(`should set its status to "aborting"`, () => {
+					const ac = getActionChain({
+						actions: [getBuiltInAction(), getEvalObjectAction()],
+						loader: (actions) => actions.map((action) => createAction(action)),
+					})
+				})
+
+				xit(`should still execute the injectee`, () => {
+					getBuiltInAction(), getEvalObjectAction()
+					const ac = getActionChain({
+						actions: [getUpdateObjectAction(), getSaveObjectAction()],
+						trigger: 'onChange',
+					})
+					const injectee = getPopUpAction()
+				})
+
+				xit(`should call abort on the remaining actions in the queue`, () => {
+					//
+				})
+
+				xit(`should not be calling executors when aborting`, () => {
+					//
+				})
+
+				xit(`should set its status to "aborted" after its done`, () => {
+					//
+				})
 			})
 		})
 	})

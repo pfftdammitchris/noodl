@@ -1,36 +1,47 @@
-import { ActionObject, EventType } from 'noodl-types'
+import { ActionObject } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
 import { ActionChainInstancesLoader } from '../types'
 import ActionChain from '../ActionChain'
 
-function createActionChain<T extends string = string>(
-	trigger: LiteralUnion<T | EventType, string>,
-	actions: ActionObject[],
-	loader?: ActionChainInstancesLoader,
-): ActionChain
-function createActionChain<T extends string = string>(args: {
-	actions: ActionObject[]
-	trigger: LiteralUnion<T | EventType, string>
-	loader?: ActionChainInstancesLoader
-}): ActionChain
-function createActionChain<T extends string = string>(
+function createActionChain<
+	A extends ActionObject = ActionObject,
+	T extends string = string
+>(
+	trigger: LiteralUnion<T, string>,
+	actions: A[],
+	loader?: ActionChainInstancesLoader<A>,
+): ActionChain<A, T>
+
+function createActionChain<
+	A extends ActionObject = ActionObject,
+	T extends string = string
+>(args: {
+	actions: A[]
+	trigger: LiteralUnion<T, string>
+	loader?: ActionChainInstancesLoader<A>
+}): ActionChain<A, T>
+
+function createActionChain<
+	A extends ActionObject = ActionObject,
+	T extends string = string
+>(
 	args:
 		| {
-				actions: ActionObject[]
-				trigger: LiteralUnion<T | EventType, string>
-				loader?: ActionChainInstancesLoader
+				actions: A[]
+				trigger: LiteralUnion<T, string>
+				loader?: ActionChainInstancesLoader<A>
 		  }
 		| T,
-	actions?: ActionObject[] | ActionChainInstancesLoader,
-	loader?: ActionChainInstancesLoader,
+	actions?: A[] | ActionChainInstancesLoader<A>,
+	loader?: ActionChainInstancesLoader<A>,
 ) {
-	let _trigger: LiteralUnion<T | EventType, string>
-	let _actions: ActionObject[] = []
-	let _loader: ActionChainInstancesLoader | undefined
+	let _trigger: LiteralUnion<T, string>
+	let _actions: A[] = []
+	let _loader: ActionChainInstancesLoader<A> | undefined
 
 	if (typeof args === 'string') {
 		_trigger = args
-		_actions = actions as ActionObject[]
+		_actions = actions as A[]
 		_loader = loader
 	} else {
 		_trigger = args.trigger

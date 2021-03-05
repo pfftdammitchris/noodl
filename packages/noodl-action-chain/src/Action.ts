@@ -1,25 +1,21 @@
 import { ActionObject } from 'noodl-types'
-import { LiteralUnion } from 'type-fest'
-import { ActionStatus, IAction } from './types'
+import { ActionStatus, IAction, IActionChain } from './types'
 import { createId, isArray, isFunction } from './utils/common'
 import AbortExecuteError from './AbortExecuteError'
 import * as c from './constants'
 
 const DEFAULT_TIMEOUT = 8000
 
-class Action<
-	A extends {} = ActionObject,
-	AType extends string = string,
-	T extends string = string
-> implements IAction {
+class Action<AType extends string = string, T extends string = string>
+	implements IAction<AType, T> {
 	#id: string
-	#actionType: LiteralUnion<AType, string>
+	#actionType: AType
 	#executor: IAction['executor']
-	#original: IAction<A, AType>['original']
+	#original: ActionObject<AType>
 	#remaining: number = Infinity
 	#status: ActionStatus | null = null
 	#timeout: NodeJS.Timeout | null = null
-	#trigger: LiteralUnion<T, string>
+	#trigger: T
 	#interval: NodeJS.Timeout | null = null
 	error: AbortExecuteError | Error | null = null
 	executed = false
@@ -28,7 +24,7 @@ class Action<
 	receivedResult = false
 	timeout = DEFAULT_TIMEOUT
 
-	constructor(trigger: T, action: IAction<A, AType>['original']) {
+	constructor(trigger: T, action: ActionObject<AType>) {
 		this.#id = createId()
 		this.#original = action
 		this.#trigger = trigger
