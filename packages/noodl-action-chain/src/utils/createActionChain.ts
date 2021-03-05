@@ -1,5 +1,4 @@
 import { ActionObject } from 'noodl-types'
-import { LiteralUnion } from 'type-fest'
 import { ActionChainInstancesLoader } from '../types'
 import ActionChain from '../ActionChain'
 
@@ -7,9 +6,9 @@ function createActionChain<
 	A extends ActionObject = ActionObject,
 	T extends string = string
 >(
-	trigger: LiteralUnion<T, string>,
+	trigger: T,
 	actions: A[],
-	loader?: ActionChainInstancesLoader<A>,
+	loader?: ActionChainInstancesLoader<A, T>,
 ): ActionChain<A, T>
 
 function createActionChain<
@@ -17,8 +16,8 @@ function createActionChain<
 	T extends string = string
 >(args: {
 	actions: A[]
-	trigger: LiteralUnion<T, string>
-	loader?: ActionChainInstancesLoader<A>
+	trigger: T
+	loader?: ActionChainInstancesLoader<A, T>
 }): ActionChain<A, T>
 
 function createActionChain<
@@ -28,16 +27,16 @@ function createActionChain<
 	args:
 		| {
 				actions: A[]
-				trigger: LiteralUnion<T, string>
-				loader?: ActionChainInstancesLoader<A>
+				trigger: T
+				loader?: ActionChainInstancesLoader<A, T>
 		  }
 		| T,
-	actions?: A[] | ActionChainInstancesLoader<A>,
-	loader?: ActionChainInstancesLoader<A>,
+	actions?: A[] | ActionChainInstancesLoader<A, T>,
+	loader?: ActionChainInstancesLoader<A, T>,
 ) {
-	let _trigger: LiteralUnion<T, string>
+	let _trigger: T
 	let _actions: A[] = []
-	let _loader: ActionChainInstancesLoader<A> | undefined
+	let _loader: ActionChainInstancesLoader<A, T> | undefined
 
 	if (typeof args === 'string') {
 		_trigger = args

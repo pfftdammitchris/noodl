@@ -1,4 +1,4 @@
-import { ActionObject, EventType } from 'noodl-types'
+import { ActionObject } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
 import AbortExecuteError from './AbortExecuteError'
 import * as c from './constants'
