@@ -317,6 +317,15 @@ class ActionChain<
 			trigger: this.trigger,
 		}
 	}
+
+	use(obj?: Partial<ActionChainObserver>) {
+		if (isPlainObject(obj)) {
+			Object.entries(obj).forEach(([evt, fn]) => {
+				this.#obs[evt] = fn
+			})
+		}
+		return this
+	}
 }
 
 export default ActionChain
