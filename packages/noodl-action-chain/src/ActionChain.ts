@@ -143,7 +143,7 @@ class ActionChain<
 			iterator = await this.next()
 			action = iterator?.value as Action<A['actionType'], T>
 
-			while (!iterator?.done) {
+			while (this.#current === null) {
 				try {
 					if (this.#timeout) clearTimeout(this.#timeout)
 					// Cache the reference since it could be changed when setTimeout fires
