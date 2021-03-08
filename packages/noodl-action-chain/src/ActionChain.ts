@@ -141,10 +141,9 @@ class ActionChain<
 			// any actions, it steps into it so the actual execution of actions
 			// begins at the second call to this.next)
 			iterator = await this.next()
-			iterator = await this.next()
 			action = iterator?.value as Action<A['actionType'], T>
 
-			while (this.#current) {
+			while (!iterator?.done) {
 				try {
 					if (this.#timeout) clearTimeout(this.#timeout)
 					// Cache the reference since it could be changed when setTimeout fires
