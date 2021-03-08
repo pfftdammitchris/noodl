@@ -27,22 +27,6 @@ describe('ActionChain', () => {
 			expect(Symbol.asyncIterator in gen).to.be.true
 		})
 
-		it(`should accumulate the result in each loop as { action, result }`, async () => {
-			const ac = getActionChain({
-				actions: [getBuiltInAction(), getEvalObjectAction(), getPopUpAction()],
-				trigger: 'onChange',
-			})
-
-			await ac.execute()
-			const results = ac.snapshot().results
-			expect(results).to.have.lengthOf(3)
-			results.forEach((res, i) => {
-				expect(res).to.have.property('action')
-				expect(res).to.have.property('result')
-				expect(res.action).to.be.instanceOf(Action)
-			})
-		})
-
 		describe(`Calling ${'next'}`, () => {
 			it(`should always return the iterator result in the shape { value, done }`, async () => {
 				const ac = getActionChain({
@@ -200,6 +184,7 @@ describe('ActionChain', () => {
 						actions: [getBuiltInAction(), getEvalObjectAction()],
 						loader: (actions) => actions.map((action) => createAction(action)),
 					})
+					expect(ac.).to.have.property('status', 'aborting')
 				})
 
 				xit(`should still execute the injectee`, () => {
