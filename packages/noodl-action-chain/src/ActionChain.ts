@@ -172,8 +172,8 @@ class ActionChain<
 
 					iterator = await this.next(result)
 
-					if (!iterator.done) {
-						action = iterator.value as Action<A['actionType'], T>
+					if (!iterator?.done) {
+						action = iterator?.value as Action<A['actionType'], T>
 					}
 
 					if (isPlainObject(result) && 'wait' in result) {
