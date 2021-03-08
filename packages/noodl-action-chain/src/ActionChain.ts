@@ -141,52 +141,63 @@ class ActionChain<
 			// any actions, it steps into it so the actual execution of actions
 			// begins at the second call to this.next)
 			iterator = await this.next()
-			action = iterator?.value as Action<A['actionType'], T>
 
-			while (this.#current === null) {
-				try {
-					if (this.#timeout) clearTimeout(this.#timeout)
-					// Cache the reference since it could be changed when setTimeout fires
-					let cachedAction = action
-					this.#timeout = setTimeout(async () => {
-						const msg = `Action of type "${cachedAction?.actionType}" timed out`
-						cachedAction?.abort(msg)
-						cachedAction = null as any
-						try {
-							await this.abort(msg)
-							throw new AbortExecuteError(msg)
-						} catch (error) {
-							throw new AbortExecuteError(error.message)
+			if (iterator) {
+				while (!iterator?.done) {
+					try {
+						if (this.#timeout) clearTimeout(this.#timeout)
+						// Cache the reference since it could be changed when setTimeout fires
+						let cachedAction = action
+						this.#timeout = setTimeout(async () => {
+							const msg = `Action of type "${cachedAction?.actionType}" timed out`
+							cachedAction?.abort(msg)
+							cachedAction = null as any
+							try {
+								await this.abort(msg)
+								throw new AbortExecuteError(msg)
+							} catch (error) {
+								throw new AbortExecuteError(error.message)
+							}
+						}, timeout)
+
+						if (iterator) {
+							if (!iterator.done) {
+								action = iterator?.value as Action<A['actionType'], T>
+
+								if (action?.status !== 'aborted') {
+									result = await action?.execute(args)
+									this.#obs.onExecuteResult?.(result)
+									this.#results.push({
+										action: action as Action<A['actionType'], T>,
+										result: action?.result,
+									})
+									iterator = await this.next(result)
+								}
+							}
+						} else {
+							await this.abort(
+								`Expected an iterator to be returned but received ${typeof iterator} instead`,
+							)
 						}
-					}, timeout)
 
-					if (action?.status !== 'aborted') {
-						result = await action?.execute(args)
-						this.#obs.onExecuteResult?.(result)
+						// iterator = await this.next(result)
+
+						// if (!iterator?.done) {
+						// 	action = iterator?.value as Action<A['actionType'], T>
+						// }
+
+						if (isPlainObject(result) && 'wait' in result) {
+							// This block is mostly intended for popUps to "wait" for a user interaction
+							await this.abort(
+								`An action returned from a "${action?.actionType}" type requested to wait`,
+							)
+						}
+					} catch (error) {
+						// TODO - replace throw with appending the error to the result item instead
+						throw error
+					} finally {
+						this.#timeout && clearTimeout(this.#timeout)
 					}
-
-					this.#results.push({
-						action: action as Action<A['actionType'], T>,
-						result: action?.result,
-					})
-
-					iterator = await this.next(result)
-
-					if (!iterator?.done) {
-						action = iterator?.value as Action<A['actionType'], T>
-					}
-
-					if (isPlainObject(result) && 'wait' in result) {
-						// This block is mostly intended for popUps to "wait" for a user interaction
-						await this.abort(
-							`An action returned from a "${action.actionType}" type requested to wait`,
-						)
-					}
-				} catch (error) {
-					// TODO - replace throw with appending the error to the result item instead
-					throw error
-				} finally {
-					this.#timeout && clearTimeout(this.#timeout)
 				}
 			}
 		} catch (error) {

@@ -246,6 +246,10 @@ describe('ActionChain', () => {
 	})
 
 	describe('Return values', () => {
+		// it(`should reach the result as { action, result } in the first`, () => {
+		// 	//
+		// })
+
 		it(`should receive an array of { action, result } when aborting`, async () => {
 			const ac = getActionChain({
 				actions: [getBuiltInAction(), getEvalObjectAction()],
