@@ -18,6 +18,7 @@ export type AnyComponentObject =
 	| LabelComponentObject
 	| ListComponentObject
 	| ListItemComponentObject
+	| MapComponentObject
 	| PageComponentObject
 	| PluginComponentObject
 	| PluginHeadComponentObject
@@ -137,6 +138,13 @@ export interface ListComponentObject
 
 export interface ListItemComponentObject extends ComponentObject {
 	type: 'listItem'
+	[key: string]: any
+}
+
+export interface MapComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'dataKey'> {
+	type: 'map'
 	[key: string]: any
 }
 

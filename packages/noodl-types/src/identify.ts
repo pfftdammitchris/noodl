@@ -92,6 +92,9 @@ export const Identify = (function () {
 			listItem(value: unknown): value is T.ListItemComponentObject {
 				return u.isObj(value) && value.type === 'listItem'
 			},
+			map(value: unknown): value is T.MapComponentObject {
+				return u.isObj(value) && value.type === 'map'
+			},
 			plugin(value: unknown): value is T.PluginComponentObject {
 				return u.isObj(value) && value.type === 'plugin'
 			},

@@ -24,7 +24,7 @@ export type AnyActionObject =
 	| SaveActionObject
 	| UpdateActionObject
 
-export interface ActionObject<T extends string = any> {
+export interface ActionObject<T extends string = string> {
 	actionType: T
 	[key: string]: any
 }

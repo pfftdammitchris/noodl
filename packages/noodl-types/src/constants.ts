@@ -23,6 +23,7 @@ export const component = {
 	LABEL: 'label',
 	LIST: 'list',
 	LISTITEM: 'listItem',
+	MAP: 'map',
 	PAGE: 'page',
 	PLUGIN: 'plugin',
 	PLUGINHEAD: 'pluginHead',
