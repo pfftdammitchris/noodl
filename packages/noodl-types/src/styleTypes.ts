@@ -72,6 +72,6 @@ export type StyleTextAlign =
 
 export interface StyleTextAlignObject {
 	x?: 'left' | 'center' | 'right' | 'centerX'
-	y?: 'left' | 'center' | 'right' | 'cemterY'
+	y?: 'left' | 'center' | 'right' | 'centerY'
 	[key: string]: any
 }
