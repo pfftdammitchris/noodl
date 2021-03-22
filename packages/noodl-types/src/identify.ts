@@ -95,6 +95,9 @@ export const Identify = (function () {
 			map(value: unknown): value is T.MapComponentObject {
 				return u.isObj(value) && value.type === 'map'
 			},
+			page(value: unknown): value is T.PageComponentObject {
+				return u.isObj(value) && value.type === 'page'
+			},
 			plugin(value: unknown): value is T.PluginComponentObject {
 				return u.isObj(value) && value.type === 'plugin'
 			},
