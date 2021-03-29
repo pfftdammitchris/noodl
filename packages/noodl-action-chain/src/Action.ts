@@ -10,6 +10,8 @@ class Action<AType extends string = string, T extends string = string>
 	implements IAction<AType, T> {
 	#id: string
 	#actionType: AType
+	#aborted = false
+	#executed = false
 	#executor: IAction['executor']
 	#original: ActionObject<AType>
 	#remaining: number = Infinity
@@ -18,7 +20,6 @@ class Action<AType extends string = string, T extends string = string>
 	#trigger: T
 	#interval: NodeJS.Timeout | null = null
 	error: AbortExecuteError | Error | null = null
-	executed = false
 	hasExecutor = false
 	result: any
 	receivedResult = false
@@ -33,6 +34,14 @@ class Action<AType extends string = string, T extends string = string>
 
 	get actionType() {
 		return this.#actionType
+	}
+
+	get aborted() {
+		return this.#aborted
+	}
+
+	get executed() {
+		return this.#executed
 	}
 
 	get executor() {
@@ -69,6 +78,7 @@ class Action<AType extends string = string, T extends string = string>
 		this.clearTimeout()
 		this.status = c.ABORTED
 		this.result = new AbortExecuteError(reason)
+		this.#aborted = true
 	}
 
 	clearTimeout() {
@@ -95,7 +105,7 @@ class Action<AType extends string = string, T extends string = string>
 
 			this.#remaining = this.timeout
 			this.error = null
-			this.executed = false
+			this.#executed = false
 			this.result = undefined
 			this.status = c.PENDING
 			this.#interval = setInterval(() => (this.#remaining -= 1000), 1000)
@@ -106,10 +116,13 @@ class Action<AType extends string = string, T extends string = string>
 			}, this.timeout || DEFAULT_TIMEOUT)
 
 			// TODO - Logic for return values as objects (new if/ condition in action chains)
-			this.result = await this.executor?.(...args)
+			this.result = this.#aborted ? undefined : await this.executor?.(...args)
 			if (this.result !== undefined) this['receivedResult'] = true
-			this.status = c.RESOLVED
-			this.executed = true
+
+			if (!this.#aborted) {
+				this.status = c.RESOLVED
+				this.#executed = true
+			}
 
 			return this.result
 		} catch (error) {

@@ -1,6 +1,6 @@
 {
 	"name": "noodl-action-chain",
-	"version": "0.0.44",
+	"version": "0.0.45",
 	"main": "dist/index.js",
 	"jsnext:main": "dist/index.js",
 	"module": "dist/index.js",

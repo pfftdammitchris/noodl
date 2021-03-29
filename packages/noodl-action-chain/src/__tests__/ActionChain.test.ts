@@ -247,22 +247,47 @@ describe(coolGold(`ActionChain`), () => {
 	})
 
 	describe(italic(`Observers`), () => {
-		xit(`should call ${magenta(`onAbortStart`)}`, () => {
-			//
+		describe(magenta(`onAbortStart`), () => {
+			it.only(`should call ${magenta(
+				`onAbortStart`,
+			)} when aborting`, async () => {
+				const spy = sinon.spy()
+				const ac = getActionChain({
+					actions: [getEvalObjectAction(), getBuiltInAction()],
+					trigger: 'onChange',
+					use: { onAbortStart: spy },
+				})
+				await ac.abort()
+				expect(spy).to.be.calledOnce
+			})
 		})
 
-		xit(`should call ${magenta(`onAbortEnd`)}`, () => {
-			//
+		describe(magenta(`onAbortEnd`), () => {
+			it.only(`should call ${magenta(
+				`onAbortEnd`,
+			)} in the end of aborting`, async () => {
+				const spy = sinon.spy()
+				const ac = getActionChain({
+					actions: [getEvalObjectAction(), getBuiltInAction()],
+					trigger: 'onChange',
+					use: { onAbortStart: spy },
+				})
+				await ac.abort()
+				ac.snapshot().results.forEach((r) => {
+					expect(r.result).to.be.instanceOf(AbortExecuteError)
+					expect(r.action.executed).to.be.false
+				})
+			})
 		})
 
-		xit(`should call ${magenta(`onAbortError`)} if an error occurred`, () => {
-			//
+		describe(magenta(`onAbortError`), () => {
+			xit(`should be called when an error occurred during the abort`, () => {
+				//
+			})
 		})
 
-		xit(
-			`should call ${magenta(`onBeforeAbortAction`)} right before calling ` +
-				`the actions' abort method`,
-			() => {
+		describe(magenta(`onBeforeAbortAction`), () => {
+			xit(`should be called right before calling the action's abort method`, () => {
 				const ac = getActionChain({
 					actions: [getBuiltInAction(), getEvalObjectAction()],
 					trigger: 'onMouseLeave',
@@ -273,38 +298,38 @@ describe(coolGold(`ActionChain`), () => {
 					)
 				}
 				ac.loadQueue()
-			},
-		)
+			})
+		})
 
-		xit(
-			`should call ${magenta(`onAfterAbortAction`)} right after calling ` +
-				`the actions' abort method`,
-			() => {
+		describe(magenta(`onAfterAbortAction`), () => {
+			xit(`should be called right after calling the action's abort method`, () => {
 				//
-			},
-		)
+			})
+		})
 
-		xit(`should call ${magenta(`onExecuteStart`)}`, () => {
+		describe(magenta(`onExecuteStart`), () => {
+			xit(`should called`, () => {
+				//
+			})
+		})
+
+		describe(magenta(`onExecuteEnd`), () => {
 			//
 		})
 
-		xit(`should call ${magenta(`onExecuteEnd`)}`, () => {
+		describe(magenta(`onExecuteResult`), () => {
 			//
 		})
 
-		xit(`should call ${magenta(`onExecuteResult`)}`, () => {
+		describe(magenta(`onRefresh`), () => {
 			//
 		})
 
-		xit(`should call ${magenta(`onRefresh`)}`, () => {
+		describe(magenta(`onBeforeInject`), () => {
 			//
 		})
 
-		xit(`should call ${magenta(`onBeforeInject`)}`, () => {
-			//
-		})
-
-		xit(`should call ${magenta(`onAfterInject`)}`, () => {
+		describe(magenta(`onAfterInject`), () => {
 			//
 		})
 	})

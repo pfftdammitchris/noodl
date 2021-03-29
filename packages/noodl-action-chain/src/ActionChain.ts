@@ -85,7 +85,7 @@ class ActionChain<
 	 * @param { string | string[] | undefined } reason
 	 */
 	async abort(_reason?: string | string[]) {
-		this.#obs.onAbortEnd?.()
+		this.#obs.onAbortStart?.()
 
 		let reason: string | string[] | undefined
 
@@ -95,12 +95,13 @@ class ActionChain<
 			else if (_reason) reason = _reason
 		}
 
-		this.#setStatus('aborted', reason)
+		this.#setStatus(c.ABORTED, reason)
 
 		// The loop below should handle the current pending action. Since this.current is never
 		// in the queue, we have to insert it back to the list for the while loop to pick it up
 		if (this.current && !this.current.executed) {
 			this.#queue.unshift(this.current)
+			this.#current = null
 		}
 
 		// Exhaust the remaining actions in the queue and abort them
@@ -125,7 +126,6 @@ class ActionChain<
 			}
 		}
 		// await this.#gen.return({} as any)
-		this.#current = null
 		this.#obs.onAbortEnd?.()
 		return this.#results
 	}

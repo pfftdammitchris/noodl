@@ -1,6 +1,7 @@
 import { ActionObject } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
 import AbortExecuteError from './AbortExecuteError'
+import ActionChain from './ActionChain'
 import * as c from './constants'
 
 export interface IAction<

@@ -20,6 +20,7 @@ export interface MockGetActionChainOptions {
 	load?: boolean
 	loader?: ActionChainInstancesLoader
 	trigger?: LiteralUnion<EventType, string>
+	use?: Parameters<ActionChain['use']>[0]
 }
 
 export interface MockGetActionChainExtendedActionsArg {
@@ -28,7 +29,7 @@ export interface MockGetActionChainExtendedActionsArg {
 }
 
 export function getActionChain(args: MockGetActionChainOptions) {
-	let { actions, trigger, loader, load = true } = args
+	let { actions, trigger, loader, load = true, use } = args
 	let isExtendedActions = 'fn' in actions[0] || 'action' in actions[0]
 
 	const getInstance = (obj: ActionObject) => {
@@ -50,9 +51,11 @@ export function getActionChain(args: MockGetActionChainOptions) {
 		(isExtendedActions
 			? actions.map((o) => o.action)
 			: actions) as ActionObject[],
-		(actions) => (loader ? loader(actions) : actions.map(getInstance)),
+		(actions) =>
+			loader ? loader(actions) : actions.map((a) => getInstance(a)),
 	)
 
+	use && ac.use(use)
 	load && ac.loadQueue()
 	return ac
 }
