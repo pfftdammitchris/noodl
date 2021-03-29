@@ -72,6 +72,10 @@ class ActionChain<
 		return this.#current
 	}
 
+	get injected() {
+		return this.#injected
+	}
+
 	get queue() {
 		return this.#queue
 	}
@@ -101,7 +105,6 @@ class ActionChain<
 		// in the queue, we have to insert it back to the list for the while loop to pick it up
 		if (this.current && !this.current.executed) {
 			this.#queue.unshift(this.current)
-		
 		}
 
 		// Exhaust the remaining actions in the queue and abort them
