@@ -88,6 +88,10 @@ export interface ActionChainObserver<A extends ActionObject = ActionObject> {
 	onExecuteStart?: (...args: any[]) => any
 	onExecuteEnd?: (...args: any[]) => any
 	onExecuteResult?: (result?: any) => any
+	onBeforeActionExecute?(args: {
+		action: IAction<A['actionType']>
+		args?: any
+	}): void
 	onRefresh?: (...args: any[]) => any
 	onBeforeInject?: (action: A | ActionObject) => any
 	onAfterInject?: (

@@ -156,7 +156,6 @@ class ActionChain<
 							cachedAction = null as any
 							try {
 								await this.abort(msg)
-								throw new AbortExecuteError(msg)
 							} catch (error) {
 								throw new AbortExecuteError(error.message)
 							}
@@ -167,6 +166,7 @@ class ActionChain<
 								action = iterator?.value as Action<A['actionType'], T>
 
 								if (action?.status !== 'aborted') {
+									this.#obs.onBeforeActionExecute({ action, args })
 									result = await action?.execute(args)
 									this.#obs.onExecuteResult?.(result)
 									this.#results.push({
