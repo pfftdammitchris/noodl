@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import { coolGold, italic, magenta } from 'noodl-common'
 import chalk from 'chalk'
 import sinon from 'sinon'
 import Action from '../Action'
@@ -16,8 +17,8 @@ import {
 } from './helpers'
 import createAction from '../utils/createAction'
 
-describe('ActionChain', () => {
-	describe('Generator', () => {
+describe(coolGold(`ActionChain`), () => {
+	describe(italic(`Generator`), () => {
 		it(`should return an ${'AsyncGenerator'}`, () => {
 			const ac = getActionChain({
 				actions: [getEvalObjectAction()],
@@ -100,7 +101,7 @@ describe('ActionChain', () => {
 		})
 	})
 
-	describe('Loading', () => {
+	describe(italic(`Loading`), () => {
 		it('should loadQueue up the instances', () => {
 			const ac = getActionChain({
 				actions: [getBuiltInAction(), getEvalObjectAction()],
@@ -110,7 +111,7 @@ describe('ActionChain', () => {
 		})
 	})
 
-	describe('Execution', () => {
+	describe(italic(`Execution`), () => {
 		it('should call the "execute" method on every action', async () => {
 			const spy1 = sinon.spy()
 			const spy2 = sinon.spy()
@@ -211,7 +212,7 @@ describe('ActionChain', () => {
 		})
 	})
 
-	describe('Aborting', () => {
+	describe(italic(`Aborting`), () => {
 		it(`should return true if status is "aborted"`, () => {
 			const ac = getActionChain({
 				actions: [getBuiltInAction(), getEvalObjectAction()],
@@ -245,7 +246,70 @@ describe('ActionChain', () => {
 		})
 	})
 
-	describe('Return values', () => {
+	describe(italic(`Observers`), () => {
+		xit(`should call ${magenta(`onAbortStart`)}`, () => {
+			//
+		})
+
+		xit(`should call ${magenta(`onAbortEnd`)}`, () => {
+			//
+		})
+
+		xit(`should call ${magenta(`onAbortError`)} if an error occurred`, () => {
+			//
+		})
+
+		xit(
+			`should call ${magenta(`onBeforeAbortAction`)} right before calling ` +
+				`the actions' abort method`,
+			() => {
+				const ac = getActionChain({
+					actions: [getBuiltInAction(), getEvalObjectAction()],
+					trigger: 'onMouseLeave',
+				})
+				ac.loader = (actions) => {
+					return actions.map((a) =>
+						createAction({ action: a, trigger: 'onClick' }),
+					)
+				}
+				ac.loadQueue()
+			},
+		)
+
+		xit(
+			`should call ${magenta(`onAfterAbortAction`)} right after calling ` +
+				`the actions' abort method`,
+			() => {
+				//
+			},
+		)
+
+		xit(`should call ${magenta(`onExecuteStart`)}`, () => {
+			//
+		})
+
+		xit(`should call ${magenta(`onExecuteEnd`)}`, () => {
+			//
+		})
+
+		xit(`should call ${magenta(`onExecuteResult`)}`, () => {
+			//
+		})
+
+		xit(`should call ${magenta(`onRefresh`)}`, () => {
+			//
+		})
+
+		xit(`should call ${magenta(`onBeforeInject`)}`, () => {
+			//
+		})
+
+		xit(`should call ${magenta(`onAfterInject`)}`, () => {
+			//
+		})
+	})
+
+	describe(italic(`Return values`), () => {
 		// it(`should reach the result as { action, result } in the first`, () => {
 		// 	//
 		// })
@@ -274,7 +338,7 @@ describe('ActionChain', () => {
 		})
 	})
 
-	xdescribe(`Timing out`, () => {
+	xdescribe(italic(`Timing out`), () => {
 		describe.skip(`when action chains don't respond or don't finish`, () => {
 			xit(`should call the timeout setTimeout callback`, async function () {
 				const ac = getActionChain({

@@ -107,11 +107,13 @@ class ActionChain<
 		while (this.#queue.length) {
 			const action = this.#queue.shift() as Action<A['actionType'], T>
 			if (action && action.status !== 'aborted') {
-				// onBeforeAbortAction
 				try {
+					this.#obs.onBeforeAbortAction?.({ action, queue: this.#queue })
 					action?.abort(reason || '')
+					this.#obs.onAfterAbortAction?.({ action, queue: this.#queue })
 				} catch (error) {
 					this.#error = error
+					this.#obs.onAbortError?.({ action, error })
 				} finally {
 					this.#results.push({
 						action,
@@ -329,9 +331,7 @@ class ActionChain<
 
 	use(obj?: Partial<ActionChainObserver>) {
 		if (isPlainObject(obj)) {
-			Object.entries(obj).forEach(([evt, fn]) => {
-				this.#obs[evt] = fn
-			})
+			Object.entries(obj).forEach(([evt, fn]) => (this.#obs[evt] = fn))
 		}
 		return this
 	}

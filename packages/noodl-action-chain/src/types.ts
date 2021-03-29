@@ -75,6 +75,15 @@ export interface ActionChainInstancesLoader<
 export interface ActionChainObserver<A extends ActionObject = ActionObject> {
 	onAbortStart?: (...args: any[]) => any
 	onAbortEnd?: (...args: any[]) => any
+	onAbortError?(args: { action: IAction<A['actionType']>; error: Error }): void
+	onBeforeAbortAction?(args: {
+		action: IAction<A['actionType']>
+		queue: IAction[]
+	}): void
+	onAfterAbortAction?(args: {
+		action: IAction<A['actionType']>
+		queue: IAction[]
+	}): void
 	onExecuteStart?: (...args: any[]) => any
 	onExecuteEnd?: (...args: any[]) => any
 	onExecuteResult?: (result?: any) => any
