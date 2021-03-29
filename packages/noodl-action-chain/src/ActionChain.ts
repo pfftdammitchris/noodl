@@ -101,7 +101,7 @@ class ActionChain<
 		// in the queue, we have to insert it back to the list for the while loop to pick it up
 		if (this.current && !this.current.executed) {
 			this.#queue.unshift(this.current)
-			this.#current = null
+		
 		}
 
 		// Exhaust the remaining actions in the queue and abort them
@@ -125,7 +125,7 @@ class ActionChain<
 				}
 			}
 		}
-		// await this.#gen.return({} as any)
+		this.#current = null
 		this.#obs.onAbortEnd?.()
 		return this.#results
 	}
