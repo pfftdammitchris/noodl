@@ -47,7 +47,7 @@ class ActionChain<
 
 		while (inst.queue.length) {
 			action = inst.queue.shift() as Action<A['actionType'], T>
-			result = await (yield action)
+			result = inst.isAborted() ? undefined : await (yield action)
 			results.push({ action, result })
 		}
 
