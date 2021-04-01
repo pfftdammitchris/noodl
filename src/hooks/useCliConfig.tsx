@@ -4,7 +4,12 @@ import yaml from 'yaml'
 import produce, { Draft } from 'immer'
 import merge from 'lodash/merge'
 import CliConfigBuilder from '../builders/CliConfig'
-import { getFilepath, getCliConfig, hasCliConfig } from '../utils/common'
+import {
+	getFilepath,
+	getCliConfig,
+	hasCliConfig,
+	saveYml,
+} from '../utils/common'
 import { CliConfigObject, PanelId } from '../types'
 import * as c from '../constants'
 
@@ -28,6 +33,7 @@ const initialState = {
 
 function useCliConfig() {
 	const { current: configPath } = React.useRef<string>(getFilepath('noodl.yml'))
+	const [saving, setSaving] = React.useState(false)
 	const [state, setState] = React.useState<State>(() => {
 		if (hasCliConfig()) return merge({}, initialState, getCliConfig())
 		else return new CliConfigBuilder().toJS()
@@ -68,7 +74,17 @@ function useCliConfig() {
 		[],
 	)
 
-	React.useEffect(() => {}, [])
+	const saveFile = React.useCallback(() => {
+		saveYml('noodl.yml', yaml.stringify(state))
+		setSaving(true)
+	}, [state])
+
+	React.useEffect(() => {
+		if (saving) {
+			saveFile()
+			setSaving(false)
+		}
+	}, [state, saving])
 
 	return {
 		...state,
@@ -76,6 +92,7 @@ function useCliConfig() {
 		addYmlDir,
 		setServerConfig,
 		setServerDir,
+		saveFile,
 	}
 }
 

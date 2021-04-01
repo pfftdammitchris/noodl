@@ -10,14 +10,13 @@ import App from './App'
 const cli = meow(
 	`
 	Usage
-	  $ noodl-cli
+	  $ noodl
 
 	Options
-		--c <directory>
+		-c <config>
 
 	Examples
-	  $ noodl-cli --c=noodlrc.json
-	  Using noodlrc.json as the main config
+	  $ noodl --c=noodl.json
 `,
 	{
 		flags: {
@@ -28,4 +27,8 @@ const cli = meow(
 	},
 )
 
-render(<App />)
+console.log(cli.help)
+console.log(cli.input)
+console.log(cli.flags)
+
+render(<App config={cli.flags?.c as string} />)

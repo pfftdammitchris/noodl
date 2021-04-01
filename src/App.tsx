@@ -1,5 +1,6 @@
 import React from 'react'
-import { Newline, Static, Text } from 'ink'
+import yaml from 'yaml'
+import { Box, Newline, Spacer, Static, Text } from 'ink'
 import { Provider } from './useCtx'
 import { PanelId } from './types'
 import SelectRoute from './panels/SelectRoute'
@@ -10,6 +11,7 @@ import RetrieveKeywords from './panels/RetrieveKeywords'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
 import useApp from './useApp'
+import { getCliConfig, saveYml } from './utils/common'
 import * as c from './constants'
 
 const panels = {
@@ -20,13 +22,19 @@ const panels = {
 	[c.panelId.RUN_SERVER]: RunServer,
 }
 
-function App() {
+function App({ config }: { config?: string }) {
 	const appCtx = useApp()
 	const Panel = panels[appCtx.panel.id as PanelId]
 
+	React.useEffect(() => {
+		if (config) {
+			appCtx.cliConfig.setServerConfig(config)
+			appCtx.cliConfig.saveFile()
+		}
+	}, [])
+
 	return (
 		<Provider value={appCtx}>
-			<Newline />
 			{appCtx.spinner ? (
 				<HighlightedText color="whiteBright">
 					<Spinner type={appCtx.spinner as any} />
@@ -36,6 +44,7 @@ function App() {
 			<Static items={appCtx.caption as string[]}>
 				{(caption, index) => <Text key={index}>{caption}</Text>}
 			</Static>
+			<Spacer />
 		</Provider>
 	)
 }
