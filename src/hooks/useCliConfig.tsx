@@ -1,98 +1,52 @@
 import React from 'react'
+import isPlainObject from 'lodash/isPlainObject'
 import fs from 'fs-extra'
-import yaml from 'yaml'
 import produce, { Draft } from 'immer'
-import merge from 'lodash/merge'
 import CliConfigBuilder from '../builders/CliConfig'
-import {
-	getFilepath,
-	getCliConfig,
-	hasCliConfig,
-	saveYml,
-} from '../utils/common'
-import { CliConfigObject, PanelId } from '../types'
+import { getFilepath, getCliConfig, hasCliConfig } from '../utils/common'
+import { App } from '../types'
 import * as c from '../constants'
+
+const cliConfig = new CliConfigBuilder()
 
 type State = typeof initialState
 
 const initialState = {
-	defaultOption: c.panelId.SELECT_ROUTE as PanelId | null,
-	defaultPanel: null as PanelId | null,
-	server: {
-		dir: '',
-		host: '',
-		port: 0,
-		protocol: '',
-		config: '',
-	} as CliConfigObject['server'],
-	objects: {
-		json: { dir: [] as string[] },
-		yml: { dir: [] as string[] },
-	},
+	...(cliConfig.toJSON() as App.CliConfigObject),
+	defaultOption: null as App.PanelId | null,
 }
 
 function useCliConfig() {
-	const { current: configPath } = React.useRef<string>(getFilepath('noodl.yml'))
-	const [saving, setSaving] = React.useState(false)
-	const [state, setState] = React.useState<State>(() => {
-		if (hasCliConfig()) return merge({}, initialState, getCliConfig())
-		else return new CliConfigBuilder().toJS()
+	const isMounted = React.useRef(false)
+	const [settings, setSettings] = React.useState<State>(() => {
+		const _settings = { ...initialState }
+		if (hasCliConfig()) {
+			const cfgObject = getCliConfig()
+			if (isPlainObject(cfgObject)) {
+				Object.entries(cfgObject).forEach(([k, v]) => (_settings[k] = v))
+			}
+		}
+		return _settings
 	})
 
-	const _setState = React.useCallback((fn: (draft: Draft<State>) => any) => {
-		setState(produce(fn))
-		// Only refresh the config if they have chose to have a config
-		if (fs.existsSync(configPath)) {
-			fs.writeFileSync(configPath, yaml.stringify(state))
-		}
+	const set = React.useCallback((fn: (draft: Draft<State>) => any) => {
+		setSettings(produce(fn))
 	}, [])
 
-	const _createAddExtDir = React.useCallback((ext: 'json' | 'yml') => {
-		return (dir: string | string[]) => {
-			const dirs = Array.isArray(dir) ? dir : [dir]
-			_setState((draft) => {
-				dirs.forEach((d) => {
-					if (!draft.objects[ext].dir.includes(d)) {
-						draft.objects[ext].dir.push(d)
-					}
-				})
-			})
-		}
-	}, [])
-
-	const addJsonDir = React.useMemo(() => _createAddExtDir('json'), [])
-	const addYmlDir = React.useMemo(() => _createAddExtDir('yml'), [])
-
-	const setServerConfig = React.useCallback(
-		(config: string) =>
-			_setState((draft) => void (draft.server.config = config)),
-		[],
-	)
-
-	const setServerDir = React.useCallback(
-		(dir: string) => _setState((draft) => void (draft.server.dir = dir)),
-		[],
-	)
-
-	const saveFile = React.useCallback(() => {
-		saveYml('noodl.yml', yaml.stringify(state))
-		setSaving(true)
-	}, [state])
+	const save = (_state?: State) => cliConfig.save(_state)
 
 	React.useEffect(() => {
-		if (saving) {
-			saveFile()
-			setSaving(false)
+		if (isMounted.current) {
+			// Only refresh/save the config to dir if they created it
+			fs.existsSync(getFilepath('noodl.yml')) && save(settings)
 		}
-	}, [state, saving])
+		isMounted.current = true
+	}, [isMounted.current, settings])
 
 	return {
-		...state,
-		addJsonDir,
-		addYmlDir,
-		setServerConfig,
-		setServerDir,
-		saveFile,
+		...settings,
+		save,
+		set,
 	}
 }
 

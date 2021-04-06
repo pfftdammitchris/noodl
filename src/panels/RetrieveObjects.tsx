@@ -1,7 +1,6 @@
 import React from 'react'
-import { WritableDraft } from 'immer/dist/internal'
 import { Box } from 'ink'
-import produce from 'immer'
+import produce, { Draft } from 'immer'
 import path from 'path'
 import fs from 'fs-extra'
 import chalk from 'chalk'
@@ -20,28 +19,29 @@ import {
 	withYmlExt,
 } from '../utils/common'
 import * as c from '../constants'
-import { ObjectResult } from '../types'
 
-const actionId = c.retrieveObjectsScript.action
-const stepId = c.retrieveObjectsScript.step
-const statusId = c.retrieveObjectsScript.status
+const stepId = {
+	SET_EXT: 'set-ext',
+	SET_CONFIG: 'set-config',
+	RETRIEVING_OBJECTS: 'retrieving-objects',
+} as const
 
-export type Ext = 'json' | 'yml' | 'json-yml'
-
+export type ActionType = 'set-config' | 'set-ext' | 'set-status'
 export type Action =
-	| { type: typeof actionId.SET_CAPTION; caption: string }
-	| { type: typeof actionId.SET_CONFIG; config: string }
-	| { type: typeof actionId.SET_EXT; ext: Ext }
-	| { type: typeof actionId.SET_STATUS; status: State['status'] }
+	| { type: 'set-config'; config: string }
+	| { type: 'set-ext'; ext: Ext }
+	| { type: 'set-status'; status: State['status'] }
+export type Ext = 'json' | 'yml'
+export type StepId = typeof stepId[keyof typeof stepId]
 
 export interface State {
 	ext: Ext | ''
 	config: string
 	caption: string[]
-	status: typeof statusId[keyof typeof statusId]
+	status: 'idle' | 'retrieving-objects'
 	step: {
-		current: typeof stepId[keyof typeof stepId]
-		items: State['step']['current'][]
+		current: StepId
+		items: StepId[]
 	}
 }
 
@@ -49,100 +49,69 @@ const initialState: State = {
 	ext: '',
 	config: '',
 	caption: [],
-	status: statusId.IDLE,
+	status: 'idle',
 	step: {
-		current: stepId.SET_EXT,
-		items: [stepId.SET_EXT, stepId.SET_CONFIG, stepId.RETRIEVE_OBJECTS],
+		current: 'set-ext',
+		items: Object.values(stepId),
 	},
 }
 
-const reducer = produce((draft: WritableDraft<State>, action: Action): void => {
-	switch (action.type) {
-		case actionId.SET_EXT:
-			draft.ext = action.ext
-			draft.step.current = stepId.SET_CONFIG
-			break
-		case actionId.SET_CONFIG:
-			draft.config = action.config
-			draft.step.current = stepId.RETRIEVE_OBJECTS
-			break
-		case actionId.SET_CAPTION:
-			return void (
-				!draft.caption.includes(action.caption) &&
-				draft.caption.push(action.caption)
-			)
-		case actionId.SET_STATUS:
-			return void (
-				draft.status !== action.status && (draft.status = action.status)
-			)
-	}
-})
-
-function RetrieveObjectsPanel() {
-	const [state, dispatch] = React.useReducer(reducer, initialState)
+function RetrieveObjectsPanel({
+	config: configProp,
+	ext: extProp,
+	onEnd,
+	onError,
+}: {
+	config?: string
+	ext?: State['ext']
+	onEnd?(): void
+	onError?(err: Error): void
+}) {
+	const [state, setState] = React.useState(initialState)
 	const [configInput, setConfigInput] = React.useState('')
-	const { aggregator, cliConfig, setCaption, setErrorCaption } = useCtx()
+	const { aggregator, settings, setCaption, setErrorCaption } = useCtx()
 
-	const items = [
-		{ label: 'JSON + YML', value: 'json-yml' },
-		{ label: 'JSON', value: 'json' },
-		{ label: 'YML', value: 'yml' },
-	]
-
-	const onSelectExt = React.useCallback(
-		(item) => dispatch({ type: actionId.SET_EXT, ext: item.value }),
-		[],
-	)
-
-	const onConfigInputChange = React.useCallback(
-		(input) => setConfigInput(input),
-		[],
-	)
-
-	const onSubmitConfig = React.useCallback((config) => {
-		aggregator.config = config
-		dispatch({ type: stepId.SET_CONFIG, config })
+	const _setState = React.useCallback((fn: (draft: Draft<State>) => void) => {
+		setState(produce(fn))
 	}, [])
 
-	React.useEffect(() => {
-		if (state.config) {
-			const exts = state.ext.split('-') as Exclude<Ext, 'json-yml'>[]
+	const items = [
+		{ label: 'JSON', value: 'json' },
+		{ label: 'YML', value: 'yml' },
+	] as const
 
-			async function onNOODLObject(args: ObjectResult & { name: string }) {
+	React.useEffect(() => {
+		const config = configProp || state.config
+		const ext = extProp || state.ext
+
+		if (config && ext) {
+			async function onObject(
+				args: {
+					json: Record<string, any> | Record<string, any>[]
+					yml: string
+				} & { name: string },
+			) {
 				if (typeof args === 'object') {
 					const { name, json, yml } = args
-					for (let ext of exts) {
-						const withExt = ext === 'json' ? withJsonExt : withYmlExt
-						const saveFn = ext === 'json' ? saveJson : saveYml
-						try {
-							for (
-								let index = 0;
-								index < cliConfig.objects[ext].dir?.length || 0;
-								index++
-							) {
-								let dir = cliConfig.objects[ext].dir[index]
-								let filepath: string
-								if (dir) {
-									dir = getFilepath(dir)
-									filepath = withExt(path.join(dir, name))
-									const save = saveFn(filepath)
+					const withExt = ext === 'json' ? withJsonExt : withYmlExt
+					const saveFn = ext === 'json' ? saveJson : saveYml
+					try {
+						for (let dir of settings.objects[ext]?.dir || []) {
+							dir = getFilepath(dir)
+							let filepath = withExt(path.join(dir, name))
 
-									if (!fs.existsSync(dir)) {
-										await fs.mkdirp(dir)
-										setCaption(`Created folder ${magenta(dir)}`)
-									}
-
-									save(ext === 'json' ? json : yml)
-									setCaption(
-										`Saved ${yellow(`${name}.${ext}`)} to ${magenta(dir)}`,
-									)
-								}
+							if (!fs.existsSync(dir)) {
+								await fs.mkdirp(dir)
+								setCaption(`Created folder ${magenta(dir)}`)
 							}
-						} catch (error) {
-							setCaption(
-								`[${chalk.red(`${name} - [${error.name}]`)}]: ${error.message}`,
-							)
+
+							saveFn(filepath)(ext === 'json' ? json : yml)
+							setCaption(`Saved ${yellow(`${name}.${ext}`)} to ${magenta(dir)}`)
 						}
+					} catch (error) {
+						setCaption(
+							`[${chalk.red(`${name} - [${error.name}]`)}]: ${error.message}`,
+						)
 					}
 					savedPageCount++
 				}
@@ -151,57 +120,66 @@ function RetrieveObjectsPanel() {
 			setCaption(`Config set to ${chalk.magentaBright(state.config)}\n`)
 
 			let savedPageCount = 0
-			dispatch({
-				type: actionId.SET_STATUS,
-				status: statusId.RETRIEVING_OBJECTS,
-			})
+
+			_setState((d) => void (d.status = 'retrieving-objects'))
+
 			aggregator
 				.on(
 					c.aggregator.event.RETRIEVED_ROOT_CONFIG,
-					async ({ json, yml }: { json: any; yml: string }) => {
-						await onNOODLObject({ name: state.config, json, yml })
+					async ({ json, yml }: { json: Record<string, any>; yml: string }) => {
+						await onObject({ name: state.config, json, yml })
 					},
 				)
-				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onNOODLObject)
-				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, onNOODLObject)
+				.on(c.aggregator.event.RETRIEVED_APP_CONFIG, onObject)
+				.on(c.aggregator.event.RETRIEVED_APP_OBJECT, onObject)
 				.init({
 					version: 'latest',
-					loadPages: {
-						includePreloadPages: true,
-					},
+					loadPages: { includePreloadPages: true },
 				})
 				.then(() => {
 					setCaption(`\nSaved ${chalk.yellow(String(savedPageCount))} objects`)
 				})
-				.catch(setErrorCaption)
-				.finally(() =>
-					dispatch({ type: actionId.SET_STATUS, status: statusId.IDLE }),
-				)
+				.catch((err) => {
+					setErrorCaption(err)
+					onError?.(err)
+				})
+				.finally(() => {
+					_setState((d) => void (d.status = 'idle'))
+					onEnd?.()
+				})
 		}
-	}, [state.config])
+	}, [state.config, state.ext, settings.objects])
 
 	return (
 		<Box padding={1} flexDirection="column">
 			<HighlightedText>
 				{!state.ext
-					? 'Choose extensions (Select an item)'
+					? 'Choose file extension(s)'
 					: !state.config
 					? 'Which config should we use?'
 					: null}
 			</HighlightedText>
 			<Box flexDirection="column">
 				{!state.ext ? (
-					<Select items={items} onSelect={onSelectExt} />
+					<Select
+						items={items.slice()}
+						onSelect={(item) =>
+							_setState((d) => void (d.ext = item.value as Ext))
+						}
+					/>
 				) : !state.config ? (
 					<TextInput
-						value={configInput}
-						onChange={onConfigInputChange}
-						onSubmit={onSubmitConfig}
 						placeholder="Enter text"
+						value={configInput}
+						onChange={setConfigInput}
+						onSubmit={(config) => {
+							aggregator.config = config
+							_setState((d) => void (d.config = config))
+						}}
 					/>
 				) : null}
 			</Box>
-			{state.status === statusId.RETRIEVING_OBJECTS && (
+			{state.status === 'retrieving-objects' && (
 				<HighlightedText color="whiteBright">
 					<Spinner />
 				</HighlightedText>
@@ -209,5 +187,7 @@ function RetrieveObjectsPanel() {
 		</Box>
 	)
 }
+
+RetrieveObjectsPanel.id = c.panel.RETRIEVE_OBJECTS
 
 export default RetrieveObjectsPanel

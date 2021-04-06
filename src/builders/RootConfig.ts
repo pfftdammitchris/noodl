@@ -1,14 +1,16 @@
 import axios from 'axios'
 import yaml from 'yaml'
 import NOODLObject from '../api/Object'
-import { RootConfig } from '../types'
+import { Noodl } from '../types'
 import {
 	replaceDesignSuffixPlaceholder,
 	replaceVersionPlaceholder,
 	withSuffix,
 } from '../utils/common'
 
-class RootConfigBuilder extends NOODLObject<RootConfig> implements RootConfig {
+class RootConfigBuilder
+	extends NOODLObject<Noodl.RootConfig>
+	implements Noodl.RootConfig {
 	#id = 'aitmed'
 	#hostname: string = 'public.aitmed.com'
 	#protocol = 'https'
@@ -73,7 +75,7 @@ class RootConfigBuilder extends NOODLObject<RootConfig> implements RootConfig {
 
 		this.json = yaml.parse(this.yml)
 		this.json = RootConfigBuilder.parsePlaceholders(this.json)
-		return (this.json || {}) as RootConfig
+		return (this.json || {}) as Noodl.RootConfig
 	}
 }
 

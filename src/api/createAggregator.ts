@@ -4,14 +4,7 @@ import yaml from 'yaml'
 import chunk from 'lodash/chunk'
 import isPlainObject from 'lodash/isPlainObject'
 import { promiseAllSafe, withSuffix } from '../utils/common'
-import {
-	AnyFn,
-	EventId,
-	ObjectResult,
-	RootConfig as IRootConfig,
-	AppConfig as IAppConfig,
-	RootConfig,
-} from '../types'
+import { AnyFn, App, Noodl } from '../types'
 import RootConfigBuilder from '../builders/RootConfig'
 import AppConfigBuilder from '../builders/AppConfig'
 import * as c from '../constants'
@@ -33,7 +26,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 	}
 
 	const cbIds = [] as string[]
-	const cbs = {} as Record<EventId, AnyFn[]>
+	const cbs = {} as Record<App.EventId, AnyFn[]>
 
 	const objects = {
 		json: {},
@@ -46,7 +39,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 	const withLocale = withSuffix('_en')
 	const withExt = withSuffix('.yml')
 
-	function _emit(event: EventId, ...args: any[]) {
+	function _emit(event: App.EventId, ...args: any[]) {
 		cbs[event]?.forEach?.((fn) => fn(...args))
 	}
 
@@ -57,7 +50,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 			json: (objects.json[configId] = await builder.rootConfig.build()),
 			yml: (objects.yml[configId] = builder.rootConfig.yml),
 		})
-		builder.appConfig.rootConfig = builder.rootConfig.json as RootConfig
+		builder.appConfig.rootConfig = builder.rootConfig.json as Noodl.RootConfig
 		return builder.rootConfig.json
 	}
 
@@ -107,22 +100,35 @@ const createAggregator = function (opts?: ConfigOptions) {
 
 	function _on(
 		event: typeof c.aggregator.event.RETRIEVED_ROOT_CONFIG,
-		fn: (opts: ObjectResult<IRootConfig> & { name: string }) => void,
+		fn: (
+			opts: {
+				json: Record<string, any> | Record<string, any>[]
+				yml: string
+			} & { name: string },
+		) => void,
 	): typeof o
 	function _on(
 		event: typeof c.aggregator.event.RETRIEVED_APP_CONFIG,
-		fn: (opts: ObjectResult<IAppConfig> & { name: string }) => void,
+		fn: (
+			opts: {
+				json: Record<string, any> | Record<string, any>[]
+				yml: string
+			} & { name: string },
+		) => void,
 	): typeof o
 	function _on(
-		event: EventId,
+		event: App.EventId,
 		fn: (
-			opts: ObjectResult & {
+			opts: {
+				json: Record<string, any> | Record<string, any>[]
+				yml: string
+			} & {
 				name: string
 			},
 		) => void,
 		id?: string,
 	): typeof o
-	function _on(event: EventId, fn: AnyFn, id?: string) {
+	function _on(event: App.EventId, fn: AnyFn, id?: string) {
 		if (!Array.isArray(cbs[event])) cbs[event] = []
 		if (!cbs[event]?.includes(fn)) {
 			if (id && cbIds.includes(id)) return
@@ -187,8 +193,8 @@ const createAggregator = function (opts?: ConfigOptions) {
 				await o.loadPages(params)
 			}
 			return [objects.json[o.config], objects.json['cadlEndpoint']] as [
-				rootConfig: IRootConfig,
-				appConfig: IAppConfig,
+				rootConfig: Noodl.RootConfig,
+				appConfig: Noodl.AppConfig,
 			]
 		},
 		async loadPreloadPages() {

@@ -276,6 +276,7 @@ describe(coolGold(`ActionChain`), () => {
 				ac.snapshot().results.forEach((r) => {
 					expect(r.result).to.be.instanceOf(AbortExecuteError)
 					expect(r.action.executed).to.be.false
+					expect(r.action.aborted).to.be.true
 				})
 			})
 		})

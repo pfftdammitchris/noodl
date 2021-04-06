@@ -76,7 +76,6 @@ const configureServer = (function () {
 		port = 3001,
 		protocol = 'http',
 	}: Options) {
-		console.log('arguments', arguments)
 		if (!config) throw new Error('A config (name) must be set')
 		if (!serverDir) throw new Error(`Please provide a directory for the server`)
 

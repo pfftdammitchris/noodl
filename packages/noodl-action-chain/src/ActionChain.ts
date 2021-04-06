@@ -133,6 +133,16 @@ class ActionChain<
 		return this.#results
 	}
 
+	clear() {
+		this.#current = null
+		this.#actions.length = 0
+		this.#queue.length = 0
+		this.#results.length = 0
+		this.#timeout && clearTimeout(this.#timeout)
+		this.#error && (this.#error = null)
+		Object.keys(this.#obs).forEach((key) => delete this.#obs[key])
+	}
+
 	async execute(args?: any, { timeout = 10000 }: { timeout?: number } = {}) {
 		try {
 			this.#results = []

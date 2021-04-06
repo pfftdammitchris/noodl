@@ -4,31 +4,36 @@ config()
 import React from 'react'
 import meow from 'meow'
 import { render } from 'ink'
+import { aquamarine, white } from './utils/common'
 import App from './App'
-// import pkg from '../package.json'
 
 const cli = meow(
 	`
-	Usage
-	  $ noodl
 
-	Options
-		-c <config>
+	
+	${aquamarine('Usage')}
+	  ${white('$')} noodl <input>
 
-	Examples
-	  $ noodl --c=noodl.json
+	${aquamarine(`Examples`)}
+	  ${white('$')} noodl -c testpage
+
+	${aquamarine(`Options`)}
+	  ${white(`--config`)}, ${white(`-c`)} NOODL config
 `,
 	{
 		flags: {
-			name: {
-				type: 'string',
-			},
+			config: { type: 'string', alias: 'c' },
+			server: { type: 'boolean', alias: 's' },
 		},
 	},
 )
 
 console.log(cli.help)
-console.log(cli.input)
-console.log(cli.flags)
 
-render(<App config={cli.flags?.c as string} />)
+render(
+	<App
+		config={cli.flags.config}
+		help={cli.help}
+		runServer={cli.flags.server}
+	/>,
+)

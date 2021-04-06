@@ -1,15 +1,17 @@
 import axios from 'axios'
 import yaml from 'yaml'
 import NOODLObject from '../api/Object'
-import { AppConfig, CliConfigObject, RootConfig } from '../types'
+import { App, Noodl } from '../types'
 import { replaceBaseUrlPlaceholder } from '../utils/common'
 
-class AppConfigBuilder extends NOODLObject<AppConfig> implements AppConfig {
-	#rootConfig = {} as RootConfig
+class AppConfigBuilder
+	extends NOODLObject<Noodl.AppConfig>
+	implements Noodl.AppConfig {
+	#rootConfig = {} as Noodl.RootConfig
 	assetsUrl = ''
 	baseUrl = ''
 	fileSuffix = '.yml'
-	server = {} as CliConfigObject['server']
+	server = {} as App.CliConfigObject['server']
 	languageSuffix = { en: '_en' }
 	preload: string[] = []
 	page: string[] = []
@@ -33,7 +35,7 @@ class AppConfigBuilder extends NOODLObject<AppConfig> implements AppConfig {
 		appBaseUrl += this.rootConfig.cadlMain
 		const { data: yml } = await axios.get(appBaseUrl)
 		this.yml = yml
-		this.json = yaml.parse(yml) as AppConfig
+		this.json = yaml.parse(yml) as Noodl.AppConfig
 		this.json = Object.entries(this.json).reduce(
 			(acc, [key, value]: [string, any]) => {
 				acc[key] =
@@ -46,7 +48,7 @@ class AppConfigBuilder extends NOODLObject<AppConfig> implements AppConfig {
 			{} as any,
 		)
 		this.initialized = true
-		return this.json as AppConfig
+		return this.json as Noodl.AppConfig
 	}
 
 	get pages() {

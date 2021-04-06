@@ -51,7 +51,7 @@ function reducer(state: State = initialState, action: Action) {
 
 function DownloadAssets() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { cliConfig, setCaption, spinner, toggleSpinner } = useCtx()
+	const { settings, setCaption, spinner, toggleSpinner } = useCtx()
 	const { files } = useServerFilesCtx()
 
 	React.useEffect(() => {
@@ -79,7 +79,7 @@ function DownloadAssets() {
 					try {
 						await download(
 							file.link,
-							u.getFilepath(cliConfig.server.dir, 'assets'),
+							u.getFilepath(settings.server.dir, 'assets'),
 						)
 					} catch (error) {
 						setCaption(`[${u.red(file.filename)}]: ${u.yellow(error.message)}`)

@@ -1,19 +1,17 @@
 export const DEFAULT_CONFIG_HOSTNAME = 'public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
-export const DEFAULT_CONFIG_FILEPATH = 'noodl.yml'
-export const DEFAULT_GENERATED_DIR = 'generated'
-export const DEFAULT_JSON_OBJECTS_DIR = `${DEFAULT_GENERATED_DIR}/json`
-export const DEFAULT_YML_OBJECTS_DIR = `${DEFAULT_GENERATED_DIR}/yml`
 export const DEFAULT_SERVER_HOSTNAME = '127.0.0.1'
 export const DEFAULT_SERVER_PATH = 'server'
 export const DEFAULT_SERVER_PORT = 3000
 export const DEFAULT_SERVER_PROTOCOL = 'http'
 
+export const EDIT_PANEL = 'edit-panel'
+
 export const app = {
 	INITIAL_OPTION: 'retrieve.objects',
 	action: {
 		SET_CAPTION: 'set.caption',
-		SET_SERVER_OPTIONS: 'set.servefr.options',
+		SET_SERVER_OPTIONS: 'set.server.options',
 		SET_OBJECTS_JSON_OPTIONS: 'set.objects.json.options',
 		SET_OBJECTS_YML_OPTIONS: 'set.obects.yml.options',
 		SET_PANEL: 'set.panel',
@@ -34,54 +32,31 @@ export const aggregator = {
 	},
 } as const
 
-export const panelId = {
-	SELECT_ROUTE: 'select.route',
-	RETRIEVE_OBJECTS: 'retrieve.objects',
-	RETRIEVE_KEYWORDS: 'retrieve.keywords',
-	SERVER_FILES: 'server.files',
-	RUN_SERVER: 'run.server',
-} as const
-
-export const panel = {
-	[panelId.RETRIEVE_OBJECTS]: {
-		id: panelId.RETRIEVE_OBJECTS,
+const _panel = {
+	RETRIEVE_OBJECTS: {
 		label: 'Retrieve objects',
 	},
-	[panelId.RETRIEVE_KEYWORDS]: {
-		id: panelId.RETRIEVE_KEYWORDS,
+	RETRIEVE_KEYWORDS: {
 		label: 'Retrieve keywords',
 	},
-	[panelId.SELECT_ROUTE]: {
-		id: panelId.SELECT_ROUTE,
-		label: 'Select route',
-	},
-	[panelId.SERVER_FILES]: {
-		id: panelId.SERVER_FILES,
+	SERVER_FILES: {
 		label: 'Retrieve all necessary files referenced in a config',
 	},
-	[panelId.RUN_SERVER]: {
-		id: panelId.RUN_SERVER,
+	RUN_SERVER: {
 		label: 'Run the server',
 	},
 } as const
 
-export const retrieveObjectsScript = {
-	action: {
-		SET_EXT: 'set.ext',
-		SET_CONFIG: 'set.config',
-		SET_CAPTION: 'set.caption',
-		SET_STATUS: 'set.status',
-	},
-	step: {
-		SET_EXT: 'set.ext',
-		SET_CONFIG: 'set.config',
-		RETRIEVE_OBJECTS: 'retrive.objects',
-	},
-	status: {
-		IDLE: 'idle',
-		RETRIEVING_OBJECTS: 'retrieving.objects',
-	},
-} as const
+export const panel = Object.entries(_panel).reduce((acc, [key, val]) => {
+	acc[key] = {
+		label: val.label,
+		value: key,
+	}
+	return acc
+}, {}) as Record<
+	keyof typeof _panel,
+	typeof _panel[keyof typeof _panel] & { value: keyof typeof _panel }
+>
 
 export const action = {
 	BUILTIN: 'builtIn',

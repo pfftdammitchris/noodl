@@ -1,40 +1,29 @@
 import React from 'react'
 import { Box, Newline, Text } from 'ink'
-import { panel as panelMap, panelId } from '../constants'
-import { PanelId } from '../types'
+import { panel as panelMap } from '../constants'
+import { App } from '../types'
 import Select from '../components/Select'
 import useCtx from '../useCtx'
 
-const panels = Object.values(panelMap).reduce((acc, obj) => {
-	if (obj.id === panelId.SELECT_ROUTE) return acc
-	return acc.concat({
-		id: obj.id,
-		label: obj.label,
-		value: obj.id,
-	} as any)
-}, [] as (typeof panelMap[keyof typeof panelMap] & { value: PanelId })[])
+const panels = Object.values(panelMap)
 
-function SelectRoute({ label = 'Select an option' }: any) {
-	const { cliConfig, setPanel } = useCtx()
+function SelectRoute({ header = 'Select an option' }: { header?: string }) {
+	const { settings, setPanel } = useCtx()
 
 	const initialIndex =
-		(panelMap[cliConfig.defaultOption as string] &&
-			panels.findIndex((p) => p.id === cliConfig.defaultOption)) ||
+		(panelMap[settings.defaultOption as App.PanelId] &&
+			panels.findIndex((p) => p.value === settings.defaultOption)) ||
 		0
 
 	return (
 		<Box padding={1} flexDirection="column">
-			<Text color="yellow">{label}</Text>
+			<Text color="yellow">{header}</Text>
 			<Newline />
 			<Select
 				items={panels}
 				initialIndex={initialIndex === -1 ? 0 : initialIndex}
-				onHighlight={(item: any) =>
-					setPanel({ highlightedId: item.value as string })
-				}
-				onSelect={(item: any) =>
-					setPanel({ id: item.value, label: item.label } as any)
-				}
+				onHighlight={(item: any) => setPanel({ highlightedId: item.value })}
+				onSelect={(item: any) => setPanel(item)}
 			/>
 		</Box>
 	)

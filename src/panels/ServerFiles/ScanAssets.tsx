@@ -6,7 +6,7 @@ import useCtx from '../../useCtx'
 import createObjectScripts from '../../api/createObjectScripts'
 import scriptObjs, { id as scriptId, Store } from '../../utils/scripts'
 import useServerFilesCtx from './useServerFilesCtx'
-import { RootConfig, AppConfig } from '../../types'
+import { Noodl } from '../../types'
 import * as T from './types'
 import * as u from '../../utils/common'
 import * as c from './constants'
@@ -16,13 +16,13 @@ import * as c from './constants'
  * or manually. The aggregator should also have its rootConfig and appConfig loaded
  */
 function ScanAssets() {
-	const { aggregator, cliConfig, setCaption } = useCtx()
+	const { aggregator, settings, setCaption } = useCtx()
 	const { insertMissingFiles, setStep } = useServerFilesCtx()
 
 	React.useEffect(() => {
-		const rootConfig = aggregator.builder.rootConfig.json as RootConfig
-		const appConfig = aggregator.builder.appConfig.json as AppConfig
-		const assetsDir = path.join(cliConfig.server.dir, 'assets')
+		const rootConfig = aggregator.builder.rootConfig.json as Noodl.RootConfig
+		const appConfig = aggregator.builder.appConfig.json as Noodl.AppConfig
+		const assetsDir = path.join(settings.server.dir, 'assets')
 
 		if (rootConfig && appConfig) {
 			const myBaseUrl = rootConfig.myBaseUrl || ''
@@ -30,7 +30,7 @@ function ScanAssets() {
 			const pages = appConfig.page
 			const scripts = createObjectScripts()
 			const ymlDocs = [...preloadPages, ...pages].reduce((acc, p) => {
-				const filepath = u.getFilepath(cliConfig.server.dir, `${p}.yml`)
+				const filepath = u.getFilepath(settings.server.dir, `${p}.yml`)
 				if (fs.existsSync(filepath)) {
 					return acc.concat(
 						yaml.parseDocument(fs.readFileSync(filepath, 'utf8')),

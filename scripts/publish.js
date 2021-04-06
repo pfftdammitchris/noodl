@@ -1,5 +1,4 @@
 const childProcess = require('child_process')
-const chalk = require('chalk').default
 const { Command } = require('commander')
 
 const program = new Command()
@@ -15,20 +14,35 @@ const args = program.opts()
 ;(async () => {
 	const lib = {
 		noodlActionChain: 'noodl-action-chain',
+		noodlTypes: 'noodl-types',
 	}
 
-	if (['nac', lib.noodlActionChain].includes(args.publish)) {
-		const message = args.message || 'Update(s) to lib'
-		const commands = [
-			`lerna exec --scope ${lib.noodlActionChain} "npm version patch"`,
-			`git add packages/${lib.noodlActionChain}`,
-			`git commit -m "${message}"`,
-			`lerna exec --scope ${lib.noodlActionChain} "npm run build && npm publish"`,
-		]
-		const commandString = commands.join(' && ')
-		const shell = childProcess.spawn(commandString, {
-			shell: true,
-			stdio: 'inherit',
-		})
+	const regex = {
+		[lib.noodlActionChain]: /(nac|noodl-action-chain)/i,
+		[lib.noodlTypes]: /(nt|types|noodl-types)/i,
 	}
+
+	const libName = regex[lib.noodlActionChain].test(args.publish)
+		? lib.noodlActionChain
+		: regex[lib.noodlTypes].test(args.publish)
+		? lib.noodlTypes
+		: undefined
+
+	if (!libName) {
+		throw new Error(`Invalid lib name`)
+	}
+
+	const message = args.message || 'Update(s) to lib'
+	const commands = [
+		`lerna exec --scope ${libName} "npm version patch"`,
+		`git add packages/${libName}`,
+		`git commit -m "${message}"`,
+		`lerna exec --scope ${libName} "npm run build && npm publish"`,
+	]
+	const commandString = commands.join(' && ')
+	const shell = childProcess.spawn(commandString, {
+		shell: true,
+		stdio: 'inherit',
+	})
+	return
 })()

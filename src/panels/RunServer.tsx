@@ -2,16 +2,16 @@ import React from 'react'
 import useCtx from '../useCtx'
 
 function RunServer() {
-	const { cliConfig } = useCtx()
+	const { settings } = useCtx()
 
 	React.useEffect(() => {
 		import('../server').then(({ default: createServer }) => {
 			createServer({
-				serverDir: cliConfig.server.dir,
-				host: cliConfig.server.host,
-				port: cliConfig.server.port,
-				protocol: cliConfig.server.protocol,
-				config: cliConfig.server.config as string,
+				serverDir: settings.server.dir,
+				host: settings.server.host,
+				port: settings.server.port,
+				protocol: settings.server.protocol,
+				config: settings.server.config as string,
 			})
 		})
 	}, [])

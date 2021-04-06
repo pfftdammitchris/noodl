@@ -99,7 +99,7 @@ export function forEachDeepKeyValue<O = any>(
 export function getCliConfig() {
 	return yaml.parse(
 		fs.readFileSync(getFilepath('noodl.yml'), 'utf8'),
-	) as T.CliConfigObject
+	) as T.App.CliConfigObject
 }
 
 export function getExt(str: string) {

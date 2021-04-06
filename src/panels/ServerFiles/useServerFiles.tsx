@@ -6,7 +6,7 @@ import yaml from 'yaml'
 import produce from 'immer'
 import useCtx from '../../useCtx'
 import RootConfigBuilder from '../../builders/RootConfig'
-import { AppConfig, RootConfig, ObjectResult } from '../../types'
+import { Noodl } from '../../types'
 import { createInitialGroupedFiles } from './helpers'
 import {
 	aggregator as aggregatorConst,
@@ -95,7 +95,7 @@ function reducer(
 
 function useServerFiles() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { aggregator, cliConfig, setCaption, spinner, toggleSpinner } = useCtx()
+	const { aggregator, settings, setCaption, spinner, toggleSpinner } = useCtx()
 
 	const setFileStatus = React.useCallback(
 		async (args: Pick<T.ServerFilesFile, 'group' | 'raw' | 'status'>) =>
@@ -130,12 +130,13 @@ function useServerFiles() {
 			if (!spinner) toggleSpinner()
 			if (state.step) setStep('')
 
-			const serverDir = cliConfig.server.dir
+			const serverDir = settings.server.dir
 			const assetsDir = path.join(serverDir, 'assets')
 			const configPath = path.join(serverDir, `${config}.yml`)
 
 			if (aggregator.config !== config) aggregator.config = config
-			if (cliConfig.server.config !== config) cliConfig.setServerConfig(config)
+			if (settings.server.config !== config)
+				settings.set((d) => (d.server.config = config))
 
 			if (!fs.existsSync(serverDir)) {
 				fs.ensureDirSync(serverDir)
@@ -167,7 +168,7 @@ function useServerFiles() {
 				await aggregator.init()
 				const rootConfigYml = fs.readFileSync(configPath, 'utf8')
 				const rootConfigJson = RootConfigBuilder.parsePlaceholders(
-					yaml.parse(rootConfigYml) as RootConfig,
+					yaml.parse(rootConfigYml) as Noodl.RootConfig,
 				)
 				aggregator.builder.rootConfig.json = rootConfigJson
 				aggregator.builder.rootConfig.yml = rootConfigYml
@@ -177,8 +178,8 @@ function useServerFiles() {
 				setCaption(`Loaded config file from ${u.magenta(configPath)}\n`)
 			}
 
-			const rootConfig = aggregator.builder.rootConfig.json as RootConfig
-			const appConfig = aggregator.builder.appConfig.json as AppConfig
+			const rootConfig = aggregator.builder.rootConfig.json as Noodl.RootConfig
+			const appConfig = aggregator.builder.appConfig.json as Noodl.AppConfig
 
 			rootConfig.cadlBaseUrl &&
 				setCaption(
@@ -204,7 +205,9 @@ function useServerFiles() {
 			const onRetrievedObject = ({
 				name,
 				yml,
-			}: ObjectResult & { name: string }) => {
+			}: { json: Record<string, any> | Record<string, any>[]; yml: string } & {
+				name: string
+			}) => {
 				if (name === config) {
 					const doc = yaml.parseDocument(yml)
 					const contents = doc.contents as YAMLMap
@@ -217,11 +220,11 @@ function useServerFiles() {
 							'myBaseUrl',
 						)} was set to ${u.magenta(baseUrl)}`,
 					)
-					const filepath = path.join(cliConfig.server.dir, config + '.yml')
+					const filepath = path.join(settings.server.dir, config + '.yml')
 					u.saveYml(filepath, yml)
 					setCaption(
 						`Loaded and saved ${u.white(config + '.yml')} to ${u.magenta(
-							cliConfig.server.dir,
+							settings.server.dir,
 						)}\n`,
 					)
 				} else if (name === 'cadlEndpoint') {
@@ -235,7 +238,7 @@ function useServerFiles() {
 					}
 					contents.set('preload', js)
 					yml = yaml.stringify(contents)
-					const filepath = path.join(cliConfig.server.dir, name + '.yml')
+					const filepath = path.join(settings.server.dir, name + '.yml')
 					u.saveYml(filepath, yml)
 					setCaption(
 						`Loaded and saved ${u.white('cadlEndpoint.yml')} to ${u.magenta(
@@ -244,7 +247,7 @@ function useServerFiles() {
 					)
 				} else {
 					const filename = name + '.yml'
-					const filepath = path.join(cliConfig.server.dir, filename)
+					const filepath = path.join(settings.server.dir, filename)
 					u.saveYml(filepath, yml)
 					setCaption(`Saved ${u.white(filename)} to ${u.magenta(filepath)}`)
 				}
@@ -261,19 +264,19 @@ function useServerFiles() {
 
 			u.newline()
 		},
-		[aggregator, cliConfig],
+		[aggregator, settings],
 	)
 
 	React.useEffect(() => {
 		setCaption(`${u.deepOrange('STEP')}: ${u.magenta(state.step)}\n`)
-		setCaption(`Server dir: ${u.magenta(u.getFilepath(cliConfig.server.dir))}`)
-		setCaption(`Server host: ${u.magenta(cliConfig.server.host)}`)
-		setCaption(`Server port: ${u.magenta(cliConfig.server.port)}`)
+		setCaption(`Server dir: ${u.magenta(u.getFilepath(settings.server.dir))}`)
+		setCaption(`Server host: ${u.magenta(settings.server.host)}`)
+		setCaption(`Server port: ${u.magenta(settings.server.port)}`)
 	}, [])
 
 	React.useEffect(() => {
-		if (!cliConfig.server.config) setStep(c.step.PROMPT_CONFIG)
-		else runConfig(cliConfig.server.config)
+		if (!settings.server.config) setStep(c.step.PROMPT_CONFIG)
+		else runConfig(settings.server.config)
 	}, [])
 
 	return {

@@ -1,16 +1,15 @@
-defaultOption: server.files
-# defaultPanel: run.server
-server:
-  dir: output/server
-  host: localhost
-  port: 3001
-  protocol: http
-  config: 'meet2d'
+defaultOption: 'SERVER_FILES'
+defaultPanel: ''
 objects:
   json:
     dir:
       - output/json
   yml:
     dir:
-      - output/yml
-      - output/server/yml
+      - output/server
+server:
+  host: 127.0.0.1
+  dir: server
+  port: 3000
+  protocol: http
+  config: testpage
