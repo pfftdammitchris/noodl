@@ -1,0 +1,42 @@
+baseUrl: ${cadlBaseUrl}
+assetsUrl: ${cadlBaseUrl}assets/
+languageSuffix:
+  zh_CN: _cn
+  es_ES: _es
+  unknown: _en
+fileSuffix: .yml
+startPage: Index
+preload:
+  - BaseDataModel
+  - BaseCSS
+  - BasePage
+  - BootNoodlForMobile
+  - PatientChartDM
+  - BaseMessage
+page:
+  - TestTopAlign
+  - NoodlLayout
+  - EmitRedraw
+  - GotoViewTag
+  - PatientChart
+  - PatientChartAddAllergies
+  - PatientChartAddHospitalization
+  - PatientChartAddMedications
+  - PatientChartDM
+  - PatientChartGeneralInfo
+  - PatientChartImmunizations
+  - PatientChartObstetrical
+  - PatientChartPastMedicalHistory
+  - PatientDashboard
+  - PopUpPage
+  - SelectKey
+  - SelectRedraw
+  - Star
+  - StyleObject
+  - TestPlugIn
+  - TestRedraw
+  - Index
+  - Home
+  - TestSearch
+  - RedrawBackgroundColor
+  - ViewInList

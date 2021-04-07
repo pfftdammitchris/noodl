@@ -11,7 +11,7 @@ class CLIConfig implements App.CliConfigObject {
 		yml: { dir: [] },
 	}
 	server = {
-		host: c.DEFAULT_SERVER_HOSTNAME,
+		host: String(c.DEFAULT_SERVER_HOSTNAME),
 		dir: c.DEFAULT_SERVER_PATH,
 		port: c.DEFAULT_SERVER_PORT,
 		protocol: c.DEFAULT_SERVER_PROTOCOL,

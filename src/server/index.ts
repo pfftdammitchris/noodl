@@ -179,10 +179,12 @@ const configureServer = (function () {
 		graphqlServer.applyMiddleware({ app })
 
 		app.listen({ cors: { origin: '*' }, port }, () => {
+			let graphqlPath = graphqlServer.graphqlPath
+			if (!graphqlPath.startsWith('/')) graphqlPath = `/${graphqlPath}`
 			log(
-				`\n🚀 Server ready at ${u.cyan(
-					`${serverUrl}${graphqlServer.graphqlPath}`,
-				)} ${config ? `using config ${u.magenta(config)}` : ''}`,
+				`\n🚀 Server ready at ${u.cyan(`${serverUrl}${graphqlPath}`)} ${
+					config ? `using config ${u.magenta(config)}` : ''
+				}`,
 			)
 			app._router.stack.forEach(function ({ route }: any) {
 				if (route) {

@@ -33,12 +33,18 @@ function useCliConfig() {
 		setSettings(produce(fn))
 	}, [])
 
-	const save = (_state?: State) => cliConfig.save(_state)
+	const save = (_state?: State) => {
+		cliConfig.save(_state)
+	}
 
 	React.useEffect(() => {
 		if (isMounted.current) {
 			// Only refresh/save the config to dir if they created it
-			fs.existsSync(getFilepath('noodl.yml')) && save(settings)
+			if (fs.existsSync(getFilepath('noodl.yml'))) {
+				save(settings)
+			} else {
+				//
+			}
 		}
 		isMounted.current = true
 	}, [isMounted.current, settings])
