@@ -231,7 +231,7 @@ export const Identify = (function () {
 			border() {},
 		},
 		textFunc(value: unknown): value is { path: T.Path } {
-			return u.isObj(value) && 'path' in value
+			return u.isObj(value) && 'text=func' in value
 		},
 		toast(value: unknown): value is { toast: T.ToastObject } {
 			return u.isObj(value) && 'toast' in value
