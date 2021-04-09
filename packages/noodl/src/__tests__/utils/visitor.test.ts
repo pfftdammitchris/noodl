@@ -1,4 +1,4 @@
-import { YAMLMap } from 'yaml/types'
+import { YAMLMap } from 'yaml'
 import { expect } from 'chai'
 import path from 'path'
 import { coolGold, italic, loadFilesAsDocs } from 'noodl-common'

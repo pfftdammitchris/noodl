@@ -1,4 +1,4 @@
-import { Node } from 'yaml/types'
+import { Node } from 'yaml'
 import yaml from 'yaml'
 import Page from './Page'
 import Root from './Root'

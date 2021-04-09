@@ -3,6 +3,8 @@ Index:
   pageNumber: "80"
   test: 'VideoChat'
   pageGoto:
+    - title: TestSelectOfListitem
+      pageName: TestSelectOfListitem
     - title: TestChangeButtonColor
       pageName: TestChangeButtonColor
     - title: TestRightAlign

@@ -1,5 +1,5 @@
 import isPlainObject from 'lodash/isPlainObject'
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 
 export function has(path: string[], node: unknown): boolean
 export function has(path: string, node: unknown): boolean

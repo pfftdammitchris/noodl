@@ -19,6 +19,7 @@ import {
 	onYAMLMap,
 	onYAMLSeq,
 } from '../utils/doc'
+import { Pair } from 'yaml'
 
 export const identify = (function () {
 	function composeFilters<N>(...fns: ((node: N) => boolean)[]) {
@@ -116,8 +117,8 @@ export const identify = (function () {
 		emit: onYAMLMap(composeFilters(partialRight(hasKey, 'emit'))),
 		if: onYAMLMap(composeFilters(partialRight(hasKey, 'if'))),
 		keyValue: {
-			actionType: onPair((node) => node.key.value === 'actionType'),
-			funcName: onPair((node) => node.key.value === 'funcName'),
+			actionType: onPair((node: Pair<any, any>) => node.key.value === 'actionType'),
+			funcName: onPair((node: Pair<any, any>) => node.key.value === 'funcName'),
 		},
 		scalar: {
 			reference: onScalar((node) => isReference(node.value)),
@@ -162,10 +163,10 @@ export const identify = (function () {
 		},
 		paths: {
 			style: {
-				any: onPair((node) => node.key.value === 'style'),
+				any: onPair((node: Pair<any, any>) => node.key.value === 'style'),
 			},
-			textAlign: onPair((node) => /textAlign/i.test(node.key.value)),
-			textBoard: onPair((node) => /textBoard/i.test(node.key.value)),
+			textAlign: onPair((node: Pair<any, any>) => /textAlign/i.test(node.key.value)),
+			textBoard: onPair((node: Pair<any, any>) => /textBoard/i.test(node.key.value)),
 		},
 	}
 

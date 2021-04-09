@@ -1,4 +1,4 @@
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 
 export interface PlainObject {
 	[key: string]: any

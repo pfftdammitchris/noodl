@@ -1,4 +1,4 @@
-import { Node, Pair, YAMLMap } from 'yaml/types'
+import { Node, Pair, YAMLMap } from 'yaml'
 import yaml from 'yaml'
 import Page from './Page'
 import Root from './Root'

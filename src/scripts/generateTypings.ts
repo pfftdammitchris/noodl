@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import yaml, { createNode, Document } from 'yaml'
 import { findPair, toJSON } from 'yaml/util'
-import { Node, Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Node, Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml'
 import createAggregator from '../api/createAggregator'
 
 const src = fs.readFileSync('./data/cadlEndpoint.yml', 'utf8')

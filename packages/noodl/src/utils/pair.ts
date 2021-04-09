@@ -1,4 +1,4 @@
-import { Pair } from 'yaml/types'
+import { Pair } from 'yaml'
 import regex from '../internal/regex'
 import * as u from './internal'
 

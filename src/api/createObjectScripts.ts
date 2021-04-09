@@ -1,126 +1,107 @@
 import { config } from 'dotenv'
 import yaml from 'yaml'
 config()
+import invariant from 'invariant'
 import chunk from 'lodash/chunk'
 import fs from 'fs-extra'
 import { YAMLNode } from '../types'
+import * as u from '../utils/common'
 
-export interface NOODLTypesObserver<Store = any> {
+export interface ScriptObject<Store = any> {
 	id?: string
 	label?: string
 	fn(node: YAMLNode, store: Store): void
 }
 
-const createObjectScripts = function <Store = any>({
-	pathToDataFile,
-	ymlDocs,
-}: {
-	pathToDataFile?: string
-	ymlDocs?: yaml.Document | yaml.Document[]
-} = {}) {
-	let cbs = {
-		start: [] as ((...args: any[]) => void)[],
-		end: [] as ((...args: any[]) => void)[],
+class Scripts<Store = any> {
+	#store = {} as Store
+	#scripts = [] as ScriptObject[]
+	#dataFilePath: string = ''
+	#obs = { start: [], end: [] } as {
+		start: ((store: Store) => void)[]
+		end: ((store: Store) => void)[]
+	}
+	docs: yaml.Document[] = []
+
+	constructor(opts: {
+		dataFilePath: string
+		store?: Store
+		docs?: yaml.Document | yaml.Document[]
+	}) {
+		invariant(!!opts.dataFilePath, `Missing "dataFilePath argument"`)
+		this.#dataFilePath = opts.dataFilePath || ''
+		if (opts.docs) {
+			u.array(opts.docs).forEach((doc) => this.docs.push(doc))
+		}
+		opts.store && (this.#store = opts.store)
 	}
 
-	const _internal = {
-		dataFile: {} as Store,
-		observers: [] as NOODLTypesObserver[],
+	get observers() {
+		return this.#obs
 	}
 
-	function onPathToDataFile() {
-		fs.ensureFileSync(pathToDataFile as string)
-		try {
-			_internal.dataFile = JSON.parse(
-				fs.readFileSync(pathToDataFile as string, 'utf8'),
-			)
-		} catch (error) {
-			fs.writeJsonSync(
-				pathToDataFile as string,
-				(_internal.dataFile = {} as Store),
-				{ spaces: 2 },
-			)
+	set dataFilePath(dataFilePath: string) {
+		this.#dataFilePath = dataFilePath
+		this.ensureDataFile()
+	}
+
+	compose(...fns: ((node: YAMLNode, store: Store) => any)[]) {
+		fns = fns.reverse()
+		return (node: YAMLNode) => fns.forEach((fn) => fn(node, this.#store))
+	}
+
+	ensureDataFile() {
+		if (!fs.existsSync(this.#dataFilePath)) {
+			fs.ensureFileSync(this.#dataFilePath)
+			fs.writeJsonSync(this.#dataFilePath, this.#store, { spaces: 2 })
+			this.#store = this.get()
 		}
 	}
 
-	pathToDataFile && onPathToDataFile()
-
-	function save() {
-		pathToDataFile &&
-			fs.writeJsonSync(pathToDataFile as string, _internal.dataFile, {
-				spaces: 2,
-			})
+	get() {
+		try {
+			return fs.readJsonSync(this.#dataFilePath)
+		} catch (error) {
+			console.error(error)
+		}
+		return null
 	}
 
-	const composeNodeFns = (
-		...fns: ((node: YAMLNode, store: Store) => any)[]
-	) => {
-		fns = fns.reverse()
-		return (node: YAMLNode) => fns.forEach((fn) => fn(node, _internal.dataFile))
+	save() {
+		try {
+			fs.writeJsonSync(this.#dataFilePath, this.#store, { spaces: 2 })
+		} catch (error) {
+			console.error(error)
+		}
+		return this.get()
 	}
 
-	const o = {
-		get observers() {
-			return _internal.observers
-		},
-		set pathToDataFile(filepath: string) {
-			pathToDataFile = filepath
-			onPathToDataFile()
-		},
-		/**
-		 * Retrieves or sets the yml docs stored in state
-		 * @param { yaml.Document | yaml.Document[] | undefined } ymlDocs - Parsed YAML documents
-		 */
-		data(docs?: yaml.Document | yaml.Document[]) {
-			if (docs) {
-				ymlDocs = Array.isArray(docs) ? docs : [docs]
-			}
-			return ymlDocs ? (Array.isArray(ymlDocs) ? ymlDocs : [ymlDocs]) : []
-		},
-		on(event: 'end' | 'start', fn: (store: Store) => void) {
-			if (event === 'start') {
-				if (!cbs.start.includes(fn)) cbs.start.push(fn)
-			} else if (event === 'end') {
-				if (!cbs.end.includes(fn)) cbs.end.push(fn)
-			}
-
-			return o
-		},
-		run() {
-			if (!_internal.dataFile) _internal.dataFile = {} as Store
-			cbs.start.forEach((fn) => fn(_internal.dataFile))
-			const chunkedDocs = chunk(o.data(), 8)
-			const numChunks = chunkedDocs.length
-			const processFns = composeNodeFns(
-				..._internal.observers.map(({ fn }) => fn),
-			)
-			for (let index = 0; index < numChunks; index++) {
-				const docs = chunkedDocs[index]
-				const numDocs = docs?.length || 0
-				for (let i = 0; i < numDocs; i++) {
-					yaml.visit(docs?.[i] as yaml.Document, (key, node, path) => {
-						processFns(node)
-					})
-				}
-			}
-			cbs.end.forEach((fn) => fn(_internal.dataFile))
-			save()
-			return o
-		},
-		use(obj: NOODLTypesObserver | NOODLTypesObserver[]) {
-			if (obj) {
-				;(Array.isArray(obj) ? obj : [obj]).forEach((o) => {
-					if (!_internal.observers.includes(o)) {
-						_internal.observers.push(o)
-					}
+	run() {
+		this.#obs.start.forEach((fn) => fn(this.#store))
+		const chunkedDocs = chunk(this.docs, 8)
+		const processFns = this.compose(...this.#scripts.map(({ fn }) => fn))
+		for (const docs of chunkedDocs) {
+			const numDocs = docs?.length || 0
+			for (let i = 0; i < numDocs; i++) {
+				yaml.visit(docs?.[i] as yaml.Document, (key, node, path) => {
+					processFns(node)
 				})
 			}
-
-			return o
-		},
+		}
+		this.#obs.end.forEach((fn) => fn(this.#store))
+		this.save()
 	}
 
-	return o
+	use(opts: {
+		script?: ScriptObject | ScriptObject[]
+		start?: ((store: Store) => void) | ((store: Store) => void)[]
+		end?: ((store: Store) => void) | ((store: Store) => void)[]
+	}) {
+		opts.script && this.#scripts.push(...u.array(opts.script))
+		opts.start && this.#obs.start.push(...u.array(opts.start))
+		opts.end && this.#obs.end.push(...u.array(opts.end))
+		return this
+	}
 }
 
-export default createObjectScripts
+export default Scripts

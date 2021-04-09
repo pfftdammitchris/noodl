@@ -1,7 +1,7 @@
 import yaml from 'yaml'
 import { expect } from 'chai'
 import { coolGold, italic } from 'noodl-common'
-import { Pair, Scalar, YAMLMap } from 'yaml/types'
+import { Pair, Scalar, YAMLMap } from 'yaml'
 import { isScalar } from '../utils/internal'
 import { dereferencer, noodl } from '../utils/test-utils'
 import NoodlPage from '../Page'

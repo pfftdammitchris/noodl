@@ -1,5 +1,5 @@
 import flowRight from 'lodash/flowRight'
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import { YAMLNode } from '../types/internalTypes'
 import * as mapUtil from './map'
 import * as scalarUtil from './scalar'
@@ -70,7 +70,7 @@ const Identify = (function () {
 		reference: composeScalarFns(scalarUtil.isReference),
 		evalReference: composeScalarFns(scalarUtil.isEvalReference),
 		localReference: composeScalarFns(scalarUtil.isLocalReference),
-		applyReference: composeScalarFns(scalarUtil.isApplyReference),
+		// applyReference: composeScalarFns(scalarUtil.isApplyReference),
 		rootReference: composeScalarFns(scalarUtil.isRootReference),
 		traverseReference: composeScalarFns(scalarUtil.isTraverseReference),
 		emit: composeMapFns(mapUtil.isEmitObject),

@@ -1,5 +1,5 @@
 import flowRight from 'lodash/flowRight'
-import { Node, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Node, isNode, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import { IdentifyFn } from '../types'
 
 export function composeScalarFns<RT = any>(...fns: ((n: Scalar) => RT)[]) {
@@ -19,7 +19,7 @@ export function composeSeqFns<RT = any>(...fns: ((n: YAMLSeq) => RT)[]) {
 }
 
 export function composeSomes<N extends Node>(...fns: ((n: N) => boolean)[]) {
-	return (node: N) => node instanceof Node && fns.some((fn) => !!fn(node))
+	return (node: N) => isNode(node) && fns.some((fn) => !!fn(node))
 }
 
 export function hasAllKeys(node: YAMLMap, keys: string | string[]) {

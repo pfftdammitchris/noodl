@@ -1,14 +1,15 @@
 import React from 'react'
 import { Box, Newline, Text } from 'ink'
 import { panel as panelMap } from '../constants'
+import { values } from '../utils/common'
 import { App } from '../types'
 import Select from '../components/Select'
 import useCtx from '../useCtx'
 
-const panels = Object.values(panelMap)
+const panels = values(panelMap)
 
 function SelectRoute({ header = 'Select an option' }: { header?: string }) {
-	const { settings, setPanel } = useCtx()
+	const { settings, updatePanel } = useCtx()
 
 	const initialIndex =
 		(panelMap[settings.defaultOption as App.PanelId] &&
@@ -22,8 +23,8 @@ function SelectRoute({ header = 'Select an option' }: { header?: string }) {
 			<Select
 				items={panels}
 				initialIndex={initialIndex === -1 ? 0 : initialIndex}
-				onHighlight={(item: any) => setPanel({ highlightedId: item.value })}
-				onSelect={(item: any) => setPanel(item)}
+				onHighlight={(item: any) => updatePanel({ highlightedId: item.value })}
+				onSelect={(item: any) => updatePanel(item)}
 			/>
 		</Box>
 	)

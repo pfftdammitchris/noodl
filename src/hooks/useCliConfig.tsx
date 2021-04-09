@@ -5,7 +5,6 @@ import produce, { Draft } from 'immer'
 import CliConfigBuilder from '../builders/CliConfig'
 import { getFilepath, getCliConfig, hasCliConfig } from '../utils/common'
 import { App } from '../types'
-import * as c from '../constants'
 
 const cliConfig = new CliConfigBuilder()
 
@@ -29,7 +28,7 @@ function useCliConfig() {
 		return _settings
 	})
 
-	const set = React.useCallback((fn: (draft: Draft<State>) => any) => {
+	const set = React.useCallback((fn: (draft: Draft<State>) => void) => {
 		setSettings(produce(fn))
 	}, [])
 

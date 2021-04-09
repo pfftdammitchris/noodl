@@ -40,3 +40,4 @@ page:
   - TestSearch
   - RedrawBackgroundColor
   - ViewInList
+  - TestSelectOfListitem

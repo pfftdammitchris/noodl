@@ -57,8 +57,6 @@ const initialState: State = {
 }
 
 function RetrieveObjectsPanel({
-	config: configProp,
-	ext: extProp,
 	onEnd,
 	onError,
 }: {
@@ -69,7 +67,13 @@ function RetrieveObjectsPanel({
 }) {
 	const [state, setState] = React.useState(initialState)
 	const [configInput, setConfigInput] = React.useState('')
-	const { aggregator, settings, setCaption, setErrorCaption } = useCtx()
+	const {
+		aggregator,
+		cliArgs,
+		settings,
+		setCaption,
+		setErrorCaption,
+	} = useCtx()
 
 	const _setState = React.useCallback((fn: (draft: Draft<State>) => void) => {
 		setState(produce(fn))
@@ -81,8 +85,8 @@ function RetrieveObjectsPanel({
 	] as const
 
 	React.useEffect(() => {
-		const config = configProp || state.config
-		const ext = extProp || state.ext
+		const config = cliArgs.config || state.config
+		const ext = cliArgs.ext || state.ext
 
 		if (config && ext) {
 			async function onObject(
@@ -117,7 +121,7 @@ function RetrieveObjectsPanel({
 				}
 			}
 
-			setCaption(`Config set to ${chalk.magentaBright(state.config)}\n`)
+			setCaption(`\nConfig set to ${chalk.magentaBright(state.config)}\n`)
 
 			let savedPageCount = 0
 
@@ -152,32 +156,38 @@ function RetrieveObjectsPanel({
 
 	return (
 		<Box padding={1} flexDirection="column">
-			<HighlightedText>
-				{!state.ext
-					? 'Choose file extension(s)'
-					: !state.config
-					? 'Which config should we use?'
-					: null}
-			</HighlightedText>
-			<Box flexDirection="column">
-				{!state.ext ? (
-					<Select
-						items={items.slice()}
-						onSelect={(item) =>
-							_setState((d) => void (d.ext = item.value as Ext))
-						}
-					/>
-				) : !state.config ? (
-					<TextInput
-						placeholder="Enter text"
-						value={configInput}
-						onChange={setConfigInput}
-						onSubmit={(config) => {
-							aggregator.config = config
-							_setState((d) => void (d.config = config))
-						}}
-					/>
-				) : null}
+			{!cliArgs.runServer && (
+				<HighlightedText>
+					{!state.ext
+						? 'Choose file extension(s)'
+						: !state.config
+						? 'Which config should we use?'
+						: null}
+				</HighlightedText>
+			)}
+			<Box paddingTop={1} flexDirection="column">
+				{!cliArgs.runServer && (
+					<>
+						{!state.ext ? (
+							<Select
+								items={items.slice()}
+								onSelect={(item) =>
+									_setState((d) => void (d.ext = item.value as Ext))
+								}
+							/>
+						) : !state.config ? (
+							<TextInput
+								placeholder="Enter text"
+								value={configInput}
+								onChange={setConfigInput}
+								onSubmit={(config) => {
+									aggregator.config = config
+									_setState((d) => void (d.config = config))
+								}}
+							/>
+						) : null}
+					</>
+				)}
 			</Box>
 			{state.status === 'retrieving-objects' && (
 				<HighlightedText color="whiteBright">

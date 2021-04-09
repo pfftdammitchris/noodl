@@ -1,4 +1,4 @@
-import { YAMLMap, YAMLSeq } from 'yaml/types'
+import { YAMLMap, YAMLSeq } from 'yaml'
 import { isActionLike, isEmitObject, isGotoObject, isToastObject } from './map'
 
 export function isActionChain(node: YAMLSeq) {

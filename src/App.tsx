@@ -7,7 +7,7 @@ import HighlightedText from './components/HighlightedText'
 import SelectRoute from './panels/SelectRoute'
 import ServerFiles from './panels/ServerFiles'
 import Spinner from './components/Spinner'
-import RetrieveObjects from './panels/RetrieveObjects'
+import RetrieveObjects, { Ext } from './panels/RetrieveObjects'
 import RetrieveKeywords from './panels/RetrieveKeywords'
 import RunServer from './panels/RunServer'
 import useSettings from './hooks/useCliConfig'
@@ -20,6 +20,7 @@ let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 const initialState: T.App.State = {
 	caption: [],
 	panel: {
+		highlightedId: '',
 		value: '',
 		mounted: false,
 		idle: false,
@@ -30,14 +31,12 @@ const initialState: T.App.State = {
 function reducer(state: T.App.State = initialState, action: T.App.Action) {
 	return produce(state, (draft) => {
 		switch (action.type) {
-			case c.EDIT_PANEL:
-				return void Object.assign(draft.panel, action.panel)
+			case c.UPDATE_PANEL:
+				return void u.assign(draft.panel, action.panel)
+			case c.app.action.HIGHLIGHT_PANEL:
+				return void (draft.panel.highlightedId = action.panelId)
 			case c.app.action.SET_CAPTION:
 				return void draft.caption.push(action.caption)
-			case c.app.action.SET_PANEL:
-				return void Object.keys(action.panel).forEach(
-					(key) => (draft.panel[key] = action.panel[key]),
-				)
 			case c.app.action.SET_SPINNER:
 				return void (draft.spinner = action.spinner)
 		}
@@ -46,13 +45,13 @@ function reducer(state: T.App.State = initialState, action: T.App.Action) {
 
 function Application({
 	config,
-	help = '',
-	panelId,
+	defaultPanel,
+	ext = 'yml',
 	runServer,
 }: {
 	config?: string
-	help?: string
-	panelId?: T.App.PanelId
+	ext?: Ext
+	defaultPanel?: T.App.PanelId
 	runServer?: boolean
 }) {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
@@ -61,9 +60,10 @@ function Application({
 	const ctx = {
 		...state,
 		aggregator,
+		cliArgs: { config, defaultPanel, ext, runServer },
 		settings,
-		setPanel: (panel: Parameters<T.App.Context['setPanel']>[0]) => {
-			dispatch({ type: c.app.action.SET_PANEL, panel })
+		highlightPanel: (panelId: T.App.PanelId) => {
+			dispatch({ type: c.app.action.HIGHLIGHT_PANEL, panelId })
 		},
 		setCaption: (caption: Parameters<T.App.Context['setCaption']>[0]) => {
 			dispatch({ type: c.app.action.SET_CAPTION, caption })
@@ -84,16 +84,25 @@ function Application({
 			})
 		},
 		updatePanel: (panel: Partial<T.App.State['panel']>) => {
-			dispatch({ type: c.EDIT_PANEL, panel })
+			dispatch({ type: c.UPDATE_PANEL, panel })
 		},
 	} as T.App.Context
 
 	React.useEffect(() => {
-		ctx.settings.set((draft) => {
-			config && (draft.server.config = config)
-			panelId && (draft.defaultPanel = c.panel[panelId].value)
-		})
-	}, [])
+		if (config || defaultPanel) {
+			ctx.settings.set((draft) => {
+				config && (draft.server.config = config)
+				defaultPanel && (draft.defaultPanel = defaultPanel)
+			})
+			if (runServer) {
+				if (!defaultPanel) {
+					ctx.updatePanel({ value: c.panel.RETRIEVE_OBJECTS.value })
+				} else {
+					ctx.updatePanel({ value: defaultPanel })
+				}
+			}
+		}
+	}, [config, defaultPanel])
 
 	return (
 		<Provider value={ctx}>

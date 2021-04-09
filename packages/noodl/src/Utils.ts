@@ -1,4 +1,4 @@
-import { Node, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Node, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import omit from 'lodash/omit'
 import NoodlRoot from './Root'
 import NoodlPage from './Page'

@@ -1,4 +1,4 @@
-import { YAMLMap, YAMLSeq } from 'yaml/types'
+import { YAMLMap, YAMLSeq } from 'yaml'
 import { YAMLNode } from './types/internalTypes'
 import Page from './Page'
 import * as u from './utils/internal'

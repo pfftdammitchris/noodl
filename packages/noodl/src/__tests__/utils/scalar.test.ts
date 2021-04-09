@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { coolGold, italic } from 'noodl-common'
-import { Scalar } from 'yaml/types'
+import { Scalar } from 'yaml'
 import * as util from '../../utils/scalar'
 
 describe(coolGold('Scalar utils'), () => {

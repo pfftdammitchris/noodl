@@ -1,4 +1,4 @@
-import { Scalar } from 'yaml/types'
+import { Scalar } from 'yaml'
 import regex from '../internal/regex'
 
 export function getScalarValue(node: any) {

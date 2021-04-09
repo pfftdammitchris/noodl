@@ -1,5 +1,5 @@
 defaultOption: SERVER_FILES
-defaultPanel: ""
+defaultPanel: RETRIEVE_OBJECTS
 objects:
   json:
     dir:

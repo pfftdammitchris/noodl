@@ -1,4 +1,4 @@
-import { Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml'
 import Root from '../Root'
 import { Pages } from './types'
 

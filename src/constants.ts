@@ -5,11 +5,12 @@ export const DEFAULT_SERVER_PATH = 'server'
 export const DEFAULT_SERVER_PORT = 3000
 export const DEFAULT_SERVER_PROTOCOL = 'http'
 
-export const EDIT_PANEL = 'edit-panel'
+export const UPDATE_PANEL = 'edit-panel'
 
 export const app = {
 	INITIAL_OPTION: 'retrieve.objects',
 	action: {
+		HIGHLIGHT_PANEL: 'HIGHLIGHT_PANEL',
 		SET_CAPTION: 'set.caption',
 		SET_SERVER_OPTIONS: 'set.server.options',
 		SET_OBJECTS_JSON_OPTIONS: 'set.objects.json.options',

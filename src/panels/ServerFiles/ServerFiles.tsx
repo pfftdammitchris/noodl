@@ -35,7 +35,7 @@ function ServerFiles() {
 			label,
 			...rest
 		}: React.PropsWithChildren<BoxProps> & { label?: string }) => (
-			<Box flexDirection="column" {...rest}>
+			<Box padding={1} flexDirection="column" {...rest}>
 				{label ? <HighlightedText>{label}</HighlightedText> : null}
 				{children}
 			</Box>

@@ -1,4 +1,4 @@
-import { Scalar, YAMLMap } from 'yaml/types'
+import { Scalar, YAMLMap } from 'yaml'
 import { YAMLNode } from './types'
 import NoodlUtils from './Utils'
 import {

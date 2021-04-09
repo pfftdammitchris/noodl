@@ -1,5 +1,5 @@
 import yaml, { Document } from 'yaml'
-import { Node } from 'yaml/types'
+import { Node } from 'yaml'
 import { YAMLNode } from './types'
 import * as u from './utils/internal'
 

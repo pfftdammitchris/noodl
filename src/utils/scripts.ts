@@ -7,7 +7,7 @@ import {
 	IfObject,
 	StyleBorderObject,
 } from 'noodl-types'
-import { Pair, YAMLMap } from 'yaml/types'
+import { Pair, YAMLMap } from 'yaml'
 import { NOODLTypesObserver } from '../api/createObjectScripts'
 import { isYAMLMap } from './doc'
 import Utils from '../api/Utils'
@@ -85,7 +85,7 @@ scripts[id.ACTION_OBJECTS] = {
 	label: 'Retrieve all action objects',
 	fn(node: YAMLMap, store) {
 		if (Utils.identify.action.any(node)) {
-			const actionType = node.get('actionType')
+			const actionType = node.get('actionType') as string
 			if (!store.actions[actionType]) store.actions[actionType] = []
 			store.actions[actionType].push(node.toJSON())
 		}
@@ -95,7 +95,7 @@ scripts[id.ACTION_OBJECTS] = {
 scripts[id.ACTION_TYPES] = {
 	id: 'action.types',
 	label: 'Retrieve all action types',
-	fn(node: Pair, store) {
+	fn(node: Pair<any, any>, store) {
 		if (Utils.identify.keyValue.actionType(node)) {
 			if (!store.actionTypes?.includes(node.value.value)) {
 				store.actionTypes.push(node.value.value)
@@ -118,7 +118,7 @@ scripts[id.STYLE_BORDER_OBJECTS] = {
 scripts[id.BUILTIN_FUNC_NAMES] = {
 	id: 'builtIn.funcNames',
 	label: 'Retrieve all builtIn action funcNames',
-	fn(node: Pair, store) {
+	fn(node: Pair<any, any>, store) {
 		if (Utils.identify.keyValue.funcName(node)) {
 			if (!store.funcNames?.includes(node.value.value)) {
 				store.funcNames.push(node.value.value)
@@ -130,7 +130,7 @@ scripts[id.BUILTIN_FUNC_NAMES] = {
 scripts[id.COMPONENT_KEYS] = {
 	id: 'component.keys',
 	label: 'Retrieve all component keys',
-	fn(node: YAMLMap, store) {
+	fn(node: YAMLMap<any>, store) {
 		if (Utils.identify.component.any(node)) {
 			node.items.forEach((pair) => {
 				if (!store.componentKeys?.includes(pair.key.value)) {
@@ -146,7 +146,7 @@ scripts[id.COMPONENT_OBJECTS] = {
 	label: 'Retrieve all component objects',
 	fn(node: YAMLMap, store) {
 		if (Utils.identify.component.any(node)) {
-			const componentType = node.get('type')
+			const componentType = node.get('type') as any
 			if (!store.components[componentType]) store.components[componentType] = []
 			store.components[componentType].push(node.toJSON())
 		}
@@ -196,7 +196,7 @@ scripts[id.OBJECTS_THAT_CONTAIN_THESE_KEYS] = {
 		if (isYAMLMap(node)) {
 			for (let index = 0; index < numKeys; index++) {
 				const key = keys[index] || ''
-				if (node.has(key)) {
+				if ((node as YAMLMap).has(key)) {
 					if (!Array.isArray(store.containedKeys[key])) {
 						store.containedKeys[key] = []
 					}
@@ -232,10 +232,10 @@ scripts[id.RETRIEVE_URLS] = {
 scripts[id.STYLE_PROPERTIES] = {
 	id: 'style.properties',
 	label: 'Retrieve all style properties',
-	fn(node: Pair, store) {
+	fn(node: Pair<any, any>, store) {
 		if (Utils.identify.paths.style.any(node)) {
 			if (isYAMLMap(node.value)) {
-				node.value.items.forEach((pair: Pair) => {
+				node.value.items.forEach((pair: Pair<any, any>) => {
 					if (pair.key?.value && !Utils.identify.scalar.reference(pair.key)) {
 						if (!store.styleKeys.includes(pair.key.value)) {
 							store.styleKeys.push(pair.key.value)
@@ -262,7 +262,7 @@ export function createActionPropComboScripts() {
 		label: `Retrieve props that may exist on ${actionType} action objects`,
 		fn(node, store: Store) {
 			if (Utils.identify.action[actionType](node)) {
-				;(node as YAMLMap).items.forEach((pair: Pair) => {
+				;(node as YAMLMap).items.forEach((pair: Pair<any, any>) => {
 					if (!Utils.identify.scalar.reference(pair.key)) {
 						const actions = store.propCombos.actions
 						if (!actions[actionType]) actions[actionType] = {}
@@ -301,7 +301,7 @@ export function createComponentPropComboScripts() {
 		label: `Retrieve props that may exist on ${type} action objects`,
 		fn(node, store: Store) {
 			if (Utils.identify.component[type]?.(node)) {
-				;(node as YAMLMap).items.forEach((pair: Pair) => {
+				;(node as YAMLMap).items.forEach((pair: Pair<any, any>) => {
 					if (!Utils.identify.scalar.reference(pair.key)) {
 						const components = store.propCombos.components
 						if (!components[type]) components[type] = {}

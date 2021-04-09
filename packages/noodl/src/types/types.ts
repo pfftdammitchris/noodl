@@ -1,4 +1,4 @@
-import { Node } from 'yaml/types'
+import { Node } from 'yaml'
 import { InternalComposerBaseArgs, YAMLNode } from './internalTypes'
 import Page from '../Page'
 import NoodlUtils from '../Utils'

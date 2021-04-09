@@ -1,5 +1,5 @@
 import yaml from 'yaml'
-import { Node, Scalar } from 'yaml/types'
+import { Node, Scalar } from 'yaml'
 import flowRight from 'lodash/flowRight'
 import NoodlRoot from './Root'
 import NoodlUtils from './Utils'

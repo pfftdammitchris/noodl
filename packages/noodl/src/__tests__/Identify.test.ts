@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { Scalar } from 'yaml/types'
+import { Scalar } from 'yaml'
 import { coolGold, italic } from 'noodl-common'
 import Identify from '../utils/Identify'
 

@@ -1,6 +1,6 @@
 import { Project, ProjectOptions, ScriptTarget, ts } from 'ts-morph'
 import yaml from 'yaml'
-import { Alias, Collection, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Alias, Collection, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
 import NoodlPage from './noodl-morph/NoodlPage'

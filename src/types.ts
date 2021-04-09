@@ -1,22 +1,20 @@
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types'
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import useCliConfig from './hooks/useCliConfig'
 import createAggregator from './api/createAggregator'
 import * as c from './constants'
 
 export namespace App {
 	export type Action =
-		| { type: typeof c.EDIT_PANEL; panel: Partial<State['panel']> }
+		| { type: typeof c.UPDATE_PANEL; panel: Partial<State['panel']> }
+		| { type: typeof c.app.action.HIGHLIGHT_PANEL; panelId: PanelId }
 		| { type: typeof c.app.action.SET_CAPTION; caption: string }
-		| {
-				type: typeof c.app.action.SET_PANEL
-				panel: { id?: PanelId; label?: string; [key: string]: any }
-		  }
 		| { type: typeof c.app.action.SET_SPINNER; spinner: false | string }
 
 	export interface State {
 		caption: string[]
 		panel: {
 			value: PanelId | ''
+			highlightedId: PanelId | ''
 			mounted: boolean
 			idle: boolean
 		}
@@ -25,10 +23,16 @@ export namespace App {
 
 	export interface Context extends State {
 		aggregator: ReturnType<typeof createAggregator>
+		cliArgs: {
+			config?: string
+			defaultPanel?: App.PanelId
+			ext?: 'json' | 'yml'
+			runServer?: boolean
+		}
+		highlightPanel(id: App.PanelId): void
 		settings: ReturnType<typeof useCliConfig>
 		setCaption(caption: string): void
 		setErrorCaption(caption: string | Error): void
-		setPanel(item: Partial<PanelObject> & { highlightedId?: string }): void
 		toggleSpinner(type?: false | string): void
 		updatePanel(panel: Partial<State['panel']>): void
 	}
