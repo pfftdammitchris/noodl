@@ -1,10 +1,7 @@
 {
 	"name": "noodl-types",
-	"version": "1.0.45",
+	"version": "1.0.48",
 	"description": "NOODL TypeScript Definitions",
-	"author": "Christopher Tran <christopher@aitmed.com>",
-	"homepage": "",
-	"license": "ISC",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
@@ -12,15 +9,17 @@
 		"start": "rm -rf dist && tsc --watch",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
+	"dependencies": {
+		"lodash": "file:../../node_modules"
+	},
+	"author": "Christopher Tran <christopher@aitmed.com>",
+	"homepage": "",
+	"license": "ISC",
 	"files": [
 		"dist"
 	],
 	"repository": {
 		"type": "git",
 		"url": "http://gitlab.aitmed.com/pfftdammitchris/aitmed-noodl-web.git"
-	},
-	"dependencies": {
-		"lodash.get": "^4.4.2",
-		"lodash.has": "^4.5.2"
 	}
 }
