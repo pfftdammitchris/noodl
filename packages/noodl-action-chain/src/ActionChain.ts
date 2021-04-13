@@ -164,12 +164,12 @@ class ActionChain<
 						if (this.#timeout) clearTimeout(this.#timeout)
 						// Cache the reference since it could be changed when setTimeout fires
 						let cachedAction = action
-						this.#timeout = setTimeout(async () => {
+						this.#timeout = setTimeout(() => {
 							const msg = `Action of type "${cachedAction?.actionType}" timed out`
 							cachedAction?.abort(msg)
 							cachedAction = null as any
 							try {
-								await this.abort(msg)
+								this.abort(msg)
 							} catch (error) {
 								throw new AbortExecuteError(error.message)
 							}
