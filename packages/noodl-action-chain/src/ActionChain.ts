@@ -47,6 +47,7 @@ class ActionChain<
 
 		while (inst.queue.length) {
 			action = inst.queue.shift() as Action<A['actionType'], T>
+			// @ts-expect-error
 			result = inst.isAborted() ? undefined : await (yield action)
 			results.push({ action, result })
 		}
@@ -208,6 +209,7 @@ class ActionChain<
 							)
 						}
 					} catch (error) {
+						this.#obs.onExecuteError?.(this.current as Action, error)
 						// TODO - replace throw with appending the error to the result item instead
 						throw error
 					} finally {

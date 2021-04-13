@@ -33,7 +33,7 @@ function createAction<AType extends string, T extends string>(
 		if (!isString(args) && !('actionType' in args) && 'action' in args) {
 			trigger = args.trigger
 			object = args.action
-		} else if ('actionType' in args) {
+		} else if (!isString(args) && 'actionType' in args) {
 			trigger = args.trigger
 			object = args
 		}

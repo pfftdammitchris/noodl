@@ -1,7 +1,6 @@
 import { ActionObject } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
 import AbortExecuteError from './AbortExecuteError'
-import ActionChain from './ActionChain'
 import * as c from './constants'
 
 export interface IAction<
@@ -87,6 +86,7 @@ export interface ActionChainObserver<A extends ActionObject = ActionObject> {
 	}): void
 	onExecuteStart?: (...args: any[]) => any
 	onExecuteEnd?: (...args: any[]) => any
+	onExecuteError?: (current: IAction, error: Error | AbortExecuteError) => any
 	onExecuteResult?: (result?: any) => any
 	onBeforeActionExecute?(args: {
 		action: IAction<A['actionType']>
