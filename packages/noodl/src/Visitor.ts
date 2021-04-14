@@ -1,4 +1,4 @@
-import { Node } from 'yaml'
+import { Node, isNode } from 'yaml'
 import yaml from 'yaml'
 import Page from './Page'
 import Root from './Root'
@@ -39,7 +39,7 @@ class NoodlVisitor implements T.InternalComposerBaseArgs {
 				yaml.visit(node.doc, this.#wrapVisitorFn(visitor))
 			} else if (node instanceof yaml.Document) {
 				yaml.visit(node, this.#wrapVisitorFn(visitor))
-			} else if (node instanceof Node) {
+			} else if (isNode(node)) {
 				yaml.visit(node, this.#wrapVisitorFn(visitor))
 			}
 		} else {
@@ -54,10 +54,16 @@ class NoodlVisitor implements T.InternalComposerBaseArgs {
 		return node
 	}
 
-	#wrapVisitorFn = (visitor: T.NoodlVisitor.Visit): yaml.visitor<any> => {
+	#wrapVisitorFn = (visitor: T.NoodlVisitor.Visit): yaml.visitor => {
 		return (key, node, path) => {
 			return visitor(
-				{ pages: this.pages, root: this.root, key, node, path },
+				{
+					pages: this.pages,
+					root: this.root,
+					key,
+					node: node as Node,
+					path: path as Node[],
+				},
 				this.util,
 			)
 		}

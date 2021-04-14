@@ -2,7 +2,6 @@ import { AxiosError } from 'axios'
 import { URL } from 'url'
 import curry from 'lodash/curry'
 import fs from 'fs-extra'
-import isPlainObject from 'lodash/isPlainObject'
 import path from 'path'
 import chalk from 'chalk'
 import yaml from 'yaml'
@@ -31,7 +30,7 @@ export const assign = (
 ) => Object.assign(v, ...rest)
 export const array = <O extends any[], P extends O[number]>(o: P | P[]): P[] =>
 	isArr(o) ? o : [o]
-export const entries = (v: any) => (isObj(v) ? Object.entries(v) : [])
+export const entries = (v: any) => (isObj(v) ? entries(v) : [])
 export const keys = (v: any) => Object.keys(v)
 export const values = <O extends Record<string, any>, K extends keyof O>(
 	v: O,
@@ -81,7 +80,7 @@ export function createPlaceholderReplacer(
 	flags?: string,
 ) {
 	const regexp = new RegExp(
-		(Array.isArray(placeholders) ? placeholders : [placeholders]).reduce(
+		(isArr(placeholders) ? placeholders : [placeholders]).reduce(
 			(str, placeholder) => str + (!str ? placeholder : `|${placeholder}`),
 			'',
 		),
@@ -93,9 +92,9 @@ export function createPlaceholderReplacer(
 		str: string | Obj,
 		value: string | number,
 	) {
-		if (typeof str === 'string') {
+		if (isStr(str)) {
 			return str.replace(regexp, String(value))
-		} else if (isPlainObject(str)) {
+		} else if (isObj(str)) {
 			const stringified = JSON.stringify(str).replace(regexp, String(value))
 			return JSON.parse(stringified)
 		}
@@ -108,12 +107,12 @@ export function forEachDeepKeyValue<O = any>(
 	cb: (key: string, value: any, obj: { [key: string]: any }) => void,
 	obj: O | O[],
 ) {
-	if (Array.isArray(obj)) {
+	if (isArr(obj)) {
 		obj.forEach((v) => forEachDeepKeyValue(cb, v))
-	} else if (isPlainObject(obj)) {
-		Object.entries(obj).forEach(([key, value]) => {
+	} else if (isObj(obj)) {
+		entries(obj).forEach(([key, value]) => {
 			cb(key, value, obj)
-			if (isPlainObject(value) || Array.isArray(value)) {
+			if (isObj(value) || isArr(value)) {
 				forEachDeepKeyValue(cb, value)
 			}
 		})
@@ -142,7 +141,7 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 	function getMetadataObject(s: GetMetadataObjectArgsObject | string) {
 		const metadata = {} as MetadataObject
 
-		let value = (typeof s === 'string' ? s : s[type]) as string
+		let value = (isStr(s) ? s : s[type]) as string
 
 		metadata.raw = value as string
 		metadata.ext = getExt(value)
@@ -155,7 +154,7 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 			metadata.pathname = value.startsWith('/') ? value : `/${value}`
 		}
 
-		if (typeof s === 'string') {
+		if (isStr(s)) {
 			if (type === 'link') {
 				if (value.startsWith('http')) metadata.link = value
 				// The link is a pathname, so we need to construct the protocol/hostname
@@ -166,7 +165,7 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 			}
 		} else {
 			if (type === 'link') {
-				const { baseUrl = '', prefix = '', tilde } = s
+				const { baseUrl = '', prefix = '' } = s
 				metadata.link = baseUrl
 				prefix && (metadata.link += `${prefix}`)
 				metadata.link += metadata.pathname.startsWith('/')
@@ -385,7 +384,7 @@ export const saveYml = curry((filepath: string, data: any) =>
 )
 
 export function sortObjPropsByKeys(obj: { [key: string]: any }) {
-	return Object.entries(obj)
+	return entries(obj)
 		.sort((a, b) => {
 			if (a[1] > b[1]) return -1
 			if (a[1] === b[1]) return 0

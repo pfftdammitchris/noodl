@@ -1,5 +1,5 @@
 import { action, component, ComponentType } from 'noodl-types'
-import { YAMLMap } from 'yaml'
+import { isMap, isSeq, YAMLMap } from 'yaml'
 import * as u from './internal'
 
 /* -------------------------------------------------------
@@ -48,8 +48,8 @@ export function isUpdateObjectAction(node: YAMLMap) {
 
 export function isComponentLike(node: YAMLMap) {
 	if (!node.has('type')) return false
-	if (u.isMap(node.get('style'))) return true
-	if (u.isSeq(node.get('children'))) return true
+	if (isMap(node.get('style'))) return true
+	if (isSeq(node.get('children'))) return true
 	return false
 }
 

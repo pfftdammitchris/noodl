@@ -38,7 +38,7 @@ class ActionChain<
 	 * Creates an asynchronous generator that generates the next immediate action
 	 * when the previous has ended
 	 */
-	static async *createGenerator<A extends ActionObject, T extends string>(
+	static *createGenerator<A extends ActionObject, T extends string>(
 		inst: ActionChain,
 	) {
 		let action: Action<A['actionType'], T> | undefined
@@ -48,7 +48,7 @@ class ActionChain<
 		while (inst.queue.length) {
 			action = inst.queue.shift() as Action<A['actionType'], T>
 			// @ts-expect-error
-			result = inst.isAborted() ? undefined : await (yield action)
+			result = inst.isAborted() ? undefined : await(yield action)
 			results.push({ action, result })
 		}
 

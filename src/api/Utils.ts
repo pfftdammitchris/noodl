@@ -1,3 +1,4 @@
+import { Pair, Scalar } from 'yaml'
 import { isReference } from 'noodl-utils'
 import partialRight from 'lodash/partialRight'
 import {
@@ -19,7 +20,6 @@ import {
 	onYAMLMap,
 	onYAMLSeq,
 } from '../utils/doc'
-import { Pair } from 'yaml'
 
 export const identify = (function () {
 	function composeFilters<N>(...fns: ((node: N) => boolean)[]) {
@@ -117,7 +117,9 @@ export const identify = (function () {
 		emit: onYAMLMap(composeFilters(partialRight(hasKey, 'emit'))),
 		if: onYAMLMap(composeFilters(partialRight(hasKey, 'if'))),
 		keyValue: {
-			actionType: onPair((node: Pair<any, any>) => node.key.value === 'actionType'),
+			actionType: onPair(
+				(node: Pair<any, any>) => node.key.value === 'actionType',
+			),
 			funcName: onPair((node: Pair<any, any>) => node.key.value === 'funcName'),
 		},
 		scalar: {
@@ -165,8 +167,12 @@ export const identify = (function () {
 			style: {
 				any: onPair((node: Pair<any, any>) => node.key.value === 'style'),
 			},
-			textAlign: onPair((node: Pair<any, any>) => /textAlign/i.test(node.key.value)),
-			textBoard: onPair((node: Pair<any, any>) => /textBoard/i.test(node.key.value)),
+			textAlign: onPair((node: Pair<any, any>) =>
+				/textAlign/i.test(node.key.value),
+			),
+			textBoard: onPair((node: Pair<any, any>) =>
+				/textBoard/i.test(node.key.value),
+			),
 		},
 	}
 

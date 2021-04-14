@@ -1,4 +1,4 @@
-import yaml, { Document } from 'yaml'
+import yaml, { isNode, isMap, isPair, isSeq, isScalar, Document } from 'yaml'
 import { Node } from 'yaml'
 import { YAMLNode } from './types'
 import * as u from './utils/internal'
@@ -37,14 +37,14 @@ class NoodlPage {
 	contains(node: Node) {
 		let result: boolean | undefined
 
-		if (u.isNode(node)) {
-			const key = (u.isScalar(node)
+		if (isNode(node)) {
+			const key = (isScalar(node)
 				? 'Scalar'
-				: u.isPair(node)
+				: isPair(node)
 				? 'Pair'
-				: u.isMap(node)
+				: isMap(node)
 				? 'Map'
-				: u.isSeq(node)
+				: isSeq(node)
 				? 'Seq'
 				: undefined) as 'Scalar' | 'Pair' | 'Map' | 'Seq'
 
@@ -67,8 +67,8 @@ class NoodlPage {
 		let result: YAMLNode | null = null
 
 		yaml.visit(this.doc, (key, node, path) => {
-			if (fn(node)) {
-				result = node
+			if (fn(node as YAMLNode)) {
+				result = node as YAMLNode
 				return yaml.visit.BREAK
 			}
 		})

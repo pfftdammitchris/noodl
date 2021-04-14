@@ -7,53 +7,55 @@ import {
 	IfObject,
 	StyleBorderObject,
 } from 'noodl-types'
-import { Pair, YAMLMap } from 'yaml'
-import { NOODLTypesObserver } from '../api/createObjectScripts'
+import yaml, { Pair, YAMLMap } from 'yaml'
+import { ScriptObject } from '../api/Scripts'
 import { isYAMLMap } from './doc'
 import Utils from '../api/Utils'
+import * as n from '../utils/noodl-utils'
+import * as u from '../utils/common'
 
 export const id = {
-	ACTION_TYPES: 'action.types',
-	ACTION_OBJECTS: 'action.objects',
-	BUILTIN_FUNC_NAMES: 'builtIn.func.names',
-	COMPONENT_KEYS: 'component.keys',
-	COMPONENT_OBJECTS: 'component.objects',
-	COMPONENT_TYPES: 'component.types',
-	EMIT_OBJECTS: 'emit.objects',
-	IF_OBJECTS: 'if.objects',
-	OBJECTS_THAT_CONTAIN_THESE_KEYS: 'objects.thataw.contain.these.keys',
-	REFERENCES: 'references',
-	RETRIEVE_URLS: 'retrieve.urls',
-	STYLE_BORDER_OBJECTS: 'style.border.objects',
-	STYLE_PROPERTIES: 'style.properties',
+	ACTION_TYPES: 'ACTION_TYPES',
+	ACTION_OBJECTS: 'ACTION_OBJECTS',
+	BUILTIN_FUNC_NAMES: 'BUILTIN_FUNC_NAMES',
+	COMPONENT_KEYS: 'COMPONENT_KEYS',
+	COMPONENT_OBJECTS: 'COMPONENT_OBJECTS',
+	COMPONENT_TYPES: 'COMPONENT_TYPES',
+	EMIT_OBJECTS: 'EMIT_OBJECTS',
+	IF_OBJECTS: 'IF_OBJECTS',
+	OBJECTS_THAT_CONTAIN_THESE_KEYS: 'OBJECTS_THAT_CONTAIN_THESE_KEYS',
+	REFERENCES: 'REFERENCES',
+	RETRIEVE_URLS: 'RETRIEVE_URLS',
+	STYLE_BORDER_OBJECTS: 'STYLE_BORDER_OBJECTS',
+	STYLE_PROPERTIES: 'STYLE_PROPERTIES',
 	// Action object props
-	BUILTIN_ACTION_PROPS: 'builtIn.action.props',
-	EVALOBJECTACTION_PROPS: 'evalObject.action.props',
-	PAGEJUMP_ACTION_PROPS: 'pageJump.action.props',
-	POPUP_ACTION_PROPS: 'popUp.action.props',
-	POPUPDISMISS_ACTION_PROPS: 'popUpDismiss.action.props',
-	REFRESH_ACTION_PROPS: 'refresh.action.props',
-	SAVEOBJECT_ACTION_PROPS: 'saveObject.action.props',
-	UPDATEOBJECT_ACTION_PROPS: 'updateObject.action.props',
+	BUILTIN_ACTION_PROPS: 'BUILTIN_ACTION_PROPS',
+	EVALOBJECTACTION_PROPS: 'EVALOBJECTACTION_PROPS',
+	PAGEJUMP_ACTION_PROPS: 'PAGEJUMP_ACTION_PROPS',
+	POPUP_ACTION_PROPS: 'POPUP_ACTION_PROPS',
+	POPUPDISMISS_ACTION_PROPS: 'POPUPDISMISS_ACTION_PROPS',
+	REFRESH_ACTION_PROPS: 'REFRESH_ACTION_PROPS',
+	SAVEOBJECT_ACTION_PROPS: 'SAVEOBJECT_ACTION_PROPS',
+	UPDATEOBJECT_ACTION_PROPS: 'UPDATEOBJECT_ACTION_PROPS',
 	// Component object props
-	BUTTON_COMPONENT_PROPS: 'button.component.props',
-	DIVIDER_COMPONENT_PROPS: 'divider.component.props',
-	IMAGE_COMPONENT_PROPS: 'image.component.props',
-	LABEL_COMPONENT_PROPS: 'label.component.props',
-	LIST_COMPONENT_PROPS: 'list.component.props',
-	LISTITEM_COMPONENT_PROPS: 'listItem.component.props',
-	POPUP_COMPONENT_PROPS: 'popUp.component.props',
-	SCROLLVIEW_COMPONENT_PROPS: 'scrollView.component.props',
-	SELECT_COMPONENT_PROPS: 'select.component.props',
-	TEXTFIELD_COMPONENT_PROPS: 'textField.component.props',
-	TEXTVIEW_COMPONENT_PROPS: 'textView.component.props',
-	VIEW_COMPONENT_PROPS: 'view.component.props',
+	BUTTON_COMPONENT_PROPS: 'BUTTON_COMPONENT_PROPS',
+	DIVIDER_COMPONENT_PROPS: 'DIVIDER_COMPONENT_PROPS',
+	IMAGE_COMPONENT_PROPS: 'IMAGE_COMPONENT_PROPS',
+	LABEL_COMPONENT_PROPS: 'LABEL_COMPONENT_PROPS',
+	LIST_COMPONENT_PROPS: 'LIST_COMPONENT_PROPS',
+	LISTITEM_COMPONENT_PROPS: 'LISTITEM_COMPONENT_PROPS',
+	POPUP_COMPONENT_PROPS: 'POPUP_COMPONENT_PROPS',
+	SCROLLVIEW_COMPONENT_PROPS: 'SCROLLVIEW_COMPONENT_PROPS',
+	SELECT_COMPONENT_PROPS: 'SELECT_COMPONENT_PROPS',
+	TEXTFIELD_COMPONENT_PROPS: 'TEXTFIELD_COMPONENT_PROPS',
+	TEXTVIEW_COMPONENT_PROPS: 'TEXTVIEW_COMPONENT_PROPS',
+	VIEW_COMPONENT_PROPS: 'VIEW_COMPONENT_PROPS',
 } as const
 
 export interface Store {
-	actions: Partial<{ [K in ActionType]: ActionObject[] }>
+	actions: Partial<Record<string, ActionObject[]>>
 	actionTypes: string[]
-	components: Partial<{ [K in ComponentType]: ComponentObject[] }>
+	components: Partial<Record<string, ComponentObject[]>>
 	componentKeys: string[]
 	componentTypes: string[]
 	emit: EmitObject[]
@@ -67,10 +69,10 @@ export interface Store {
 	urls: string[]
 	propCombos: {
 		actions: {
-			[K in ActionType]: { [key: string]: any[] }
+			[actionType: string]: { [key: string]: any[] }
 		}
 		components: {
-			[K in ComponentType]: { [key: string]: any[] }
+			[componentType: string]: { [key: string]: any[] }
 		}
 	}
 	containedKeys: {
@@ -78,11 +80,11 @@ export interface Store {
 	}
 }
 
-const scripts = {} as { [K in typeof id[keyof typeof id]]: NOODLTypesObserver }
+const scripts: Record<string, () => ScriptObject> = {}
 
 scripts[id.ACTION_OBJECTS] = {
-	id: 'action.objects',
 	label: 'Retrieve all action objects',
+	cond: 'map',
 	fn(node: YAMLMap, store) {
 		if (Utils.identify.action.any(node)) {
 			const actionType = node.get('actionType') as string
@@ -93,7 +95,6 @@ scripts[id.ACTION_OBJECTS] = {
 }
 
 scripts[id.ACTION_TYPES] = {
-	id: 'action.types',
 	label: 'Retrieve all action types',
 	fn(node: Pair<any, any>, store) {
 		if (Utils.identify.keyValue.actionType(node)) {
@@ -105,7 +106,6 @@ scripts[id.ACTION_TYPES] = {
 }
 
 scripts[id.STYLE_BORDER_OBJECTS] = {
-	id: 'border.style.objects',
 	label: 'Retrieve all style border objects',
 	fn(node, store) {
 		if (Utils.identify.style.border(node)) {
@@ -116,7 +116,6 @@ scripts[id.STYLE_BORDER_OBJECTS] = {
 }
 
 scripts[id.BUILTIN_FUNC_NAMES] = {
-	id: 'builtIn.funcNames',
 	label: 'Retrieve all builtIn action funcNames',
 	fn(node: Pair<any, any>, store) {
 		if (Utils.identify.keyValue.funcName(node)) {
@@ -128,7 +127,6 @@ scripts[id.BUILTIN_FUNC_NAMES] = {
 }
 
 scripts[id.COMPONENT_KEYS] = {
-	id: 'component.keys',
 	label: 'Retrieve all component keys',
 	fn(node: YAMLMap<any>, store) {
 		if (Utils.identify.component.any(node)) {
@@ -142,7 +140,6 @@ scripts[id.COMPONENT_KEYS] = {
 }
 
 scripts[id.COMPONENT_OBJECTS] = {
-	id: 'component.objects',
 	label: 'Retrieve all component objects',
 	fn(node: YAMLMap, store) {
 		if (Utils.identify.component.any(node)) {
@@ -154,7 +151,6 @@ scripts[id.COMPONENT_OBJECTS] = {
 }
 
 scripts[id.COMPONENT_TYPES] = {
-	id: 'component.types',
 	label: 'Retrieve all component types',
 	fn(node: YAMLMap, store) {
 		if (Utils.identify.component.any(node)) {
@@ -166,7 +162,6 @@ scripts[id.COMPONENT_TYPES] = {
 }
 
 scripts[id.EMIT_OBJECTS] = {
-	id: 'emit.objects',
 	label: 'Retrieve all emit objects',
 	fn(node: YAMLMap, store) {
 		if (Utils.identify.emit(node)) {
@@ -177,7 +172,6 @@ scripts[id.EMIT_OBJECTS] = {
 }
 
 scripts[id.IF_OBJECTS] = {
-	id: 'if.objects',
 	label: 'Retrieve all "if" objects',
 	fn(node: YAMLMap, store) {
 		if (Utils.identify.if(node)) {
@@ -188,7 +182,6 @@ scripts[id.IF_OBJECTS] = {
 }
 
 scripts[id.OBJECTS_THAT_CONTAIN_THESE_KEYS] = {
-	id: 'objects.that.contain.these.keys',
 	label: `Retrieve all objects that contain the specified keys`,
 	fn(node, store) {
 		const keys = ['contentType']
@@ -207,20 +200,43 @@ scripts[id.OBJECTS_THAT_CONTAIN_THESE_KEYS] = {
 	},
 }
 
-scripts[id.REFERENCES] = {
-	id: 'references',
-	label: 'Retrieve all references',
-	fn(node: Pair, store) {
-		if (Utils.identify.scalar.reference(node)) {
-			if (!store.references.includes(node.value)) {
-				store.references.push(node.value)
+scripts[id.REFERENCES] = () => {
+	const context = new Map<string, string[]>()
+	const getPageName = (doc: yaml.Document) => doc.contents.items[0].key.value
+
+	return {
+		label: 'Retrieve all references',
+		fn({ key, node, path }, store) {
+			let pageName = n.isPageDocument(path[0]) ? getPageName(path[0]) : ''
+			let references: string[] | undefined = context.get(pageName)
+
+			if (!store.context) store.context = context
+
+			if (pageName && !references) {
+				references = []
+				context.set(pageName, references)
 			}
-		}
-	},
+
+			if (Utils.identify.scalar.reference(node)) {
+				const reference = String(node.value)
+				if (!references?.includes(reference)) {
+					if (key === 'key') {
+						//
+					} else if (key === 'value') {
+						//
+					} else if (u.isNum(key)) {
+						//
+					}
+					if (pageName) {
+						references?.push(reference)
+					}
+				}
+			}
+		},
+	}
 }
 
 scripts[id.RETRIEVE_URLS] = {
-	id: 'retrieve.urls',
 	label: 'Retrieve all urls/paths',
 	fn(node: Pair, store) {
 		if (Utils.identify.scalar.url(node)) {
@@ -230,7 +246,6 @@ scripts[id.RETRIEVE_URLS] = {
 }
 
 scripts[id.STYLE_PROPERTIES] = {
-	id: 'style.properties',
 	label: 'Retrieve all style properties',
 	fn(node: Pair<any, any>, store) {
 		if (Utils.identify.paths.style.any(node)) {
@@ -278,7 +293,7 @@ export function createActionPropComboScripts() {
 				})
 			}
 		},
-	})) as NOODLTypesObserver[]
+	})) as ScriptObject[]
 }
 export function createComponentPropComboScripts() {
 	return [
@@ -317,7 +332,7 @@ export function createComponentPropComboScripts() {
 				})
 			}
 		},
-	})) as NOODLTypesObserver[]
+	})) as ScriptObject[]
 }
 
 export default scripts

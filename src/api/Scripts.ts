@@ -6,11 +6,24 @@ import chunk from 'lodash/chunk'
 import fs from 'fs-extra'
 import { YAMLNode } from '../types'
 import * as u from '../utils/common'
+import * as n from '../utils/noodl-utils'
+
+export interface MetadataObject {
+	page?: string
+}
 
 export interface ScriptObject<Store = any> {
-	id?: string
 	label?: string
-	fn(node: YAMLNode, store: Store): void
+	cond?: 'scalar' | 'pair' | 'map' | 'seq' | ((node: YAMLNode) => boolean)
+	key?: string
+	fn(
+		args: {
+			key: number | 'key' | 'value'
+			node: yaml.Document<unknown> | YAMLNode | null
+			path: (yaml.Document<unknown> | YAMLNode | yaml.Pair<unknown, unknown>)[]
+		},
+		store: Store,
+	): void
 }
 
 class Scripts<Store = any> {
@@ -28,16 +41,9 @@ class Scripts<Store = any> {
 		store?: Store
 		docs?: yaml.Document | yaml.Document[]
 	}) {
-		invariant(!!opts.dataFilePath, `Missing "dataFilePath argument"`)
 		this.#dataFilePath = opts.dataFilePath || ''
-		if (opts.docs) {
-			u.array(opts.docs).forEach((doc) => this.docs.push(doc))
-		}
+		opts.docs && u.array(opts.docs).forEach((doc) => this.docs.push(doc))
 		opts.store && (this.#store = opts.store)
-	}
-
-	get observers() {
-		return this.#obs
 	}
 
 	set dataFilePath(dataFilePath: string) {
@@ -45,9 +51,18 @@ class Scripts<Store = any> {
 		this.ensureDataFile()
 	}
 
-	compose(...fns: ((node: YAMLNode, store: Store) => any)[]) {
-		fns = fns.reverse()
-		return (node: YAMLNode) => fns.forEach((fn) => fn(node, this.#store))
+	get observers() {
+		return this.#obs
+	}
+
+	compose(scripts: ScriptObject[]) {
+		scripts = scripts.reverse()
+
+		const composed = (args: Parameters<ScriptObject['fn']>[0]) => {
+			scripts.forEach((obj) => obj.fn(args, this.#store))
+		}
+
+		return composed
 	}
 
 	ensureDataFile() {
@@ -59,32 +74,27 @@ class Scripts<Store = any> {
 	}
 
 	get() {
-		try {
-			return fs.readJsonSync(this.#dataFilePath)
-		} catch (error) {
-			console.error(error)
+		if (this.#dataFilePath) {
+			try {
+				return fs.readJsonSync(this.#dataFilePath)
+			} catch (error) {
+				console.error(error)
+			}
 		}
-		return null
-	}
 
-	save() {
-		try {
-			fs.writeJsonSync(this.#dataFilePath, this.#store, { spaces: 2 })
-		} catch (error) {
-			console.error(error)
-		}
-		return this.get()
+		return null
 	}
 
 	run() {
 		this.#obs.start.forEach((fn) => fn(this.#store))
 		const chunkedDocs = chunk(this.docs, 8)
-		const processFns = this.compose(...this.#scripts.map(({ fn }) => fn))
+		const composed = this.compose(this.#scripts)
 		for (const docs of chunkedDocs) {
 			const numDocs = docs?.length || 0
 			for (let i = 0; i < numDocs; i++) {
-				yaml.visit(docs?.[i] as yaml.Document, (key, node, path) => {
-					processFns(node)
+				const doc = docs?.[i] as yaml.Document
+				yaml.visit(doc, (key, node, path) => {
+					composed({ key, node, path } as Parameters<ScriptObject['fn']>[0])
 				})
 			}
 		}
@@ -92,12 +102,23 @@ class Scripts<Store = any> {
 		this.save()
 	}
 
+	save() {
+		if (this.#dataFilePath) {
+			try {
+				fs.writeJsonSync(this.#dataFilePath, this.#store, { spaces: 2 })
+			} catch (error) {
+				console.error(error)
+			}
+		}
+		return this.get()
+	}
+
 	use(opts: {
-		script?: ScriptObject | ScriptObject[]
+		script?: (() => ScriptObject) | (() => ScriptObject)[]
 		start?: ((store: Store) => void) | ((store: Store) => void)[]
 		end?: ((store: Store) => void) | ((store: Store) => void)[]
 	}) {
-		opts.script && this.#scripts.push(...u.array(opts.script))
+		opts.script && this.#scripts.push(...u.array(opts.script).map((s) => s()))
 		opts.start && this.#obs.start.push(...u.array(opts.start))
 		opts.end && this.#obs.end.push(...u.array(opts.end))
 		return this

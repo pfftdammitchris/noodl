@@ -1,26 +1,17 @@
 import flowRight from 'lodash/flowRight'
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
+import { isMap, isScalar, Scalar, YAMLMap } from 'yaml'
 import { YAMLNode } from '../types/internalTypes'
 import * as mapUtil from './map'
 import * as scalarUtil from './scalar'
 import * as seqUtil from './seq'
-import * as u from './internal'
 
 const composeScalarFns = <RT = any>(...fns: ((n: Scalar) => RT)[]) => (
 	n: YAMLNode,
-) => u.isScalar(n) && flowRight(...fns)(n)
-
-const composePairFns = <RT = any>(...fns: ((n: Pair) => RT)[]) => (
-	n: YAMLNode,
-) => u.isPair(n) && flowRight(...fns)(n)
+) => isScalar(n) && flowRight(...fns)(n)
 
 const composeMapFns = <RT = any>(...fns: ((n: YAMLMap) => RT)[]) => (
 	n: YAMLNode,
-) => u.isMap(n) && flowRight(...fns)(n)
-
-const composeSeqFns = <RT = any>(...fns: ((n: YAMLSeq) => RT)[]) => (
-	n: YAMLNode,
-) => u.isSeq(n) && flowRight(...fns)(n)
+) => isMap(n) && flowRight(...fns)(n)
 
 const Identify = (function () {
 	const o = {
@@ -39,7 +30,7 @@ const Identify = (function () {
 		component: {
 			any(v: unknown) {
 				return (
-					u.isMap(v) &&
+					isMap(v) &&
 					[mapUtil.isComponent, mapUtil.isComponentLike].some((fn) => fn(v))
 				)
 			},

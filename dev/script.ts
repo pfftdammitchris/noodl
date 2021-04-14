@@ -3,7 +3,7 @@ config()
 import { enablePatches } from 'immer'
 import fs from 'fs-extra'
 import chalk from 'chalk'
-import Scripts from '../src/api/createObjectScripts'
+import Scripts from '../src/api/Scripts'
 import scripts, {
 	createActionPropComboScripts,
 	createComponentPropComboScripts,
@@ -30,7 +30,7 @@ u.values({
 	componentTypes: scriptId.COMPONENT_TYPES,
 	componentKeys: scriptId.COMPONENT_KEYS,
 	styleKeys: scriptId.STYLE_PROPERTIES,
-} as const).forEach((id) => o.use(scripts[id]))
+} as const).forEach((id) => o.use({ script: scripts[id] }))
 
 o.use({
 	script: [

@@ -6,7 +6,7 @@
 		"prebuild": "rm -rf dist && npm run codegen",
 		"build": "tsc",
 		"build:noodl": "lerna exec --scope noodl \"npm run build\"",
-		"build:types": "lerna exec --scope noodl-types \"npm run build\"",
+		"build:noodltypes": "lerna exec --scope noodl-types \"npm run build\"",
 		"bootstrap": "lerna bootstrap --hoist",
 		"codegen": "graphql-codegen",
 		"codegen:watch": "graphql-codegen --watch",
@@ -20,14 +20,11 @@
 		"pretest": "npm run build",
 		"postinstall": "npm run bootstrap",
 		"test": "ava --watch",
-		"test:mocha": "npx nodemon scripts/test.js test -n",
 		"test:noodl": "lerna exec --scope noodl \"npm run test\"",
 		"test:noodl:file": "lerna exec --scope noodl \"npm run test:file\"",
 		"test:nac": "lerna exec --scope noodl-action-chain \"npm run test\"",
-		"test:mocha:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files src",
-		"test:mocha:dev": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file dev/noodl-morph/setupTests.ts --watch --watch-files dev",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files \"src/**/*.ts\"",
-		"publish": "node scripts/publish.js -p"
+		"pub": "node scripts/publish.js -p"
 	},
 	"dependencies": {
 		"apollo-server-express": "^2.21.0",
@@ -92,6 +89,7 @@
 		"globby": "^11.0.2",
 		"ink-testing-library": "^2.1.0",
 		"lerna": "^4.0.0",
+		"lodash": "^4.17.21",
 		"meow": "^9.0.0",
 		"mocha": "^8.2.1",
 		"rollup": "^2.39.0",
@@ -105,7 +103,7 @@
 		"ts-node": "^9.1.1",
 		"ts-node-dev": "^1.1.1",
 		"type-fest": "^1.0.1",
-		"typescript": "^4.1.5",
+		"typescript": "^4.2.4",
 		"xo": "^0.37.1",
 		"yaml": "^2.0.0-4"
 	},

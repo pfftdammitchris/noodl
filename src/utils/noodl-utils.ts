@@ -1,5 +1,15 @@
 import isPlainObject from 'lodash/isPlainObject'
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
+import yaml, {
+	isDocument,
+	isMap,
+	isSeq,
+	isScalar,
+	isPair,
+	Pair,
+	Scalar,
+	YAMLMap,
+	YAMLSeq,
+} from 'yaml'
 
 export function has(path: string[], node: unknown): boolean
 export function has(path: string, node: unknown): boolean
@@ -59,6 +69,12 @@ export function isEmitObj(node: YAMLMap) {
 
 export function isIfObj(node: YAMLMap) {
 	return has('if', node)
+}
+
+export function isPageDocument(node: unknown): node is yaml.Document<YAMLMap> {
+	return (
+		isDocument(node) && isMap(node.contents) && node.contents.items.length === 1
+	)
 }
 
 export function isYAMLNode(type: 'pair', node: any): node is Pair

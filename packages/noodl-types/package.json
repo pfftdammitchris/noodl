@@ -1,16 +1,14 @@
 {
 	"name": "noodl-types",
-	"version": "1.0.50",
+	"version": "1.0.53",
 	"description": "NOODL TypeScript Definitions",
 	"main": "dist/index.js",
+	"module": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"start": "rm -rf dist && tsc --watch",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
-	},
-	"dependencies": {
-		"lodash": "file:../../node_modules/lodash"
 	},
 	"author": "Christopher Tran <christopher@aitmed.com>",
 	"homepage": "",

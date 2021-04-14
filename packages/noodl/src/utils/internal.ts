@@ -1,5 +1,3 @@
-import { Node, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
-
 export interface PlainObject {
 	[key: string]: any
 }
@@ -16,12 +14,7 @@ export const isUnd = (v: any): v is undefined => v === undefined
 export const isNil = (v: any): v is null | undefined => isNull(v) && isUnd(v)
 export const isObj = <V extends Record<string, any>>(v: any): v is V =>
 	!!v && !isArr(v) && typeof v === 'object'
-export const isNode = (v: any) => !!(v && v instanceof Node)
 export const isPage = (v: any) => !!(v && 'doc' in v)
-export const isMap = (v: any): v is YAMLMap => v instanceof YAMLMap
-export const isPair = (v: any): v is Pair => v instanceof Pair
-export const isScalar = (v: any): v is Scalar => v instanceof Scalar
-export const isSeq = (v: any): v is YAMLSeq => v instanceof YAMLSeq
 export const trimInitialDots = (v: any) => {
 	if (isStr(v)) {
 		if (!v.startsWith('.')) return v

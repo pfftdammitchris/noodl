@@ -13,8 +13,8 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "es5"
+		"target": "es6"
 	},
 	"exclude": ["node_modules", "dist"],
-	"include": ["src/**/*"]
+	"include": ["src"]
 }

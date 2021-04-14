@@ -1,4 +1,4 @@
-import { Scalar, YAMLMap } from 'yaml'
+import { isScalar, Scalar, YAMLMap } from 'yaml'
 import { YAMLNode } from './types'
 import NoodlUtils from './Utils'
 import {
@@ -48,7 +48,7 @@ class Dereferencer {
 				if (ref[0] === ref[0].toUpperCase()) {
 					value = this.getRootReference(ref)
 				} else if (ref[0] === ref[0].toLowerCase()) {
-					value = this.getLocalReference(ref, { page: rootNode })
+					value = this.getLocalReference(ref, { page: rootNode as NoodlPage })
 				}
 			}
 		}
@@ -106,7 +106,7 @@ class Dereferencer {
 			}
 		}
 
-		if (u.isScalar(value) && isReference(value)) {
+		if (isScalar(value) && isReference(value)) {
 			if (isLocalReference(value)) {
 				for (const page of this.#pages.values()) {
 					if (page.contains(value)) {
@@ -123,7 +123,7 @@ class Dereferencer {
 					}
 				}
 			} else if (isRootReference(value)) {
-				value = this.getRootReference(value.value)
+				value = this.getRootReference(value.value as string)
 			}
 		}
 

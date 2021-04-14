@@ -1,9 +1,9 @@
 import yaml from 'yaml'
-import { Node, Scalar } from 'yaml'
+import { Node, isPair, isScalar } from 'yaml'
 import flowRight from 'lodash/flowRight'
 import NoodlRoot from './Root'
 import NoodlUtils from './Utils'
-import { isReference, isEvalReference, isLocalReference } from './utils/scalar'
+import { isReference } from './utils/scalar'
 import * as u from './utils/internal'
 import * as T from './types'
 
@@ -22,12 +22,12 @@ export const _noodlSpecTransformers = (function () {
 			node,
 			util,
 		): any {
-			if (u.isPair(node)) {
-				if (String(node.key.value).endsWith('@')) {
-					const ref = node.key.value
+			if (isPair(node)) {
+				if (isScalar(node.key) && String(node.key.value).endsWith('@')) {
+					const ref = node.key.value as string
 					// Start with the right side first because the reference application
 					// is always determined by its value
-					if (isReference(node.value)) {
+					if (isScalar(node.value) && isReference(node.value)) {
 						console.log('node.value.value', node.value.value)
 						transformReference.call(this, node.value, util)
 						console.log('node.value.value', node.value.value)
@@ -35,16 +35,16 @@ export const _noodlSpecTransformers = (function () {
 
 					// Next, move to the key since the value is resolved
 					node.key.value = ref.substring(0, ref.length - 1)
-					if (isReference(node.key.value)) {
+					if (isScalar(node.key) && isReference(String(node.key.value))) {
 						transformReference.call(this, node.key, util)
 						return yaml.visit.SKIP
 					}
-					if (u.isScalar(node.value)) return yaml.visit.SKIP
+					if (isScalar(node.value)) return yaml.visit.SKIP
 				}
-			} else if (u.isScalar(node) && u.isStr(node.value)) {
+			} else if (isScalar(node) && u.isStr(node.value)) {
 				let value: any
 
-				if (u.isScalar(node) && u.isStr(node.value)) {
+				if (isScalar(node) && u.isStr(node.value)) {
 					if (node.value.startsWith('..')) {
 						node.value = node.value.substring(2)
 						transformReference.call(this, node, util)

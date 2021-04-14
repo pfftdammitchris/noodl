@@ -3,7 +3,7 @@ import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
 import useCtx from '../../useCtx'
-import createObjectScripts from '../../api/createObjectScripts'
+import Scripts from '../../api/Scripts'
 import scriptObjs, { id as scriptId, Store } from '../../utils/scripts'
 import useServerFilesCtx from './useServerFilesCtx'
 import { Noodl } from '../../types'
@@ -28,102 +28,105 @@ function ScanAssets() {
 			const myBaseUrl = rootConfig.myBaseUrl || ''
 			const preloadPages = appConfig.preload
 			const pages = appConfig.page
-			const scripts = createObjectScripts()
-			const ymlDocs = [...preloadPages, ...pages].reduce((acc, p) => {
-				const filepath = u.getFilepath(settings.server.dir, `${p}.yml`)
-				if (fs.existsSync(filepath)) {
-					return acc.concat(
-						yaml.parseDocument(fs.readFileSync(filepath, 'utf8')),
-					)
-				} else {
-					setCaption(`${u.red(p)} is not found`)
-				}
-				return acc
-			}, [] as yaml.Document[])
+			const scripts = new Scripts({
+				dataFilePath: '',
+				docs: [...preloadPages, ...pages].reduce((acc, p) => {
+					const filepath = u.getFilepath(settings.server.dir, `${p}.yml`)
+					if (fs.existsSync(filepath)) {
+						return acc.concat(
+							yaml.parseDocument(fs.readFileSync(filepath, 'utf8')),
+						)
+					} else {
+						setCaption(`${u.red(p)} is not found`)
+					}
+					return acc
+				}, [] as yaml.Document[]),
+			})
 
-			scripts.data(ymlDocs)
 			scripts
-				.use(scriptObjs[scriptId.RETRIEVE_URLS])
-				.on('start', (store) => !store.urls && (store.urls = []))
-				.on('end', (store: Store) => {
-					store.urls = store.urls.sort()
+				.use({
+					script: scriptObjs.RETRIEVE_URLS,
+					start: (store) => !store.urls && (store.urls = []),
+					end(store) {
+						store.urls = store.urls.sort()
 
-					const contained = [] as T.MetadataObject[]
-					const missing = [] as T.MetadataObject[]
+						const contained = [] as T.MetadataObject[]
+						const missing = [] as T.MetadataObject[]
 
-					fs.ensureDirSync(assetsDir)
+						fs.ensureDirSync(assetsDir)
 
-					const localAssetFiles = fs.readdirSync(assetsDir)
-					// Meta data objects ƒetched remotely
-					const groupedMetadataObjects = {
-						...u.createGroupedMetadataObjects(),
-						allUrls: [],
-					} as T.GroupedMetadataObjects & { allUrls: string[] }
+						const localAssetFiles = fs.readdirSync(assetsDir)
+						// Meta data objects ƒetched remotely
+						const groupedMetadataObjects = {
+							...u.createGroupedMetadataObjects(),
+							allUrls: [],
+						} as T.GroupedMetadataObjects & { allUrls: string[] }
 
-					const {
-						documents,
-						images,
-						scripts,
-						videos,
-						allUrls,
-					} = groupedMetadataObjects
+						const {
+							documents,
+							images,
+							scripts,
+							videos,
+							allUrls,
+						} = groupedMetadataObjects
 
-					for (let url of store.urls) {
-						const raw = url
-						// Calculate and re-assign as the full url
-						// Asset urls that are dependent on the myBaseUrl prefix
-						if (url.includes('~/')) {
-							url = u.replaceTildePlaceholder(url, myBaseUrl)
+						for (let url of store.urls) {
+							const raw = url
+							// Calculate and re-assign as the full url
+							// Asset urls that are dependent on the myBaseUrl prefix
+							if (url.includes('~/')) {
+								url = u.replaceTildePlaceholder(url, myBaseUrl)
+							}
+
+							// Skip unrelated urls
+							if (url.startsWith('http') && !/aitmed/i.test(url)) continue
+
+							const metadata = u.getLinkMetadata({
+								link: url,
+								baseUrl: appConfig.baseUrl,
+								prefix: 'assets',
+								tilde: myBaseUrl,
+							})
+
+							// Re-assign raw because url was tampered
+							metadata.raw = raw
+
+							if (metadata.link) allUrls.push(metadata.link)
+
+							if (u.isImg(url)) images.push(metadata)
+							else if (u.isVid(url)) videos.push(metadata)
+							else if (u.isPdf(url)) documents.push(metadata)
+							else if (u.isJs(url) || u.isHtml(url)) scripts.push(metadata)
+
+							allUrls.push(metadata.link as string)
+
+							const filename = u.hasSlash(url) ? u.getFilename(url) : url
+
+							if (localAssetFiles.includes(filename)) contained.push(metadata)
+							else missing.push(metadata)
 						}
 
-						// Skip unrelated urls
-						if (url.startsWith('http') && !/aitmed/i.test(url)) continue
+						const configId = aggregator.config
 
-						const metadata = u.getLinkMetadata({
-							link: url,
-							baseUrl: appConfig.baseUrl,
-							prefix: 'assets',
-							tilde: myBaseUrl,
-						})
+						setCaption('\n')
+						//
+						;['images', 'documents', 'scripts', 'videos'].forEach((s) =>
+							setCaption(
+								`Found ${u.magenta(
+									groupedMetadataObjects[s].length,
+								)} ${s} in ${u.italic(configId)}`,
+							),
+						)
 
-						// Re-assign raw because url was tampered
-						metadata.raw = raw
-
-						if (metadata.link) allUrls.push(metadata.link)
-
-						if (u.isImg(url)) images.push(metadata)
-						else if (u.isVid(url)) videos.push(metadata)
-						else if (u.isPdf(url)) documents.push(metadata)
-						else if (u.isJs(url) || u.isHtml(url)) scripts.push(metadata)
-
-						allUrls.push(metadata.link as string)
-
-						const filename = u.hasSlash(url) ? u.getFilename(url) : url
-
-						if (localAssetFiles.includes(filename)) contained.push(metadata)
-						else missing.push(metadata)
-					}
-
-					const configId = aggregator.config
-
-					setCaption('\n')
-					//
-					;['images', 'documents', 'scripts', 'videos'].forEach((s) =>
 						setCaption(
-							`Found ${u.magenta(
-								groupedMetadataObjects[s].length,
-							)} ${s} in ${u.italic(configId)}`,
-						),
-					)
+							`\n${u.magenta(store.urls.length)} overall assets in ${u.magenta(
+								configId,
+							)} config`,
+						)
 
-					setCaption(
-						`\n${u.magenta(store.urls.length)} overall assets in ${u.magenta(
-							configId,
-						)} config`,
-					)
-
-					insertMissingFiles(missing)
-					setStep(c.step.DOWNLOAD_ASSETS)
+						insertMissingFiles(missing)
+						setStep(c.step.DOWNLOAD_ASSETS)
+					},
 				})
 				.run()
 		} else {
