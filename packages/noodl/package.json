@@ -1,6 +1,6 @@
 {
 	"name": "noodl",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
 	"module": "dist/index.js",
 	"main": "dist/index.js",
@@ -16,7 +16,6 @@
 		"noodl-common": "file:../noodl-common",
 		"noodl-types": "file:../noodl-types"
 	},
-	"devDependencies": {},
 	"keywords": [
 		"noodl",
 		"javascript",
