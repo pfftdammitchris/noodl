@@ -1,6 +1,6 @@
 {
 	"name": "noodl-types",
-	"version": "1.0.54",
+	"version": "1.0.55",
 	"description": "NOODL TypeScript Definitions",
 	"main": "dist/index.js",
 	"module": "dist/index.js",
@@ -19,5 +19,6 @@
 	"repository": {
 		"type": "git",
 		"url": "http://gitlab.aitmed.com/pfftdammitchris/aitmed-noodl-web.git"
-	}
+	},
+	"gitHead": "706e69ec933707daf635b0fea670185493b5c0e5"
 }
