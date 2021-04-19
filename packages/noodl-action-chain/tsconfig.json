@@ -6,7 +6,7 @@
 		"declaration": true,
 		"declarationDir": "dist",
 		"esModuleInterop": true,
-		"lib": ["es6", "esnext"],
+		"lib": ["esnext"],
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"noEmitOnError": false,
@@ -15,9 +15,10 @@
 		"strictNullChecks": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
+		"strict": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "es2019"
+		"target": "es2017"
 	},
-	"exclude": ["node_modules/**/*"],
-	"files": ["src/index.ts"]
+	"exclude": ["node_modules", "src/**/*__tests__"],
+	"include": ["src"]
 }

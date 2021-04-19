@@ -9,6 +9,7 @@ export interface IAction<
 > {
 	actionType: AType
 	abort(reason?: string | string[]): void
+	aborted: boolean
 	execute(...args: any[]): Promise<any>
 	executor(...args: any[]): Promise<any>
 	executed: boolean

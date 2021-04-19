@@ -12,7 +12,7 @@ class Action<AType extends string = string, T extends string = string>
 	#actionType: AType
 	#aborted = false
 	#executed = false
-	#executor: IAction['executor']
+	#executor = {} as IAction['executor']
 	#original: ActionObject<AType>
 	#remaining: number = Infinity
 	#status: ActionStatus | null = null

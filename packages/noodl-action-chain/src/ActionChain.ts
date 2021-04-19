@@ -20,7 +20,7 @@ class ActionChain<
 	#actions: A[]
 	#current: Action<A['actionType'], T> | null = null
 	#error: null | Error | AbortExecuteError = null
-	#gen: AsyncGenerator<
+	#gen = {} as AsyncGenerator<
 		Action<A['actionType'], T>,
 		ActionChainIteratorResult<A, T>[],
 		any
@@ -277,6 +277,7 @@ class ActionChain<
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()
 		}
+		// @ts-expect-error
 		this.#gen = ActionChain.createGenerator<A, T>(this)
 		return this.queue
 	}

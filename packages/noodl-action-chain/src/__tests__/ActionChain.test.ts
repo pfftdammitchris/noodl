@@ -248,9 +248,7 @@ describe(coolGold(`ActionChain`), () => {
 
 	describe(italic(`Observers`), () => {
 		describe(magenta(`onAbortStart`), () => {
-			it.only(`should call ${magenta(
-				`onAbortStart`,
-			)} when aborting`, async () => {
+			it(`should call ${magenta(`onAbortStart`)} when aborting`, async () => {
 				const spy = sinon.spy()
 				const ac = getActionChain({
 					actions: [getEvalObjectAction(), getBuiltInAction()],
@@ -263,7 +261,7 @@ describe(coolGold(`ActionChain`), () => {
 		})
 
 		describe(magenta(`onAbortEnd`), () => {
-			it.only(`should call ${magenta(
+			it(`should call ${magenta(
 				`onAbortEnd`,
 			)} in the end of aborting`, async () => {
 				const spy = sinon.spy()
