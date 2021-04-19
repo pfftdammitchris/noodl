@@ -11,9 +11,12 @@ describe('Action', () => {
 			action.error = err
 			action.result = 'abc'
 			expect(action.error).to.equal(err)
+			action.error = null
+			expect(action.error).to.be.null
 			expect(action.result).to.equal('abc')
 			action.execute()
-			expect(action.error).to.be.null
+			expect(action.error).to.be.instanceOf(Error)
+			expect(action.error).not.to.eq(err)
 			expect(action.result).to.be.undefined
 		})
 

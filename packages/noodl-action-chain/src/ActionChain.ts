@@ -38,7 +38,7 @@ class ActionChain<
 	 * Creates an asynchronous generator that generates the next immediate action
 	 * when the previous has ended
 	 */
-	static *createGenerator<A extends ActionObject, T extends string>(
+	static async *createGenerator<A extends ActionObject, T extends string>(
 		inst: ActionChain,
 	) {
 		let action: Action<A['actionType'], T> | undefined
@@ -48,7 +48,7 @@ class ActionChain<
 		while (inst.queue.length) {
 			action = inst.queue.shift() as Action<A['actionType'], T>
 			// @ts-expect-error
-			result = inst.isAborted() ? undefined : await(yield action)
+			result = inst.isAborted() ? undefined : await (yield action)
 			results.push({ action, result })
 		}
 
@@ -166,7 +166,7 @@ class ActionChain<
 						let cachedAction = action
 						this.#timeout = setTimeout(() => {
 							const msg = `Action of type "${cachedAction?.actionType}" timed out`
-							cachedAction?.abort(msg)
+							cachedAction?.abort?.(msg)
 							cachedAction = null as any
 							try {
 								this.abort(msg)
@@ -181,13 +181,13 @@ class ActionChain<
 
 								if (action?.status !== 'aborted') {
 									this.#obs.onBeforeActionExecute?.({ action, args })
-									result = await action?.execute(args)
+									result = await action?.execute?.(args)
 									this.#obs.onExecuteResult?.(result)
 									this.#results.push({
 										action: action as Action<A['actionType'], T>,
 										result: action?.result,
 									})
-									iterator = await this.next(result)
+									iterator = await this.next?.(result)
 								}
 							}
 						} else {
@@ -204,7 +204,7 @@ class ActionChain<
 
 						if (isPlainObject(result) && 'wait' in result) {
 							// This block is mostly intended for popUps to "wait" for a user interaction
-							await this.abort(
+							await this?.abort?.(
 								`An action returned from a "${action?.actionType}" type requested to wait`,
 							)
 						}
@@ -218,10 +218,10 @@ class ActionChain<
 				}
 			}
 		} catch (error) {
-			await this.abort(error.message)
-			throw new AbortExecuteError(error.message)
+			await this.abort?.(error.message)
+			// throw new AbortExecuteError(error.message)
 		} finally {
-			this.#refresh()
+			this.#refresh?.()
 			this.#obs.onExecuteEnd?.()
 		}
 		return this.#results
@@ -277,7 +277,6 @@ class ActionChain<
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()
 		}
-		// @ts-expect-error
 		this.#gen = ActionChain.createGenerator<A, T>(this)
 		return this.queue
 	}
