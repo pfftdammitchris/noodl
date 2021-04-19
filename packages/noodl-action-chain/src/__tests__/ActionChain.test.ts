@@ -85,19 +85,17 @@ describe(coolGold(`ActionChain`), () => {
 			})
 
 			describe(`when it is the last item in the generator`, () => {
-				it.only(`should return an array of results of objects in the shape of { action, result }`, async () => {
+				it(`should return an array of results of objects in the shape of { action, result }`, async () => {
 					const ac = getActionChain({
 						actions: [getPopUpDismissAction(), getPopUpAction()],
 						trigger: 'onChange',
 					})
-					console.info(ac.snapshot())
 					const results = await ac.execute()
-					// console.info('results', results)
-					// expect(results).to.be.an('array').with.lengthOf(2)
-					// results.forEach((res) => {
-					// expect(res).to.have.property('action').to.be.instanceOf(Action)
-					// expect(res).to.have.property('result')
-					// })
+					expect(results).to.be.an('array').with.lengthOf(2)
+					results.forEach((res) => {
+						expect(res).to.have.property('action').to.be.instanceOf(Action)
+						expect(res).to.have.property('result')
+					})
 				})
 			})
 		})
@@ -114,6 +112,16 @@ describe(coolGold(`ActionChain`), () => {
 	})
 
 	describe(italic(`Execution`), () => {
+		it(`should only invoke the callback once`, async () => {
+			const spy = sinon.spy()
+			const ac = getActionChain({
+				actions: [{ action: getEvalObjectAction(), fn: async () => spy() }],
+				trigger: 'onChange',
+			})
+			await ac.execute()
+			expect(spy).to.be.calledOnce
+		})
+
 		it('should call the "execute" method on every action', async () => {
 			const spy1 = sinon.spy()
 			const spy2 = sinon.spy()
