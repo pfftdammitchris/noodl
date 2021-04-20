@@ -17,6 +17,7 @@ export interface StyleObject {
 		height?: string
 	}
 	display?: string // TODO - check if handling
+	float?: boolean
 	flex?: string
 	flexFlow?: any
 	fontColor?: string // TODO - check if handling

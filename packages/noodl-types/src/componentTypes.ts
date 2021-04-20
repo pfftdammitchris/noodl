@@ -36,10 +36,12 @@ export type UncommonComponentObjectProps = {
 	[key in EventType]: ActionChain
 } & {
 	actions?: (ActionObject | EmitObject | GotoObject)[]
+	audioStream?: boolean
 	contentType?: ContentType
 	chatItem?: Partial<ComponentObject>
 	dataKey?: string
 	emit?: EmitObject
+	image?: string
 	isEditable?: boolean
 	iteratorVar?: string
 	listObject?: any[]
@@ -58,6 +60,7 @@ export type UncommonComponentObjectProps = {
 	textAlign?: StyleTextAlign | StyleTextAlignObject
 	'text=func'?: string
 	videoFormat?: string
+	videoStream?: boolean
 }
 
 export interface ComponentObject<T extends string = any>

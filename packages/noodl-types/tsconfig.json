@@ -4,7 +4,7 @@
 		"declaration": true,
 		"declarationDir": "dist",
 		"esModuleInterop": true,
-		"lib": ["esnext"],
+		"lib": ["es5", "es6", "esnext"],
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"noEmitOnError": false,
@@ -13,8 +13,8 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "es6"
+		"target": "es5"
 	},
-	"exclude": ["node_modules", "dist"],
-	"include": ["src"]
+	"exclude": ["node_modules"],
+	"include": ["src/**/*"]
 }
