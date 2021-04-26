@@ -1,12 +1,19 @@
+import { EmitObject } from './uncategorizedTypes'
+
 export interface UncommonActionObjectProps {
+	actions?: any[]
 	contentType?: string // ex: "messageHidden"
+	emit?: EmitObject
 	dataKey?: any
+	dataIn?: any
 	dataObject?: any
 	destination?: string
 	dismissOnTouchOutside?: boolean
 	evolve?: boolean
-	funcName: string
+	funcName?: string
+	message?: string
 	object?: any
+	pageReload?: boolean
 	popUpView?: string
 	reload?: boolean
 	timer?: number
