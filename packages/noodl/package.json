@@ -13,8 +13,8 @@
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file src/setupTests.ts --watch --watch-files src"
 	},
 	"dependencies": {
-		"noodl-common": "file:../noodl-common",
-		"noodl-types": "file:../noodl-types"
+		"noodl-common": "^0.0.6",
+		"noodl-types": "^1.0.54"
 	},
 	"keywords": [
 		"noodl",
@@ -56,5 +56,6 @@
 		"singleQuote": true,
 		"tabWidth": 2,
 		"trailingComma": "all"
-	}
+	},
+	"gitHead": "706e69ec933707daf635b0fea670185493b5c0e5"
 }
