@@ -20,5 +20,6 @@
 		"type": "git",
 		"url": "http://gitlab.aitmed.com/pfftdammitchris/aitmed-noodl-web.git"
 	},
-	"gitHead": "706e69ec933707daf635b0fea670185493b5c0e5"
+	"gitHead": "706e69ec933707daf635b0fea670185493b5c0e5",
+	"dependencies": {}
 }

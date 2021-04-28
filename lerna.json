@@ -3,7 +3,8 @@
 		"packages/noodl",
 		"packages/noodl-action-chain",
 		"packages/noodl-common",
-		"packages/noodl-types"
+		"packages/noodl-types",
+		"packages/noodl-webextension"
 	],
 	"npmClient": "npm",
 	"version": "independent",
