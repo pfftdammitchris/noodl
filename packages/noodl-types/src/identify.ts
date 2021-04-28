@@ -69,6 +69,9 @@ export const Identify = (function () {
 			divider(value: unknown): value is T.DividerComponentObject {
 				return u.isObj(value) && value.type === 'divider'
 			},
+			ecosDoc(value: unknown): value is T.EcosDocComponentObject {
+				return u.isObj(value) && value.type === 'ecosDoc'
+			},
 			footer(value: unknown): value is T.FooterComponentObject {
 				return u.isObj(value) && value.type === 'footer'
 			},

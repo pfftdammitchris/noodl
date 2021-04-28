@@ -12,6 +12,7 @@ import {
 export type AnyComponentObject =
 	| ButtonComponentObject
 	| DividerComponentObject
+	| EcosDocComponentObject
 	| FooterComponentObject
 	| HeaderComponentObject
 	| ImageComponentObject
@@ -40,7 +41,9 @@ export type UncommonComponentObjectProps = {
 	contentType?: ContentType
 	chatItem?: Partial<ComponentObject>
 	dataKey?: string
+	ecosObj?: any
 	emit?: EmitObject
+	global?: true
 	image?: string
 	isEditable?: boolean
 	iteratorVar?: string
@@ -91,6 +94,13 @@ export interface ButtonComponentObject
 
 export interface DividerComponentObject extends ComponentObject {
 	type: 'divider'
+	[key: string]: any
+}
+
+export interface EcosDocComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'ecosObj'> {
+	type: 'ecosDoc'
 	[key: string]: any
 }
 
