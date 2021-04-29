@@ -279,6 +279,7 @@ class ActionChain<
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()
 		}
+		// @ts-expect-error
 		this.#gen = ActionChain.createGenerator<A, T>(this)
 		return this.queue
 	}
