@@ -1,4 +1,4 @@
-export interface EcosDocument<NameField = any> {
+export interface EcosDocument<NameField extends NameFieldBase = NameFieldBase> {
 	id: null | string
 	ctime: null | number
 	mtime: null | number
@@ -17,7 +17,7 @@ export interface EcosDocument<NameField = any> {
 	}
 	type: null | number
 	name: null | NameField
-	deat: null | number
+	deat: Deat
 	size: null | number
 	fid: null | string
 	eid: null | string
@@ -25,4 +25,17 @@ export interface EcosDocument<NameField = any> {
 	esig: null | string
 	created_at: null | number
 	modified_at: null | number
+}
+
+export type Deat = DeatObject | number | null
+
+export interface DeatObject {
+	url?: string
+	sig?: string
+	exptime?: string
+}
+
+export interface NameFieldBase<Data = any> {
+	type: string
+	data?: Data
 }
