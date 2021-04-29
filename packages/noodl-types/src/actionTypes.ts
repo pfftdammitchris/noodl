@@ -53,6 +53,27 @@ export interface EvalActionObject
 	[key: string]: any
 }
 
+export interface OpenCameraActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'dataKey' | 'dataObject'> {
+	actionType: 'openCamera'
+	[key: string]: any
+}
+
+export interface OpenPhotoLibraryActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'dataKey' | 'dataObject'> {
+	actionType: 'openPhotoLibrary'
+	[key: string]: any
+}
+
+export interface OpenDocumentManagerActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'dataKey' | 'dataObject'> {
+	actionType: 'openDocumentManager'
+	[key: string]: any
+}
+
 export interface PageJumpActionObject
 	extends ActionObject,
 		Pick<UncommonActionObjectProps, 'destination'> {

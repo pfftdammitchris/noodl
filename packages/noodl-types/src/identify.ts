@@ -23,6 +23,15 @@ export const Identify = (function () {
 			evalObject(v: unknown): v is T.EvalActionObject {
 				return u.isObj(v) && v.actionType === 'evalObject'
 			},
+			openCamera(v: unknown): v is T.OpenCameraActionObject {
+				return u.isObj(v) && v.actionType === 'openCamera'
+			},
+			openPhotoLibrary(v: unknown): v is T.OpenPhotoLibraryActionObject {
+				return u.isObj(v) && v.actionType === 'openPhotoLibrary'
+			},
+			openDocumentManager(v: unknown): v is T.OpenDocumentManagerActionObject {
+				return u.isObj(v) && v.actionType === 'openDocumentManager'
+			},
 			pageJump(v: unknown): v is T.PageJumpActionObject {
 				return u.isObj(v) && v.actionType === 'pageJump'
 			},
