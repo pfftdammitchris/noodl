@@ -32,6 +32,7 @@ class ActionChain<
 	#results = [] as ActionChainIteratorResult<A, T>[]
 	#status: ActionChainStatus = c.IDLE
 	#timeout: NodeJS.Timeout | null = null
+	data = new Map()
 	trigger: T
 
 	/**
@@ -135,6 +136,7 @@ class ActionChain<
 	}
 
 	clear() {
+		this.data.clear()
 		this.#current = null
 		this.#actions.length = 0
 		this.#queue.length = 0
