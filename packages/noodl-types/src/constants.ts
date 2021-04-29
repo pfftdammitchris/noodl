@@ -1,6 +1,9 @@
 export const action = {
 	BUILTIN: 'builtIn',
 	EVALOBJECT: 'evalObject',
+	OPENCAMERA: 'openCamera',
+	OPENPHOTOLIBRARY: 'openPhotoLibrary',
+	OPENDOCUMENTMANAGER: 'openDocumentManager',
 	PAGEJUMP: 'pageJump',
 	POPUP: 'popUp',
 	POPUPDISMISS: 'popUpDismiss',
@@ -16,6 +19,7 @@ export const component = {
 	BUTTON: 'button',
 	CHART: 'chart',
 	CHATLIST: 'chatList',
+	ECOSDOC: 'ecosDoc',
 	DIVIDER: 'divider',
 	FOOTER: 'footer',
 	HEADER: 'header',
@@ -45,8 +49,10 @@ export const componentKeys = [
 	'children',
 	'contentType',
 	'dataId',
+	'dataIn',
 	'dataKey',
 	'dataModel',
+	'ecosObj',
 	'height',
 	'isEditable',
 	'itemObject',
@@ -95,7 +101,6 @@ export const contentTypes = [
 	'text',
 	'timer',
 	'videoSubStream',
-	'vidoeSubStream',
 ] as const
 
 export const styleKeys = [
@@ -115,6 +120,7 @@ export const styleKeys = [
 	'diaplay',
 	'display',
 	'filter',
+	'float',
 	'flex',
 	'flexFlow',
 	'fontColor',
