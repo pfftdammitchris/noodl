@@ -36,6 +36,10 @@ export interface DeatObject {
 }
 
 export interface NameFieldBase<Data = any> {
-	type: string
 	data?: Data
+	title?: string
+	content?: string
+	tags?: string[]
+	type: string
+	user?: string
 }
