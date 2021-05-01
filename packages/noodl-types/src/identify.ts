@@ -144,6 +144,18 @@ export const Identify = (function () {
 				return u.isObj(value) && value.type === 'view'
 			},
 		},
+		ecosObj: {
+			audio(v: unknown) {},
+			doc(v: unknown) {},
+			font(v: unknown) {},
+			image(v: unknown) {},
+			message(v: unknown) {},
+			model(v: unknown) {},
+			multipart(v: unknown) {},
+			other(v: unknown) {},
+			text(v: unknown) {},
+			video(v: unknown) {},
+		},
 		emit(v: unknown): v is T.EmitObject {
 			return u.isObj(v) && 'emit' in v
 		},
@@ -152,6 +164,38 @@ export const Identify = (function () {
 		},
 		if(v: unknown): v is T.IfObject {
 			return u.isObj(v) && 'if' in v
+		},
+		mediaType: {
+			audio(v: unknown): v is T.AudioMediaType {
+				return v == 2
+			},
+			doc(v: unknown): v is T.DocMediaType {
+				return v == 1
+			},
+			font(v: unknown): v is T.FontMediaType {
+				return v == 3
+			},
+			image(v: unknown): v is T.ImageMediaType {
+				return v == 4
+			},
+			message(v: unknown): v is T.MessageMediaType {
+				return v == 5
+			},
+			model(v: unknown): v is T.ModelMediaType {
+				return v == 6
+			},
+			multipart(v: unknown): v is T.MultipartMediaType {
+				return v == 7
+			},
+			other(v: unknown): v is T.OtherMediaType {
+				return v == 0
+			},
+			text(v: unknown): v is T.TextMediaType {
+				return v == 8
+			},
+			video(v: unknown): v is T.VideoMediaType {
+				return v == 9
+			},
 		},
 		reference(value: unknown): value is string {
 			if (typeof value !== 'string') return false
