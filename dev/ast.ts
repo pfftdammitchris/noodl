@@ -25,10 +25,10 @@ const scripts = new Scripts({
 scripts.use({
 	script: [scriptIds.REFERENCES],
 	start(store) {
-		store.references = []
+		// store.references = []
 	},
 	end(store) {
-		console.log(store)
+		// console.log(store)
 	},
 })
 

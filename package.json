@@ -28,6 +28,7 @@
 	},
 	"dependencies": {
 		"apollo-server-express": "^2.21.0",
+		"cheerio": "^1.0.0-rc.6",
 		"download": "^8.0.0",
 		"express": "^4.17.1",
 		"immer": "^9.0.1",
@@ -80,12 +81,14 @@
 		"chai-as-promised": "^7.1.1",
 		"chai-noodl": "file:packages/chai-noodl",
 		"commander": "^7.2.0",
+		"copy-webpack-plugin": "^5.1.2",
 		"cross-env": "^7.0.3",
 		"eslint-config-xo-react": "^0.25.0",
 		"eslint-plugin-ava": "^12.0.0",
 		"eslint-plugin-react": "^7.21.5",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"fast-xml-parser": "^3.17.6",
+		"fs-extra": "^9.1.0",
 		"globby": "^11.0.2",
 		"ink-testing-library": "^2.1.0",
 		"lerna": "^4.0.0",
@@ -151,7 +154,8 @@
 		],
 		"env": {
 			"browser": true,
-			"es6": true
+			"es6": true,
+			"webextensions": true
 		},
 		"settings": {
 			"import/resolver": {

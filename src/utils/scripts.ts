@@ -52,7 +52,7 @@ export const id = {
 	VIEW_COMPONENT_PROPS: 'VIEW_COMPONENT_PROPS',
 } as const
 
-export interface Store {
+export interface SerializedStore {
 	actions: Partial<Record<string, ActionObject[]>>
 	actionTypes: string[]
 	components: Partial<Record<string, ComponentObject[]>>
@@ -80,141 +80,161 @@ export interface Store {
 	}
 }
 
-const scripts: Record<string, () => ScriptObject> = {}
+const scripts = {} as Record<
+	typeof id[keyof typeof id],
+	() => ScriptObject<keyof SerializedStore>
+>
 
-scripts[id.ACTION_OBJECTS] = {
-	label: 'Retrieve all action objects',
-	cond: 'map',
-	fn(node: YAMLMap, store) {
-		if (Utils.identify.action.any(node)) {
-			const actionType = node.get('actionType') as string
-			if (!store.actions[actionType]) store.actions[actionType] = []
-			store.actions[actionType].push(node.toJSON())
-		}
-	},
-}
-
-scripts[id.ACTION_TYPES] = {
-	label: 'Retrieve all action types',
-	fn(node: Pair<any, any>, store) {
-		if (Utils.identify.keyValue.actionType(node)) {
-			if (!store.actionTypes?.includes(node.value.value)) {
-				store.actionTypes.push(node.value.value)
+scripts[id.ACTION_OBJECTS] = () => {
+	return {
+		label: 'Retrieve all action objects',
+		cond: 'map',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.action.any(node)) {
+				const actionType = node.get('actionType') as string
+				if (!store.actions[actionType]) store.actions[actionType] = []
+				store.actions[actionType].push(node.toJSON())
 			}
-		}
-	},
+		},
+	}
 }
 
-scripts[id.STYLE_BORDER_OBJECTS] = {
+scripts[id.ACTION_TYPES] = () => {
+	return {
+		label: 'Retrieve all action types',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.keyValue.actionType(node)) {
+				if (!store.actionTypes?.includes(node.value.value)) {
+					store.actionTypes.push(node.value.value)
+				}
+			}
+		},
+	}
+}
+
+scripts[id.STYLE_BORDER_OBJECTS] = () => ({
 	label: 'Retrieve all style border objects',
-	fn(node, store) {
+	fn({ key, node, path }, store) {
 		if (Utils.identify.style.border(node)) {
 			if (!store.styles.border) store.styles.border = []
 			store.styles.border.push(node)
 		}
 	},
-}
+})
 
-scripts[id.BUILTIN_FUNC_NAMES] = {
-	label: 'Retrieve all builtIn action funcNames',
-	fn(node: Pair<any, any>, store) {
-		if (Utils.identify.keyValue.funcName(node)) {
-			if (!store.funcNames?.includes(node.value.value)) {
-				store.funcNames.push(node.value.value)
-			}
-		}
-	},
-}
-
-scripts[id.COMPONENT_KEYS] = {
-	label: 'Retrieve all component keys',
-	fn(node: YAMLMap<any>, store) {
-		if (Utils.identify.component.any(node)) {
-			node.items.forEach((pair) => {
-				if (!store.componentKeys?.includes(pair.key.value)) {
-					store.componentKeys.push(pair.key.value)
+scripts[id.BUILTIN_FUNC_NAMES] = () => {
+	return {
+		label: 'Retrieve all builtIn action funcNames',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.keyValue.funcName(node)) {
+				if (!store.funcNames?.includes(node.value.value)) {
+					store.funcNames.push(node.value.value)
 				}
-			})
-		}
-	},
-}
-
-scripts[id.COMPONENT_OBJECTS] = {
-	label: 'Retrieve all component objects',
-	fn(node: YAMLMap, store) {
-		if (Utils.identify.component.any(node)) {
-			const componentType = node.get('type') as any
-			if (!store.components[componentType]) store.components[componentType] = []
-			store.components[componentType].push(node.toJSON())
-		}
-	},
-}
-
-scripts[id.COMPONENT_TYPES] = {
-	label: 'Retrieve all component types',
-	fn(node: YAMLMap, store) {
-		if (Utils.identify.component.any(node)) {
-			if (!store.componentTypes.includes(node.get('type'))) {
-				store.componentTypes.push(node.get('type'))
 			}
-		}
-	},
+		},
+	}
 }
 
-scripts[id.EMIT_OBJECTS] = {
-	label: 'Retrieve all emit objects',
-	fn(node: YAMLMap, store) {
-		if (Utils.identify.emit(node)) {
-			if (!store.emit) store.emit = []
-			store.emit.push(node.get('emit'))
-		}
-	},
-}
-
-scripts[id.IF_OBJECTS] = {
-	label: 'Retrieve all "if" objects',
-	fn(node: YAMLMap, store) {
-		if (Utils.identify.if(node)) {
-			if (!store.if) store.if = []
-			store.if.push(node.get('if'))
-		}
-	},
-}
-
-scripts[id.OBJECTS_THAT_CONTAIN_THESE_KEYS] = {
-	label: `Retrieve all objects that contain the specified keys`,
-	fn(node, store) {
-		const keys = ['contentType']
-		const numKeys = keys.length
-		if (isYAMLMap(node)) {
-			for (let index = 0; index < numKeys; index++) {
-				const key = keys[index] || ''
-				if ((node as YAMLMap).has(key)) {
-					if (!Array.isArray(store.containedKeys[key])) {
-						store.containedKeys[key] = []
+scripts[id.COMPONENT_KEYS] = () => {
+	return {
+		label: 'Retrieve all component keys',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.component.any(node)) {
+				node.items.forEach((pair) => {
+					if (!store.componentKeys?.includes(pair.key.value)) {
+						store.componentKeys.push(pair.key.value)
 					}
-					store.containedKeys[key].push(node.toJSON())
+				})
+			}
+		},
+	}
+}
+
+scripts[id.COMPONENT_OBJECTS] = () => {
+	return {
+		label: 'Retrieve all component objects',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.component.any(node)) {
+				const componentType = node.get('type') as any
+				if (!store.components[componentType])
+					store.components[componentType] = []
+				store.components[componentType].push(node.toJSON())
+			}
+		},
+	}
+}
+
+scripts[id.COMPONENT_TYPES] = () => {
+	return {
+		label: 'Retrieve all component types',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.component.any(node)) {
+				if (!store.componentTypes.includes(node.get('type'))) {
+					store.componentTypes.push(node.get('type'))
 				}
 			}
-		}
-	},
+		},
+	}
+}
+
+scripts[id.EMIT_OBJECTS] = () => {
+	return {
+		label: 'Retrieve all emit objects',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.emit(node)) {
+				if (!store.emit) store.emit = []
+				store.emit.push(node.get('emit'))
+			}
+		},
+	}
+}
+
+scripts[id.IF_OBJECTS] = () => {
+	return {
+		label: 'Retrieve all "if" objects',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.if(node)) {
+				if (!store.if) store.if = []
+				store.if.push(node.get('if'))
+			}
+		},
+	}
+}
+
+scripts[id.OBJECTS_THAT_CONTAIN_THESE_KEYS] = () => {
+	return {
+		label: `Retrieve all objects that contain the specified keys`,
+		fn({ key, node, path }, store) {
+			const keys = ['contentType']
+			const numKeys = keys.length
+			if (isYAMLMap(node)) {
+				for (let index = 0; index < numKeys; index++) {
+					const key = keys[index] || ''
+					if ((node as YAMLMap).has(key)) {
+						if (!Array.isArray(store.containedKeys[key])) {
+							store.containedKeys[key] = []
+						}
+						store.containedKeys[key].push(node.toJSON())
+					}
+				}
+			}
+		},
+	}
 }
 
 scripts[id.REFERENCES] = () => {
-	const context = new Map<string, string[]>()
-	const getPageName = (doc: yaml.Document) => doc.contents.items[0].key.value
+	const getPageName = (doc: yaml.Document<any>) =>
+		doc.contents.items[0].key.value
 
 	return {
 		label: 'Retrieve all references',
 		fn({ key, node, path }, store) {
 			let pageName = n.isPageDocument(path[0]) ? getPageName(path[0]) : ''
-			let references: string[] | undefined = context.get(pageName)
-
-			if (!store.context) store.context = context
+			let references: string[] | undefined = store.context.get(pageName)
 
 			if (pageName && !references) {
 				references = []
-				context.set(pageName, references)
+				store.context.set(pageName, references)
 			}
 
 			if (Utils.identify.scalar.reference(node)) {
@@ -236,30 +256,34 @@ scripts[id.REFERENCES] = () => {
 	}
 }
 
-scripts[id.RETRIEVE_URLS] = {
-	label: 'Retrieve all urls/paths',
-	fn(node: Pair, store) {
-		if (Utils.identify.scalar.url(node)) {
-			if (!store.urls.includes(node.value)) store.urls.push(node.value)
-		}
-	},
+scripts[id.RETRIEVE_URLS] = () => {
+	return {
+		label: 'Retrieve all urls/paths',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.scalar.url(node)) {
+				if (!store.urls.includes(node.value)) store.urls.push(node.value)
+			}
+		},
+	}
 }
 
-scripts[id.STYLE_PROPERTIES] = {
-	label: 'Retrieve all style properties',
-	fn(node: Pair<any, any>, store) {
-		if (Utils.identify.paths.style.any(node)) {
-			if (isYAMLMap(node.value)) {
-				node.value.items.forEach((pair: Pair<any, any>) => {
-					if (pair.key?.value && !Utils.identify.scalar.reference(pair.key)) {
-						if (!store.styleKeys.includes(pair.key.value)) {
-							store.styleKeys.push(pair.key.value)
+scripts[id.STYLE_PROPERTIES] = () => {
+	return {
+		label: 'Retrieve all style properties',
+		fn({ key, node, path }, store) {
+			if (Utils.identify.paths.style.any(node)) {
+				if (isYAMLMap(node.value)) {
+					node.value.items.forEach((pair: Pair<any, any>) => {
+						if (pair.key?.value && !Utils.identify.scalar.reference(pair.key)) {
+							if (!store.styleKeys.includes(pair.key.value)) {
+								store.styleKeys.push(pair.key.value)
+							}
 						}
-					}
-				})
+					})
+				}
 			}
-		}
-	},
+		},
+	}
 }
 
 export function createActionPropComboScripts() {
@@ -275,7 +299,7 @@ export function createActionPropComboScripts() {
 	].map((actionType) => ({
 		id: id[`${actionType.toUpperCase()}_ACTION_PROPS`],
 		label: `Retrieve props that may exist on ${actionType} action objects`,
-		fn(node, store: Store) {
+		fn({ key, node, path }, store: Store) {
 			if (Utils.identify.action[actionType](node)) {
 				;(node as YAMLMap).items.forEach((pair: Pair<any, any>) => {
 					if (!Utils.identify.scalar.reference(pair.key)) {
@@ -314,7 +338,7 @@ export function createComponentPropComboScripts() {
 	].map((type) => ({
 		id: id[`${type.toUpperCase()}_ACTION_PROPS`],
 		label: `Retrieve props that may exist on ${type} action objects`,
-		fn(node, store: Store) {
+		fn({ key, node, path }, store: Store) {
 			if (Utils.identify.component[type]?.(node)) {
 				;(node as YAMLMap).items.forEach((pair: Pair<any, any>) => {
 					if (!Utils.identify.scalar.reference(pair.key)) {

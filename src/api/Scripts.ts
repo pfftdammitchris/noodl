@@ -1,34 +1,38 @@
 import { config } from 'dotenv'
 import yaml from 'yaml'
 config()
-import invariant from 'invariant'
 import chunk from 'lodash/chunk'
 import fs from 'fs-extra'
 import { YAMLNode } from '../types'
 import * as u from '../utils/common'
 import * as n from '../utils/noodl-utils'
 
+export type ScriptObserver<DataLabel extends string = string> = (
+	store: Store<DataLabel>,
+) => ScriptObject<DataLabel>
+
 export interface MetadataObject {
 	page?: string
 }
 
-export interface ScriptObject<Store = any> {
+export type Store<DataLabel extends string = string> = Map<DataLabel, any>
+
+export interface ScriptObject<DataLabel extends string = string> {
 	label?: string
 	cond?: 'scalar' | 'pair' | 'map' | 'seq' | ((node: YAMLNode) => boolean)
 	key?: string
-	fn(
-		args: {
-			key: number | 'key' | 'value'
-			node: yaml.Document<unknown> | YAMLNode | null
-			path: (yaml.Document<unknown> | YAMLNode | yaml.Pair<unknown, unknown>)[]
-		},
-		store: Store,
-	): void
+	fn: (
+		store: Store<DataLabel>,
+	) => (args: {
+		key: number | 'key' | 'value'
+		node: yaml.Document<any> | YAMLNode | null
+		path: (yaml.Document<any> | YAMLNode | yaml.Pair<any, any>)[]
+	}) => void
 }
 
-class Scripts<Store = any> {
-	#store = {} as Store
-	#scripts = [] as ScriptObject[]
+class Scripts<DataLabel extends string = string> {
+	#store: Store<DataLabel> = new Map()
+	#scripts = [] as ScriptObserver<DataLabel>[]
 	#dataFilePath: string = ''
 	#obs = { start: [], end: [] } as {
 		start: ((store: Store) => void)[]
@@ -38,12 +42,11 @@ class Scripts<Store = any> {
 
 	constructor(opts: {
 		dataFilePath: string
-		store?: Store
+		store?: Store<DataLabel>
 		docs?: yaml.Document | yaml.Document[]
 	}) {
 		this.#dataFilePath = opts.dataFilePath || ''
 		opts.docs && u.array(opts.docs).forEach((doc) => this.docs.push(doc))
-		opts.store && (this.#store = opts.store)
 	}
 
 	set dataFilePath(dataFilePath: string) {
@@ -55,11 +58,9 @@ class Scripts<Store = any> {
 		return this.#obs
 	}
 
-	compose(scripts: ScriptObject[]) {
-		scripts = scripts.reverse()
-
+	compose(scripts: ScriptObserver<DataLabel> | ScriptObserver<DataLabel>[]) {
 		const composed = (args: Parameters<ScriptObject['fn']>[0]) => {
-			scripts.forEach((obj) => obj.fn(args, this.#store))
+			return u.array(scripts).map((obj) => obj(this.#store))
 		}
 
 		return composed
@@ -102,10 +103,20 @@ class Scripts<Store = any> {
 		this.save()
 	}
 
+	serialize() {
+		const serializedOutput = {} as Record<DataLabel, any>
+		for (const [key, val] of this.#store.entries()) {
+			serializedOutput[key] = val
+		}
+		return serializedOutput
+	}
+
 	save() {
 		if (this.#dataFilePath) {
 			try {
-				fs.writeJsonSync(this.#dataFilePath, this.#store, { spaces: 2 })
+				fs.writeJsonSync(this.#dataFilePath, this.serialize(), {
+					spaces: 2,
+				})
 			} catch (error) {
 				console.error(error)
 			}
@@ -114,11 +125,11 @@ class Scripts<Store = any> {
 	}
 
 	use(opts: {
-		script?: (() => ScriptObject) | (() => ScriptObject)[]
+		script?: ScriptObserver<DataLabel> | ScriptObserver<DataLabel>[]
 		start?: ((store: Store) => void) | ((store: Store) => void)[]
 		end?: ((store: Store) => void) | ((store: Store) => void)[]
 	}) {
-		opts.script && this.#scripts.push(...u.array(opts.script).map((s) => s()))
+		opts.script && this.#scripts.push(...u.array(opts.script))
 		opts.start && this.#obs.start.push(...u.array(opts.start))
 		opts.end && this.#obs.end.push(...u.array(opts.end))
 		return this
