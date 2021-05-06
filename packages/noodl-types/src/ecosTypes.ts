@@ -29,20 +29,20 @@ export interface DeatObject {
 export namespace NameField {
 	export interface Base<Type extends string = string> {
 		tags?: string[]
+		title?: string
 		type: Type
 		user?: string
 	}
 
 	export interface DocBase<Type extends string = string> extends Base<Type> {
-		data: string
+		data?: string
 	}
 
 	export interface MediaBase<Type extends string = string> extends Base<Type> {
-		data: string
+		data?: string
 	}
 
 	export interface TextBase<Type extends string = string> extends Base<Type> {
-		title?: string
 		content?: string
 	}
 
