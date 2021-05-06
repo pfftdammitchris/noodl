@@ -32,6 +32,7 @@ export namespace NameField {
 		title?: string
 		type: Type
 		user?: string
+		[key: string]: any
 	}
 
 	export interface DocBase<Type extends string = string> extends Base<Type> {
