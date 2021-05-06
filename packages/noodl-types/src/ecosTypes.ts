@@ -1,29 +1,29 @@
 export interface EcosDocument<N extends NameField.Base = NameField.Base> {
-	id: string
-	ctime: number
-	mtime: number
-	atime: number
-	atimes: number
-	tage: number
-	type: number
-	name: N | undefined | null
-	deat: Deat
-	size: number
-	fid: string
-	eid: string
-	bsig: string
-	esig: string
-	created_at: number
-	modified_at: number
-	subtype: SubtypeObject
+	id?: string | null
+	ctime?: number | null
+	mtime?: number | null
+	atime?: number | null
+	atimes?: number | null
+	tage?: number | null
+	type?: number | null
+	name?: N | null
+	deat?: Deat | null
+	size?: number | null
+	fid?: string | null
+	eid?: string | null
+	bsig?: string | null
+	esig?: string | null
+	created_at?: number | null
+	modified_at?: number | null
+	subtype?: SubtypeObject | null
 }
 
 export type Deat = DeatObject | number
 
 export interface DeatObject {
-	url: string
-	sig: string
-	exptime: string
+	url?: string
+	sig?: string
+	exptime?: string
 }
 
 export namespace NameField {
@@ -81,14 +81,14 @@ export namespace NameField {
 }
 
 export interface SubtypeObject {
-	isOnServer: null | boolean
-	isZipped: null | boolean
-	isBinary: null | boolean
-	isEncrypted: null | boolean
-	isEditable: null | boolean
-	applicationDataType: null | number
-	mediaType: null | MediaType
-	size: null | number
+	isOnServer?: null | boolean
+	isZipped?: null | boolean
+	isBinary?: null | boolean
+	isEncrypted?: null | boolean
+	isEditable?: null | boolean
+	applicationDataType?: null | number
+	mediaType?: null | MediaType
+	size?: null | number
 }
 
 export type MediaType =
