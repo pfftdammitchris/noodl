@@ -116,6 +116,9 @@ export const Identify = (function () {
 			pluginHead(value: unknown): value is T.PluginHeadComponentObject {
 				return u.isObj(value) && value.type === 'pluginHead'
 			},
+			pluginBodyTop(value: unknown): value is T.PluginBodyTopComponentObject {
+				return u.isObj(value) && value.type === 'pluginBodyTop'
+			},
 			pluginBodyTail(value: unknown): value is T.PluginBodyTailComponentObject {
 				return u.isObj(value) && value.type === 'pluginBodyTail'
 			},

@@ -23,6 +23,7 @@ export type AnyComponentObject =
 	| PageComponentObject
 	| PluginComponentObject
 	| PluginHeadComponentObject
+	| PluginBodyTopComponentObject
 	| PluginBodyTailComponentObject
 	| PopUpComponentObject
 	| RegisterComponentObject
@@ -179,6 +180,13 @@ export interface PluginHeadComponentObject
 	extends ComponentObject,
 		Pick<UncommonComponentObjectProps, 'path'> {
 	type: 'pluginHead'
+	[key: string]: any
+}
+
+export interface PluginBodyTopComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'path'> {
+	type: 'pluginBodyTop'
 	[key: string]: any
 }
 
