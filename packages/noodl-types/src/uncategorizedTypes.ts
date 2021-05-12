@@ -9,6 +9,11 @@ export interface EmitObject {
 	[key: string]: any
 }
 
+export interface EmitObjectFold {
+	emit: EmitObject
+	[key: string]: any
+}
+
 export type GotoUrl = string
 
 export interface GotoObject {
