@@ -29,6 +29,7 @@ export interface DeatObject {
 export namespace NameField {
 	export interface Base<Type extends string = string> {
 		tags?: string[]
+		note?: string
 		title?: string
 		type: Type
 		user?: string

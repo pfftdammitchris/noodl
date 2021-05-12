@@ -1,6 +1,6 @@
 {
 	"name": "noodl-types",
-	"version": "1.0.69",
+	"version": "1.0.70",
 	"description": "NOODL TypeScript Definitions",
 	"main": "dist/index.js",
 	"module": "dist/index.js",

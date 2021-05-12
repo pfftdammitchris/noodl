@@ -4,11 +4,8 @@ import { StyleObject } from './styleTypes'
 export type ActionChain = (AnyActionObject | EmitObject | GotoObject)[]
 
 export interface EmitObject {
-	emit: {
-		actions: any[]
-		dataKey?: string | { [key: string]: string }
-		[key: string]: any
-	}
+	actions: any[]
+	dataKey?: string | { [key: string]: string }
 	[key: string]: any
 }
 

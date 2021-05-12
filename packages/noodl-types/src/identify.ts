@@ -9,8 +9,10 @@ import * as T from '.'
 import * as u from './_internal'
 
 export const Identify = (function () {
-	const composeSomes = (...fns: any[]) => (arg: any) =>
-		fns.some((fn) => fn(arg))
+	const composeSomes =
+		(...fns: any[]) =>
+		(arg: any) =>
+			fns.some((fn) => fn(arg))
 
 	const o = {
 		action: {
@@ -276,8 +278,8 @@ export const Identify = (function () {
 				),
 			),
 		),
-		emit(value: unknown): value is { emit: T.EmitObject } {
-			return u.isObj(value) && 'emit' in value
+		emit(value: unknown): value is T.EmitObject {
+			return u.isObj(value) && 'actions' in value
 		},
 		goto(value: unknown): value is { goto: T.GotoUrl | T.GotoObject } {
 			return u.isObj(value) && 'goto' in value
