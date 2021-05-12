@@ -162,7 +162,7 @@ export const Identify = (function () {
 			video(v: unknown) {},
 		},
 		emit(v: unknown): v is T.EmitObject {
-			return u.isObj(v) && 'emit' in v
+			return u.isObj(v) && 'actions' in v
 		},
 		goto(v: unknown): v is T.GotoObject {
 			return u.isObj(v) && 'goto' in v
@@ -281,7 +281,7 @@ export const Identify = (function () {
 		emit<O extends Record<string, any>>(
 			value: unknown,
 		): value is { emit: T.EmitObject } & O {
-			return u.isObj(value) && 'actions' in value
+			return u.isObj(value) && 'emit' in value
 		},
 		goto(value: unknown): value is { goto: T.GotoUrl | T.GotoObject } {
 			return u.isObj(value) && 'goto' in value
