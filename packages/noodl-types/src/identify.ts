@@ -278,7 +278,9 @@ export const Identify = (function () {
 				),
 			),
 		),
-		emit(value: unknown): value is T.EmitObject {
+		emit<O extends Record<string, any>>(
+			value: unknown,
+		): value is { emit: T.EmitObject } & O {
 			return u.isObj(value) && 'actions' in value
 		},
 		goto(value: unknown): value is { goto: T.GotoUrl | T.GotoObject } {
