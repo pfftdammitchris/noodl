@@ -248,7 +248,7 @@ export const Identify = (function () {
 	const folds = {
 		actionChain(
 			v: unknown,
-		): v is (T.ActionObject | T.EmitObject | T.GotoObject)[] {
+		): v is (T.ActionObject | T.EmitObjectFold | T.GotoObject)[] {
 			return u.isArr(v) && v.some(composeSomes(o.action.any, o.emit, o.goto))
 		},
 		component: Object.assign(

@@ -1,9 +1,9 @@
-import { EmitObject } from './uncategorizedTypes'
+import { EmitObjectFold } from './uncategorizedTypes'
 
 export interface UncommonActionObjectProps {
 	actions?: any[]
 	contentType?: string // ex: "messageHidden"
-	emit?: EmitObject
+	emit?: EmitObjectFold
 	dataKey?: any
 	dataIn?: any
 	dataObject?: any
