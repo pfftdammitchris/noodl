@@ -63,6 +63,9 @@ export const white = (...s: any[]) => chalk.whiteBright(...s)
 export const yellow = (...s: any[]) => chalk.yellow(...s)
 export const newline = () => console.log('')
 
+// prettier-ignore
+export const withTag = (colorFunc = cyan) => (s: string) => `[${colorFunc(s)}]`
+
 export function createGroupedMetadataObjects(
 	init?: Partial<GroupedMetadataObjects>,
 ): GroupedMetadataObjects & {} {

@@ -1,15 +1,5 @@
-import isPlainObject from 'lodash/isPlainObject'
-import yaml, {
-	isDocument,
-	isMap,
-	isSeq,
-	isScalar,
-	isPair,
-	Pair,
-	Scalar,
-	YAMLMap,
-	YAMLSeq,
-} from 'yaml'
+import * as u from '@jsmanifest/utils'
+import yaml, { isDocument, isMap, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 
 export function has(path: string[], node: unknown): boolean
 export function has(path: string, node: unknown): boolean
@@ -31,7 +21,7 @@ export function hasPaths(
 export function hasPaths(paths: string[][], node: unknown): boolean
 export function hasPaths(paths: any, node: unknown) {
 	if (isYAMLNode('map', node)) {
-		if (isPlainObject(paths)) {
+		if (u.isObj(paths)) {
 			const required = paths.required
 			paths = paths.paths
 			if (required?.length) {

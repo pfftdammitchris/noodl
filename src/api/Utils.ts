@@ -1,4 +1,4 @@
-import { Pair, Scalar } from 'yaml'
+import { Pair } from 'yaml'
 import { isReference } from 'noodl-utils'
 import partialRight from 'lodash/partialRight'
 import {
@@ -207,13 +207,9 @@ const Utils = (function () {
 			)
 			return results
 		},
-		getKeyCounts({
-			keys,
-			objs,
-		}: {
-			objs: any
-			keys?: string | string[]
-		}): { [key: string]: number } {
+		getKeyCounts({ keys, objs }: { objs: any; keys?: string | string[] }): {
+			[key: string]: number
+		} {
 			const keywords = Array.isArray(keys) ? keys : (keys && [keys]) || []
 			const results = {} as { [key: string]: number }
 			forEachDeepKeyValue((key, value, obj) => {

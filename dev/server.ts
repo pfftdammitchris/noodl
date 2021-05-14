@@ -2,6 +2,15 @@ import axios from 'axios'
 import chalk from 'chalk'
 import { gql, ApolloError } from 'apollo-server-express'
 
+export interface Server {
+	name?: string
+	address?: string
+}
+
+export interface APPServer extends Server {
+	port?: number
+}
+
 async function start() {
 	const { data } = await axios.get('http://127.0.0.1:4000', {
 		params: {

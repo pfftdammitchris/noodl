@@ -1,18 +1,18 @@
 import {
 	ActionObject,
-	ActionType,
 	ComponentObject,
-	ComponentType,
 	EmitObject,
 	IfObject,
 	StyleBorderObject,
 } from 'noodl-types'
 import yaml, { Pair, YAMLMap } from 'yaml'
-import { ScriptObject } from '../api/Scripts'
 import { isYAMLMap } from './doc'
 import Utils from '../api/Utils'
+import * as t from '../api/Scripts/types'
 import * as n from '../utils/noodl-utils'
 import * as u from '../utils/common'
+
+const log = console.log
 
 export const id = {
 	ACTION_TYPES: 'ACTION_TYPES',
@@ -52,60 +52,34 @@ export const id = {
 	VIEW_COMPONENT_PROPS: 'VIEW_COMPONENT_PROPS',
 } as const
 
-export interface SerializedStore {
-	actions: Partial<Record<string, ActionObject[]>>
-	actionTypes: string[]
-	components: Partial<Record<string, ComponentObject[]>>
-	componentKeys: string[]
-	componentTypes: string[]
-	emit: EmitObject[]
-	funcNames: string[]
-	if: IfObject[]
-	references: string[]
-	styleKeys: string[]
-	styles: {
-		border: StyleBorderObject[]
-	}
-	urls: string[]
-	propCombos: {
-		actions: {
-			[actionType: string]: { [key: string]: any[] }
-		}
-		components: {
-			[componentType: string]: { [key: string]: any[] }
-		}
-	}
-	containedKeys: {
-		[keyword: string]: any[]
-	}
-}
-
 const scripts = {} as Record<
 	typeof id[keyof typeof id],
-	() => ScriptObject<keyof SerializedStore>
+	t.Script.Register<Store>
 >
 
-scripts[id.ACTION_OBJECTS] = () => {
+scripts[id.ACTION_OBJECTS] = (store) => {
 	return {
+		key: 'actions',
 		label: 'Retrieve all action objects',
 		cond: 'map',
-		fn({ key, node, path }, store) {
+		fn({ key, node, path }) {
 			if (Utils.identify.action.any(node)) {
 				const actionType = node.get('actionType') as string
-				if (!store.actions[actionType]) store.actions[actionType] = []
-				store.actions[actionType].push(node.toJSON())
+				if (!store.actions?.[actionType]) store.actions[actionType] = []
+				store.actions[actionType]?.push(node.toJSON())
 			}
 		},
 	}
 }
 
-scripts[id.ACTION_TYPES] = () => {
+scripts[id.ACTION_TYPES] = (store) => {
 	return {
+		key: 'actionTypes',
 		label: 'Retrieve all action types',
-		fn({ key, node, path }, store) {
+		fn({ key, node, path } = {}) {
 			if (Utils.identify.keyValue.actionType(node)) {
-				if (!store.actionTypes?.includes(node.value.value)) {
-					store.actionTypes.push(node.value.value)
+				if (!store.actionTypes?.includes(node.value as string)) {
+					store.actionTypes.push(node.value as string)
 				}
 			}
 		},
@@ -222,19 +196,20 @@ scripts[id.OBJECTS_THAT_CONTAIN_THESE_KEYS] = () => {
 	}
 }
 
-scripts[id.REFERENCES] = () => {
+scripts[id.REFERENCES] = (store) => {
 	const getPageName = (doc: yaml.Document<any>) =>
 		doc.contents.items[0].key.value
-
+	// console.log(store)
 	return {
+		key: id.REFERENCES,
 		label: 'Retrieve all references',
-		fn({ key, node, path }, store) {
-			let pageName = n.isPageDocument(path[0]) ? getPageName(path[0]) : ''
-			let references: string[] | undefined = store.context.get(pageName)
+		fn({ doc, key, node, path }) {
+			let pageName = n.isPageDocument(path?.[0]) ? getPageName(path[0]) : ''
+			let references: string[] | undefined = store.references
 
 			if (pageName && !references) {
 				references = []
-				store.context.set(pageName, references)
+				// store.context.set(pageName, references)
 			}
 
 			if (Utils.identify.scalar.reference(node)) {
@@ -317,7 +292,7 @@ export function createActionPropComboScripts() {
 				})
 			}
 		},
-	})) as ScriptObject[]
+	})) as t.Script.Config<Store>[]
 }
 export function createComponentPropComboScripts() {
 	return [
@@ -356,7 +331,7 @@ export function createComponentPropComboScripts() {
 				})
 			}
 		},
-	})) as ScriptObject[]
+	})) as t.Script.Config<Store>[]
 }
 
 export default scripts

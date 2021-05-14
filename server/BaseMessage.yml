@@ -4,6 +4,13 @@
 #but we can copy docs from (subtype=0) edge to it.
 #If Don't include chat history, then we simple create a new chat group(subtype=1).
 
+MessageObjStore:
+  currentChatEdge: ""
+
+  newChatInfo: #save information for NewChat Page, will be referenced in ChatInviteeInfo
+    rootChat: ""  # the group chat root edge
+    bufferChat: ""
+
 
 FirebaseToken:
   edge:
@@ -23,41 +30,44 @@ FirebaseToken:
       api: dx
       dataKey: FirebaseToken.edge
 
-  registerToken:
-    async: =.builtIn.retrieveFCMToken
-    onCallback:
-      - .FirebaseToken.edge.name.accessToken@: =.builtIn.getFCMToken
-      - .FirebaseToken.edge.evid@: =.builtIn.getAPPID
-      - .FirebaseToken.edge.refid@: =.builtIn.getFCMTokenSHA256Half
-      - =.FirebaseToken.edgeAPI.store: ""
+  # registerToken:
+  #   async: =.builtIn.retrieveFCMToken
+  #   onCallback:
+  #     - .FirebaseToken.edge.name.accessToken@: =.builtIn.getFCMToken
+  #     - .FirebaseToken.edge.evid@: =.builtIn.getAPPID
+  #     - .FirebaseToken.edge.refid@: =.builtIn.getFCMTokenSHA256Half
+  #     - =.FirebaseToken.edgeAPI.store
 
-  unregisterToken:
-    - =.FirebaseToken.edgeAPI.delete: ""
-
-  checkTokenExpire:
-    if:
-      - =.builtIn.needUpdateToken
-      - =.FirebaseToken.registerToken
-      - continue
+#  unregisterToken:
+#    - =.FirebaseToken.edgeAPI.delete
+#
+#  checkTokenExpire:
+#    if:
+#      - =.builtIn.needUpdateToken
+#      - =.FirebaseToken.registerToken
+#      - continue
 
 
 CreateChatRelation:
 
-  createChatEdge:
+  inviteToChat:
     edge:
-      .Edge: ""
-      id: "" # reset id after every api call, using DNA here mess up other page, when the page evolve
+      id: ""
       type: 1091
-      name: ""
-      subType: ""  # 0 for 1 to 1 chat ,  1 for group chat
       refid: ""
+      name:
+        phoneNumber: ""
+        firstName: ""
+        lastName: ""
+        fullName: ""
+        InviterName: .Global.currentUser.vertex.name.userName
+      subtype: 1  # 0 for 1 to 1 chat ,  1 for group chat
     edgeAPI:
       .EdgeAPI: ""
       store:
         api: ce
-        dataIn: CreateChatRelation.createChatEdge.edge
-        dataOut: CreateChatRelation.createChatEdge.result
-    result: ""
+        dataIn: inviteToChat.edge
+
 
   fun_createGroupChatRootEdge:
     parameter:
@@ -67,9 +77,9 @@ CreateChatRelation:
     execute:
       - .CreateChatRelation.createChatEdge.edge.id@: "" # clean id because we are creating a new edge
       - .CreateChatRelation.createChatEdge.edge.refid@: ""
-      - .CreateChatRelation.createChatEdge.edge.subType@: 1
+      - .CreateChatRelation.createChatEdge.edge.subtype@: 1
       - .CreateChatRelation.createChatEdge.edge.name@: =.CreateChatRelation.fun_createGroupChatRootEdge.parameter.name
-      - =.CreateChatRelation.createChatEdge.edgeAPI.store: ""
+      - =.CreateChatRelation.createChatEdge.edgeAPI.store
 
   fun_createGroupChatInviteEdge:
     parameter:
@@ -80,9 +90,9 @@ CreateChatRelation:
     execute:
       - .CreateChatRelation.createChatEdge.edge.id@: ""  # clean id because we are creating a new edge
       - .CreateChatRelation.createChatEdge.edge.refid@: =.CreateChatRelation.fun_createGroupChatInviteEdge.parameter.refid
-      - .CreateChatRelation.createChatEdge.edge.subType@: 1
+      - .CreateChatRelation.createChatEdge.edge.subtype@: 1
       - .CreateChatRelation.createChatEdge.edge.name@: =.CreateChatRelation.fun_createGroupChatInviteEdge.parameter.name
-      - =.CreateChatRelation.createChatEdge.edgeAPI.store: ""
+      - =.CreateChatRelation.createChatEdge.edgeAPI.store
 
 
   fun_create1To1ChatEdge:
@@ -96,7 +106,7 @@ CreateChatRelation:
       #- .CreateChatRelation.createChatEdge.edge.refid@: =.builtIn.getAPPID  TODO uncomment
       - .CreateChatRelation.createChatEdge.edge.subType@: 0
       - .CreateChatRelation.createChatEdge.edge.name@: =.CreateChatRelation.fun_create1To1ChatEdge.parameter.name
-      - =.CreateChatRelation.createChatEdge.edgeAPI.store: ""
+      - =.CreateChatRelation.createChatEdge.edgeAPI.store
 
 CreateDocInChat:
 
@@ -134,7 +144,7 @@ CreateDocInChat:
       - .CreateDocInChat.document.docAPI.store.type@: 1025  # uploadFile
       - .CreateDocInChat.document.docAPI.store.name.data@:  =.CreateDocInChat.fun_createFileDoc.parameter.name.data
       - .CreateDocInChat.document.docAPI.store.eid@: =.CreateDocInChat.fun_createFileDoc.parameter.eid
-      - =.CreateDocInChat.document.docAPI.store: ""
+      - =.CreateDocInChat.document.docAPI.store
 
 
   fun_createMessageDoc: # each doc represent a message
@@ -151,7 +161,7 @@ CreateDocInChat:
       - .CreateDocInChat.document.docAPI.store.type@: 769  # short message
       - .CreateDocInChat.document.docAPI.store.name.data@:  =.CreateDocInChat.fun_createMessageDoc.parameter.data
       - .CreateDocInChat.document.docAPI.store.eid@: =.CreateDocInChat.fun_createMessageDoc.parameter.eid
-      - =.CreateDocInChat.document.docAPI.store: ""
+      - =.CreateDocInChat.document.docAPI.store
 
   fun_createInviteDoc: # every time a user is invited to a group chat, put in a doc to the root chat
     parameter:
@@ -165,7 +175,7 @@ CreateDocInChat:
       - .CreateDocInChat.document.docAPI.store.type@:  1281 # InviteUserMessage
       - .CreateDocInChat.document.docAPI.store.name.data@:  =.CreateDocInChat.fun_createInviteDoc.parameter.data
       - .CreateDocInChat.document.docAPI.store.eid@:  =.CreateDocInChat.fun_createInviteDoc.parameter.eid
-      - =.CreateDocInChat.document.docAPI.store: ""
+      - =.CreateDocInChat.document.docAPI.store
 
 
 ReceiveMessagePopUp:

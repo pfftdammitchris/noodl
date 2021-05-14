@@ -12,4 +12,4 @@ server:
   dir: server
   port: 3000
   protocol: http
-  config: testpage
+  config: meet4d

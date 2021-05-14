@@ -12,10 +12,11 @@
 		"codegen:watch": "graphql-codegen --watch",
 		"lib:build": "lerna exec --scope noodl-types --scope noodl-action-chain --scope noodl \"npm run build\"",
 		"prestart": "rm -rf dist && npm run codegen",
+		"scripts:dev": "ts-node-dev --respawn --transpile-only --cls dev/script.ts",
 		"start": "cross-env DEV=true CI=false tsc --watch",
 		"start:noodl": "lerna exec --scope noodl \"npm run start\"",
 		"server": "npm run codegen && ts-node-dev --respawn --transpile-only src/server/index.ts",
-		"dev": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only dev/dev.ts",
+		"ebuild": "./node_modules/.bin/esbuild --bundle --platform=node --format=cjs --target=node10.4",
 		"dev:file": "cross-env DEV=true CI=false ts-node-dev --respawn --transpile-only",
 		"pretest": "npm run build",
 		"postinstall": "npm run bootstrap",
@@ -39,14 +40,15 @@
 		"invariant": "^2.2.4",
 		"noodl": "file:packages/noodl",
 		"noodl-types": "file:packages/noodl-types",
-		"react": "^16.14.0"
+		"react": "^16.14.0",
+		"transducers-js": "^0.4.174"
 	},
 	"devDependencies": {
 		"@aitmed/ecos-lvl2-sdk": "^1.4.123",
 		"@babel/plugin-proposal-private-methods": "^7.12.13",
-		"@babel/plugin-transform-runtime": "^7.12.17",
+		"@babel/plugin-transform-runtime": "^7.14.2",
 		"@babel/polyfill": "^7.12.1",
-		"@babel/preset-env": "^7.12.17",
+		"@babel/preset-env": "^7.14.2",
 		"@babel/preset-typescript": "^7.12.17",
 		"@babel/register": "^7.12.13",
 		"@graphql-codegen/cli": "^1.20.1",
@@ -55,6 +57,8 @@
 		"@graphql-codegen/typescript": "^1.18.1",
 		"@graphql-codegen/typescript-operations": "^1.17.13",
 		"@graphql-tools/load-files": "^6.3.2",
+		"@jsmanifest/typefest": "^1.0.1",
+		"@jsmanifest/utils": "^1.0.5",
 		"@rollup/plugin-babel": "^5.3.0",
 		"@rollup/plugin-commonjs": "^18.0.0",
 		"@rollup/plugin-node-resolve": "^11.2.0",
@@ -63,6 +67,7 @@
 		"@types/chai-as-promised": "^7.1.3",
 		"@types/download": "^6.2.4",
 		"@types/fs-extra": "^9.0.6",
+		"@types/invariant": "^2.2.34",
 		"@types/lodash": "^4.14.168",
 		"@types/lodash.get": "^4.4.6",
 		"@types/lodash.has": "^4.5.6",
@@ -71,6 +76,7 @@
 		"@types/react": "^17.0.0",
 		"@types/sinon": "^9.0.10",
 		"@types/sinon-chai": "^3.2.5",
+		"@types/transducers-js": "^0.4.4",
 		"@types/yaml": "^1.9.7",
 		"@typescript-eslint/eslint-plugin": "^4.1.1",
 		"@typescript-eslint/parser": "^4.1.1",
@@ -83,12 +89,13 @@
 		"commander": "^7.2.0",
 		"copy-webpack-plugin": "^5.1.2",
 		"cross-env": "^7.0.3",
+		"esbuild": "^0.11.20",
 		"eslint-config-xo-react": "^0.25.0",
 		"eslint-plugin-ava": "^12.0.0",
 		"eslint-plugin-react": "^7.21.5",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"fast-xml-parser": "^3.17.6",
-		"fs-extra": "^9.1.0",
+		"fs-extra": "^10.0.0",
 		"globby": "^11.0.2",
 		"ink-testing-library": "^2.1.0",
 		"lerna": "^4.0.0",
@@ -107,7 +114,7 @@
 		"ts-node-dev": "^1.1.1",
 		"type-fest": "^1.0.1",
 		"typescript": "^4.2.4",
-		"xo": "^0.37.1",
+		"xo": "^0.40.1",
 		"yaml": "^2.0.0-4"
 	},
 	"main": "dist/cli.js",
@@ -194,5 +201,11 @@
 		"rules": {
 			"react/prop-types": "off"
 		}
+	},
+	"nodemonConfig": {
+		"ignore": [
+			"dist",
+			".yml"
+		]
 	}
 }

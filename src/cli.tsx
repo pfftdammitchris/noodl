@@ -11,8 +11,6 @@ import { App as IApp } from './types'
 
 const cli = meow(
 	`
-
-	
 	${aquamarine('Usage')}
 	  ${white('$')} noodl <input>
 
