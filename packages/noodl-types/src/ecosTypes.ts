@@ -16,6 +16,7 @@ export interface EcosDocument<N extends NameField.Base = NameField.Base> {
 	created_at?: number | null
 	modified_at?: number | null
 	subtype?: SubtypeObject | null
+	[key: string]: any
 }
 
 export type Deat = DeatObject | number
@@ -24,6 +25,7 @@ export interface DeatObject {
 	url?: string
 	sig?: string
 	exptime?: string
+	[key: string]: any
 }
 
 export namespace NameField {
@@ -38,14 +40,17 @@ export namespace NameField {
 
 	export interface DocBase<Type extends string = string> extends Base<Type> {
 		data?: string
+		[key: string]: any
 	}
 
 	export interface MediaBase<Type extends string = string> extends Base<Type> {
 		data?: string
+		[key: string]: any
 	}
 
 	export interface TextBase<Type extends string = string> extends Base<Type> {
 		content?: string
+		[key: string]: any
 	}
 
 	export namespace Doc {

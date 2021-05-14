@@ -65,6 +65,7 @@ export type UncommonComponentObjectProps = {
 	'text=func'?: string
 	videoFormat?: string
 	videoStream?: boolean
+	[key: string]: any
 }
 
 export interface ComponentObject<T extends string = any>
