@@ -157,6 +157,14 @@ export const Identify = (function () {
 			message(v: unknown) {},
 			model(v: unknown) {},
 			multipart(v: unknown) {},
+			note(
+				v: unknown,
+			): v is T.EcosDocument<
+				T.NameField<T.MimeType.Pdf | T.MimeType.Json>,
+				T.DocMediaType
+			> {
+				return u.hasNameField(v) && v.type === 'application/json'
+			},
 			other(v: unknown) {},
 			text(v: unknown) {},
 			video(v: unknown) {},

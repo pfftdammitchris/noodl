@@ -1,5 +1,6 @@
 import get from 'lodash/get'
 import has from 'lodash/has'
+import { NameField } from '../ecosTypes'
 import { PlainObject } from '../internalTypes'
 
 export function excludeKeys(keys1: string[], keys2: string | string[]) {
@@ -46,6 +47,10 @@ export function hasMinimumKeys(
 		if (count >= min) return true
 	}
 	return false
+}
+
+export function hasNameField(v: any): v is NameField {
+	return isObj(v) && 'name' in v
 }
 
 export function hasAnyKeys(keys: string | string[], value: PlainObject) {

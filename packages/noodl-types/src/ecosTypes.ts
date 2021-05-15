@@ -1,4 +1,7 @@
-export interface EcosDocument<N extends NameField.Base = NameField.Base> {
+export interface EcosDocument<
+	NF extends NameField = NameField,
+	MT extends MediaType = MediaType,
+> {
 	id?: string | null
 	ctime?: number | null
 	mtime?: number | null
@@ -6,7 +9,7 @@ export interface EcosDocument<N extends NameField.Base = NameField.Base> {
 	atimes?: number | null
 	tage?: number | null
 	type?: number | null
-	name?: N | null
+	name?: NF | null
 	deat?: Deat | null
 	size?: number | null
 	fid?: string | null
@@ -15,8 +18,51 @@ export interface EcosDocument<N extends NameField.Base = NameField.Base> {
 	esig?: string | null
 	created_at?: number | null
 	modified_at?: number | null
-	subtype?: SubtypeObject | null
+	subtype?: SubtypeObject<MT> | null
 	[key: string]: any
+}
+
+export interface NameField<
+	Type extends
+		| MimeType.Audio
+		| MimeType.Image
+		| MimeType.Json
+		| MimeType.Pdf
+		| MimeType.Video =
+		| MimeType.Audio
+		| MimeType.Image
+		| MimeType.Json
+		| MimeType.Pdf
+		| MimeType.Video,
+> {
+	tags?: string[]
+	title?: string
+	data?: string
+	type: Type
+	user?: string
+	[key: string]: any
+}
+
+export namespace MimeType {
+	// prettier-ignore
+	export type Audio = `audio/${'3gp' | 'flac' | 'm4a' | 'mp3' | 'ogg' | 'wav' | 'wma' | 'webm'}`
+	// prettier-ignore
+	export type Image = `image/${'ai' | 'bmp' | 'eps' | 'gif' | 'jpg' | 'jpeg' | 'png' | 'psd' | 'svg' | 'tiff' | 'webp'}`
+	export type Json = 'application/json'
+	export type Pdf = 'application/pdf'
+	// prettier-ignore
+	export type Video = `video/${'avi' | 'flv' | 'mkv' | 'mov' | 'mpg' | 'mp4' | 'ogg' | 'webm' | 'wmv'}`
+}
+
+export interface SubtypeObject<MT extends MediaType = MediaType> {
+	isOnServer?: null | boolean
+	isZipped?: null | boolean
+	isBinary?: null | boolean
+	isEncrypted?: null | boolean
+	isEditable?: null | boolean
+	applicationDataType?: null | number
+	mediaType?: null | MT
+	size?: null | number
 }
 
 export type Deat = DeatObject | number
@@ -26,76 +72,6 @@ export interface DeatObject {
 	sig?: string
 	exptime?: string
 	[key: string]: any
-}
-
-export namespace NameField {
-	export interface Base<Type extends string = string> {
-		tags?: string[]
-		note?: string
-		title?: string
-		type: Type
-		user?: string
-		[key: string]: any
-	}
-
-	export interface DocBase<Type extends string = string> extends Base<Type> {
-		data?: string
-		[key: string]: any
-	}
-
-	export interface MediaBase<Type extends string = string> extends Base<Type> {
-		data?: string
-		[key: string]: any
-	}
-
-	export interface TextBase<Type extends string = string> extends Base<Type> {
-		content?: string
-		[key: string]: any
-	}
-
-	export namespace Doc {
-		export type Epub = DocBase<'application/epub+zip'>
-		// prettier-ignore
-		export type Excel = DocBase<`application/${'vnd.ms-excel' | 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'}`>
-		export type Json = DocBase<'application/json'>
-		export type Pdf = DocBase<'application/pdf'>
-		// prettier-ignore
-		export type PowerPoint = DocBase<`application/${'vnd.ms-powerpoint' | 'vnd.openxmlformats-officedocument.presentationml.presentatio'}`>
-		// prettier-ignore
-		export type Zipped = DocBase<`application/${'vnd.rar' | 'x-7z-compressed' | 'x-tar' | 'zip'}`>
-		// prettier-ignore
-		export type Word = DocBase<`application/${'msword' | 'vnd.openxmlformats-officedocument.wordprocessingml.document'}`>
-		export type RichTxt = DocBase<'application/rtf'>
-	}
-
-	export namespace Media {
-		// prettier-ignore
-		export type Audio = MediaBase<`audio/${'3gp' | 'flac' | 'm4a' | 'mp3' | 'ogg' | 'wav' | 'wma' | 'webm'}`>
-		// prettier-ignore
-		export type Image = MediaBase<`image/${'ai' | 'bmp' | 'eps' | 'gif' | 'jpg' | 'jpeg' | 'png' | 'psd' | 'svg' | 'tiff' | 'webp'}`>
-		// prettier-ignore
-		export type Video = MediaBase<`video/${'avi' | 'flv' | 'mkv' | 'mov' | 'mpg' | 'mp4' | 'ogg' | 'webm' | 'wmv'}`>
-	}
-
-	export namespace Text {
-		export type Csv = TextBase<`text/csv`>
-		export type Html = TextBase<`text/html`>
-		export type JavaScript = TextBase<`text/javascript`>
-		export type Plain = TextBase<`text/plain`>
-		export type Markdown = TextBase<`text/markdown`>
-		export type Xml = TextBase<`text/xml`>
-	}
-}
-
-export interface SubtypeObject {
-	isOnServer?: null | boolean
-	isZipped?: null | boolean
-	isBinary?: null | boolean
-	isEncrypted?: null | boolean
-	isEditable?: null | boolean
-	applicationDataType?: null | number
-	mediaType?: null | MediaType
-	size?: null | number
 }
 
 export type MediaType =
@@ -120,3 +96,35 @@ export type ModelMediaType = 6
 export type MultipartMediaType = 7
 export type TextMediaType = 8
 export type VideoMediaType = 9
+
+// export namespace NameField {
+// 	export namespace Doc {
+// 		export type Epub = DocumentObject<'application/epub+zip'>
+// 		// prettier-ignore
+// 		export type Excel = DocumentObject<`application/${'vnd.ms-excel' | 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'}`>
+// 		export type Json = DocumentObject<'application/json'>
+// 		export type Pdf = DocumentObject<'application/pdf'>
+// 		// prettier-ignore
+// 		export type PowerPoint = DocumentObject<`application/${'vnd.ms-powerpoint' | 'vnd.openxmlformats-officedocument.presentationml.presentatio'}`>
+// 		// prettier-ignore
+// 		export type Zipped = DocumentObject<`application/${'vnd.rar' | 'x-7z-compressed' | 'x-tar' | 'zip'}`>
+// 		// prettier-ignore
+// 		export type Word = DocumentObject<`application/${'msword' | 'vnd.openxmlformats-officedocument.wordprocessingml.document'}`>
+// 		export type RichTxt = DocumentObject<'application/rtf'>
+// 	}
+
+// 	export namespace Media {
+// 		export type Audio = MediaObject<NameField.MimeType.Audio>
+// 		export type Image = MediaObject<NameField.MimeType.Image>
+// 		export type Video = MediaObject<NameField.MimeType.Video>
+// 	}
+
+// 	export namespace Text {
+// 		export type Csv = TextObject<`text/csv`>
+// 		export type Html = TextObject<`text/html`>
+// 		export type JavaScript = TextObject<`text/javascript`>
+// 		export type Plain = TextObject<`text/plain`>
+// 		export type Markdown = TextObject<`text/markdown`>
+// 		export type Xml = TextObject<`text/xml`>
+// 	}
+// }
