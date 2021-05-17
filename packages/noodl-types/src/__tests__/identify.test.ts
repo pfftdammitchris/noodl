@@ -36,8 +36,8 @@ describe(chalk.keyword('navajowhite').italic('Identify'), () => {
 	})
 
 	describe(label('ecosObj'), () => {
-		describe(`note`, () => {
-			it(`should return true for note docs`, () => {
+		describe(`note/pdf`, () => {
+			it(`should return true for note/pdf docs`, () => {
 				const ecosObj: t.EcosDocument<any> = {
 					name: {
 						title: `note title`,
@@ -47,10 +47,10 @@ describe(chalk.keyword('navajowhite').italic('Identify'), () => {
 					subtype: { mediaType: 1 },
 					type: 1025,
 				}
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.true
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.true
 			})
 
-			it(`should return false for docs that are not note docs`, () => {
+			it(`should return false for docs that are not note/pdf docs`, () => {
 				const ecosObj: t.EcosDocument<any> = {
 					name: {
 						title: `note title`,
@@ -60,21 +60,21 @@ describe(chalk.keyword('navajowhite').italic('Identify'), () => {
 					subtype: { mediaType: 1 },
 					type: 1025,
 				}
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'application/pdf'
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'text/html'
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'text/markdown'
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'text/javascript'
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'image/png'
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'image/jpg'
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'video/mp4'
-				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 			})
 		})
 	})

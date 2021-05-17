@@ -152,23 +152,62 @@ export const Identify = (function () {
 		},
 		ecosObj: {
 			audio(v: unknown) {},
-			doc(v: unknown) {},
-			font(v: unknown) {},
-			image(v: unknown) {},
-			message(v: unknown) {},
-			model(v: unknown) {},
-			multipart(v: unknown) {},
-			note(
+			doc(
 				v: unknown,
 			): v is T.EcosDocument<
 				T.NameField<T.MimeType.Pdf | T.MimeType.Json>,
 				T.DocMediaType
 			> {
-				return i.hasNameField(v) && v.name.type === 'application/json'
+				return (
+					i.hasNameField<T.EcosDocument>(v) &&
+					(/application\//i.test(v.name?.type || '') ||
+						v.subtype.mediaType === 1)
+				)
 			},
-			other(v: unknown) {},
-			text(v: unknown) {},
-			video(v: unknown) {},
+			font(v: unknown) {},
+			image(
+				v: unknown,
+			): v is T.EcosDocument<T.NameField<T.MimeType.Image>, T.ImageMediaType> {
+				return (
+					i.hasNameField<T.EcosDocument>(v) &&
+					(/image/i.test(v.name?.type || '') || v.subtype.mediaType === 4)
+				)
+			},
+			message(v: unknown) {},
+			model(v: unknown) {},
+			multipart(v: unknown) {},
+			other(
+				v: unknown,
+			): v is T.EcosDocument<T.NameField<any>, T.OtherMediaType> {
+				return (
+					i.hasNameField<T.EcosDocument>(v) &&
+					(!/(application|audio|font|image|multipart|text|video)\//i.test(
+						v.name?.type || '',
+					) ||
+						v.subtype.mediaType === 0)
+				)
+			},
+			text(
+				v: unknown,
+			): v is T.EcosDocument<
+				T.NameField<T.MimeType.Text>,
+				T.TextMediaType | T.OtherMediaType
+			> {
+				return (
+					i.hasNameField<T.EcosDocument>(v) &&
+					(/text\//i.test(v.name?.type || '') ||
+						v.subtype.mediaType === 8 ||
+						v.subtype.mediaType === 0)
+				)
+			},
+			video(
+				v: unknown,
+			): v is T.EcosDocument<T.NameField<T.MimeType.Video>, T.VideoMediaType> {
+				return (
+					i.hasNameField<T.EcosDocument>(v) &&
+					(/video\//i.test(v.name?.type || '') || v.subtype.mediaType === 9)
+				)
+			},
 		},
 		emit(v: unknown): v is T.EmitObject {
 			return u.isObj(v) && 'actions' in v

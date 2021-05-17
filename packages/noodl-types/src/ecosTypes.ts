@@ -32,13 +32,14 @@ export interface NameField<Type extends MimeType.Options = MimeType.Options> {
 }
 
 export namespace MimeType {
-	export type Options = Audio | Image | Json | Pdf | Video
+	export type Options = Audio | Image | Json | Pdf | Text | Video
 	// prettier-ignore
 	export type Audio = `audio/${'3gp' | 'flac' | 'm4a' | 'mp3' | 'ogg' | 'wav' | 'wma' | 'webm'}`
 	// prettier-ignore
 	export type Image = `image/${'ai' | 'bmp' | 'eps' | 'gif' | 'jpg' | 'jpeg' | 'png' | 'psd' | 'svg' | 'tiff' | 'webp'}`
 	export type Json = 'application/json'
 	export type Pdf = 'application/pdf'
+	export type Text = `text/${'css' | 'html' | 'javascript' | 'plain'}`
 	// prettier-ignore
 	export type Video = `video/${'avi' | 'flv' | 'mkv' | 'mov' | 'mpg' | 'mp4' | 'ogg' | 'webm' | 'wmv'}`
 }
