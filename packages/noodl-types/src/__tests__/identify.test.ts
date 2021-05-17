@@ -37,7 +37,7 @@ describe(chalk.keyword('navajowhite').italic('Identify'), () => {
 
 	describe(label('ecosObj'), () => {
 		describe(`note`, () => {
-			it(``, () => {
+			it(`should return true for note docs`, () => {
 				const ecosObj: t.EcosDocument<any> = {
 					name: {
 						title: `note title`,
@@ -48,6 +48,33 @@ describe(chalk.keyword('navajowhite').italic('Identify'), () => {
 					type: 1025,
 				}
 				expect(t.Identify.ecosObj.note(ecosObj)).to.be.true
+			})
+
+			it(`should return false for docs that are not note docs`, () => {
+				const ecosObj: t.EcosDocument<any> = {
+					name: {
+						title: `note title`,
+						data: `note's contents`,
+						type: 'text/plain',
+					},
+					subtype: { mediaType: 1 },
+					type: 1025,
+				}
+				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				ecosObj.name.type = 'application/pdf'
+				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				ecosObj.name.type = 'text/html'
+				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				ecosObj.name.type = 'text/markdown'
+				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				ecosObj.name.type = 'text/javascript'
+				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				ecosObj.name.type = 'image/png'
+				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				ecosObj.name.type = 'image/jpg'
+				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
+				ecosObj.name.type = 'video/mp4'
+				expect(t.Identify.ecosObj.note(ecosObj)).to.be.false
 			})
 		})
 	})
