@@ -10,7 +10,7 @@ import HighlightedText from '../components/HighlightedText'
 import Spinner from '../components/Spinner'
 import Select from '../components/Select'
 import {
-	getFilepath,
+	getFilePath,
 	magenta,
 	yellow,
 	saveJson,

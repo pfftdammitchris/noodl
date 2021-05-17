@@ -1,8 +1,4 @@
-export interface PlainObject {
-	[key: string]: any
-}
-
-export const assign = (v: any, ...rest: (PlainObject | undefined)[]) =>
+export const assign = (v: any, ...rest: (Record<string, any> | undefined)[]) =>
 	v && isObj(v) && Object.assign(v, ...rest)
 export const isArr = (v: any): v is any[] => Array.isArray(v)
 export const isBool = (v: any): v is boolean => typeof v === 'boolean'

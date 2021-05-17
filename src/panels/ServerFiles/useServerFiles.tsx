@@ -269,7 +269,7 @@ function useServerFiles() {
 
 	React.useEffect(() => {
 		setCaption(`${u.deepOrange('STEP')}: ${u.magenta(state.step)}\n`)
-		setCaption(`Server dir: ${u.magenta(u.getFilepath(settings.server.dir))}`)
+		setCaption(`Server dir: ${u.magenta(u.getFilePath(settings.server.dir))}`)
 		setCaption(`Server host: ${u.magenta(settings.server.host)}`)
 		setCaption(`Server port: ${u.magenta(settings.server.port)}`)
 	}, [])

@@ -3,7 +3,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import fs from 'fs-extra'
 import produce, { Draft } from 'immer'
 import CliConfigBuilder from '../builders/CliConfig'
-import { getFilepath, getCliConfig, hasCliConfig } from '../utils/common'
+import { getFilePath, getCliConfig, hasCliConfig } from '../utils/common'
 import { App } from '../types'
 
 const cliConfig = new CliConfigBuilder()
@@ -39,7 +39,7 @@ function useCliConfig() {
 	React.useEffect(() => {
 		if (isMounted.current) {
 			// Only refresh/save the config to dir if they created it
-			if (fs.existsSync(getFilepath('noodl.yml'))) {
+			if (fs.existsSync(getFilePath('noodl.yml'))) {
 				save(settings)
 			} else {
 				//

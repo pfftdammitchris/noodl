@@ -13,3 +13,11 @@ server:
   port: 3000
   protocol: http
   config: meet4d
+scripts:
+  aggregator:
+    dataFiles: server
+    outFile: dev/aggregator/metadata.json
+    use:
+      - actionTypes
+      - references
+      - urls

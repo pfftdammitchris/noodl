@@ -15,7 +15,7 @@ import * as u from '../utils/common'
 const log = console.log
 
 export const id = {
-	ACTION_TYPES: 'ACTION_TYPES',
+	ACTION_TYPES: 'actionTypes',
 	ACTION_OBJECTS: 'ACTION_OBJECTS',
 	BUILTIN_FUNC_NAMES: 'BUILTIN_FUNC_NAMES',
 	COMPONENT_KEYS: 'COMPONENT_KEYS',
@@ -24,7 +24,7 @@ export const id = {
 	EMIT_OBJECTS: 'EMIT_OBJECTS',
 	IF_OBJECTS: 'IF_OBJECTS',
 	OBJECTS_THAT_CONTAIN_THESE_KEYS: 'OBJECTS_THAT_CONTAIN_THESE_KEYS',
-	REFERENCES: 'REFERENCES',
+	REFERENCES: 'references',
 	RETRIEVE_URLS: 'RETRIEVE_URLS',
 	STYLE_BORDER_OBJECTS: 'STYLE_BORDER_OBJECTS',
 	STYLE_PROPERTIES: 'STYLE_PROPERTIES',
@@ -52,10 +52,7 @@ export const id = {
 	VIEW_COMPONENT_PROPS: 'VIEW_COMPONENT_PROPS',
 } as const
 
-const scripts = {} as Record<
-	typeof id[keyof typeof id],
-	t.Script.Register<Store>
->
+const scripts = {} as Record<typeof id[keyof typeof id], any>
 
 scripts[id.ACTION_OBJECTS] = (store) => {
 	return {
@@ -72,20 +69,6 @@ scripts[id.ACTION_OBJECTS] = (store) => {
 	}
 }
 
-scripts[id.ACTION_TYPES] = (store) => {
-	return {
-		key: 'actionTypes',
-		label: 'Retrieve all action types',
-		fn({ key, node, path } = {}) {
-			if (Utils.identify.keyValue.actionType(node)) {
-				if (!store.actionTypes?.includes(node.value as string)) {
-					store.actionTypes.push(node.value as string)
-				}
-			}
-		},
-	}
-}
-
 scripts[id.STYLE_BORDER_OBJECTS] = () => ({
 	label: 'Retrieve all style border objects',
 	fn({ key, node, path }, store) {
@@ -96,34 +79,6 @@ scripts[id.STYLE_BORDER_OBJECTS] = () => ({
 	},
 })
 
-scripts[id.BUILTIN_FUNC_NAMES] = () => {
-	return {
-		label: 'Retrieve all builtIn action funcNames',
-		fn({ key, node, path }, store) {
-			if (Utils.identify.keyValue.funcName(node)) {
-				if (!store.funcNames?.includes(node.value.value)) {
-					store.funcNames.push(node.value.value)
-				}
-			}
-		},
-	}
-}
-
-scripts[id.COMPONENT_KEYS] = () => {
-	return {
-		label: 'Retrieve all component keys',
-		fn({ key, node, path }, store) {
-			if (Utils.identify.component.any(node)) {
-				node.items.forEach((pair) => {
-					if (!store.componentKeys?.includes(pair.key.value)) {
-						store.componentKeys.push(pair.key.value)
-					}
-				})
-			}
-		},
-	}
-}
-
 scripts[id.COMPONENT_OBJECTS] = () => {
 	return {
 		label: 'Retrieve all component objects',
@@ -133,19 +88,6 @@ scripts[id.COMPONENT_OBJECTS] = () => {
 				if (!store.components[componentType])
 					store.components[componentType] = []
 				store.components[componentType].push(node.toJSON())
-			}
-		},
-	}
-}
-
-scripts[id.COMPONENT_TYPES] = () => {
-	return {
-		label: 'Retrieve all component types',
-		fn({ key, node, path }, store) {
-			if (Utils.identify.component.any(node)) {
-				if (!store.componentTypes.includes(node.get('type'))) {
-					store.componentTypes.push(node.get('type'))
-				}
 			}
 		},
 	}
@@ -196,52 +138,6 @@ scripts[id.OBJECTS_THAT_CONTAIN_THESE_KEYS] = () => {
 	}
 }
 
-scripts[id.REFERENCES] = (store) => {
-	const getPageName = (doc: yaml.Document<any>) =>
-		doc.contents.items[0].key.value
-	// console.log(store)
-	return {
-		key: id.REFERENCES,
-		label: 'Retrieve all references',
-		fn({ doc, key, node, path }) {
-			let pageName = n.isPageDocument(path?.[0]) ? getPageName(path[0]) : ''
-			let references: string[] | undefined = store.references
-
-			if (pageName && !references) {
-				references = []
-				// store.context.set(pageName, references)
-			}
-
-			if (Utils.identify.scalar.reference(node)) {
-				const reference = String(node.value)
-				if (!references?.includes(reference)) {
-					if (key === 'key') {
-						//
-					} else if (key === 'value') {
-						//
-					} else if (u.isNum(key)) {
-						//
-					}
-					if (pageName) {
-						references?.push(reference)
-					}
-				}
-			}
-		},
-	}
-}
-
-scripts[id.RETRIEVE_URLS] = () => {
-	return {
-		label: 'Retrieve all urls/paths',
-		fn({ key, node, path }, store) {
-			if (Utils.identify.scalar.url(node)) {
-				if (!store.urls.includes(node.value)) store.urls.push(node.value)
-			}
-		},
-	}
-}
-
 scripts[id.STYLE_PROPERTIES] = () => {
 	return {
 		label: 'Retrieve all style properties',
@@ -274,7 +170,7 @@ export function createActionPropComboScripts() {
 	].map((actionType) => ({
 		id: id[`${actionType.toUpperCase()}_ACTION_PROPS`],
 		label: `Retrieve props that may exist on ${actionType} action objects`,
-		fn({ key, node, path }, store: Store) {
+		fn({ key, node, path }, store: any) {
 			if (Utils.identify.action[actionType](node)) {
 				;(node as YAMLMap).items.forEach((pair: Pair<any, any>) => {
 					if (!Utils.identify.scalar.reference(pair.key)) {
@@ -292,7 +188,7 @@ export function createActionPropComboScripts() {
 				})
 			}
 		},
-	})) as t.Script.Config<Store>[]
+	})) as any[]
 }
 export function createComponentPropComboScripts() {
 	return [
@@ -313,11 +209,12 @@ export function createComponentPropComboScripts() {
 	].map((type) => ({
 		id: id[`${type.toUpperCase()}_ACTION_PROPS`],
 		label: `Retrieve props that may exist on ${type} action objects`,
-		fn({ key, node, path }, store: Store) {
+		fn({ key, node, path }) {
 			if (Utils.identify.component[type]?.(node)) {
 				;(node as YAMLMap).items.forEach((pair: Pair<any, any>) => {
 					if (!Utils.identify.scalar.reference(pair.key)) {
-						const components = store.propCombos.components
+						// const components = store.propCombos.components
+						const components = {}
 						if (!components[type]) components[type] = {}
 						if (!components[type][pair.key?.value]) {
 							components[type][pair.key.value] = []
@@ -331,7 +228,7 @@ export function createComponentPropComboScripts() {
 				})
 			}
 		},
-	})) as t.Script.Config<Store>[]
+	})) as any[]
 }
 
 export default scripts

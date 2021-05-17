@@ -1,6 +1,7 @@
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import useCliConfig from './hooks/useCliConfig'
 import createAggregator from './api/createAggregator'
+import { Cli } from './cli'
 import * as c from './constants'
 
 export namespace App {
@@ -17,12 +18,14 @@ export namespace App {
 			highlightedId: PanelId | ''
 			mounted: boolean
 			idle: boolean
+			[key: string]: any
 		}
 		spinner: false | string
 	}
 
 	export interface Context extends State {
 		aggregator: ReturnType<typeof createAggregator>
+		cli: Cli
 		cliArgs: {
 			config?: string
 			defaultPanel?: App.PanelId
@@ -55,9 +58,17 @@ export namespace App {
 				dir: string[]
 			}
 		}
+		scripts?: {
+			aggregator?: {
+				dataFiles?: string
+				outFile?: string
+				use?: string[]
+			}
+		}
 	}
 
-	export type EventId = typeof c.aggregator.event[keyof typeof c.aggregator.event]
+	export type EventId =
+		typeof c.aggregator.event[keyof typeof c.aggregator.event]
 
 	export type PanelId = keyof typeof c.panel
 
@@ -160,8 +171,8 @@ export interface IdentifyFn<N = any> {
 	(node: N): boolean
 }
 
-export interface PlainObject {
-	[key: string]: any
-}
-
-export type YAMLNode = Scalar | Pair | YAMLMap | YAMLSeq
+export type YAMLNode =
+	| Scalar<any>
+	| Pair<any, any>
+	| YAMLMap<any, any>
+	| YAMLSeq<any>

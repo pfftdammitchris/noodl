@@ -9,6 +9,8 @@ import App from './App'
 import { Ext } from './panels/RetrieveObjects'
 import { App as IApp } from './types'
 
+export type Cli = typeof cli
+
 const cli = meow(
 	`
 	${aquamarine('Usage')}
@@ -24,15 +26,18 @@ const cli = meow(
 		flags: {
 			config: { type: 'string', alias: 'c' },
 			panel: { type: 'string', alias: 'p' },
+			retrieve: { type: 'string', alias: 'r' },
 			server: { type: 'boolean', alias: 's' },
 		},
 	},
 )
 
 console.log(cli.help)
+console.log(cli.flags)
 
 render(
 	<App
+		cli={cli}
 		config={cli.flags.config}
 		defaultPanel={cli.flags.panel as IApp.PanelId}
 		runServer={cli.flags.server}

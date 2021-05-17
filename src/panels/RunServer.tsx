@@ -2,7 +2,7 @@ import React from 'react'
 import useCtx from '../useCtx'
 
 function RunServer() {
-	const { settings } = useCtx()
+	const { cli, settings } = useCtx()
 
 	React.useEffect(() => {
 		import('../server').then(({ default: createServer }) => {
@@ -11,7 +11,7 @@ function RunServer() {
 				host: settings.server.host,
 				port: settings.server.port,
 				protocol: settings.server.protocol,
-				config: settings.server.config as string,
+				config: cli.flags.config || (settings.server.config as string),
 			})
 		})
 	}, [])

@@ -63,25 +63,25 @@ export function isScalar(v: unknown): v is Scalar<any> {
 }
 
 export function onYAMLMap(fn: IdentifyFn<YAMLMap<any, any>>) {
-	return function (v: unknown): v is YAMLMap {
+	return function (v: unknown): v is YAMLMap<any, any> {
 		return isYAMLMap(v) && fn(v)
 	}
 }
 
 export function onYAMLSeq(fn: IdentifyFn<YAMLSeq<any>>) {
-	return function (v: unknown): v is YAMLSeq {
+	return function (v: unknown): v is YAMLSeq<any> {
 		return isYAMLSeq(v) && fn(v)
 	}
 }
 
 export function onPair(fn: IdentifyFn<Pair<any, any>>) {
-	return function (v: unknown): v is Pair {
+	return function (v: unknown): v is Pair<any, any> {
 		return isPair(v) && fn(v)
 	}
 }
 
 export function onScalar(fn: IdentifyFn<Scalar<any>>) {
-	return function (v: unknown): v is Scalar {
+	return function (v: unknown): v is Scalar<any> {
 		return isScalar(v) && fn(v)
 	}
 }

@@ -22,19 +22,7 @@ export interface EcosDocument<
 	[key: string]: any
 }
 
-export interface NameField<
-	Type extends
-		| MimeType.Audio
-		| MimeType.Image
-		| MimeType.Json
-		| MimeType.Pdf
-		| MimeType.Video =
-		| MimeType.Audio
-		| MimeType.Image
-		| MimeType.Json
-		| MimeType.Pdf
-		| MimeType.Video,
-> {
+export interface NameField<Type extends MimeType.Options = MimeType.Options> {
 	tags?: string[]
 	title?: string
 	data?: string
@@ -44,6 +32,7 @@ export interface NameField<
 }
 
 export namespace MimeType {
+	export type Options = Audio | Image | Json | Pdf | Video
 	// prettier-ignore
 	export type Audio = `audio/${'3gp' | 'flac' | 'm4a' | 'mp3' | 'ogg' | 'wav' | 'wma' | 'webm'}`
 	// prettier-ignore
@@ -63,6 +52,7 @@ export interface SubtypeObject<MT extends MediaType = MediaType> {
 	applicationDataType?: null | number
 	mediaType?: null | MT
 	size?: null | number
+	[key: string]: any
 }
 
 export type Deat = DeatObject | number

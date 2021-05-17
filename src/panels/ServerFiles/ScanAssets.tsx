@@ -4,7 +4,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import useCtx from '../../useCtx'
 import Scripts from '../../api/Scripts'
-import scriptObjs, { id as scriptId, Store } from '../../utils/scripts'
+import scriptObjs from '../../utils/scripts'
 import useServerFilesCtx from './useServerFilesCtx'
 import { Noodl } from '../../types'
 import * as T from './types'
@@ -30,8 +30,9 @@ function ScanAssets() {
 			const pages = appConfig.page
 			const scripts = new Scripts({
 				dataFilePath: '',
+				// @ts-expect-error
 				docs: [...preloadPages, ...pages].reduce((acc, p) => {
-					const filepath = u.getFilepath(settings.server.dir, `${p}.yml`)
+					const filepath = u.getFilePath(settings.server.dir, `${p}.yml`)
 					if (fs.existsSync(filepath)) {
 						return acc.concat(
 							yaml.parseDocument(fs.readFileSync(filepath, 'utf8')),
@@ -45,9 +46,9 @@ function ScanAssets() {
 
 			scripts
 				.use({
-					script: scriptObjs.RETRIEVE_URLS,
-					start: (store) => !store.urls && (store.urls = []),
-					end(store) {
+					script: [scriptObjs.RETRIEVE_URLS],
+					onStart: (store) => !store.urls && (store.urls = []),
+					onEnd(store) {
 						store.urls = store.urls.sort()
 
 						const contained = [] as T.MetadataObject[]
@@ -62,13 +63,8 @@ function ScanAssets() {
 							allUrls: [],
 						} as T.GroupedMetadataObjects & { allUrls: string[] }
 
-						const {
-							documents,
-							images,
-							scripts,
-							videos,
-							allUrls,
-						} = groupedMetadataObjects
+						const { documents, images, scripts, videos, allUrls } =
+							groupedMetadataObjects
 
 						for (let url of store.urls) {
 							const raw = url

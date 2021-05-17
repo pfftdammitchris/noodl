@@ -11,7 +11,7 @@ import {
 } from '../src/utils/scripts'
 import * as u from '../src/utils/common'
 
-const pathToDataFile = u.getFilepath('data/generated/page-parts.json')
+const pathToDataFile = u.getFilePath('data/generated/page-parts.json')
 let dataFile = {}
 
 const o = createObjectScripts({
@@ -74,7 +74,7 @@ o.on('start', (store) => {
 			)
 		}
 
-		const generateFolder = u.getFilepath('packages/noodl-types/src/generated')
+		const generateFolder = u.getFilePath('packages/noodl-types/src/generated')
 		fs.ensureDirSync(generateFolder)
 
 		// Save as js files for noodl-types to export them for use

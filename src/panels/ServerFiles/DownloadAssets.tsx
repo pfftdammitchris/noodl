@@ -79,7 +79,7 @@ function DownloadAssets() {
 					try {
 						await download(
 							file.link,
-							u.getFilepath(settings.server.dir, 'assets'),
+							u.getFilePath(settings.server.dir, 'assets'),
 						)
 					} catch (error) {
 						setCaption(`[${u.red(file.filename)}]: ${u.yellow(error.message)}`)

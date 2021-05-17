@@ -1,3 +1,5 @@
+import * as u from '@jsmanifest/utils'
+import invariant from 'invariant'
 import React from 'react'
 import produce from 'immer'
 import { Spacer, Static, Text } from 'ink'
@@ -11,7 +13,7 @@ import RetrieveObjects, { Ext } from './panels/RetrieveObjects'
 import RetrieveKeywords from './panels/RetrieveKeywords'
 import RunServer from './panels/RunServer'
 import useSettings from './hooks/useCliConfig'
-import * as u from './utils/common'
+import { magenta } from './utils/common'
 import * as c from './constants'
 import * as T from './types'
 
@@ -44,11 +46,13 @@ function reducer(state: T.App.State = initialState, action: T.App.Action) {
 }
 
 function Application({
+	cli,
 	config,
 	defaultPanel,
 	ext = 'yml',
 	runServer,
 }: {
+	cli: T.App.Context['cli']
 	config?: string
 	ext?: Ext
 	defaultPanel?: T.App.PanelId
@@ -60,6 +64,7 @@ function Application({
 	const ctx = {
 		...state,
 		aggregator,
+		cli,
 		cliArgs: { config, defaultPanel, ext, runServer },
 		settings,
 		highlightPanel: (panelId: T.App.PanelId) => {
@@ -89,16 +94,36 @@ function Application({
 	} as T.App.Context
 
 	React.useEffect(() => {
-		if (config || defaultPanel) {
-			ctx.settings.set((draft) => {
-				config && (draft.server.config = config)
-				defaultPanel && (draft.defaultPanel = defaultPanel)
-			})
-			if (runServer) {
-				if (!defaultPanel) {
-					ctx.updatePanel({ value: c.panel.RETRIEVE_OBJECTS.value })
-				} else {
-					ctx.updatePanel({ value: defaultPanel })
+		if (u.keys(cli.flags).length) {
+			const isRetrieving = !!cli.flags.retrieve
+			const isStartingServer = !!cli.flags.server
+
+			if (isRetrieving) {
+				invariant(
+					['json', 'yml'].includes(cli.flags.retrieve as string),
+					`Invalid value for "${magenta(
+						`retrieve`,
+					)}". Valid options are: ${magenta('json')}, ${magenta('yml')}`,
+				)
+				ctx.updatePanel({
+					value: c.panel.RETRIEVE_OBJECTS.value,
+					server: isStartingServer,
+				})
+			} else if (isStartingServer) {
+				ctx.updatePanel({ value: c.panel.RUN_SERVER.value })
+			}
+		} else {
+			if (config || defaultPanel) {
+				ctx.settings.set((draft) => {
+					config && (draft.server.config = config)
+					defaultPanel && (draft.defaultPanel = defaultPanel)
+				})
+				if (runServer) {
+					if (!defaultPanel) {
+						ctx.updatePanel({ value: c.panel.RETRIEVE_OBJECTS.value })
+					} else {
+						ctx.updatePanel({ value: defaultPanel })
+					}
 				}
 			}
 		}
@@ -114,7 +139,7 @@ function Application({
 			{state.panel.value === c.panel.RETRIEVE_OBJECTS.value ? (
 				<RetrieveObjects
 					onEnd={() => {
-						if (runServer) {
+						if (state.panel.server || runServer) {
 							ctx.updatePanel({
 								idle: true,
 								mounted: false,

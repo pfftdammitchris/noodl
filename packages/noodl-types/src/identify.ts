@@ -1,3 +1,4 @@
+import * as u from '@jsmanifest/utils'
 import {
 	componentTypes,
 	minimalStyleKeys,
@@ -6,7 +7,7 @@ import {
 import { ComponentType } from './constantTypes'
 import { StyleObject } from './styleTypes'
 import * as T from '.'
-import * as u from './_internal'
+import * as i from './_internal'
 
 export const Identify = (function () {
 	const composeSomes =
@@ -55,7 +56,7 @@ export const Identify = (function () {
 		},
 		actionChain(v: unknown) {
 			return (
-				Array.isArray(v) &&
+				u.isArr(v) &&
 				[o.action.any, o.emit, o.goto, o.toast].some((fn) => v.some(fn))
 			)
 		},
@@ -163,7 +164,7 @@ export const Identify = (function () {
 				T.NameField<T.MimeType.Pdf | T.MimeType.Json>,
 				T.DocMediaType
 			> {
-				return u.hasNameField(v) && v.type === 'application/json'
+				return i.hasNameField(v) && v.name.type === 'application/json'
 			},
 			other(v: unknown) {},
 			text(v: unknown) {},
@@ -230,19 +231,19 @@ export const Identify = (function () {
 			return (
 				typeof v === 'string' &&
 				!v.startsWith('.') &&
-				(u.isImg(v) || u.isJs(v) || u.isHtml(v) || u.isPdf(v) || u.isVid(v))
+				(i.isImg(v) || i.isJs(v) || i.isHtml(v) || i.isPdf(v) || i.isVid(v))
 			)
 		},
 		style: {
 			any(v: unknown): v is StyleObject {
-				return u.isObj(v) && u.hasAnyKeys(minimalStyleKeys, v)
+				return u.isObj(v) && i.hasAnyKeys(minimalStyleKeys, v)
 			},
 			border(v: unknown) {
 				return (
 					u.isObj(v) &&
-					u.hasAnyKeys(['color', 'style', 'width'], v) &&
-					!u.hasAnyKeys(
-						u.excludeKeys(minimalStyleKeys, minimalBorderStyleKeys),
+					i.hasAnyKeys(['color', 'style', 'width'], v) &&
+					!i.hasAnyKeys(
+						i.excludeKeys(minimalStyleKeys, minimalBorderStyleKeys),
 						v,
 					)
 				)
@@ -259,7 +260,7 @@ export const Identify = (function () {
 		): v is (T.ActionObject | T.EmitObjectFold | T.GotoObject)[] {
 			return u.isArr(v) && v.some(composeSomes(o.action.any, o.emit, o.goto))
 		},
-		component: Object.assign(
+		component: u.assign(
 			{
 				any(v: unknown): v is T.AnyComponentObject {
 					return (
@@ -269,7 +270,7 @@ export const Identify = (function () {
 					)
 				},
 			},
-			Object.assign(
+			u.assign(
 				{} as {
 					[K in ComponentType]: <K extends T.ComponentType>(
 						v: unknown,
@@ -277,10 +278,8 @@ export const Identify = (function () {
 				},
 				componentTypes.reduce(
 					(acc, type) =>
-						Object.assign(acc, {
-							[type](v: unknown) {
-								return u.isObj(v) && v['type'] === type
-							},
+						u.assign(acc, {
+							[type]: (v: unknown) => u.isObj(v) && v['type'] === type,
 						}),
 					{},
 				),

@@ -124,7 +124,7 @@ export function forEachDeepKeyValue<O = any>(
 
 export function getCliConfig() {
 	return yaml.parse(
-		fs.readFileSync(getFilepath('noodl.yml'), 'utf8'),
+		fs.readFileSync(getFilePath('noodl.yml'), 'utf8'),
 	) as T.App.CliConfigObject
 }
 
@@ -164,7 +164,7 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 				// TODO - Find a way to get the hostname here?
 				else metadata.link = value
 			} else {
-				metadata.filepath = getFilepath(value)
+				metadata.filepath = getFilePath(value)
 			}
 		} else {
 			if (type === 'link') {
@@ -176,8 +176,8 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 					: `/${metadata.pathname}`
 			} else {
 				metadata.filepath = s.prefix
-					? getFilepath(path.join(s.prefix, s[type] as string))
-					: getFilepath(s[type] as string)
+					? getFilePath(path.join(s.prefix, s[type] as string))
+					: getFilePath(s[type] as string)
 			}
 		}
 
@@ -209,12 +209,12 @@ export function getFilename(str: string) {
 	return str.substring(str.lastIndexOf('/') + 1)
 }
 
-export function getFilepath(...paths: string[]) {
+export function getFilePath(...paths: string[]) {
 	return path.normalize(path.resolve(path.join(process.cwd(), ...paths)))
 }
 
 export function hasCliConfig() {
-	return fs.existsSync(getFilepath('noodl.yml'))
+	return fs.existsSync(getFilePath('noodl.yml'))
 }
 
 export function hasDot(s: string) {
@@ -232,25 +232,36 @@ export function loadFileAsDoc(filepath: string) {
 export function loadFilesAsDocs(opts: {
 	as: 'doc'
 	dir: string
+	includeExt?: boolean
 	recursive: boolean
 }): yaml.Document.Parsed[]
 export function loadFilesAsDocs(opts: {
 	as: 'metadataDocs'
 	dir: string
+	includeExt?: boolean
 	recursive: boolean
 }): { name: string; doc: yaml.Document.Parsed }[]
 export function loadFilesAsDocs({
 	as = 'doc',
 	dir,
+	includeExt = true,
 	recursive = true,
 }: {
 	as?: 'doc' | 'metadataDocs'
 	dir: string
+	includeExt?: boolean
 	recursive?: boolean
 }) {
 	const xform =
 		as === 'metadataDocs'
-			? (obj: any) => ({ doc: loadFileAsDoc(obj.path), name: obj.name })
+			? (obj: any) => ({
+					doc: loadFileAsDoc(obj.path),
+					name: includeExt
+						? obj.name
+						: obj.name.includes('.')
+						? obj.name.substring(0, obj.name.lastIndexOf('.'))
+						: obj.name,
+			  })
 			: (fpath: string) => loadFileAsDoc(fpath)
 	return globby
 		.sync(path.join(dir, recursive ? '**/*.yml' : '*.yml'), {
@@ -268,8 +279,8 @@ export function loadFiles(opts: {
 export function loadFiles(opts: {
 	dir: string
 	ext: 'json'
-	onFile?(args: { file: T.PlainObject; filename: string }): void
-}): T.PlainObject[]
+	onFile?(args: { file: Record<string, any>; filename: string }): void
+}): Record<string, any>[]
 export function loadFiles({
 	dir,
 	ext = 'json',
@@ -278,12 +289,12 @@ export function loadFiles({
 	dir: string
 	ext?: 'json' | 'yml'
 	onFile?(args: {
-		file?: T.PlainObject | yaml.Document
+		file?: Record<string, any> | yaml.Document
 		filename: string
 	}): void
 }) {
 	return globby
-		.sync(path.resolve(getFilepath(dir), `**/*.${ext}`))
+		.sync(path.resolve(getFilePath(dir), `**/*.${ext}`))
 		.reduce((acc, filename) => {
 			const file =
 				ext === 'json'

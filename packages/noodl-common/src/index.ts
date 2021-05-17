@@ -6,10 +6,6 @@ import chalk from 'chalk'
 import yaml from 'yaml'
 import globby from 'globby'
 
-interface PlainObject {
-	[key: string]: any
-}
-
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
 export const highlight = (...s: any[]) => chalk.yellow(...s)
 export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
@@ -78,7 +74,7 @@ export function getFilename(str: string) {
 	return str.substring(str.lastIndexOf('/') + 1)
 }
 
-export function getFilepath(...paths: string[]) {
+export function getFilePath(...paths: string[]) {
 	return path.normalize(path.resolve(path.join(process.cwd(), ...paths)))
 }
 
@@ -91,7 +87,7 @@ export function hasSlash(s: string) {
 }
 
 export function hasCliConfig() {
-	return fs.existsSync(getFilepath('noodl.yml'))
+	return fs.existsSync(getFilePath('noodl.yml'))
 }
 
 export function loadFileAsDoc(filepath: string) {
@@ -137,8 +133,8 @@ export function loadFiles(opts: {
 export function loadFiles(opts: {
 	dir: string
 	ext: 'json'
-	onFile?(args: { file: PlainObject; filename: string }): void
-}): PlainObject[]
+	onFile?(args: { file: Record<string, any>; filename: string }): void
+}): Record<string, any>[]
 export function loadFiles({
 	dir,
 	ext = 'json',
@@ -146,10 +142,13 @@ export function loadFiles({
 }: {
 	dir: string
 	ext?: 'json' | 'yml'
-	onFile?(args: { file?: PlainObject | yaml.Document; filename: string }): void
+	onFile?(args: {
+		file?: Record<string, any> | yaml.Document
+		filename: string
+	}): void
 }) {
 	return globby
-		.sync(path.resolve(getFilepath(dir), `**/*.${ext}`))
+		.sync(path.resolve(getFilePath(dir), `**/*.${ext}`))
 		.reduce((acc, filename) => {
 			const file =
 				ext === 'json'

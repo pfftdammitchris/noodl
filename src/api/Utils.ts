@@ -1,4 +1,5 @@
 import { Pair } from 'yaml'
+import * as u from '@jsmanifest/utils'
 import { isReference } from 'noodl-utils'
 import partialRight from 'lodash/partialRight'
 import {
@@ -126,7 +127,7 @@ export const identify = (function () {
 			reference: onScalar((node) => isReference(node.value)),
 			url: onScalar(
 				(node) =>
-					typeof node.value === 'string' &&
+					u.isStr(node.value) &&
 					!node.value.startsWith('.') &&
 					(isImg(node.value) ||
 						isJs(node.value) ||

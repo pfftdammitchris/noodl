@@ -1,5 +1,6 @@
 import express from 'express'
 import fs from 'fs-extra'
+import WebSocket from 'ws'
 import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
 import { ApolloServerPlugin } from 'apollo-server-plugin-base'
 import globby from 'globby'
@@ -141,7 +142,7 @@ const configureServer = (function () {
 
 		app.get(
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
-			(req, res) => res.sendFile(u.getFilepath(serverDir, 'cadlEndpoint.yml')),
+			(req, res) => res.sendFile(u.getFilePath(serverDir, 'cadlEndpoint.yml')),
 		)
 
 		metadata.yml.forEach(({ group, filepath, filename }) => {
@@ -186,6 +187,32 @@ const configureServer = (function () {
 					config ? `using config ${u.magenta(config)}` : ''
 				}`,
 			)
+
+			const wss = new WebSocket.Server({ port: 3002 })
+
+			wss.on('listening', () => {
+				u.newline()
+				log(
+					u.brightGreen(
+						`WebSocket server is listening at: ws://127.0.0.1:3002`,
+					),
+				)
+			})
+
+			wss.on('connection', function connection(ws, sender) {
+				const { socket } = sender
+				const ip = socket.remoteAddress
+
+				u.newline()
+				log(u.brightGreen(`Client is connected`), { ip })
+
+				ws.on('message', (message) => log('Received: %s', message))
+				ws.send('Hello client. I am the WebSocket server you are connected to!')
+			})
+
+			wss.on('close', () => log(u.white(`WebSocket server has closed`)))
+			wss.on('error', (err) => log(u.red(`[${err.name}] ${err.message}`)))
+
 			app._router.stack.forEach(function ({ route }: any) {
 				if (route) {
 					const { methods, path, stack } = route

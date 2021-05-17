@@ -98,7 +98,7 @@ Global : # name of an object
   
   globalRegister:
 
-
+  
     # When the app obtain the current token (either from login or Firebase auto update)
     # send the access token to server via 1090 edge
     - type: register
@@ -147,7 +147,7 @@ Global : # name of an object
 #                - do something..
 #                - continue
 
-
+  newAccountFlag: "1"
   currentDateTime : =.builtIn.currentDateTime # long integer of Unix_TimeStamp in millsecond
   currentUser : 
     response:

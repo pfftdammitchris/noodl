@@ -2,13 +2,8 @@
 import axios from 'axios'
 import isPlainObject from 'lodash/isPlainObject'
 import chalk from 'chalk'
-import { getNoodlObject } from '../utils/common'
 
-export interface PlainObject {
-	[key: string]: any
-}
-
-export type SourceOption = string | PlainObject
+export type SourceOption = string | Record<string, any>
 
 export function occurrences(obj: any, data: any = {}) {
 	return isPlainObject(obj)

@@ -12,7 +12,7 @@
 		"codegen:watch": "graphql-codegen --watch",
 		"lib:build": "lerna exec --scope noodl-types --scope noodl-action-chain --scope noodl \"npm run build\"",
 		"prestart": "rm -rf dist && npm run codegen",
-		"scripts:dev": "ts-node-dev --respawn --transpile-only --cls dev/script.ts",
+		"scripts:dev": "ts-node-dev --respawn --transpile-only --cls dev/aggregator/index.ts",
 		"start": "cross-env DEV=true CI=false tsc --watch",
 		"start:noodl": "lerna exec --scope noodl \"npm run start\"",
 		"server": "npm run codegen && ts-node-dev --respawn --transpile-only src/server/index.ts",
@@ -41,7 +41,8 @@
 		"noodl": "file:packages/noodl",
 		"noodl-types": "file:packages/noodl-types",
 		"react": "^16.14.0",
-		"transducers-js": "^0.4.174"
+		"transducers-js": "^0.4.174",
+		"ws": "^7.4.5"
 	},
 	"devDependencies": {
 		"@aitmed/ecos-lvl2-sdk": "^1.4.123",
@@ -58,7 +59,7 @@
 		"@graphql-codegen/typescript-operations": "^1.17.13",
 		"@graphql-tools/load-files": "^6.3.2",
 		"@jsmanifest/typefest": "^1.0.1",
-		"@jsmanifest/utils": "^1.0.5",
+		"@jsmanifest/utils": "^1.0.7",
 		"@rollup/plugin-babel": "^5.3.0",
 		"@rollup/plugin-commonjs": "^18.0.0",
 		"@rollup/plugin-node-resolve": "^11.2.0",

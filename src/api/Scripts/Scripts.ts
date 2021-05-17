@@ -1,12 +1,14 @@
 import { config } from 'dotenv'
 config()
+import { AcceptArray } from '@jsmanifest/typefest'
+import curry from 'lodash/curry'
 import * as u from '@jsmanifest/utils'
 import * as tds from 'transducers-js'
 import invariant from 'invariant'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
 import fs from 'fs-extra'
-import { cyan, yellow, magenta } from '../../utils/common'
+import { cyan, italic, yellow, magenta } from '../../utils/common'
 import * as t from './types'
 
 const log = console.log
@@ -14,13 +16,20 @@ const tag = (s: string) => `[${cyan(s)}]`
 
 class Scripts<Store extends Record<string, any> = Record<string, any>> {
 	#store = {} as Store
-	#scripts = [] as t.Script.Config<Store>[]
+	#scripts = [] as t.Script.Config<
+		Store,
+		keyof Store,
+		t.Script.ScriptDataType
+	>[]
 	#dataFilePath = ''
 	#hooks = { onStart: [], onEnd: [] } as Record<
 		keyof t.Script.Hooks<Store>,
 		t.Script.Hooks<Store>[keyof t.Script.Hooks<Store>][]
 	>
-	docs: (yaml.Document | yaml.Document.Parsed)[] = [];
+	docs: {
+		name: string
+		doc: yaml.Document<yaml.Node> | yaml.Document.Parsed<any>
+	}[] = [];
 
 	[Symbol.for('nodejs.util.inspect.custom')]() {
 		return {
@@ -39,7 +48,7 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 	constructor(opts: {
 		dataFilePath: string
 		store?: Store
-		docs?: yaml.Document | yaml.Document[]
+		docs?: AcceptArray<Scripts<Store>['docs'][number]>
 	}) {
 		this.#dataFilePath = opts.dataFilePath || ''
 		opts.docs && u.array(opts.docs).forEach((doc) => this.docs.push(doc))
@@ -52,6 +61,10 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 
 	get hooks() {
 		return this.#hooks
+	}
+
+	get store() {
+		return this.#store
 	}
 
 	ensureDataFile() {
@@ -73,29 +86,26 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 		return null
 	}
 
-	compose(scripts?: t.Script.Config<Store>[]) {
+	compose(scripts?: ReturnType<t.Script.Register<Store>>[]) {
 		const configs = scripts || this.#scripts
 
-		const useComposer = (fn: t.Script.ConsumerFunc) => {
-			return (step: <V>(val: V) => V) => {
-				return (args: Parameters<t.Script.ConsumerFunc>[0]) => fn(step(args))
-			}
-		}
+		const useCurriedTransformComposer = curry(
+			(
+				fn: t.Script.ConsumerFunc,
+				step: <V>(val: V) => V,
+				args: Parameters<t.Script.ConsumerFunc>[0],
+			) => {
+				fn(args)
+				return step(args)
+			},
+		)
 
-		const composed = tds.comp(
-			...configs.map((config) => {
-				invariant(
-					!!config.key,
-					`Script config ${magenta(`key`)} is missing ${
-						config.label ? `for label ${yellow(config.label)}` : ''
-					}`,
-				)
-				return useComposer(config.fn)
-			}),
+		const createTransform = tds.comp(
+			...configs.map((config) => useCurriedTransformComposer(config.fn)),
 		)
 
 		const step = <V>(args: V) => args
-		const transform = composed(step)
+		const transform = createTransform(step)
 
 		invariant(
 			u.isFnc(transform),
@@ -103,9 +113,15 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 				`Received ${u.red(typeof transform)} instead`,
 		)
 
-		function onTransform(doc: yaml.Document | yaml.Document.Parsed) {
-			return (...args: Parameters<yaml.visitorFn<unknown>>) => {
-				return transform({ doc, node: args[0], key: args[1], path: args[2] })
+		function onTransform(obj: Scripts<Store>['docs'][number]) {
+			return (...[key, node, path]: Parameters<yaml.visitorFn<yaml.Node>>) => {
+				return transform({
+					name: obj.name,
+					doc: obj.doc,
+					key,
+					node,
+					path,
+				})
 			}
 		}
 
@@ -131,7 +147,10 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 		)
 
 		for (const docs of chunkedDocs) {
-			for (const doc of docs) yaml.visit(doc, composed(doc))
+			for (const obj of docs) {
+				// @ts-expect-error
+				yaml.visit(obj.doc, composed(obj))
+			}
 		}
 
 		this.#hooks.onEnd.forEach((fn) => {
@@ -154,7 +173,7 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 	}
 
 	use(opts: {
-		script?: t.Script.Register<Store> | t.Script.Register<Store>[]
+		script?: AcceptArray<t.Script.Register<Store>>
 		onStart?: t.Script.HooksRegister<Store, 'onStart'>
 		onEnd?: t.Script.HooksRegister<Store, 'onEnd'>
 	}) {
@@ -167,7 +186,18 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 						u.isFnc(config),
 						`Expected a script register function to "use" but received ${typeof config}`,
 					)
-					return config(this.#store)
+					const _config = config(this.#store)
+					invariant(!!_config.key, `Missing script ${italic(yellow(`key`))}`)
+					!_config.type && (_config.type = 'array')
+
+					this.#store[_config.key as keyof Store] =
+						_config.type === 'map'
+							? (new Map() as any)
+							: _config.type === 'object'
+							? ({} as Record<string, any>)
+							: ([] as any[])
+
+					return _config
 				}),
 			)
 		return this

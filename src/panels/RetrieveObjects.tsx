@@ -10,7 +10,7 @@ import HighlightedText from '../components/HighlightedText'
 import Spinner from '../components/Spinner'
 import Select from '../components/Select'
 import {
-	getFilepath,
+	getFilePath,
 	magenta,
 	yellow,
 	saveJson,
@@ -65,15 +65,14 @@ function RetrieveObjectsPanel({
 	onEnd?(): void
 	onError?(err: Error): void
 }) {
-	const [state, setState] = React.useState(initialState)
 	const [configInput, setConfigInput] = React.useState('')
-	const {
-		aggregator,
-		cliArgs,
-		settings,
-		setCaption,
-		setErrorCaption,
-	} = useCtx()
+	const { aggregator, cli, cliArgs, settings, setCaption, setErrorCaption } =
+		useCtx()
+	const [state, setState] = React.useState(() => ({
+		...initialState,
+		ext: cli.flags.retrieve || ('' as any),
+		config: cli.flags.config || cliArgs.config || '',
+	}))
 
 	const _setState = React.useCallback((fn: (draft: Draft<State>) => void) => {
 		setState(produce(fn))
@@ -85,8 +84,8 @@ function RetrieveObjectsPanel({
 	] as const
 
 	React.useEffect(() => {
-		const config = cliArgs.config || state.config
-		const ext = cliArgs.ext || state.ext
+		const config = cli.flags.config || cliArgs.config || state.config
+		const ext = cli.flags.retrieve || cliArgs.ext || state.ext
 
 		if (config && ext) {
 			async function onObject(
@@ -101,7 +100,7 @@ function RetrieveObjectsPanel({
 					const saveFn = ext === 'json' ? saveJson : saveYml
 					try {
 						for (let dir of settings.objects[ext]?.dir || []) {
-							dir = getFilepath(dir)
+							dir = getFilePath(dir)
 							let filepath = withExt(path.join(dir, name))
 
 							if (!fs.existsSync(dir)) {
@@ -156,7 +155,7 @@ function RetrieveObjectsPanel({
 
 	return (
 		<Box padding={1} flexDirection="column">
-			{!cliArgs.runServer && (
+			{!(cli.flags.config || cliArgs.runServer ? true : false) && (
 				<HighlightedText>
 					{!state.ext
 						? 'Choose file extension(s)'
@@ -166,7 +165,7 @@ function RetrieveObjectsPanel({
 				</HighlightedText>
 			)}
 			<Box paddingTop={1} flexDirection="column">
-				{!cliArgs.runServer && (
+				{!cli.flags.config && !cliArgs.runServer && (
 					<>
 						{!state.ext ? (
 							<Select

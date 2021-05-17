@@ -1,7 +1,6 @@
 import get from 'lodash/get'
 import has from 'lodash/has'
 import { NameField } from '../ecosTypes'
-import { PlainObject } from '../internalTypes'
 
 export function excludeKeys(keys1: string[], keys2: string | string[]) {
 	const targetKeys = Array.isArray(keys2) ? keys2 : [keys2]
@@ -20,19 +19,19 @@ export function hasKeyEqualTo(key: string, value: any) {
 	return has(value, key) && get(value, key) === value
 }
 export function hasAllKeys(keys: string | string[]) {
-	return (value: PlainObject) =>
+	return (value: Record<string, any>) =>
 		(Array.isArray(keys) ? keys : [keys]).every((k) => k in (value || {}))
 }
 
 export function hasInAllKeys(keys: string | string[]) {
-	return (value: PlainObject) =>
+	return (value: Record<string, any>) =>
 		(Array.isArray(keys) ? keys : [keys]).every((k) => has(value, k))
 }
 
 export function hasMinimumKeys(
 	keys: string | string[],
 	min: number,
-	value: PlainObject,
+	value: Record<string, any>,
 ) {
 	const occurrences = [] as string[]
 	const keyz = Array.isArray(keys) ? keys : [keys]
@@ -49,15 +48,23 @@ export function hasMinimumKeys(
 	return false
 }
 
-export function hasNameField(v: any): v is NameField {
-	return isObj(v) && 'name' in v
+export function hasNameField<
+	O extends Record<string, any> = Record<string, any>,
+>(v: O | undefined): v is O & { name: NameField } {
+	return isObj(v) && 'name' in v && isObj(v.name)
 }
 
-export function hasAnyKeys(keys: string | string[], value: PlainObject) {
+export function hasAnyKeys(
+	keys: string | string[],
+	value: Record<string, any>,
+) {
 	return (Array.isArray(keys) ? keys : [keys]).some((k) => k in value)
 }
 
-export function hasInAnyKeys(keys: string | string[], value: PlainObject) {
+export function hasInAnyKeys(
+	keys: string | string[],
+	value: Record<string, any>,
+) {
 	return (Array.isArray(keys) ? keys : [keys]).some((k) => has(value, k))
 }
 
@@ -73,7 +80,7 @@ export function isNil(v: unknown) {
 	return v === null || typeof v === 'undefined'
 }
 
-export function isObj(value: unknown): value is PlainObject {
+export function isObj(value: unknown): value is Record<string, any> {
 	return exists(value) && !Array.isArray(value) && typeof value === 'object'
 }
 
