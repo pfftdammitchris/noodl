@@ -59,7 +59,7 @@ function Application({
 	runServer?: boolean
 }) {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const settings = useSettings()
+	const settings = useSettings({ server: { config: cli.flags.config } })
 
 	const ctx = {
 		...state,
@@ -95,12 +95,12 @@ function Application({
 
 	React.useEffect(() => {
 		if (u.keys(cli.flags).length) {
-			const isRetrieving = !!cli.flags.retrieve
+			const isRetrieving = !!cli.flags.retrieve?.length
 			const isStartingServer = !!cli.flags.server
 
 			if (isRetrieving) {
 				invariant(
-					['json', 'yml'].includes(cli.flags.retrieve as string),
+					['json', 'yml'].some((ext) => cli.flags.retrieve?.includes(ext)),
 					`Invalid value for "${magenta(
 						`retrieve`,
 					)}". Valid options are: ${magenta('json')}, ${magenta('yml')}`,
@@ -110,7 +110,7 @@ function Application({
 					server: isStartingServer,
 				})
 			} else if (isStartingServer) {
-				ctx.updatePanel({ value: c.panel.RUN_SERVER.value })
+				ctx.updatePanel({ value: c.panel.SERVER_FILES.value })
 			}
 		} else {
 			if (config || defaultPanel) {

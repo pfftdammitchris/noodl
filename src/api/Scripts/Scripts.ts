@@ -100,8 +100,13 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 			},
 		)
 
+		const registeredScripts = configs.map((config) =>
+			useCurriedTransformComposer(config.fn),
+		)
+
 		const createTransform = tds.comp(
-			...configs.map((config) => useCurriedTransformComposer(config.fn)),
+			...(registeredScripts.length == 1 ? [tds.identity] : []),
+			...registeredScripts,
 		)
 
 		const step = <V>(args: V) => args

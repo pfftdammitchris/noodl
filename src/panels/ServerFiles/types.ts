@@ -1,8 +1,12 @@
 import useServerFiles from './useServerFiles'
-import { MetadataGroup } from '../../types'
+import { App, MetadataGroup } from '../../types'
 import * as c from './constants'
 
 export type ServerFilesAction =
+	| {
+			type: typeof c.action.SET_ON
+			on: Partial<ServerFilesState['on']>
+	  }
 	| {
 			type: typeof c.action.SET_STEP
 			step: Exclude<ServerFilesState['step'], typeof c['step']['SCAN_ASSETS']>
@@ -33,12 +37,15 @@ export interface ServerFilesState {
 		missing: ServerFilesGroupedFiles
 	}
 	step: '' | typeof c.step[keyof typeof c.step]
+	on: Partial<
+		Record<ServerFilesState['step'], { end?: { setPanel?: App.PanelId } }>
+	>
 }
 
 export type ServerFilesContext = ServerFilesState &
 	Pick<
 		ReturnType<typeof useServerFiles>,
-		'consumeMissingFiles' | 'insertMissingFiles' | 'setStep'
+		'consumeMissingFiles' | 'insertMissingFiles' | 'setOn' | 'setStep'
 	>
 
 export type ServerFilesGroupedFiles = Record<

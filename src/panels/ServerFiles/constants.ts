@@ -4,6 +4,7 @@ export const action = {
 	DOWNLOADED: 'downloaded',
 	DOWNLOAD_FAILED: 'download.failed',
 	INSERT_MISSING_FILES: 'set.files',
+	SET_ON: 'set.on',
 	SET_ROOT_CONFIG: 'set.root.config',
 	SET_APP_CONFIG: 'set.app.config',
 	SET_SERVER_DIR: 'set.server.dir',

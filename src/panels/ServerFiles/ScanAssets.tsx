@@ -4,7 +4,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import useCtx from '../../useCtx'
 import Scripts from '../../api/Scripts'
-import scriptObjs from '../../utils/scripts'
+import Utils from '../../api/Utils'
 import useServerFilesCtx from './useServerFilesCtx'
 import { Noodl } from '../../types'
 import * as T from './types'
@@ -17,7 +17,7 @@ import * as c from './constants'
  */
 function ScanAssets() {
 	const { aggregator, settings, setCaption } = useCtx()
-	const { insertMissingFiles, setStep } = useServerFilesCtx()
+	const { insertMissingFiles, setOn, setStep } = useServerFilesCtx()
 
 	React.useEffect(() => {
 		const rootConfig = aggregator.builder.rootConfig.json as Noodl.RootConfig
@@ -34,21 +34,36 @@ function ScanAssets() {
 				docs: [...preloadPages, ...pages].reduce((acc, p) => {
 					const filepath = u.getFilePath(settings.server.dir, `${p}.yml`)
 					if (fs.existsSync(filepath)) {
-						return acc.concat(
-							yaml.parseDocument(fs.readFileSync(filepath, 'utf8')),
-						)
+						return acc.concat({
+							name: p,
+							doc: yaml.parseDocument(fs.readFileSync(filepath, 'utf8')),
+						})
 					} else {
 						setCaption(`${u.red(p)} is not found`)
 					}
 					return acc
-				}, [] as yaml.Document[]),
+				}, [] as { name: string; doc: yaml.Document | yaml.Document.Parsed }[]),
 			})
 
 			scripts
 				.use({
-					script: [scriptObjs.RETRIEVE_URLS],
-					onStart: (store) => !store.urls && (store.urls = []),
+					script: [
+						(store) => ({
+							key: 'urls',
+							type: 'array',
+							label: 'Retrieve all urls/paths',
+							fn({ node }) {
+								if (Utils.identify.scalar.url(node) && u.isStr(node.value)) {
+									if (!store.urls.includes(node.value)) {
+										store.urls.push(node.value)
+									}
+								}
+							},
+						}),
+					],
+					// onStart: (store) => !store.urls && (store.urls = []),
 					onEnd(store) {
+						console.log(store)
 						store.urls = store.urls.sort()
 
 						const contained = [] as T.MetadataObject[]
@@ -122,6 +137,11 @@ function ScanAssets() {
 
 						insertMissingFiles(missing)
 						setStep(c.step.DOWNLOAD_ASSETS)
+						setOn({
+							[c.step.DOWNLOAD_ASSETS]: {
+								end: { setPanel: 'RUN_SERVER' },
+							},
+						})
 					},
 				})
 				.run()

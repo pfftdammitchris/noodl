@@ -16,6 +16,8 @@ function ServerFiles() {
 		files,
 		consumeMissingFiles,
 		insertMissingFiles,
+		on,
+		setOn,
 		runConfig,
 		step,
 		setStep,
@@ -23,6 +25,8 @@ function ServerFiles() {
 
 	const ctx: ServerFilesContext = {
 		files,
+		on,
+		setOn,
 		step,
 		consumeMissingFiles,
 		insertMissingFiles,

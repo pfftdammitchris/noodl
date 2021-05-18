@@ -1,5 +1,6 @@
 import React from 'react'
 import isPlainObject from 'lodash/isPlainObject'
+import merge from 'lodash/merge'
 import fs from 'fs-extra'
 import produce, { Draft } from 'immer'
 import CliConfigBuilder from '../builders/CliConfig'
@@ -15,7 +16,7 @@ const initialState = {
 	defaultOption: null as App.PanelId | null,
 }
 
-function useCliConfig() {
+function useCliConfig(overrideSettings?: Record<string, any>) {
 	const isMounted = React.useRef(false)
 	const [settings, setSettings] = React.useState<State>(() => {
 		const _settings = { ...initialState }
@@ -25,7 +26,7 @@ function useCliConfig() {
 				Object.entries(cfgObject).forEach(([k, v]) => (_settings[k] = v))
 			}
 		}
-		return _settings
+		return merge(_settings, overrideSettings)
 	})
 
 	const set = React.useCallback((fn: (draft: Draft<State>) => void) => {

@@ -3,6 +3,7 @@ import produce from 'immer'
 import download from 'download'
 import useCtx from '../../useCtx'
 import useServerFilesCtx from './useServerFilesCtx'
+import { panel as panelId } from '../../constants'
 import * as u from '../../utils/common'
 import * as c from './constants'
 import * as T from './types'
@@ -51,8 +52,9 @@ function reducer(state: State = initialState, action: Action) {
 
 function DownloadAssets() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { settings, setCaption, spinner, toggleSpinner } = useCtx()
-	const { files } = useServerFilesCtx()
+	const { panel, settings, setCaption, spinner, toggleSpinner, updatePanel } =
+		useCtx()
+	const { files, on } = useServerFilesCtx()
 
 	React.useEffect(() => {
 		const isNew = (link: string) =>
@@ -70,26 +72,36 @@ function DownloadAssets() {
 	React.useEffect(() => {
 		const pendingLinks = Object.keys(state.downloading)
 
-		if (pendingLinks.length) {
-			async function downloadAsset(file: T.ServerFilesFile) {
-				setCaption(
-					`[${u.magenta(file.group)}] Downloading ${u.white(file.link)}`,
-				)
-				if (file?.link) {
-					try {
-						await download(
-							file.link,
-							u.getFilePath(settings.server.dir, 'assets'),
-						)
-					} catch (error) {
-						setCaption(`[${u.red(file.filename)}]: ${u.yellow(error.message)}`)
-					}
+		async function downloadAsset(file: T.ServerFilesFile) {
+			setCaption(`[${u.magenta(file.group)}] Downloading ${u.white(file.link)}`)
+			if (file?.link) {
+				try {
+					await download(
+						file.link,
+						u.getFilePath(settings.server.dir, 'assets'),
+					)
+				} catch (error) {
+					setCaption(`[${u.red(file.filename)}]: ${u.yellow(error.message)}`)
 				}
 			}
-			pendingLinks.forEach((link) => {
-				state.downloading[link] && downloadAsset(state.downloading[link])
-			})
 		}
+
+		Promise.all(
+			pendingLinks.reduce((acc, link) => {
+				if (state.downloading[link]) {
+					return acc.concat(downloadAsset(state.downloading[link]))
+				}
+				return acc
+			}, [] as ReturnType<typeof downloadAsset>[]),
+		).finally(() => {
+			if (
+				on[c.step.DOWNLOAD_ASSETS]?.end?.setPanel ===
+					panelId.RUN_SERVER.value &&
+				panel.value !== panelId.RUN_SERVER.value
+			) {
+				updatePanel({ value: panelId.RUN_SERVER.value })
+			}
+		})
 	}, [state.downloading])
 
 	React.useEffect(() => {

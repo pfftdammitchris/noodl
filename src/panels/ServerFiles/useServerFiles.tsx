@@ -11,6 +11,7 @@ import { createInitialGroupedFiles } from './helpers'
 import {
 	aggregator as aggregatorConst,
 	DEFAULT_CONFIG_HOSTNAME,
+	panel,
 } from '../../constants'
 import * as u from '../../utils/common'
 import * as c from './constants'
@@ -38,6 +39,7 @@ const initialState: T.ServerFilesState = {
 		missing: createInitialGroupedFiles(),
 	},
 	step: c.step.INITIALIZING,
+	on: {},
 }
 
 function reducer(
@@ -46,6 +48,8 @@ function reducer(
 ): T.ServerFilesState {
 	return produce(state, (draft) => {
 		switch (action.type) {
+			case c.action.SET_ON:
+				return void u.assign(draft.on, action.on)
 			case c.action.CONSUME_MISSING_FILES:
 				return void (draft.files.missing = createInitialGroupedFiles())
 			case c.action.INSERT_MISSING_FILES: {
@@ -95,7 +99,8 @@ function reducer(
 
 function useServerFiles() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { aggregator, settings, setCaption, spinner, toggleSpinner } = useCtx()
+	const { aggregator, cli, settings, setCaption, spinner, toggleSpinner } =
+		useCtx()
 
 	const setFileStatus = React.useCallback(
 		async (args: Pick<T.ServerFilesFile, 'group' | 'raw' | 'status'>) =>
@@ -114,6 +119,13 @@ function useServerFiles() {
 			dispatch({ type: c.action.INSERT_MISSING_FILES, files }),
 		[],
 	)
+
+	const setOn = React.useCallback((opts: Partial<T.ServerFilesState['on']>) => {
+		dispatch({
+			type: c.action.SET_ON,
+			on: opts,
+		})
+	}, [])
 
 	const setStep = React.useCallback(
 		(step: T.ServerFilesState['step'], stepContext?: any) => {
@@ -285,6 +297,7 @@ function useServerFiles() {
 		runConfig,
 		insertMissingFiles,
 		setFileStatus,
+		setOn,
 		setStep,
 	}
 }

@@ -26,14 +26,14 @@ const cli = meow(
 		flags: {
 			config: { type: 'string', alias: 'c' },
 			panel: { type: 'string', alias: 'p' },
-			retrieve: { type: 'string', alias: 'r' },
+			retrieve: { type: 'string', alias: 'r', isMultiple: true },
 			server: { type: 'boolean', alias: 's' },
 		},
 	},
 )
 
 console.log(cli.help)
-console.log(cli.flags)
+console.log({ flags: cli.flags, input: cli.input })
 
 render(
 	<App
