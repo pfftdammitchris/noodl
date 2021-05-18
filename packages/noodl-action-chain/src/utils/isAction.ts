@@ -1,7 +1,13 @@
 import Action from '../Action'
 
 function isAction(obj: unknown): obj is Action {
-	return !!(obj && obj instanceof Action)
+	return !!(
+		obj &&
+		!Array.isArray(obj) &&
+		typeof obj === 'object' &&
+		!('queue' in obj) &&
+		('hasExecutor' in obj || 'executor' in obj)
+	)
 }
 
 export default isAction
