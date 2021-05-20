@@ -24,7 +24,8 @@ export interface Options {
 	locale?: string
 	staticPaths?: {
 		name: string
-		fn: express.RequestHandler
+		req?: (req: Parameters<express.RequestHandler>[0]) => void
+		res?: (res: Parameters<express.RequestHandler>[1]) => void
 	}[]
 	serverPath?: string
 	serverPort?: number | string
@@ -88,7 +89,10 @@ class NoodlWebpackPlugin {
 		u.newline()
 
 		for (const obj of this.options.staticPaths) {
-			this.server?.get(this.getRoutes(obj.name), obj.fn)
+			this.server?.get(this.getRoutes(obj.name), (req, res) => {
+				obj.req?.(req)
+				return obj.res?.(res)
+			})
 		}
 
 		const getFilePathMetadata = createMetadataExtractor('filepath')
@@ -133,7 +137,7 @@ class NoodlWebpackPlugin {
 
 				info(
 					u.white(
-						`Registering ${u.yellow(obj.group)} pathname: ${u.magenta(
+						`Registering ${u.yellow(obj.group)} ${u.magenta(
 							filename,
 						)} filepath: ${obj.filepath}`,
 					),
@@ -160,7 +164,7 @@ class NoodlWebpackPlugin {
 		yml.forEach(handlePageRoute)
 
 		this.listen({
-			server: this.server,
+			server: this.server as express.Express,
 			wss: (this.wss = new WebSocket.Server({
 				host: this.options.hostname,
 				port: Number(this.options.wssPort),
@@ -192,7 +196,11 @@ class NoodlWebpackPlugin {
 		server,
 		wss,
 		watch,
-	}: Pick<NoodlWebpackPlugin, 'server' | 'watch' | 'wss'>) {
+	}: {
+		server: express.Express
+		wss: WebSocket.Server
+		watch: chokidar.FSWatcher
+	}) {
 		const comet = '\u2604\uFE0F'
 		const croissant = '\uD83D\uDE48'
 
