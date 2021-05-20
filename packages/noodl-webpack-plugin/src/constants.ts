@@ -1,0 +1,13 @@
+export const DEFAULT_CONFIG = 'aitmed'
+export const DEFAULT_HOSTNAME = 'localhost'
+export const DEFAULT_LOCALE = '_en'
+export const DEFAULT_SERVER_PORT = 3001
+export const DEFAULT_SERVER_PATH = 'server'
+export const DEFAULT_WSS_PORT = 3002
+export const FILE_ADDED = 'FILE_ADDED'
+export const FILE_REMOVED = 'FILE_REMOVED'
+export const FILE_CHANGED = 'FILE_CHANGED'
+export const FOLDER_ADDED = 'FOLDER_ADDED'
+export const FOLDER_REMOVED = 'FOLDER_REMOVED'
+export const WATCHING_FILES = 'WATCHING_FILES'
+export const WATCH_ERROR = 'WATCH_ERROR'

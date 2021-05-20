@@ -1,0 +1,40 @@
+{
+	"name": "noodl-webpack-plugin",
+	"version": "0.0.1",
+	"description": "NOODL webpack plugin to provide live reload functionality when making changes",
+	"scripts": {
+		"presample": "rm -rf build",
+		"sample": "webpack serve --port 3000 --mode=development",
+		"prebuild": "rm -rf dist",
+		"build": "npx esbuild src/noodl-webpack-plugin.ts --bundle --outfile=dist/noodl-webpack-plugin.js --target=node14 --platform=node",
+		"start": "npm run build -- --watch"
+	},
+	"keywords": [
+		"noodl",
+		"webpack",
+		"plugin",
+		"reloader",
+		"refresher",
+		"yml",
+		"yaml"
+	],
+	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
+	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
+	"license": "ISC",
+	"main": "dist/noodl-webpack-plugin.js",
+	"files": [
+		"dist"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
+	},
+	"bugs": {
+		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
+	},
+	"devDependencies": {
+		"esbuild": "^0.12.1",
+		"webpack-cli": "^4.7.0",
+		"webpack-dev-server": "^3.11.2"
+	}
+}
