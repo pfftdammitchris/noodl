@@ -4,6 +4,8 @@ import WebSocket from 'ws'
 import globby from 'globby'
 import chokidar from 'chokidar'
 import express from 'express'
+import fs from 'fs-extra'
+import path from 'path'
 import {
 	createMetadataExtractor,
 	getExt,
@@ -91,7 +93,9 @@ class NoodlWebpackPlugin {
 
 		const getFilePathMetadata = createMetadataExtractor('filepath')
 		const isAssetPath = (s: string) => /\/assets?/i.test(s)
-		const localFiles = globby?.sync(this.options.serverPath)
+		const localFiles = globby?.sync(this.options.serverPath, {
+			onlyFiles: true,
+		})
 		const assets = [] as MetadataObject[]
 		const yml = [] as MetadataObject[]
 		const other = [] as any[]
@@ -115,7 +119,8 @@ class NoodlWebpackPlugin {
 
 		const registerRoute = (type: 'asset' | 'page') => {
 			const fn = (obj: MetadataObject) => {
-				let { filename, filepath, group } = obj
+				let filename = obj.filename
+
 				!filename.startsWith('/') && (filename = `/${filename}`)
 
 				if (type === 'asset') {
@@ -127,20 +132,20 @@ class NoodlWebpackPlugin {
 
 				info(
 					u.white(
-						`Registering ${u.yellow(group)} pathname: ${u.magenta(
+						`Registering ${u.yellow(obj.group)} pathname: ${u.magenta(
 							filename,
-						)} filepath: ${filepath}`,
+						)} filepath: ${obj.filepath}`,
 					),
 				)
 
 				if (type === 'asset') {
 					this.server?.get(
 						[filename, `/assets/${filename.replace('/', '')}`],
-						(req, res) => res.sendFile(filepath),
+						(req, res) => res.sendFile(obj.filepath),
 					)
 				} else {
 					this.server?.get(this.getRoutes(filename), (req, res) => {
-						res.send(loadFile(filepath))
+						res.send(loadFile(obj.filepath))
 					})
 				}
 			}
@@ -159,11 +164,10 @@ class NoodlWebpackPlugin {
 				host: this.options.hostname,
 				port: Number(this.options.wssPort),
 			})),
-			watch: (this.watch = chokidar.watch(getFilePath('server/**/*'), {
-				cwd: process.cwd(),
-				followSymlinks: true,
-				ignoreInitial: true,
-			})),
+			watch: (this.watch = chokidar.watch(
+				path.join(this.options.serverPath, '**/*'),
+				{ cwd: process.cwd(), ignoreInitial: true },
+			)),
 		})
 	}
 
@@ -245,14 +249,14 @@ class NoodlWebpackPlugin {
 					isFolder: boolean
 					name: string
 					path: string
-					// stats: fs.Stats
+					stats: fs.Stats
 				}) => void,
 			) {
 				async function onEvent(path: string) {
-					// const stats = await fs.stat(getFilePath(path))
+					const stats = await fs.stat(getFilePath(path))
 					const args = {
-						// isFile: stats.isFile(),
-						// isFolder: stats.isDirectory(),
+						isFile: stats.isFile(),
+						isFolder: stats.isDirectory(),
 						name: getFileName(path),
 						path,
 						// stats,
