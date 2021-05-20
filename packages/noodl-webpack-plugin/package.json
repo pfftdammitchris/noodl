@@ -1,6 +1,6 @@
 {
 	"name": "noodl-webpack-plugin",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"description": "NOODL webpack plugin to provide live reload functionality when making changes",
 	"browser": "dist/noodl-webpack-plugin.js",
 	"main": "dist/noodl-webpack-plugin.js",

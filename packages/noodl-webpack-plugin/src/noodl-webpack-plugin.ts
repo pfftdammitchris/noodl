@@ -93,9 +93,10 @@ class NoodlWebpackPlugin {
 
 		const getFilePathMetadata = createMetadataExtractor('filepath')
 		const isAssetPath = (s: string) => /\/assets?/i.test(s)
-		const localFiles = globby?.sync(this.options.serverPath, {
-			onlyFiles: true,
-		})
+		const localFiles = globby?.sync(
+			path.join(this.options.serverPath, '**/*'),
+			{ onlyFiles: true },
+		)
 		const assets = [] as MetadataObject[]
 		const yml = [] as MetadataObject[]
 		const other = [] as any[]
