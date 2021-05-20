@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"allowUmdGlobalAccess": true,
+		"allowSyntheticDefaultImports": true,
+		"declaration": true,
+		"declarationDir": "dist",
+		"esModuleInterop": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"lib": ["esnext"],
+		"keyofStringsOnly": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noEmitOnError": false,
+		"noImplicitAny": false,
+		"outDir": "dist",
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"sourceMap": true,
+		"target": "es5"
+	},
+	"include": ["src"],
+	"exclude": ["node_modules"]
+}

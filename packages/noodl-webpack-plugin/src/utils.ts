@@ -1,3 +1,4 @@
+import { URL } from 'url'
 import fs from 'fs-extra'
 import path from 'path'
 

@@ -1,15 +1,18 @@
 const path = require('path')
 const webpack = require('webpack')
-const NoodlWebpackPlugin = require('./dist/noodl-webpack-plugin')
-const pkg = require('./package.json')
+const NoodlWebpackPlugin = require('.').default
+
+// const NodePolyfillsPlugin = require('node-polyfill-webpack-plugin')
+const srcDir = path.join(__dirname, './example')
+const publicDir = path.join(srcDir, 'public')
 
 /** @type { import('webpack-dev-server').Configuration } */
 const devServerOptions = {
 	clientLogLevel: 'info',
 	compress: false,
-	contentBase: [path.join(__dirname, 'public')],
+	contentBase: [srcDir],
 	host: '127.0.0.1',
-	hot: true,
+	hot: false,
 }
 
 /**
@@ -21,16 +24,18 @@ module.exports = {
 	},
 	output: {
 		filename: 'index.js',
-		path: path.resolve(__dirname, 'build'),
+		path: publicDir,
+		publicPath: publicDir,
 	},
 	devServer: devServerOptions,
 	devtool: 'inline-source-map',
+	mode: 'development',
 	module: {
 		rules: [
 			{
 				test: /\.ts$/,
 				exclude: /node_modules/,
-				include: path.resolve(__dirname, 'example'),
+				include: srcDir,
 				use: [
 					{
 						loader: 'esbuild-loader',
@@ -44,8 +49,32 @@ module.exports = {
 		],
 	},
 	resolve: {
-		extensions: ['.ts'],
+		alias: {
+			fs: path.resolve(__dirname, './node_modules/fs-extra'),
+		},
+		extensions: ['.ts', '.js'],
+		fallback: {
+			constants: require.resolve('constants-browserify'),
+			path: require.resolve('path-browserify'),
+			os: require.resolve('os-browserify/browser'),
+			stream: require.resolve('stream-browserify'),
+		},
 		modules: ['node_modules'],
 	},
-	plugins: [new NoodlWebpackPlugin(), new webpack.ProgressPlugin()],
+	recordsPath: path.join(__dirname, 'records.json'),
+	plugins: [
+		// new NodePolyfillsPlugin(),
+		new webpack.ProvidePlugin({
+			process: 'process',
+		}),
+		new NoodlWebpackPlugin({
+			config: 'meet4d',
+		}),
+		// new HtmlWebpackPlugin({
+		// 	publicPath: path.join(__dirname, './example/public'),
+		// }),
+		new webpack.ProgressPlugin({
+			percentBy: 'entries',
+		}),
+	],
 }
