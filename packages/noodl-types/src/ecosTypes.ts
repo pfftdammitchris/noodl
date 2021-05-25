@@ -32,6 +32,12 @@ export interface RootConfig {
 	cadlMain: string
 	/** Defaults to "console_log_api" */
 	debug: string
+	/** If this is specified the app should transform this to a plugin component */
+	bodyTopPplugin?: string
+	/** If this is specified the app should transform this to a plugin component */
+	bodyTailPplugin?: string
+	/** If this is specified the app should transform this to a plugin component */
+	headPlugin?: string
 	/**
 	 * The timestamp the config was last created or modified.
 	 * This is used to invalidate the config cache
@@ -45,6 +51,25 @@ export interface RootConfig {
 		min: number
 		max: number
 	}
+	[key: string]: any
+}
+
+export interface AppConfig {
+	assetsUrl: string
+	/** The equivalent of "cadlBaseUrl" from the root config */
+	baseUrl: string
+	languageSuffix: { [lang: string]: string }
+	fileSuffix: string
+	/**
+	 * The default page for user sessions where they haven't visited any pages
+	 * Also the default page for unauthorized users
+	 */
+	startPage: string
+	/** Pages to be loaded before loading other pages */
+	preload: string[]
+	/** Pages to be loaded and treated as routes in the runtime */
+	page: string[]
+	[key: string]: any
 }
 
 export interface RootConfigDeviceVersionObject {
