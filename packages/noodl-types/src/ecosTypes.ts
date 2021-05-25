@@ -1,3 +1,59 @@
+export interface RootConfig {
+	/** Example: albh2.aitmed.io */
+	apiHost: string
+	/** Example: 443 */
+	apiPort: string | number
+	/**
+	 * Can be a variable (example: apiHost which re-uses the value of
+	 * "apiHost" in the config)
+	 */
+	webApiHost: string
+	/**
+	 * Can be a variable (example: apiHost which re-uses the value of
+	 * "appApiHost" in the config)
+	 */
+	appApiHost: string
+	/**
+	 * Base url that links in relative format will resolve from
+	 * For example, if cadlBaseUrl is "http://127.0.0.1:3000", a page referenced
+	 * in a noodl object like "SignIn" will resolve to:
+	 * "http://127.0.0.1:3000/SignIn"
+	 */
+	cadlBaseUrl: string
+	myBaseUrl: string
+	connectiontimeout: string | number
+	loadingLevel: number // Defaulted to 1
+	/**
+	 * The file name/path will be the pathname used to grab the "app" config
+	 * For example, if cadlMain is "cadlEndpoint.yml", the app should pick up
+	 * "${cadlBaseUrl}/cadlEndpoint.yml" where ${cadlBaseUrl} is a placeholder
+	 * for the cadlBaseUrl variable
+	 */
+	cadlMain: string
+	/** Defaults to "console_log_api" */
+	debug: string
+	/**
+	 * The timestamp the config was last created or modified.
+	 * This is used to invalidate the config cache
+	 */
+	timestamp: number
+	web: RootConfigDeviceVersionObject
+	ios: RootConfigDeviceVersionObject
+	android: RootConfigDeviceVersionObject
+	keywords: string[]
+	viewWidthHeightRatio?: {
+		min: number
+		max: number
+	}
+}
+
+export interface RootConfigDeviceVersionObject {
+	cadlVersion: {
+		stable: string
+		test: string
+	}
+}
+
 export interface EcosDocument<
 	NF extends NameField = NameField,
 	MT extends MediaType = MediaType,
