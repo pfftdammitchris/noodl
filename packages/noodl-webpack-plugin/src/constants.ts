@@ -1,5 +1,13 @@
 export const DEFAULT_CONFIG = 'aitmed'
-export const DEFAULT_HOSTNAME = 'localhost'
+export const DEFAULT_CONFIG_API_PORT = 443
+export const DEFAULT_CONFIG_BASEE_URL = 'https://public.aitmed.com'
+export const DEFAULT_CONFIG_CADL_MAIN = 'cadlEndpoint'
+export const DEFAULT_CONFIG_DEBUG = 'console_log_api'
+export const DEFAULT_CONFIG_VERSION = 'latest'
+export const DEFAULT_DEVICE_TYPE = 'web'
+export const DEFAULT_ENV = 'test'
+export const DEFAULT_HOSTNAME = '127.0.0.1'
+export const DEFAULT_PROTOCOL = 'http'
 export const DEFAULT_LOCALE = '_en'
 export const DEFAULT_SERVER_PORT = 3001
 export const DEFAULT_SERVER_PATH = 'server'

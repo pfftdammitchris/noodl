@@ -1,35 +1,22 @@
 {
 	"name": "noodl-webpack-plugin",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"description": "NOODL webpack plugin to provide live reload functionality when making changes",
-	"browser": "dist/noodl-webpack-plugin.js",
 	"main": "dist/noodl-webpack-plugin.js",
 	"module": "dist/noodl-webpack-plugin.js",
 	"types": "dist/noodl-webpack-plugin.d.ts",
 	"scripts": {
 		"presample": "rm -rf build",
-		"sample": "webpack serve --port 3000 --mode=development",
+		"sample": "npx webpack serve -c webpack.config.js --port 3000 --mode=development",
 		"prebuild": "rm -rf dist",
-		"build": "esbuild src/noodl-webpack-plugin.ts --bundle --outdir=dist --target=node10.4 --platform=node --format=cjs",
-		"start": "npm run build -- --watch",
-		"server": "node server.js"
-	},
-	"dependencies": {
-		"@jsmanifest/utils": "^1.0.7",
-		"chokidar": "^2.1.8",
-		"express": "^4.17.1",
-		"fs-extra": "^10.0.0",
-		"globby": "^6.1.0",
-		"ws": "^6.2.1"
+		"build": "esbeuild src/noodl-webpack-plugin.ts --bundle --outdir=dist --target=node10.4 --platform=node --format=cjs",
+		"start": "tsc --watch",
+		"server": "node server.js",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src 'src/**/*.test.ts'"
 	},
 	"devDependencies": {
-		"esbuild": "^0.12.1",
-		"html-webpack-plugin": "^5.3.1",
 		"node-polyfill-webpack-plugin": "^1.1.2",
-		"typescript": "^4.2.4",
-		"webpack": "^5.37.1",
 		"webpack-cli": "^4.7.0",
-		"webpack-dev-middleware": "^3.7.3",
 		"webpack-dev-server": "^3.11.2"
 	},
 	"keywords": [
@@ -53,5 +40,9 @@
 	},
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
+	},
+	"dependencies": {
+		"noodl-ui": "^0.1.75",
+		"noodl-ui-dom": "^0.0.61"
 	}
 }
