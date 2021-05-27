@@ -1,43 +1,69 @@
+import merge from 'lodash/merge'
 import yaml from 'yaml'
-import { CliConfigObject } from '../types'
-import { saveYml } from '../utils/common'
-import * as c from '../constants'
+import fs from 'fs-extra'
+import { getAbsFilePath, getCliConfig } from '../utils/common'
 
-class CLIConfig implements CliConfigObject {
-	defaultOption = null
-	defaultPanel = null
-	objects = {
-		json: { dir: [] },
-		yml: { dir: [] },
-	}
-	server = {
-		host: String(c.DEFAULT_SERVER_HOSTNAME),
-		dir: c.DEFAULT_SERVER_PATH,
-		port: c.DEFAULT_SERVER_PORT,
-		protocol: c.DEFAULT_SERVER_PROTOCOL,
-		config: c.DEFAULT_CONFIG,
-	}
-
-	get serverUrl() {
-		return `${this.server.protocol}://${this.server.host}:${this.server.port}`
-	}
-
-	save(opts?: Partial<CliConfigObject>) {
-		saveYml('noodl.yml', yaml.stringify({ ...this.toJSON(), ...opts }))
-	}
-
-	toJSON() {
-		return {
-			defaultOption: this.defaultOption,
-			defaultPanel: this.defaultPanel,
-			objects: this.objects,
-			server: this.server,
+class CliConfig {
+	#state = {} as {
+		defaultOption?: string
+		defaultPanel?: string
+		panels: Record<string, { component: String; label: string }>
+		objects: {
+			json: {
+				dir: string[]
+			}
+			yml: {
+				dir: string[]
+			}
+		}
+		server: {
+			host: string
+			dir: string
+			port: string | number
+			protocol: string
+			config: string
+		}
+		regex: {
+			packages: Record<string, string>
 		}
 	}
 
+	static filename = 'noodl.yml'
+
+	constructor() {
+		merge(this.#state, getCliConfig())
+	}
+
+	get serverUrl() {
+		return (
+			`${this.state.server.protocol}://` +
+			`${this.state.server.host}:${this.state.server.port}`
+		)
+	}
+
+	get state() {
+		return this.#state
+	}
+
+	set state(state) {
+		this.save(merge(this.#state, state))
+	}
+
+	save(opts?: Partial<CliConfig['state']>) {
+		fs.writeFileSync(
+			getAbsFilePath(CliConfig.filename),
+			yaml.stringify({ ...this.toJSON(), ...opts }),
+		)
+		return getCliConfig()
+	}
+
+	toJSON() {
+		return { ...this.state }
+	}
+
 	toString() {
-		return JSON.stringify({ server: this.server }, null, 2)
+		return JSON.stringify(this.toJSON(), null, 2)
 	}
 }
 
-export default CLIConfig
+export default CliConfig

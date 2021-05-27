@@ -5,21 +5,22 @@ config()
 import React from 'react'
 import meow from 'meow'
 import { render } from 'ink'
-import { aquamarine, cyan, white } from './utils/common'
+import * as co from './utils/color'
 import App from './App'
+import CliConfig from './builders/CliConfig'
 
 export type Cli = typeof cli
 
 const cli = meow(
 	`
-	${aquamarine('Usage')}
-	  ${white('$')} noodl <input>
+	${co.aquamarine('Usage')}
+	  ${co.white('$')} noodl <input>
 
-	${aquamarine(`Examples`)}
-	  ${white('$')} noodl -c testpage
+	${co.aquamarine(`Examples`)}
+	  ${co.white('$')} noodl -c testpage
 
-	${aquamarine(`Options`)}
-	  ${white(`--config`)}, ${white(`-c`)} NOODL config
+	${co.aquamarine(`Options`)}
+	  ${co.white(`--config`)}, ${co.white(`-c`)} NOODL config
 `,
 	{
 		flags: {
@@ -27,13 +28,19 @@ const cli = meow(
 			fetch: { type: 'boolean', alias: 'f' },
 			panel: { type: 'string', alias: 'p' },
 			retrieve: { type: 'string', alias: 'r', isMultiple: true },
-			server: { type: 'boolean', alias: 's' },
+			server: { type: 'boolean' },
 			start: { type: 'string' },
+			script: { type: 'string', alias: 's' },
 		},
 	},
 )
 
-console.log(cyan(`Flags: `), cli.flags)
-console.log(cyan(`Input: `), cli.input || [])
+console.log(co.cyan(`Flags: `), cli.flags)
+console.log(co.cyan(`Input: `), cli.input || [])
+console.log('')
 
-render(<App cli={cli} />)
+const cliConfig = new CliConfig()
+
+const { cleanup, clear, rerender, unmount, waitUntilExit } = render(
+	<App cli={cli} cliConfig={cliConfig} />,
+)

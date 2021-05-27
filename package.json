@@ -42,8 +42,14 @@
 		"express": "^4.17.1",
 		"immer": "^9.0.1",
 		"ink": "^3.0.8",
+		"ink-divider": "^3.0.0",
+		"ink-gradient": "^2.0.0",
+		"ink-link": "^2.0.0",
+		"ink-progress-bar": "^3.0.0",
 		"ink-select-input": "^4.2.0",
 		"ink-spinner": "^4.0.1",
+		"ink-table": "^3.0.0",
+		"ink-task-list": "^1.0.1",
 		"ink-text-input": "^4.0.1",
 		"invariant": "^2.2.4",
 		"noodl": "file:packages/noodl",
@@ -273,7 +279,6 @@
 	},
 	"nodemonConfig": {
 		"ignore": [
-			"dist",
 			".yml"
 		]
 	}

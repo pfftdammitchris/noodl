@@ -4,7 +4,7 @@ import merge from 'lodash/merge'
 import fs from 'fs-extra'
 import produce, { Draft } from 'immer'
 import CliConfigBuilder from '../builders/CliConfig'
-import { getFilePath, getCliConfig, hasCliConfig } from '../utils/common'
+import { getAbsFilePath, getCliConfig, hasCliConfig } from '../utils/common'
 import { App, CliConfigObject } from '../types'
 
 const cliConfig = new CliConfigBuilder()
@@ -13,7 +13,7 @@ type State = typeof initialState
 
 const initialState = {
 	...(cliConfig.toJSON() as CliConfigObject),
-	defaultOption: null as App.PanelId | null,
+	defaultOption: null as App.PanelKey | null,
 }
 
 function useCliConfig(overrideSettings?: Record<string, any>) {
@@ -41,7 +41,7 @@ function useCliConfig(overrideSettings?: Record<string, any>) {
 	React.useEffect(() => {
 		if (isMounted.current) {
 			// Only refresh/save the config to dir if they created it
-			if (fs.existsSync(getFilePath('noodl.yml'))) {
+			if (fs.existsSync(getAbsFilePath('noodl.yml'))) {
 				save(settings)
 			} else {
 				//

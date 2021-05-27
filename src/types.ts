@@ -1,41 +1,44 @@
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
-import useCliConfig from './hooks/useCliConfig'
+import { Draft } from 'immer'
 import createAggregator from './api/createAggregator'
 import { Cli } from './cli'
 import { initialState as initialAppState } from './App'
+import CliConfig from './builders/CLIConfig'
 import * as c from './constants'
 
 export namespace App {
 	export interface Context extends State {
 		aggregator: ReturnType<typeof createAggregator>
 		cli: Cli
-		highlight(id: PanelId): void
+		cliConfig: CliConfig
+		exit: (error?: Error | undefined) => void
+		highlight(id: string): void
 		log(caption: string): void
 		logError(caption: string | Error): void
 		toggleSpinner(type?: false | string): void
-		settings: ReturnType<typeof useCliConfig>
-		setPanel(id: PanelId): void
-		updatePanel<Id extends PanelId>(
-			id: Id,
-			panel: Partial<PanelObject<Id>>,
+		set(fn: (draft: Draft<App.State>) => void): void
+		setPanel(id: string): void
+		updatePanel<Key extends string>(
+			id: Key,
+			panel: Partial<PanelObject<Key>>,
 		): void
 	}
 
-	export type PanelId = keyof App.State['panel']
+	export type PanelKey = keyof State['panels']
 
 	export type State = typeof initialAppState
 }
 
-export type PanelObject<Id extends string = string> = {
-	id?: Id
-	value: Id
+export interface PanelObject<Key extends string = string> {
+	key?: Key
+	value: Key
 	label: string
 	[key: string]: any
 }
 
 export interface CliConfigObject {
-	defaultOption: App.PanelId | null
-	defaultPanel: App.PanelId | null
+	defaultOption: App.PanelKey | null
+	defaultPanel: App.PanelKey | null
 	server: {
 		config?: string
 		dir: string

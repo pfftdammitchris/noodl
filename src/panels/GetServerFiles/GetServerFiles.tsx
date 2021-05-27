@@ -20,6 +20,7 @@ import {
 } from '../../constants'
 import { Noodl } from '../../types'
 import * as com from '../../utils/common'
+import * as co from '../../utils/color'
 import * as c from './constants'
 import * as t from './types'
 
@@ -87,7 +88,7 @@ function GetServerFiles(props: GetServerFilesProps) {
 
 	const runConfig = React.useCallback(
 		async (config: string) => {
-			log(com.captioning(`\nRunning ${u.italic(config)} config...`))
+			log(co.captioning(`\nRunning ${u.italic(config)} config...`))
 
 			if (!spinner) toggleSpinner()
 			if (state.step) ctx.setStep('')
@@ -226,8 +227,8 @@ function GetServerFiles(props: GetServerFilesProps) {
 	)
 
 	React.useEffect(() => {
-		log(`\n${com.deepOrange('STEP')}: ${u.magenta(String(state.activeStep))}\n`)
-		log(`Server dir: ${u.magenta(com.getFilePath(settings.server.dir))}`)
+		log(`\n${co.deepOrange('STEP')}: ${u.magenta(String(state.activeStep))}\n`)
+		log(`Server dir: ${u.magenta(com.getAbsFilePath(settings.server.dir))}`)
 		log(`Server host: ${u.magenta(settings.server.host)}`)
 		log(`Server port: ${u.magenta(String(settings.server.port))}`)
 	}, [])

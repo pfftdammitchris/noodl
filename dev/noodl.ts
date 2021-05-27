@@ -12,7 +12,7 @@ import { Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml'
 import { Identify } from '../packages/noodl-types/src/Identify'
 import createAggregator from '../src/api/createAggregator'
 import { EcosGRPC, RootConfig, YAMLNode } from '../src/types'
-import { getFilePath } from '../src/utils/common'
+import { getAbsFilePath } from '../src/utils/common'
 import { PlainObject } from 'noodl-utils/dist/types'
 
 const DEFAULT_OPTIONS = {
@@ -182,7 +182,7 @@ const parser = (function () {
 })()
 
 // const file = fs.readFileSync(
-// 	getFilePath('data/generated/yml/ContactsList.yml'),
+// 	getAbsFilePath('data/generated/yml/ContactsList.yml'),
 // 	'utf8',
 // )
 

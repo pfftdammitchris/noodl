@@ -74,7 +74,7 @@ export function getFilename(str: string) {
 	return str.substring(str.lastIndexOf('/') + 1)
 }
 
-export function getFilePath(...paths: string[]) {
+export function getAbsFilePath(...paths: string[]) {
 	return path.normalize(path.resolve(path.join(process.cwd(), ...paths)))
 }
 
@@ -87,7 +87,7 @@ export function hasSlash(s: string) {
 }
 
 export function hasCliConfig() {
-	return fs.existsSync(getFilePath('noodl.yml'))
+	return fs.existsSync(getAbsFilePath('noodl.yml'))
 }
 
 export function loadFileAsDoc(filepath: string) {
@@ -148,7 +148,7 @@ export function loadFiles({
 	}): void
 }) {
 	return globby
-		.sync(path.resolve(getFilePath(dir), `**/*.${ext}`))
+		.sync(path.resolve(getAbsFilePath(dir), `**/*.${ext}`))
 		.reduce((acc, filename) => {
 			const file =
 				ext === 'json'

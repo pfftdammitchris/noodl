@@ -8,11 +8,11 @@ import invariant from 'invariant'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
 import fs from 'fs-extra'
-import { cyan, italic, yellow, magenta } from '../../utils/common'
+import * as co from '../../utils/color'
 import * as t from './types'
 
 const log = console.log
-const tag = (s: string) => `[${cyan(s)}]`
+const tag = (s: string) => `[${co.cyan(s)}]`
 
 class Scripts<Store extends Record<string, any> = Record<string, any>> {
 	#store = {} as Store
@@ -146,9 +146,11 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 		const composed = this.compose()
 
 		log(
-			`${tag('Chunks')} ${magenta(
+			`${tag('Chunks')} ${co.magenta(
 				chunkedDocs.length,
-			)} total chunks were created from ${magenta(this.docs.length)} yml docs`,
+			)} total chunks were created from ${co.magenta(
+				this.docs.length,
+			)} yml docs`,
 		)
 
 		for (const docs of chunkedDocs) {
@@ -192,7 +194,10 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 						`Expected a script register function to "use" but received ${typeof config}`,
 					)
 					const _config = config(this.#store)
-					invariant(!!_config.key, `Missing script ${italic(yellow(`key`))}`)
+					invariant(
+						!!_config.key,
+						`Missing script ${co.italic(co.yellow(`key`))}`,
+					)
 					!_config.type && (_config.type = 'array')
 
 					this.#store[_config.key as keyof Store] =

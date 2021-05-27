@@ -1,5 +1,4 @@
 import * as u from '@jsmanifest/utils'
-import { isFile, isDirectory } from 'path-type'
 import express from 'express'
 import chokidar from 'chokidar'
 import fs from 'fs-extra'
@@ -11,6 +10,7 @@ import createAggregator from '../api/createAggregator'
 import emitResolvers from './resolvers/emit.resolvers'
 import typeDefs from '../generated/typeDefs'
 import { GetServerFiles } from '../panels/GetServerFiles/types'
+import * as co from '../utils/color'
 import * as com from '../utils/common'
 
 const log = console.log
@@ -196,11 +196,11 @@ const configureServer = (function () {
 			const port = 3002
 			const wss = new WebSocket.Server({ host, port })
 			const tags = {
-				ws: com.aquamarine('ws'),
-				host: com.lightGreen(host),
+				ws: co.aquamarine('ws'),
+				host: co.lightGreen(host),
 				port: u.green(String(port)),
 				slash: u.cyan('//'),
-				graphql: com.aquamarine('graphql'),
+				graphql: co.aquamarine('graphql'),
 				config: u.yellow(config),
 			}
 
@@ -219,7 +219,7 @@ const configureServer = (function () {
 
 			wss.on('connection', (ws, { socket }) => {
 				u.newline()
-				log(com.brightGreen(`Client is connected`), {
+				log(co.brightGreen(`Client is connected`), {
 					ip: socket.remoteAddress,
 				})
 				ws.on('message', (message) => log('Received: %s', message))
@@ -241,7 +241,7 @@ const configureServer = (function () {
 				ignoreInitial: true,
 			})
 
-			const tag = `[${com.cyan(`watcher`)}]`
+			const tag = `[${co.cyan(`watcher`)}]`
 
 			function sendMessage(msg: Record<string, any>) {
 				return new Promise((resolve, reject) => {

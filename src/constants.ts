@@ -5,6 +5,17 @@ export const DEFAULT_SERVER_PATH = 'server'
 export const DEFAULT_SERVER_PORT = 3000
 export const DEFAULT_SERVER_PROTOCOL = 'http'
 
+export const DEFAULT_PANEL = 'select'
+export const panel = {
+	FETCH_OBJECTS: { key: 'fetchObjects', label: 'Fetch noodl objects' },
+	FETCH_SERVER_FILES: { key: 'fetchServerFiles', label: 'Fetch server files' },
+	GET_APP: {
+		key: 'getApp',
+		label: 'Scaffold an entire directory structure based on the config',
+	},
+	RUN_SERVER: { key: 'runServer', label: 'Run server' },
+} as const
+
 export const app = {
 	INITIAL_OPTION: 'retrieve.objects',
 	action: {
@@ -16,12 +27,7 @@ export const app = {
 		SET_PANEL: 'set.panel',
 		SET_SPINNER: 'set.spinner',
 	},
-	panel: {
-		FETCH_OBJECTS: 'fetchObjects',
-		FETCH_SERVER_FILES: 'fetchServerFiles',
-		RUN_SERVER: 'runServer',
-		NOODL_WEBPACK_PLUGIN: 'noodlWebpackPlugin',
-	},
+	panel,
 } as const
 
 export const aggregator = {

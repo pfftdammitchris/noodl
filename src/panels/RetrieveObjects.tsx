@@ -4,21 +4,19 @@ import { Box } from 'ink'
 import produce, { Draft } from 'immer'
 import path from 'path'
 import fs from 'fs-extra'
-import chalk from 'chalk'
 import TextInput from 'ink-text-input'
 import useCtx from '../useCtx'
 import HighlightedText from '../components/HighlightedText'
 import Spinner from '../components/Spinner'
 import Select from '../components/Select'
 import {
-	getFilePath,
-	magenta,
-	yellow,
+	getAbsFilePath,
 	saveJson,
 	saveYml,
 	withJsonExt,
 	withYmlExt,
 } from '../utils/common'
+import * as co from '../utils/color'
 import * as c from '../constants'
 
 const stepId = {
@@ -101,25 +99,25 @@ function RetrieveObjectsPanel({
 					const saveFn = ext === 'json' ? saveJson : saveYml
 					try {
 						for (let dir of settings.objects[ext]?.dir || []) {
-							dir = getFilePath(dir)
+							dir = getAbsFilePath(dir)
 							let filepath = withExt(path.join(dir, name))
 
 							if (!fs.existsSync(dir)) {
 								await fs.mkdirp(dir)
-								log(`Created folder ${magenta(dir)}`)
+								log(`Created folder ${co.magenta(dir)}`)
 							}
 
 							saveFn(filepath)(ext === 'json' ? json : yml)
-							log(`Saved ${yellow(`${name}.${ext}`)} to ${magenta(dir)}`)
+							log(`Saved ${co.yellow(`${name}.${ext}`)} to ${co.magenta(dir)}`)
 						}
 					} catch (error) {
-						log(`[${chalk.red(`${name} - [${error.name}]`)}]: ${error.message}`)
+						log(`[${co.red(`${name} - [${error.name}]`)}]: ${error.message}`)
 					}
 					savedPageCount++
 				}
 			}
 
-			log(`\nConfig set to ${chalk.magentaBright(state.config)}\n`)
+			log(`\nConfig set to ${co.magenta(state.config)}\n`)
 
 			let savedPageCount = 0
 
@@ -139,7 +137,7 @@ function RetrieveObjectsPanel({
 					loadPages: { includePreloadPages: true },
 				})
 				.then(() => {
-					log(`\nSaved ${chalk.yellow(String(savedPageCount))} objects`)
+					log(`\nSaved ${co.yellow(String(savedPageCount))} objects`)
 				})
 				.catch((err) => {
 					logError(err)

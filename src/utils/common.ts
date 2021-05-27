@@ -8,61 +8,13 @@ import chalk from 'chalk'
 import yaml from 'yaml'
 import globby from 'globby'
 import { GetServerFiles } from '../panels/GetServerFiles/types'
-import * as T from '../types'
+import * as co from './color'
+import * as t from '../types'
 
-export const isArr = (v: any): v is any[] => Array.isArray(v)
-export const isBool = (v: any): v is boolean => typeof v === 'boolean'
-export const isNum = (v: any): v is number => typeof v === 'number'
-export const isFnc = (v: any): v is (...args: any[]) => any =>
-	typeof v === 'function'
-export const isStr = (v: any): v is string => typeof v === 'string'
-export const isNull = (v: any): v is null => v === null
-export const isUnd = (v: any): v is undefined => v === undefined
-export const isNil = (v: any): v is null | undefined => isNull(v) || isUnd(v)
-export const isObj = <V extends Record<string, any>>(v: any): v is V =>
-	!!v && !isArr(v) && typeof v === 'object'
-
-export const assign = (
-	v: Record<string, any> = {},
-	...rest: (Record<string, any> | undefined)[]
-) => Object.assign(v, ...rest)
-export const array = <O extends any[], P extends O[number]>(o: P | P[]): P[] =>
-	isArr(o) ? o : [o]
-export const entries = (v: any) => (isObj(v) ? entries(v) : [])
-export const keys = (v: any) => Object.keys(v)
-export const values = <O extends Record<string, any>, K extends keyof O>(
-	v: O,
-): O[K][] => Object.values(v)
-
-export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
-export const highlight = (...s: any[]) => chalk.yellow(...s)
-export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
-export const aquamarine = (...s: any[]) => chalk.keyword('aquamarine')(...s)
-export const lightGold = (...s: any[]) => chalk.keyword('blanchedalmond')(...s)
-export const blue = (...s: any[]) => chalk.keyword('deepskyblue')(...s)
-export const fadedBlue = (...s: any[]) => chalk.blue(...s)
-export const cyan = (...s: any[]) => chalk.cyan(...s)
-export const brightGreen = (...s: any[]) => chalk.keyword('chartreuse')(...s)
-export const lightGreen = (...s: any[]) => chalk.keyword('lightgreen')(...s)
-export const green = (...s: any[]) => chalk.green(...s)
-export const coolGold = (...s: any[]) => chalk.keyword('navajowhite')(...s)
-export const gray = (...s: any[]) => chalk.keyword('lightslategray')(...s)
-export const hotpink = (...s: any[]) => chalk.hex('#F65CA1')(...s)
-export const fadedSalmon = (...s: any[]) => chalk.keyword('darksalmon')(...s)
-export const magenta = (...s: any[]) => chalk.magenta(...s)
-export const orange = (...s: any[]) => chalk.keyword('lightsalmon')(...s)
-export const deepOrange = (...s: any[]) => chalk.hex('#FF8B3F')(...s)
-export const purple = (...s: any[]) => chalk.keyword('purple')(...s)
-export const lightRed = (...s: any[]) => chalk.keyword('lightpink')(...s)
-export const coolRed = (...s: any[]) => chalk.keyword('lightcoral')(...s)
-export const red = (...s: any[]) => chalk.keyword('tomato')(...s)
-export const teal = (...s: any[]) => chalk.keyword('turquoise')(...s)
-export const white = (...s: any[]) => chalk.whiteBright(...s)
-export const yellow = (...s: any[]) => chalk.yellow(...s)
-export const newline = () => console.log('')
-
-// prettier-ignore
-export const withTag = (colorFunc = cyan) => (s: string) => `[${colorFunc(s)}]`
+export const withTag =
+	(colorFunc = co.cyan) =>
+	(s: string) =>
+		`[${colorFunc(s)}]`
 
 export function createGroupedMetadataObjects(
 	init?: Partial<GetServerFiles.GroupedMetadataObjects>,
@@ -81,7 +33,7 @@ export function createPlaceholderReplacer(
 	flags?: string,
 ) {
 	const regexp = new RegExp(
-		(isArr(placeholders) ? placeholders : [placeholders]).reduce(
+		(u.isArr(placeholders) ? placeholders : [placeholders]).reduce(
 			(str, placeholder) => str + (!str ? placeholder : `|${placeholder}`),
 			'',
 		),
@@ -93,9 +45,9 @@ export function createPlaceholderReplacer(
 		str: string | Obj,
 		value: string | number,
 	) {
-		if (isStr(str)) {
+		if (u.isStr(str)) {
 			return str.replace(regexp, String(value))
-		} else if (isObj(str)) {
+		} else if (u.isObj(str)) {
 			const stringified = JSON.stringify(str).replace(regexp, String(value))
 			return JSON.parse(stringified)
 		}
@@ -108,12 +60,12 @@ export function forEachDeepKeyValue<O = any>(
 	cb: (key: string, value: any, obj: { [key: string]: any }) => void,
 	obj: O | O[],
 ) {
-	if (isArr(obj)) {
+	if (u.isArr(obj)) {
 		obj.forEach((v) => forEachDeepKeyValue(cb, v))
-	} else if (isObj(obj)) {
-		entries(obj).forEach(([key, value]) => {
+	} else if (u.isObj(obj)) {
+		u.entries(obj).forEach(([key, value]) => {
 			cb(key, value, obj)
-			if (isObj(value) || isArr(value)) {
+			if (u.isObj(value) || u.isArr(value)) {
 				forEachDeepKeyValue(cb, value)
 			}
 		})
@@ -122,8 +74,8 @@ export function forEachDeepKeyValue<O = any>(
 
 export function getCliConfig() {
 	return yaml.parse(
-		fs.readFileSync(getFilePath('noodl.yml'), 'utf8'),
-	) as T.CliConfigObject
+		fs.readFileSync(getAbsFilePath('noodl.yml'), 'utf8'),
+	) as t.CliConfigObject
 }
 
 export function getExt(str: string) {
@@ -160,7 +112,7 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 	function getMetadataObject(s: GetMetadataObjectArgsObject | string) {
 		const metadata = {} as GetServerFiles.MetadataObject
 
-		const value = (isStr(s) ? s : s[type]) as string
+		const value = (u.isStr(s) ? s : s[type]) as string
 
 		metadata.raw = value as string
 		metadata.ext = getExt(value)
@@ -173,14 +125,14 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 			metadata.pathname = value.startsWith('/') ? value : `/${value}`
 		}
 
-		if (isStr(s)) {
+		if (u.isStr(s)) {
 			if (type === 'link') {
 				if (value.startsWith('http')) metadata.link = value
 				// The link is a pathname, so we need to construct the protocol/hostname
 				// TODO - Find a way to get the hostname here?
 				else metadata.link = value
 			} else {
-				metadata.filepath = getFilePath(value)
+				metadata.filepath = getAbsFilePath(value)
 			}
 		} else {
 			if (type === 'link') {
@@ -192,8 +144,8 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 					: `/${metadata.pathname}`
 			} else {
 				metadata.filepath = s.prefix
-					? getFilePath(path.join(s.prefix, s[type] as string))
-					: getFilePath(s[type] as string)
+					? getAbsFilePath(path.join(s.prefix, s[type] as string))
+					: getAbsFilePath(s[type] as string)
 			}
 		}
 
@@ -225,12 +177,12 @@ export function getFilename(str: string) {
 	return str.substring(str.lastIndexOf('/') + 1)
 }
 
-export function getFilePath(...paths: string[]) {
-	return path.normalize(path.resolve(path.join(process.cwd(), ...paths)))
+export function getAbsFilePath(...paths: string[]) {
+	return path.resolve(path.join(process.cwd(), ...paths))
 }
 
 export function hasCliConfig() {
-	return fs.existsSync(getFilePath('noodl.yml'))
+	return fs.existsSync(getAbsFilePath('noodl.yml'))
 }
 
 export function hasDot(s: string) {
@@ -310,7 +262,7 @@ export function loadFiles({
 	}): void
 }) {
 	return globby
-		.sync(path.resolve(getFilePath(dir), `**/*.${ext}`))
+		.sync(path.resolve(getAbsFilePath(dir), `**/*.${ext}`))
 		.reduce((acc, filename) => {
 			const file =
 				ext === 'json'
@@ -414,7 +366,8 @@ export const saveYml = curry((filepath: string, data: any) =>
 )
 
 export function sortObjPropsByKeys(obj: { [key: string]: any }) {
-	return entries(obj)
+	return u
+		.entries(obj)
 		.sort((a, b) => {
 			if (a[1] > b[1]) return -1
 			if (a[1] === b[1]) return 0

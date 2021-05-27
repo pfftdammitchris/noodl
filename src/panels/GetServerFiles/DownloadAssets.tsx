@@ -85,7 +85,7 @@ function DownloadAssets(props: DownloadAssetsProps) {
 				try {
 					await download(
 						file.link,
-						com.getFilePath(settings.server.dir, 'assets'),
+						com.getAbsFilePath(settings.server.dir, 'assets'),
 					)
 				} catch (error) {
 					log(`[${u.red(file.filename)}]: ${u.yellow(error.message)}`)

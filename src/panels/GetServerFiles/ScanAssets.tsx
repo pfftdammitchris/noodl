@@ -32,7 +32,7 @@ function ScanAssets() {
 				dataFilePath: '',
 				// @ts-expect-error
 				docs: [...preloadPages, ...pages].reduce((acc, p) => {
-					const filepath = com.getFilePath(settings.server.dir, `${p}.yml`)
+					const filepath = com.getAbsFilePath(settings.server.dir, `${p}.yml`)
 					if (fs.existsSync(filepath)) {
 						return acc.concat({
 							name: p,
