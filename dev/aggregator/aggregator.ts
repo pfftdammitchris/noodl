@@ -57,7 +57,9 @@ async function aggregate() {
 
 	scripts
 		.use({
-			script: u.values(scriptsToRegister),
+			script: u
+				.values(scriptsToRegister)
+				.filter((f) => f({})?.key === 'gotoObjects'),
 			onEnd: () => u.log(`${u.withTag(`End`, lightGreen)} script`),
 		})
 		.run()

@@ -18,11 +18,11 @@ export const action = {
 
 export const step = {
 	INITIALIZING: 'initializing',
-	PROMPT_CONFIG: 'prompt.config',
-	LOAD_FILES: 'load.files',
-	SCAN_ASSETS: 'scan.assets',
-	DOWNLOAD_ASSETS: 'download.assets',
-	RUN_SERVER: 'run.server',
+	PROMPT_CONFIG: 'promptConfig',
+	LOAD_FILES: 'loadFiles',
+	SCAN_ASSETS: 'scanAssets',
+	DOWNLOAD_ASSETS: 'downloadAssets',
+	RUN_SERVER: 'runServer',
 } as const
 
 export const file = {

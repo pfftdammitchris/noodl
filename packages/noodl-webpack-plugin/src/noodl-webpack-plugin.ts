@@ -1,17 +1,10 @@
 import * as u from '@jsmanifest/utils'
-import get from 'lodash/get'
-import { RootConfig, AppConfig } from 'noodl-types'
 import invariant from 'invariant'
-import pick from 'lodash/pick'
-import {
-	Document,
-	isSeq,
-	parse as parseToJson,
-	parseDocument,
-	stringify,
-	YAMLSeq,
-} from 'yaml'
+import { RootConfig, AppConfig } from 'noodl-types'
+import { SetRequired } from 'type-fest'
+import { Document, parse as parseToJson, parseDocument, stringify } from 'yaml'
 import { Compiler } from 'webpack'
+import get from 'lodash/get'
 import WebSocket from 'ws'
 import chokidar from 'chokidar'
 import express from 'express'
@@ -24,17 +17,11 @@ import {
 	ensurePageName,
 	getMetadataObject,
 	loadFile,
-	isPageDoc,
 	isYml,
-	replaceBaseUrlPlaceholder,
-	replaceDesignSuffixPlaceholder,
-	replaceTildePlaceholder,
-	replaceVersionPlaceholder,
 	request,
 } from './utils'
 import * as t from './types'
 import * as c from './constants'
-import { SetRequired } from 'type-fest'
 
 interface Options {
 	config?: string
@@ -60,7 +47,10 @@ const getAbsPath = (...s: string[]) =>
 	path.resolve(path.join(process.cwd(), ...s))
 
 class NoodlWebpackPlugin {
+	#rootConfigObject: RootConfig | undefined
+	#appConfigObject: AppConfig | undefined
 	#cadlBaseUrl = ''
+	#nativeCadlBaseUrl = ''
 	#other = [] as string[]
 	#assets = [] as t.MetadataObject[]
 	#server: express.Express | undefined
@@ -97,11 +87,6 @@ class NoodlWebpackPlugin {
 		this.options.staticPaths = staticPaths || []
 		this.options.version = version
 		this.options.wssPort = wssPort
-
-		invariant(
-			fs.existsSync(this.options.serverDir),
-			`The path ${this.options.serverDir} does not exist`,
-		)
 	}
 
 	get config() {
@@ -139,7 +124,7 @@ class NoodlWebpackPlugin {
 		info(`Serving files at: ${u.green(this.serverUrl)}`)
 		info(`Path to server files: ${u.green(this.options.serverDir)}`)
 
-		const {
+		let {
 			config,
 			deviceType,
 			env,
@@ -151,58 +136,66 @@ class NoodlWebpackPlugin {
 			version,
 		} = this.options
 
-		info(`Searching your directory for the config file...`)
+		if (!(await fs.pathExists(serverDir))) {
+			await fs.ensureDir(serverDir)
+			info(`Created folder for server: ${u.yellow(serverDir)}`)
+		}
 
-		const localFiles = (await globby(path.join(serverDir, '**/*'), {
+		u.newline()
+
+		info(
+			`Searching your directory for the config (${u.yellow(config)}) file...`,
+		)
+
+		let localFiles = await globby(path.join(serverDir, '**/*'), {
+			expandDirectories: true,
 			onlyFiles: true,
-		})) as string[]
-
-		//
+		})
 
 		let configRegEx = new RegExp(`(${this.config}|${this.config}.yml)`, 'i')
-		let configFilePath = localFiles.find((filepath) =>
-			configRegEx.test(filepath),
-		)
-		let configDoc: Document | Document.Parsed | undefined
-		let configRemotelyFetched = false
-		let configYml = ''
+		let configFilePath = localFiles.find((path) => configRegEx.test(path))
 		let configVersion = ''
 
 		if (configFilePath) {
 			try {
 				info(`Found ${u.yellow(configFilePath)}`)
-				configDoc = parseDocument(loadFile(configFilePath))
+				// Purge root config (populates other props in this instance)
+				this.parseConfig(parseToJson(loadFile(configFilePath)))
+				info(`Parsed root config`)
 			} catch (error) {
-				throw error
+				console.error(u.red(`[${error.name}] ${error.message}`))
 			}
 		} else {
-			info(
-				`Config file not found. ` +
-					`Downloading remotely and saving it to your dir...`,
+			throw new Error(
+				`Config "${u.yellow(config)}" is not found in ${u.yellow(serverDir)}`,
 			)
-			// Prompt first time config
-			// Else use saved config as default
-			configYml = (await request(
-				`https://public.aitmed.com/config/${config}.yml`,
-			)) as string
+			// info(
+			// 	`Config file not found. ` +
+			// 		`Downloading remotely and saving it to your folder...`,
+			// )
+			// // Prompt first time config
+			// // Else use saved config as default
+			// configYml = (await request(
+			// 	`https://public.aitmed.com/config/${config}.yml`,
+			// )) as string
 
-			configRemotelyFetched = true
+			// configRemotelyFetched = true
 
-			info(`Received config in (YML)`)
+			// info(`Received config in (YML)`)
 
-			configDoc = parseDocument(configYml)
+			// configDoc = parseDocument(configYml)
 
-			try {
-				const configFileName = `${config}.yml`
-				await fs.writeFile(
-					path.join(serverDir, configFileName),
-					stringify(configDoc),
-					'utf8',
-				)
-				info(`Created and saved ${u.yellow(configFileName)} to your dir`)
-			} catch (error) {
-				throw new Error(error)
-			}
+			// try {
+			// 	const configFileName = `${config}.yml`
+			// 	await fs.writeFile(
+			// 		path.join(serverDir, configFileName),
+			// 		stringify(configDoc),
+			// 		'utf8',
+			// 	)
+			// 	info(`Created and saved ${u.yellow(configFileName)} to your dir`)
+			// } catch (error) {
+			// 	console.error(u.red(`[${error.name}] ${error.message}`))
+			// }
 		}
 
 		info(
@@ -211,110 +204,235 @@ class NoodlWebpackPlugin {
 				`environment (You can change these settings by passing them into the plugin's options)`,
 		)
 
-		let rootConfigObject = configDoc.toJSON() as RootConfig
 		let appConfig: AppConfig
 		let appConfigYml = ''
 		let appConfigUrl = ''
 
-		configVersion = this.getConfigVersion(rootConfigObject)
+		configVersion = this.getConfigVersion(this.#rootConfigObject)
 
 		info(
-			`Selected config version: ${u.yellow(configVersion)}${
-				version === 'latest' ? ` (latest)` : ''
+			`Selected version: ${u.yellow(configVersion)}${
+				version === 'latest' ? ` (${u.yellow('latest')})` : ''
 			}`,
 		)
 
-		const parsedRootConfig = this.parseConfig(rootConfigObject)
+		// appConfigUrl =
+		// 	`${c.DEFAULT_CONFIG_BASEE_URL}/cadl/${config}_${configVersion}` +
+		// 	`/${this.#rootConfigObject.cadlMain}`
 
-		appConfigUrl = `${parsedRootConfig.cadlBaseUrl}${parsedRootConfig.cadlMain}`
-
-		info(`Root config was parsed`)
-
-		this.#cadlBaseUrl = parsedRootConfig.cadlBaseUrl
-
-		info(`apiHost: ${u.yellow(parsedRootConfig.apiHost)}`)
-		info(`appApiHost: ${u.yellow(parsedRootConfig.appApiHost)}`)
-		info(`webApiHost: ${u.yellow(parsedRootConfig.webApiHost)}`)
-		info(`apiPort: ${u.yellow(parsedRootConfig.apiPort)}`)
+		info(`appApiHost: ${u.yellow(this.#rootConfigObject.appApiHost)}`)
+		info(`apiHost: ${u.yellow(this.#rootConfigObject.apiHost)}`)
+		info(`apiPort: ${u.yellow(this.#rootConfigObject.apiPort)}`)
 		info(`cadlBaseUrl: ${u.yellow(this.#cadlBaseUrl)}`)
+		info(`webApiHost: ${u.yellow(this.#rootConfigObject.webApiHost)}`)
 
-		if (parsedRootConfig.myBaseUrl) {
-			info(`myBaseUrl: ${u.yellow(parsedRootConfig.myBaseUrl)}`)
+		if (this.#rootConfigObject.myBaseUrl) {
+			info(`myBaseUrl: ${u.yellow(this.#rootConfigObject.myBaseUrl)}`)
 		}
 
-		if (parsedRootConfig.timestamp) {
-			info(`timestamp: ${u.yellow(parsedRootConfig.timestamp)}`)
+		if (this.#rootConfigObject.timestamp) {
+			info(`timestamp: ${u.yellow(this.#rootConfigObject.timestamp)}`)
 		}
 
-		if (configRemotelyFetched) {
-			info(`Retrieving app config from ${u.yellow(appConfigUrl)}`)
-			appConfigYml = (await request(appConfigUrl)) as string
+		const appConfigFilePath = localFiles.find((filepath) =>
+			filepath.startsWith(this.#rootConfigObject.cadlMain),
+		)
+
+		if (appConfigFilePath) {
+			info(`Loading app config...`)
+			appConfigYml = loadFile(appConfigFilePath)
 		} else {
-			const appConfigFilePath = localFiles.find((filepath) =>
-				filepath.startsWith(parsedRootConfig.cadlMain),
+			info(
+				`Missing app config file (${u.yellow(
+					this.#rootConfigObject.cadlMain,
+				)}) from the dir. Fetching remotely now...`,
 			)
-			if (appConfigFilePath) {
-				info(`Loading app config...`)
-				appConfigYml = loadFile(appConfigFilePath)
-			} else {
-				info(`Missing app config file from the dir. Fetching remotely now...`)
+
+			// TODO - Fetch native root config if current cadlBaseUrl is local, and save it to this.#nativeRootConfigUrl
+
+			if (/(127.0.0.1|localhost)/i.test(this.#cadlBaseUrl)) {
+				info(
+					`Fetching for a fresh root config object to retrieve the original hostname`,
+				)
+
+				// Fetch a fresh config remotely and get the real cadlBaseUrl
+				const nativeRootConfigYml = (await request(
+					`https://public.aitmed.com/config/${config}.yml`,
+				)) as string
+
+				if (nativeRootConfigYml) {
+					const nativeRootConfigObject = parseToJson(nativeRootConfigYml)
+					const nativeCadlBaseUrl = nativeRootConfigObject.cadlBaseUrl
+
+					if (u.isObj(nativeRootConfigObject)) {
+						appConfigUrl =
+							nativeCadlBaseUrl.replace(
+								new RegExp('\\${cadlVersion}', 'g'),
+								configVersion,
+							) + nativeRootConfigObject.cadlMain
+					} else {
+						u.red(
+							`Could not read from the remote root (${u.yellow(
+								config,
+							)}) config. Something went wrong.`,
+						)
+					}
+				} else {
+					u.red(
+						`Could not fetch a fresh root config object remotely because the data ` +
+							`received was empty or invalid`,
+					)
+				}
+			}
+
+			if (!/(127.0.0.1|localhost)/i.test(appConfigUrl)) {
 				appConfigYml = (await request(appConfigUrl)) as string
+			} else {
+				console.error(
+					`Tried one or more times to remotely fetch the original app config ` +
+						`but the ${u.yellow(
+							`cadlBaseUrl`,
+						)} is not a valid remote config url`,
+				)
 			}
 		}
 
 		if (appConfigYml) info(`App config was retrieved as YAML`)
-		else throw new Error(`Could not load the app config YAML`)
+		else console.error(`Could not load the app config YAML`)
 
 		appConfig = parseToJson(appConfigYml)
 
+		const preloadPages = (appConfig.preload as string[]) || []
+		const pages = (appConfig.page as string[]) || []
+		const allPages = [...preloadPages, ...pages]
+
 		if (appConfig) {
 			appConfig = this.parseConfig(appConfig, rootConfigObject)
-			info(`App config was parsed`)
+			info(`App config (${u.yellow(rootConfigObject.cadlMain)}) was parsed`)
 			info(`assetsUrl: ${u.yellow(appConfig.assetsUrl)}`)
 			info(`baseUrl: ${u.yellow(appConfig.baseUrl)}`)
 			info(`startPage: ${u.yellow(appConfig.startPage)}`)
-			info(`No. preload pages: ${u.yellow(appConfig.preload?.length || 0)}`)
-			info(`No. pages: ${u.yellow(appConfig.page?.length || 0)}`)
+			info(
+				`There are ${u.yellow(
+					String(preloadPages.length),
+				)} preload pages in the config`,
+			)
+			info(`There are ${u.yellow(String(pages.length))} pages in the config`)
+			info(
+				`Total ${u.yellow(
+					String(preloadPages.length + pages.length),
+				)} pages in total`,
+			)
 		} else {
-			throw new Error(`Could not load the app config object`)
+			u.red(
+				`Could not load the app config object. Either there was a YAML parsing error ` +
+					`or the YAML file could not be retrieved for an unknown reason`,
+			)
 		}
 
-		const preloadPages = appConfig.preload as string[]
-		const pages = appConfig.page as string[]
+		info(`Scanning for missing files...`)
 
-		preloadPages.length &&
+		const localFilesAsFileNames = [] as string[]
+
+		localFiles.forEach((filepath) => {
+			const metadata = getMetadataObject(filepath, { config })
+			const filename = (
+				metadata.filepath.indexOf('/') > -1
+					? metadata.filepath.substring(metadata.filepath.lastIndexOf('/') + 1)
+					: metadata.filepath
+			).replace(/(~\/|_en|.yml)/gi, '')
+			localFilesAsFileNames.push(filename)
+		})
+
+		const missingFilesPromises = [] as Promise<
+			t.MetadataObject & { url: string; yml: string }
+		>[]
+
+		const replacePlaceholders = createPlaceholderReplacers(
+			[
+				['${cadlBaseUrl}', this.#cadlBaseUrl],
+				['${cadlVersion}', this.getConfigVersion(rootConfigObject)],
+			],
+			'g',
+		)
+
+		for (const page of [...allPages, rootConfigObject.cadlMain]) {
+			if (!localFilesAsFileNames.includes(page)) {
+				missingFilesPromises.push(
+					new Promise(async (resolve) => {
+						const ext = 'yml'
+						const filename = page.startsWith('~/')
+							? page.replace('~/', '')
+							: page
+						const filenameWithSuffix = `${filename}_en.${ext}`
+						const downloadLink = replacePlaceholders(
+							`${rootConfigObject.cadlBaseUrl}${filenameWithSuffix}`,
+						)
+						const missingFile = {
+							ext,
+							filename,
+							filepath: path.resolve(path.join(serverDir, filenameWithSuffix)),
+							group: 'page',
+							url: downloadLink,
+							yml: (await request(downloadLink)) as string,
+						} as t.MetadataObject & { url: string; yml: string }
+						resolve(missingFile)
+					}),
+				)
+			}
+		}
+
+		let missingFilesDownloadCounter = 0
+
+		if (missingFilesPromises.length) {
 			info(
-				`${u.yellow(String(preloadPages.length))} preload pages being loaded`,
+				`Downloading ${u.yellow(
+					String(missingFilesPromises.length),
+				)} missing files`,
 			)
-		pages.length && info(`Total pages: ${u.yellow(String(pages.length))}`)
+			const missingFiles = await Promise.all(missingFilesPromises)
+			u.newline()
+			for (const missingFile of missingFiles) {
+				info(`Saved missing page ${u.magenta(missingFile.filename)}`)
+				await fs.writeFile(missingFile.filepath, missingFile.yml, 'utf8')
+				missingFilesDownloadCounter++
+			}
+			u.newline()
+			info(
+				`Finished downloading ${u.yellow(
+					String(missingFilesDownloadCounter),
+				)} of ${u.yellow(String(missingFilesPromises.length))} missing files`,
+			)
+			u.newline()
+		}
 
 		/**
 		 * 1. Scan all files
 		 * 2. Separate config files from non-config files
 		 */
 
-		if (localFiles.length) {
-			info(
-				`Loading ${u.yellow(
-					String(localFiles.length),
-				)} files mentioned in ${u.green(`${this.config}.yml`)}`,
-			)
-		} else {
-			info(`No local files found in ${u.yellow(serverDir)}`)
-		}
+		// if (localFiles.length) {
+		// 	info(
+		// 		`Loading ${u.yellow(
+		// 			String(localFiles.length),
+		// 		)} files mentioned in ${u.green(`${this.config}.yml`)}`,
+		// 	)
+		// } else {
+		// 	info(`No local files found in ${u.yellow(serverDir)}`)
+		// }
 
-		const missingPages = [] as t.File[]
+		// const missingPages = [] as t.File[]
 
-		for (const filepath of localFiles) {
-			if (!filepath?.includes('.')) continue
-			if (/\/assets?/i.test(filepath)) {
-				this.#assets.push(getMetadataObject(filepath))
-			} else if (isYml(filepath)) {
-				this.#yml.push(getMetadataObject(filepath, { config: this.config }))
-			} else {
-				this.#other.push(filepath)
-			}
-		}
+		// for (const filepath of localFiles) {
+		// 	if (!filepath?.includes('.')) continue
+		// 	if (/\/assets?/i.test(filepath)) {
+		// 		this.#assets.push(getMetadataObject(filepath))
+		// 	} else if (isYml(filepath)) {
+		// 		this.#yml.push(getMetadataObject(filepath, { config: this.config }))
+		// 	} else {
+		// 		this.#other.push(filepath)
+		// 	}
+		// }
 
 		this.listen({
 			server: (this.#server = express() as express.Express),
@@ -430,20 +548,6 @@ class NoodlWebpackPlugin {
 						}
 					})
 				})
-				// .on('headers', (headers, { headers: headersObject, socket, url }) => {
-				// 	info(`Headers string`, headers)
-				// 	info(`Headers string`, headersObject)
-				// 	info(`Socket info`, {
-				// 		...pick(socket, [
-				// 			'localAddress',
-				// 			'localPort',
-				// 			'remoteAddress',
-				// 			'remoteFamily',
-				// 			'remotePort',
-				// 		] as (keyof typeof socket)[]),
-				// 		address: socket.address(),
-				// 	})
-				// })
 				.on('close', () => info(u.white(`WS has closed`)))
 				.on('error', (err) => info(u.red(`[${err.name}] ${err.message}`)))
 
@@ -550,6 +654,16 @@ class NoodlWebpackPlugin {
 		})
 	}
 
+	purgePlaceholders(value: string) {
+		return createPlaceholderReplacers(
+			[
+				['${cadlBaseUrl}', this.#cadlBaseUrl],
+				['${cadlVersion}', this.getConfigVersion(rootConfigObject)],
+			],
+			'g',
+		)(value)
+	}
+
 	/**
 	 * @param { Partial<RootConfig> } configObject
 	 * Parses the config provided, returning a parsed object where placeholders
@@ -564,7 +678,7 @@ class NoodlWebpackPlugin {
 		// Root config
 		if (u.isUnd(configObject2)) {
 			configObject1 = configObject1 as RootConfig
-			return JSON.parse(
+			configObject1 = JSON.parse(
 				createPlaceholderReplacers(
 					[
 						['${cadlBaseUrl}', this.#cadlBaseUrl],
@@ -591,9 +705,12 @@ class NoodlWebpackPlugin {
 					}),
 				),
 			) as RootConfig
+			this.#cadlBaseUrl = configObject1.cadlBaseUrl
+			this.#rootConfigObject = configObject1
+			return this.#rootConfigObject
 		}
 
-		return JSON.parse(
+		configObject1 = JSON.parse(
 			createPlaceholderReplacers(
 				[
 					['${cadlBaseUrl}', this.#cadlBaseUrl],
@@ -602,6 +719,9 @@ class NoodlWebpackPlugin {
 				'g',
 			)(u.isStr(configObject1) ? configObject1 : JSON.stringify(configObject1)),
 		) as AppConfig
+
+		this.#appConfigObject = configObject1
+		return this.#appConfigObject
 	}
 
 	getConfigVersion(configObject?: RootConfig) {

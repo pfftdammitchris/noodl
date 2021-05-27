@@ -2,78 +2,65 @@ import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import useCliConfig from './hooks/useCliConfig'
 import createAggregator from './api/createAggregator'
 import { Cli } from './cli'
+import { initialState as initialAppState } from './App'
 import * as c from './constants'
 
 export namespace App {
-	export type Action =
-		| { type: typeof c.UPDATE_PANEL; panel: Partial<State['panel']> }
-		| { type: typeof c.app.action.HIGHLIGHT_PANEL; panelId: PanelId }
-		| { type: typeof c.app.action.SET_CAPTION; caption: string }
-		| { type: typeof c.app.action.SET_SPINNER; spinner: false | string }
-
-	export interface State {
-		caption: string[]
-		panel: {
-			value: PanelId | ''
-			highlightedId: PanelId | ''
-			mounted: boolean
-			idle: boolean
-			[key: string]: any
-		}
-		spinner: false | string
-	}
-
 	export interface Context extends State {
 		aggregator: ReturnType<typeof createAggregator>
 		cli: Cli
-		cliArgs: {
-			config?: string
-			defaultPanel?: App.PanelId
-			ext?: 'json' | 'yml'
-			runServer?: boolean
-		}
-		highlightPanel(id: App.PanelId): void
-		settings: ReturnType<typeof useCliConfig>
-		setCaption(caption: string): void
-		setErrorCaption(caption: string | Error): void
+		highlight(id: PanelId): void
+		log(caption: string): void
+		logError(caption: string | Error): void
 		toggleSpinner(type?: false | string): void
-		updatePanel(panel: Partial<State['panel']>): void
+		settings: ReturnType<typeof useCliConfig>
+		setPanel(id: PanelId): void
+		updatePanel<Id extends PanelId>(
+			id: Id,
+			panel: Partial<PanelObject<Id>>,
+		): void
 	}
 
-	export interface CliConfigObject {
-		defaultOption: App.PanelId | null
-		defaultPanel: App.PanelId | null
-		server: {
-			config?: string
-			dir: string
-			host: string
-			port: number
-			protocol: string
-		}
-		objects: {
-			json: {
-				dir: string[]
-			}
-			yml: {
-				dir: string[]
-			}
-		}
-		scripts?: {
-			aggregator?: {
-				dataFiles?: string
-				outFile?: string
-				use?: string[]
-			}
-		}
-	}
+	export type PanelId = keyof App.State['panel']
 
-	export type EventId =
-		typeof c.aggregator.event[keyof typeof c.aggregator.event]
-
-	export type PanelId = keyof typeof c.panel
-
-	export type PanelObject = typeof c.panel[PanelId]
+	export type State = typeof initialAppState
 }
+
+export type PanelObject<Id extends string = string> = {
+	id?: Id
+	value: Id
+	label: string
+	[key: string]: any
+}
+
+export interface CliConfigObject {
+	defaultOption: App.PanelId | null
+	defaultPanel: App.PanelId | null
+	server: {
+		config?: string
+		dir: string
+		host: string
+		port: number
+		protocol: string
+	}
+	objects: {
+		json: {
+			dir: string[]
+		}
+		yml: {
+			dir: string[]
+		}
+	}
+	scripts?: {
+		aggregator?: {
+			dataFiles?: string
+			outFile?: string
+			use?: string[]
+		}
+	}
+}
+
+export type EventId = typeof c.aggregator.event[keyof typeof c.aggregator.event]
 
 /* -------------------------------------------------------
 	---- CONSTANTS

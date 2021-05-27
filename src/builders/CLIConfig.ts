@@ -1,9 +1,9 @@
 import yaml from 'yaml'
-import { App } from '../types'
+import { CliConfigObject } from '../types'
 import { saveYml } from '../utils/common'
 import * as c from '../constants'
 
-class CLIConfig implements App.CliConfigObject {
+class CLIConfig implements CliConfigObject {
 	defaultOption = null
 	defaultPanel = null
 	objects = {
@@ -22,7 +22,7 @@ class CLIConfig implements App.CliConfigObject {
 		return `${this.server.protocol}://${this.server.host}:${this.server.port}`
 	}
 
-	save(opts?: Partial<App.CliConfigObject>) {
+	save(opts?: Partial<CliConfigObject>) {
 		saveYml('noodl.yml', yaml.stringify({ ...this.toJSON(), ...opts }))
 	}
 
