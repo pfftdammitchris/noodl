@@ -32,6 +32,7 @@
 		"cheerio": "^1.0.0-rc.6",
 		"download": "^8.0.0",
 		"express": "^4.17.1",
+		"graphql": "^15.5.0",
 		"immer": "^9.0.1",
 		"ink": "^3.0.8",
 		"ink-select-input": "^4.2.0",

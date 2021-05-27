@@ -12,7 +12,7 @@ server:
   dir: server
   port: 3000
   protocol: http
-  config: meet3
+  config: meet4d
 scripts:
   aggregator:
     dataFiles: server
