@@ -90,21 +90,6 @@ const scripts = {
 			}
 		},
 	})),
-	gotoObjects: createScript((store) => ({
-		type: 'array',
-		label: 'Retrieve all goto objects',
-		fn({ node }) {
-			if (yaml.isMap(node)) {
-				if (
-					node.has('goto') ||
-					node.has('destination') ||
-					node.hasIn(['dataIn', 'destination'])
-				) {
-					store.gotoObjects.push(node)
-				}
-			}
-		},
-	})),
 	references: createScript((store) => ({
 		type: 'array',
 		label: 'References',

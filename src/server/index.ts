@@ -1,6 +1,6 @@
+// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import express from 'express'
-import chokidar from 'chokidar'
 import fs from 'fs-extra'
 import WebSocket from 'ws'
 import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
@@ -9,7 +9,7 @@ import globby from 'globby'
 import createAggregator from '../api/createAggregator'
 import emitResolvers from './resolvers/emit.resolvers'
 import typeDefs from '../generated/typeDefs'
-import { GetServerFiles } from '../panels/GetServerFiles/types'
+import { MetadataObject } from '../panels/GetApp/types'
 import * as co from '../utils/color'
 import * as com from '../utils/common'
 
@@ -64,7 +64,7 @@ const configureServer = (function () {
 			if (failed.length) {
 				log(
 					`\n${copied.length} files were copied over but ` +
-						`${u.magenta(String(failed.length))} files failed\n`,
+						`${com.magenta(failed.length)} files failed\n`,
 				)
 			}
 		},
@@ -101,10 +101,7 @@ const configureServer = (function () {
 				}
 				return acc
 			},
-			{
-				assets: [] as GetServerFiles.MetadataObject[],
-				yml: [] as GetServerFiles.MetadataObject[],
-			},
+			{ assets: [] as MetadataObject[], yml: [] as MetadataObject[] },
 		)
 
 		const options: ApolloServerExpressConfig = {
@@ -157,8 +154,8 @@ const configureServer = (function () {
 			filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
 			group = 'page' as any
 			log(
-				u.white(
-					`Registering ${u.yellow(group)} pathname: ${u.magenta(
+				com.white(
+					`Registering ${com.yellow(group)} pathname: ${com.magenta(
 						filename,
 					)} filepath: ${filepath}`,
 				),
@@ -172,8 +169,8 @@ const configureServer = (function () {
 		metadata.assets.forEach(({ group, filepath, filename }) => {
 			if (!filename.startsWith('/')) filename = `/${filename}`
 			log(
-				u.white(
-					`Registering ${u.yellow(group)} pathname: ${u.magenta(
+				com.white(
+					`Registering ${com.yellow(group)} pathname: ${com.magenta(
 						filename,
 					)} filepath: ${filepath}`,
 				),
@@ -198,35 +195,43 @@ const configureServer = (function () {
 			const tags = {
 				ws: co.aquamarine('ws'),
 				host: co.lightGreen(host),
-				port: u.green(String(port)),
-				slash: u.cyan('//'),
+				port: com.green(String(port)),
+				slash: com.cyan('//'),
 				graphql: co.aquamarine('graphql'),
-				config: u.yellow(config),
+				config: com.yellow(config),
 			}
 
 			log(
-				`\n${comet}   Server ready at ${u.cyan(`${serverUrl}`)}/${
-					tags.graphql
-				} ${config ? `using config ${tags.config}` : ''}`,
+				`\n🚀 Server ready at ${com.cyan(`${serverUrl}${graphqlPath}`)} ${
+					config ? `using config ${com.magenta(config)}` : ''
+				}`,
 			)
 
+			const wss = new WebSocket.Server({ port: 3002 })
+
 			wss.on('listening', () => {
+				com.newline()
 				log(
-					`${croissant}  WebSocket server is listening at: ${tags.ws}:${tags.slash}` +
-						`${tags.host}:${tags.port}`,
+					com.brightGreen(
+						`WebSocket server is listening at: ws://127.0.0.1:3002`,
+					),
 				)
 			})
 
-			wss.on('connection', (ws, { socket }) => {
-				u.newline()
+			wss.on('connection', function connection(ws, sender) {
+				const { socket } = sender
+				const ip = socket.remoteAddress
+
+				com.newline()
 				log(co.brightGreen(`Client is connected`), {
 					ip: socket.remoteAddress,
 				})
 				ws.on('message', (message) => log('Received: %s', message))
+				ws.send('Hello client. I am the WebSocket server you are connected to!')
 			})
 
-			wss.on('close', () => log(u.white(`WebSocket server has closed`)))
-			wss.on('error', (err) => log(u.red(`[${err.name}] ${err.message}`)))
+			wss.on('close', () => log(com.white(`WebSocket server has closed`)))
+			wss.on('error', (err) => log(com.red(`[${err.name}] ${err.message}`)))
 
 			app._router.stack.forEach(function ({ route }: any) {
 				if (route) {
@@ -285,8 +290,8 @@ const configureServer = (function () {
 
 			watcher
 				.on('ready', () => {
-					u.log(
-						`${tag} Watching for file changes at ${u.magenta(
+					com.log(
+						`${tag} Watching for file changes at ${com.magenta(
 							com.getFilePath(serverDir),
 						)}`,
 					)
@@ -295,40 +300,40 @@ const configureServer = (function () {
 				.on(
 					'change',
 					onWatchEvent((args) => {
-						u.log(`${tag} file changed`, args.path)
+						com.log(`${tag} file changed`, args.path)
 						sendMessage({ type: 'FILE_CHANGED', ...args })
 					}),
 				)
 				.on(
 					'add',
 					onWatchEvent((args) => {
-						u.log(`${tag} file added`, args.path)
+						com.log(`${tag} file added`, args.path)
 						sendMessage({ type: 'FILE_ADDED', ...args })
 					}),
 				)
 				.on(
 					'addDir',
 					onWatchEvent((args) => {
-						u.log(`${tag} folder added`, args.path)
+						com.log(`${tag} folder added`, args.path)
 						sendMessage({ type: 'FOLDER_ADDED', ...args })
 					}),
 				)
 				.on(
 					'unlink',
 					onWatchEvent((args) => {
-						u.log(`${tag} file was removed`, args.path)
+						com.log(`${tag} file was removed`, args.path)
 						sendMessage({ type: 'FILE_REMOVED', ...args })
 					}),
 				)
 				.on(
 					'unlinkDir',
 					onWatchEvent((args) => {
-						u.log(`${tag} folder was removed`, args.path)
+						com.log(`${tag} folder was removed`, args.path)
 						sendMessage({ type: 'FOLDER_REMOVED', ...args })
 					}),
 				)
 				.on('error', (err) => {
-					u.log(`${tag} error`, err)
+					com.log(`${tag} error`, err)
 					sendMessage({ type: 'WATCH_ERROR', error: err })
 				})
 		})

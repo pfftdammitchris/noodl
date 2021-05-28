@@ -1,13 +1,12 @@
-import * as u from '@jsmanifest/utils'
 import { AxiosError } from 'axios'
 import { URL } from 'url'
+import * as u from '@jsmanifest/utils'
 import curry from 'lodash/curry'
 import fs from 'fs-extra'
 import path from 'path'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import globby from 'globby'
-import { GetServerFiles } from '../panels/GetServerFiles/types'
 import * as co from './color'
 import * as t from '../types'
 
@@ -17,8 +16,8 @@ export const withTag =
 		`[${colorFunc(s)}]`
 
 export function createGroupedMetadataObjects(
-	init?: Partial<GetServerFiles.GroupedMetadataObjects>,
-): GetServerFiles.GroupedMetadataObjects & {} {
+	init?: Partial<Record<string, any>>,
+): Record<string, any> & {} {
 	return {
 		documents: [],
 		images: [],
@@ -73,29 +72,11 @@ export function forEachDeepKeyValue<O = any>(
 }
 
 export function getCliConfig() {
-	return yaml.parse(
-		fs.readFileSync(getAbsFilePath('noodl.yml'), 'utf8'),
-	) as t.CliConfigObject
+	return yaml.parse(fs.readFileSync(getAbsFilePath('noodl.yml'), 'utf8'))
 }
 
 export function getExt(str: string) {
 	return hasDot(str) ? str.substring(str.lastIndexOf('.') + 1) : ''
-}
-
-export function findByRegexMap(
-	regexMap: Record<string, any>,
-	keyword: string,
-	flags?: string,
-) {
-	let value: any
-	u.eachEntries(regexMap, (regexStr, val, done) => {
-		const regex = new RegExp(regexStr, flags || '')
-		if (regex.test(keyword)) {
-			value = val
-			done()
-		}
-	})
-	return value
 }
 
 export function createMetadataExtractor(type: 'filepath' | 'link') {
@@ -107,10 +88,10 @@ export function createMetadataExtractor(type: 'filepath' | 'link') {
 
 	function getMetadataObject(
 		args: GetMetadataObjectArgsObject,
-	): GetServerFiles.MetadataObject
-	function getMetadataObject(str: string): GetServerFiles.MetadataObject
+	): Record<string, any>
+	function getMetadataObject(str: string): Record<string, any>
 	function getMetadataObject(s: GetMetadataObjectArgsObject | string) {
-		const metadata = {} as GetServerFiles.MetadataObject
+		const metadata = {} as Record<string, any>
 
 		const value = (u.isStr(s) ? s : s[type]) as string
 
@@ -285,19 +266,19 @@ export function isVid(s: string) {
 	return /([a-z\-_0-9\/\:\.]*\.(mp4|avi|wmv))/i.test(s)
 }
 
-export function isYml(s = '') {
+export function isYml(s: string = '') {
 	return s.endsWith('.yml')
 }
 
-export function isJson(s = '') {
+export function isJson(s: string = '') {
 	return s.endsWith('.json')
 }
 
-export function isJs(s = '') {
+export function isJs(s: string = '') {
 	return s.endsWith('.js')
 }
 
-export function isHtml(s = '') {
+export function isHtml(s: string = '') {
 	return s.endsWith('.html')
 }
 
@@ -317,7 +298,7 @@ export function prettifyErr(err: AxiosError | Error) {
  */
 export async function promiseAllSafe(...promises: Promise<any>[]) {
 	const results = [] as any[]
-	for (const promise of promises) {
+	for (let promise of promises) {
 		try {
 			const result = await promise
 			results.push(result)
@@ -330,7 +311,7 @@ export async function promiseAllSafe(...promises: Promise<any>[]) {
 
 export async function promiseAllSafelySplit(...promises: Promise<any>[]) {
 	const results = [[], []] as [passed: any[], failed: any[]]
-	for (const promise of promises) {
+	for (let promise of promises) {
 		try {
 			results[0].push(await promise)
 		} catch (error) {

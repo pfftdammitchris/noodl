@@ -2,6 +2,7 @@ import * as u from '@jsmanifest/utils'
 import pick from 'lodash/pick'
 import { LiteralUnion } from 'type-fest'
 import invariant from 'invariant'
+import yaml from 'yaml'
 import React from 'react'
 import produce, { Draft } from 'immer'
 // import Gradient from 'ink-gradient'
@@ -13,49 +14,42 @@ import CliConfig from './builders/CliConfig'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
 import GetApp from './panels/GetApp'
-import RetrieveObjects from './panels/RetrieveObjects'
-import RunServer from './panels/RunServer'
-import SelectRoute from './panels/SelectRoute'
+// import RetrieveObjects from './panels/RetrieveObjects'
+// import RunServer from './panels/RunServer'
+// import SelectRoute from './panels/SelectRoute'
+import * as com from './utils/common'
 import * as co from './utils/color'
 import * as c from './constants'
 import * as t from './types'
 
 export const AppPanel = {
 	getApp: GetApp,
-	retrieveObjects: RetrieveObjects,
-	runServer: RunServer,
-	[c.DEFAULT_PANEL]: SelectRoute,
+	// retrieveObjects: RetrieveObjects,
+	// runServer: RunServer,
+	// [c.DEFAULT_PANEL]: SelectRoute,
 } as const
 
 const aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
 export const initialState = {
-	caption: [] as string[],
-	activePanel: '' as LiteralUnion<keyof typeof AppPanel | '', string>,
-	highlightedPanel: '',
-	panels: {} as Record<t.App.PanelKey, t.PanelObject>,
-	queue: [] as string[],
+	activePanel: '' as t.App.PanelKey,
+	highlightedPanel: '' as t.App.PanelKey,
 	spinner: false as false | string,
+	text: [] as string[],
 }
 
 function Application({
 	cli,
 	cliConfig,
+	config,
 }: {
 	cli: t.App.Context['cli']
 	cliConfig: CliConfig
+	config: t.App.Config
 }) {
 	const [mounted, setMounted] = React.useState(false)
-	const [state, _setState] = React.useState<t.App.State>(() => {
-		return {
-			...initialState,
-			panels: u.reduce(
-				u.entries(cliConfig.state.panels),
-				(acc, [panel, panelObject]) => u.assign(acc, { [panel]: panelObject }),
-				{},
-			),
-		}
-	})
+	const [state, _setState] = React.useState<t.App.State>(initialState)
+
 	const { exit } = useApp()
 
 	const set = React.useCallback(
@@ -66,16 +60,17 @@ function Application({
 	const ctx: t.App.Context = {
 		...state,
 		aggregator,
+		config,
 		cli,
 		cliConfig,
 		exit,
 		set,
 		highlight: (id) => set((d) => void (d.highlightedPanel = id)),
-		log: (caption) => set((d) => void d.caption.push(caption)),
+		log: (text) => set((d) => void d.text.push(text)),
 		logError: (err) =>
 			set(
 				(d) =>
-					void d.caption.push(
+					void d.text.push(
 						err instanceof Error
 							? `[${u.red(err.name)}]: ${u.yellow(err.message)}`
 							: err,
@@ -90,17 +85,26 @@ function Application({
 						? false
 						: type),
 			),
-		setPanel: (id: string) => {
+		setPanel: (panelKey: t.App.PanelKey | '') => {
 			console.log('')
-			ctx.log(
-				`Panel is switching to ${u.cyan(id)}: ${u.white(
-					cliConfig.state.panels[id]?.label,
-				)}`,
-			)
+			if (panelKey in AppPanel) {
+				let componentName = ''
+				for (const key of u.keys(AppPanel)) {
+					if (panelKey === key) {
+						componentName = u.keys(AppPanel[key])[0]
+						break
+					}
+				}
+				panelKey in AppPanel &&
+					ctx.log(
+						`Panel is switching to ${u.cyan(panelKey)}: ${u.white(
+							`<${componentName} />`,
+						)}`,
+					)
+			}
 			console.log('')
-			set((d) => void (d.activePanel = id))
+			set((d) => void (d.activePanel = panelKey))
 		},
-		update: (id, p) => set((d) => void u.assign(d.panels[id], p)),
 	}
 
 	React.useEffect(() => {
@@ -109,18 +113,17 @@ function Application({
 
 	React.useEffect(() => {
 		if (u.keys(cli.flags).length) {
-			const handleGenerate = ({
-				value,
-			}: {
-				value: t.App.Panel.Generate.Key
-			}) => {
-				if (AppPanel[value]) {
-					ctx.setPanel(value)
+			const handleGenerate = () => {
+				const generate = cli.flags.generate as string
+				if (generate in AppPanel) {
+					ctx.setPanel(generate)
 				} else {
 					u.log(
 						co.red(
-							`Invalid generate operation: "${co.white(value)}"\nSupported ` +
-								`options are: ${co.yellow(u.keys(AppPanel).join(', '))}\n`,
+							`Invalid generate operation: "${co.white(generate)}"\n` +
+								`Supported options are: ${co.yellow(
+									u.keys(AppPanel).join(', '),
+								)}\n`,
 						),
 					)
 					exit()
@@ -139,8 +142,9 @@ function Application({
 			const handleRetrieve = () => {
 				invariant(
 					['json', 'yml'].some((ext) => cli.flags.retrieve?.includes(ext)),
-					`Invalid value for "${u.magenta(`retrieve`)}" ` +
-						`Valid options are: ${u.magenta('json')}, ${u.magenta('yml')}`,
+					`Invalid value for "${co.magenta(
+						`retrieve`,
+					)}". Valid options are: ${co.magenta('json')}, ${co.magenta('yml')}`,
 				)
 				set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
 			}
@@ -154,9 +158,7 @@ function Application({
 			}
 
 			cli.flags.generate
-				? handleGenerate({
-						value: cli.flags.generate as t.App.PanelKey,
-				  })
+				? handleGenerate()
 				: cli.flags.script
 				? handleScript(cli.flags.script)
 				: cli.flags.retrieve
@@ -167,7 +169,7 @@ function Application({
 		} else {
 			ctx.setPanel(c.DEFAULT_PANEL)
 		}
-	}, [cli.flags])
+	}, [])
 
 	const Panel = AppPanel[state.activePanel]
 
@@ -204,8 +206,8 @@ function Application({
 			// 	<SelectRoute />
 			// )
 			null}
-			<Static items={ctx.caption as string[]}>
-				{(caption, index) => <Text key={index}>{caption}</Text>}
+			<Static items={ctx.text as string[]}>
+				{(text, index) => <Text key={index}>{text}</Text>}
 			</Static>
 			<Spacer />
 		</Provider>

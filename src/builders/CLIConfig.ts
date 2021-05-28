@@ -4,41 +4,19 @@ import fs from 'fs-extra'
 import { getAbsFilePath, getCliConfig } from '../utils/common'
 
 class CliConfig {
-	#state = {} as {
-		defaultOption?: string
-		defaultPanel?: string
-		panels: Record<string, { component: String; label: string }>
+	#state = {
+		defaultOption: null,
+		defaultPanel: null,
 		objects: {
-			json: {
-				dir: string[]
-			}
-			yml: {
-				dir: string[]
-			}
-		}
-		server: {
-			host: string
-			dir: string
-			port: string | number
-			protocol: string
-			config: string
-		}
-		regex: {
-			packages: Record<string, string>
-		}
+			json: { dir: [] },
+			yml: { dir: [] },
+		},
 	}
 
 	static filename = 'noodl.yml'
 
 	constructor() {
 		merge(this.#state, getCliConfig())
-	}
-
-	get serverUrl() {
-		return (
-			`${this.state.server.protocol}://` +
-			`${this.state.server.host}:${this.state.server.port}`
-		)
 	}
 
 	get state() {

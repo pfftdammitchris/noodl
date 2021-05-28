@@ -4,6 +4,8 @@ import Panel from '../components/Panel'
 import Select, { SelectInputProps } from '../components/Select'
 import useCtx from '../useCtx'
 
+const panels = values(panelMap)
+
 function SelectRoute({ header = 'Select an option' }: { header?: string }) {
 	const { panels, highlight, setPanel } = useCtx()
 
@@ -24,14 +26,16 @@ function SelectRoute({ header = 'Select an option' }: { header?: string }) {
 	)
 
 	return (
-		<Panel header={header}>
+		<Box padding={1} flexDirection="column">
+			<Text color="yellow">{header}</Text>
+			<Newline />
 			<Select
 				items={items}
 				initialIndex={0}
 				onHighlight={(item: any) => highlight(item.value)}
 				onSelect={(item: any) => setPanel(item.value)}
 			/>
-		</Panel>
+		</Box>
 	)
 }
 

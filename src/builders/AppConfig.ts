@@ -1,18 +1,17 @@
 import axios from 'axios'
 import yaml from 'yaml'
 import NOODLObject from '../api/Object'
-import { CliConfigObject, Noodl } from '../types'
+import { App, Noodl } from '../types'
 import { replaceBaseUrlPlaceholder } from '../utils/common'
 
 class AppConfigBuilder
 	extends NOODLObject<Noodl.AppConfig>
-	implements Noodl.AppConfig
-{
+	implements Noodl.AppConfig {
 	#rootConfig = {} as Noodl.RootConfig
 	assetsUrl = ''
 	baseUrl = ''
 	fileSuffix = '.yml'
-	server = {} as CliConfigObject['server']
+	server = {} as App.CliConfigObject['server']
 	languageSuffix = { en: '_en' }
 	preload: string[] = []
 	page: string[] = []

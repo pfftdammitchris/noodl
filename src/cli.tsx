@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-process.stdout.write('\x1Bc')
-import { config } from 'dotenv'
-config()
+import { config as dotenvConfig } from 'dotenv'
+dotenvConfig()
 import React from 'react'
 import meow from 'meow'
 import { render } from 'ink'
-import * as co from './utils/color'
 import App from './App'
 import CliConfig from './builders/CliConfig'
+import * as co from './utils/color'
+import * as com from './utils/common'
+import * as t from './types'
 
 export type Cli = typeof cli
 
@@ -36,6 +37,10 @@ const cli = meow(
 	},
 )
 
+const config = com
+	.loadFileAsDoc(com.getAbsFilePath('config.yml'))
+	.toJSON() as t.App.Config
+
 console.log(co.cyan(`Flags: `), cli.flags)
 console.log(co.cyan(`Input: `), cli.input || [])
 console.log('')
@@ -43,5 +48,5 @@ console.log('')
 const cliConfig = new CliConfig()
 
 const { cleanup, clear, rerender, unmount, waitUntilExit } = render(
-	<App cli={cli} cliConfig={cliConfig} />,
+	<App cli={cli} cliConfig={cliConfig} config={config} />,
 )

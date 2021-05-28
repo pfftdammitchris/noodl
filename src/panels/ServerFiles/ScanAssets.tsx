@@ -1,6 +1,6 @@
+import * as u from '@jsmanifest/utils'
 import React from 'react'
 import yaml from 'yaml'
-import * as u from '@jsmanifest/utils'
 import fs from 'fs-extra'
 import path from 'path'
 import useCtx from '../../useCtx'
@@ -9,15 +9,18 @@ import Utils from '../../api/Utils'
 import useServerFilesCtx from './useServerFilesCtx'
 import { Noodl } from '../../types'
 import * as t from './types'
+import * as co from '../../utils/color'
 import * as com from '../../utils/common'
+import * as c from './constants'
 
 /**
  * This expects the serverDir to have been applyd with files either from a previous script
  * or manually. The aggregator should also have its rootConfig and appConfig loaded
  */
 function ScanAssets() {
+	// @ts-expect-error
+	const { aggregator, settings, setCaption } = useCtx()
 	const { insertMissingFiles, setOn, setStep } = useServerFilesCtx()
-	const { aggregator, log, settings } = useCtx()
 
 	React.useEffect(() => {
 		const rootConfig = aggregator.builder.rootConfig.json as Noodl.RootConfig
@@ -39,7 +42,7 @@ function ScanAssets() {
 							doc: yaml.parseDocument(fs.readFileSync(filepath, 'utf8')),
 						})
 					} else {
-						log(`${u.red(p)} is not found`)
+						setCaption(`${co.red(p)} is not found`)
 					}
 					return acc
 				}, [] as { name: string; doc: yaml.Document | yaml.Document.Parsed }[]),
@@ -66,8 +69,8 @@ function ScanAssets() {
 						console.log(store)
 						store.urls = store.urls.sort()
 
-						const contained = [] as t.GetServerFiles.MetadataObject[]
-						const missing = [] as t.GetServerFiles.MetadataObject[]
+						const contained = [] as t.MetadataObject[]
+						const missing = [] as t.MetadataObject[]
 
 						fs.ensureDirSync(assetsDir)
 
@@ -76,7 +79,7 @@ function ScanAssets() {
 						const groupedMetadataObjects = {
 							...com.createGroupedMetadataObjects(),
 							allUrls: [],
-						} as t.GetServerFiles.GroupedMetadataObjects & { allUrls: string[] }
+						} as any
 
 						const { documents, images, scripts, videos, allUrls } =
 							groupedMetadataObjects
@@ -97,7 +100,7 @@ function ScanAssets() {
 								baseUrl: appConfig.baseUrl,
 								prefix: 'assets',
 								tilde: myBaseUrl,
-							})
+							}) as any
 
 							// Re-assign raw because url was tampered
 							metadata.raw = raw
@@ -119,27 +122,27 @@ function ScanAssets() {
 
 						const configId = aggregator.config
 
-						log('\n')
+						setCaption('\n')
 						//
 						;['images', 'documents', 'scripts', 'videos'].forEach((s) =>
-							log(
+							setCaption(
 								`Found ${u.magenta(
 									groupedMetadataObjects[s].length,
 								)} ${s} in ${u.italic(configId)}`,
 							),
 						)
 
-						log(
-							`\n${u.magenta(store.urls.length)} overall assets in ${u.magenta(
+						setCaption(
+							`\n${u.magenta(store.urls.length)} overall assets in ${co.magenta(
 								configId,
 							)} config`,
 						)
 
 						insertMissingFiles(missing)
-						setStep('downloadAssets')
+						setStep(c.step.DOWNLOAD_ASSETS)
 						setOn({
-							downloadAssets: {
-								end: { setPanel: 'runServer' },
+							[c.step.DOWNLOAD_ASSETS]: {
+								end: { setPanel: 'RUN_SERVER' },
 							},
 						})
 					},

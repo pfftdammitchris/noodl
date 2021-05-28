@@ -4,7 +4,7 @@ import yaml from 'yaml'
 import chunk from 'lodash/chunk'
 import isPlainObject from 'lodash/isPlainObject'
 import { promiseAllSafe, withSuffix } from '../utils/common'
-import { AnyFn, EventId, Noodl } from '../types'
+import { AnyFn, App, Noodl } from '../types'
 import RootConfigBuilder from '../builders/RootConfig'
 import AppConfigBuilder from '../builders/AppConfig'
 import * as c from '../constants'
@@ -26,7 +26,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 	}
 
 	const cbIds = [] as string[]
-	const cbs = {} as Record<EventId, AnyFn[]>
+	const cbs = {} as Record<App.EventId, AnyFn[]>
 
 	const objects = {
 		json: {},
@@ -39,7 +39,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 	const withLocale = withSuffix('_en')
 	const withExt = withSuffix('.yml')
 
-	function _emit(event: EventId, ...args: any[]) {
+	function _emit(event: App.EventId, ...args: any[]) {
 		cbs[event]?.forEach?.((fn) => fn(...args))
 	}
 
@@ -117,7 +117,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 		) => void,
 	): typeof o
 	function _on(
-		event: EventId,
+		event: App.EventId,
 		fn: (
 			opts: {
 				json: Record<string, any> | Record<string, any>[]
@@ -128,7 +128,7 @@ const createAggregator = function (opts?: ConfigOptions) {
 		) => void,
 		id?: string,
 	): typeof o
-	function _on(event: EventId, fn: AnyFn, id?: string) {
+	function _on(event: App.EventId, fn: AnyFn, id?: string) {
 		if (!Array.isArray(cbs[event])) cbs[event] = []
 		if (!cbs[event]?.includes(fn)) {
 			if (id && cbIds.includes(id)) return

@@ -1,5 +1,5 @@
 import React from 'react'
-import * as u from '@jsmanifest/utils'
+import isPlainObject from 'lodash/isPlainObject'
 import merge from 'lodash/merge'
 import fs from 'fs-extra'
 import produce, { Draft } from 'immer'
@@ -22,9 +22,8 @@ function useCliConfig(overrideSettings?: Record<string, any>) {
 		const _settings = { ...initialState }
 		if (hasCliConfig()) {
 			const cfgObject = getCliConfig()
-			if (u.isObj(cfgObject)) {
-				// @ts-expect-error
-				u.entries(cfgObject).forEach(([k, v]) => (_settings[k] = v))
+			if (isPlainObject(cfgObject)) {
+				Object.entries(cfgObject).forEach(([k, v]) => (_settings[k] = v))
 			}
 		}
 		return merge(_settings, overrideSettings)

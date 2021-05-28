@@ -5,88 +5,86 @@ languageSuffix:
   es_ES: _es
   unknown: _en
 fileSuffix: .yml
-startPage: SignIn
+startPage: Home
 preload:
   - BasePage
   - BaseCSS
   - BaseDataModel
-  - BaseMessage
+  - WwwBasePage
 page:
-  - ~/HomePageUrl
-  - Welcome # page1   /
-  - WelcomeLoad # page2  /
-  - SignIn # page3  page45 /
-  - MeetingChat
-  - EditProfile # page4 /
-  - DisplayProfile #page6  /
-  - PubProfile #page6-1  /
-  - ShareProfile #page7   
-  - PersonalDocuments #page8 /
-  - PersonalDocumentsTime
-  - DocumentDetail # page10  
-  - DocumentNotes
-  - MyDocumentDetail # page10  
-  - MyDocumentNotes
-  - FreeTrialPage
-  - FreeTrialPageEnded
-  - FreeTrailMysubscription
-  - Subscriptions
-  - MonthlySubscriptions
-  - MonthlySubscriptSummary
-  - AddDateAndPaymentAmount
-  - SelectPayment
-  - SubAndPaySuccessful
-  #- ConfirmSubscription
-  - ActiveMonthlySubscription
-  - MeetingRoomInvited #page12 /
-  - MeetingRoomCreate # page13 /
-  - MeetingRoomHistory #page14 /
-  - MeetingSummary #page15 /
-  - MeetingSharedDocuments #/
-  - SideMenuBar #page17  /
-  - ContactsList #page18  
-  - UploadContact
-  #- UploadContact2
-  - FavoriteList #page19  /
-  - UploadFavorite
-  #- UploadFavorite2
-  #- UserList
-  - RecentList
-  - UploadRecent
-  #- UploadRecent2
-  - AddContact #page20  /
-  - AddDocuments # /
-  - SharedDocuments
-  #- SharedDocuments2
-  - ContactInformation # page21  /
-  - EditContact
-  - MeetingLobby
-  - UploadDocuments
-  #- UploadDocuments2
-  - UploadSharedDocuments
-  #- UploadSharedDocuments2
-  - MeetingDocumentsNotes #page27 /
-  - MeetingDocumentsShared #page28
-  - InviteContact
-  #- InviteContact2
-  - InviteeInfo01 #page30  /
-  #- InviteeInfo02 #page31 /
-  - InviteSuccess01 # page32 /
-  #- InviteSuccess02  #page33 /
-  - InactiveMySubscription
-  - FAQs #page34 /
-  - ContactSupport #page35 /
-  - AboutAitmed #page36 /
-  - ManageMeeting #page 44 /
-  - SignUp # /
-  - CreateNewAccount # /
-  - VideoChat #/
-  - Logout #/
-  #- EmptyPage #
+  - Home
+  - Business
+  - NursingHome
+  - SurgeryCenter
+  - ContactInformation
+  - CopyOfCloudWaitingRoom1
+  - CopyOfCloudWaitingRoom5
+  - Community
+  - ImgineCenterLab
+  - AboutAitmed
+  - AitmedCommunity
+  - Forpatients
+  - MedicalWebinar
+  - WellnessGroup
+  - YourWellnessStory
+  - Forum
+  - InsuranceCompany
   - PrivacyPolicy
-  - UserAgreement
-  - ServicesAgreement
-  - ScanQRCode #v0.17 page360
-  - AccessToPhotos #v0.17 page370
-  - MyQRCode #v0.17 page380
-  - EditMyDocument #v0.17 page524
+  - TermsOfService
+  - Hospital
+  - Price
+  - Healthall
+  - FAQs
+  - DownloadApp
+  - HaAbdominalPain
+  # HEALTH A-Z link
+  - HaAbdominalPainInChild
+  - HaBloodInTheStool
+  - HaChestPain
+  - HaConstipation
+  - HaConstipationInChild
+  - HaCough
+  - HaCoughInChild
+  - HaDiarrheaInAdult
+  - HaDiarrheaInChild
+  - HaDifficultySwallowing
+  - HaDizziness
+  - HaEaracheInChild
+  - HaEarProblemsInChild
+  - HaEyeDiscomfortAndRedness
+  - HaEyeDiscomfortAndRednessInChild
+  - HaEyeProblems
+  - HaEyeProblemsInChild
+  - HaFeverInChild
+  - HaFootPainOrAnklePain
+  - HaHeadacheInChild
+  - HaHeadaches
+  - HaHeartPalpitions
+  - HaHipPain
+  - HaJointPainOrMusclePainInChild
+  - HaKneePain
+  - HaLegOrFootSwelling
+  - HaLowBackPain
+  - HaMenopause
+  - HaNasalCongestion
+  - HaNasalCongestionC
+  - HaNauseaAndVomting
+  - HaNauseaAndVomtingInChild
+  - HaNeckPain
+  - HaNumbnessOrTinglingInHands
+  - HaPelvicPainFemale
+  - HaPelvicPainMale
+  - HaShortnessOfBreath
+  - HaShoulderPain
+  - HaSkinRashesInChild
+  - HaSoreThroat
+  - HaSoreThroatInChild
+  - HaUrinaryProblems
+  - HaWheezing
+  - HaWheezingInChild
+  - Covid19Data
+  - CloudWaitingRoom
+  - CustomizedWebPage
+  - Documentation
+  - SelfScheduling
+  - WwwBasePage

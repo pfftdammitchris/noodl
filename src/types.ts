@@ -1,3 +1,4 @@
+import { LiteralUnion } from 'type-fest'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import { Draft } from 'immer'
 import { Cli } from './cli'
@@ -5,24 +6,30 @@ import { initialState as initialAppState } from './App'
 import { AppPanel } from './App'
 import createAggregator from './api/createAggregator'
 import CliConfig from './builders/CLIConfig'
-import * as c from './constants'
 
 export namespace App {
+	export interface Config {
+		paths?: {
+			json: string
+			yml: string
+		}
+		panels: { component: string; label: string; value: string }[]
+	}
 	export interface Context extends State {
 		aggregator: ReturnType<typeof createAggregator>
+		config: Config
 		cli: Cli
 		cliConfig: CliConfig
 		exit: (error?: Error | undefined) => void
-		highlight(id: string): void
-		log(caption: string): void
-		logError(caption: string | Error): void
+		highlight(panelKey: App.PanelKey | ''): void
+		log(text: string): void
+		logError(text: string | Error): void
 		toggleSpinner(type?: false | string): void
 		set(fn: (draft: Draft<App.State>) => void): void
-		setPanel(id: string, params?: Record<string, any>): void
-		update<Key extends string>(id: Key, panel: Partial<PanelObject<Key>>): void
+		setPanel(panelKey: App.PanelKey | '', props?: Record<string, any>): void
 	}
 
-	export type PanelKey = keyof typeof AppPanel
+	export type PanelKey = LiteralUnion<keyof typeof AppPanel, string>
 
 	export type State = typeof initialAppState
 }
@@ -36,40 +43,16 @@ export interface PanelObject<Key extends string = string> {
 	[key: string]: any
 }
 
-export interface CliConfigObject {
-	defaultOption: App.PanelKey | null
-	defaultPanel: App.PanelKey | null
-	server: {
-		config?: string
-		dir: string
-		host: string
-		port: number
-		protocol: string
-	}
-	objects: {
-		json: {
-			dir: string[]
-		}
-		yml: {
-			dir: string[]
-		}
-	}
-	scripts?: {
-		aggregator?: {
-			dataFiles?: string
-			outFile?: string
-			use?: string[]
-		}
-	}
-}
-
-export type EventId = typeof c.aggregator.event[keyof typeof c.aggregator.event]
-
 /* -------------------------------------------------------
 	---- CONSTANTS
 -------------------------------------------------------- */
 
-export type MetadataGroup = 'documents' | 'images' | 'scripts' | 'videos'
+export type MetadataGroup =
+	| 'documents'
+	| 'images'
+	| 'page'
+	| 'scripts'
+	| 'videos'
 
 /* -------------------------------------------------------
 	---- OTHER
@@ -155,10 +138,6 @@ export namespace Noodl {
 		a: AnyFn
 		b: AnyFn
 	}
-}
-
-export interface IdentifyFn<N = any> {
-	(node: N): boolean
 }
 
 export type YAMLNode =
