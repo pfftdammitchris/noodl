@@ -1,6 +1,7 @@
 import flowRight from 'lodash/flowRight'
 import { Node, isNode, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
-import { IdentifyFn } from '../types'
+
+type IdentifyFn<F> = (fn: F) => F
 
 export function composeScalarFns<RT = any>(...fns: ((n: Scalar<any>) => RT)[]) {
 	return onScalar(flowRight(...fns))
@@ -64,24 +65,24 @@ export function isScalar(v: unknown): v is Scalar<any> {
 
 export function onYAMLMap(fn: IdentifyFn<YAMLMap<any, any>>) {
 	return function (v: unknown): v is YAMLMap<any, any> {
-		return isYAMLMap(v) && fn(v)
+		return isYAMLMap(v) && (fn(v) as any)
 	}
 }
 
 export function onYAMLSeq(fn: IdentifyFn<YAMLSeq<any>>) {
 	return function (v: unknown): v is YAMLSeq<any> {
-		return isYAMLSeq(v) && fn(v)
+		return isYAMLSeq(v) && (fn(v) as any)
 	}
 }
 
 export function onPair(fn: IdentifyFn<Pair<any, any>>) {
 	return function (v: unknown): v is Pair<any, any> {
-		return isPair(v) && fn(v)
+		return isPair(v) && (fn(v) as any)
 	}
 }
 
 export function onScalar(fn: IdentifyFn<Scalar<any>>) {
 	return function (v: unknown): v is Scalar<any> {
-		return isScalar(v) && fn(v)
+		return isScalar(v) && (fn(v) as any)
 	}
 }

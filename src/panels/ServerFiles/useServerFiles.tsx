@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import { YAMLMap, YAMLSeq } from 'yaml'
 import fs from 'fs-extra'

@@ -230,6 +230,11 @@ export interface ScrollViewComponentObject extends ComponentObject {
 	[key: string]: any
 }
 
+export interface CanvasComponentObject extends ComponentObject {
+	type: 'canvas'
+	[key: string]: any
+}
+
 export interface TextFieldComponentObject
 	extends ComponentObject,
 		Pick<
