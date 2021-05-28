@@ -1,18 +1,22 @@
 defaultOption: null
 defaultPanel: RETRIEVE_OBJECTS
 panels:
-  getApp:
-    component: GetApp
-    label: Scaffold an entire directory structure using the current config
-  retrieveObjects:
-    component: RetrieveObjects
-    label: Retrieve objects from noodl files
-  runServer:
-    component: RunServer
-    label: Run server
-  select:
-    component: SelectRoute
-    label: Select a panel
+  generate:
+    getApp:
+      component: GetApp
+      label: Scaffold an entire directory structure using the current config
+  retrieve:
+    retrieveObjects:
+      component: RetrieveObjects
+      label: Retrieve objects from noodl files
+  server:
+    runServer:
+      component: RunServer
+      label: Run server
+  default:
+    select:
+      component: SelectRoute
+      label: Select a panel
 objects:
   json:
     dir:

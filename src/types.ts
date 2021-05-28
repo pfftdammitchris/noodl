@@ -1,8 +1,9 @@
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import { Draft } from 'immer'
-import createAggregator from './api/createAggregator'
 import { Cli } from './cli'
 import { initialState as initialAppState } from './App'
+import { AppPanel } from './App'
+import createAggregator from './api/createAggregator'
 import CliConfig from './builders/CLIConfig'
 import * as c from './constants'
 
@@ -17,17 +18,16 @@ export namespace App {
 		logError(caption: string | Error): void
 		toggleSpinner(type?: false | string): void
 		set(fn: (draft: Draft<App.State>) => void): void
-		setPanel(id: string): void
-		updatePanel<Key extends string>(
-			id: Key,
-			panel: Partial<PanelObject<Key>>,
-		): void
+		setPanel(id: string, params?: Record<string, any>): void
+		update<Key extends string>(id: Key, panel: Partial<PanelObject<Key>>): void
 	}
 
-	export type PanelKey = keyof State['panels']
+	export type PanelKey = keyof typeof AppPanel
 
 	export type State = typeof initialAppState
 }
+
+export type PanelType = 'main' | 'generate' | 'retrieve' | 'server'
 
 export interface PanelObject<Key extends string = string> {
 	key?: Key

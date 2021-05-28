@@ -26,6 +26,7 @@ const cli = meow(
 		flags: {
 			config: { type: 'string', alias: 'c' },
 			fetch: { type: 'boolean', alias: 'f' },
+			generate: { type: 'string', alias: 'g' },
 			panel: { type: 'string', alias: 'p' },
 			retrieve: { type: 'string', alias: 'r', isMultiple: true },
 			server: { type: 'boolean' },

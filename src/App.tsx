@@ -1,4 +1,6 @@
 import * as u from '@jsmanifest/utils'
+import pick from 'lodash/pick'
+import { LiteralUnion } from 'type-fest'
 import invariant from 'invariant'
 import React from 'react'
 import produce, { Draft } from 'immer'
@@ -11,16 +13,27 @@ import CliConfig from './builders/CliConfig'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
 import GetApp from './panels/GetApp'
+import RetrieveObjects from './panels/RetrieveObjects'
+import RunServer from './panels/RunServer'
+import SelectRoute from './panels/SelectRoute'
+import * as co from './utils/color'
 import * as c from './constants'
 import * as t from './types'
+
+export const AppPanel = {
+	getApp: GetApp,
+	retrieveObjects: RetrieveObjects,
+	runServer: RunServer,
+	[c.DEFAULT_PANEL]: SelectRoute,
+} as const
 
 const aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
 export const initialState = {
 	caption: [] as string[],
-	activePanel: '',
+	activePanel: '' as LiteralUnion<keyof typeof AppPanel | '', string>,
 	highlightedPanel: '',
-	panels: {} as CliConfig['state']['panels'],
+	panels: {} as Record<t.App.PanelKey, t.PanelObject>,
 	queue: [] as string[],
 	spinner: false as false | string,
 }
@@ -33,7 +46,7 @@ function Application({
 	cliConfig: CliConfig
 }) {
 	const [mounted, setMounted] = React.useState(false)
-	const [state, _setState] = React.useState(() => {
+	const [state, _setState] = React.useState<t.App.State>(() => {
 		return {
 			...initialState,
 			panels: u.reduce(
@@ -87,7 +100,7 @@ function Application({
 			console.log('')
 			set((d) => void (d.activePanel = id))
 		},
-		updatePanel: (id, p) => set((d) => void u.assign(d.panels[id], p)),
+		update: (id, p) => set((d) => void u.assign(d.panels[id], p)),
 	}
 
 	React.useEffect(() => {
@@ -95,31 +108,70 @@ function Application({
 	}, [])
 
 	React.useEffect(() => {
-		console.log(`Initial state`, state)
 		if (u.keys(cli.flags).length) {
-			if (cli.flags.script) {
-				if (cli.flags.script in state.panels) {
-					ctx.setPanel(cli.flags.script)
+			const handleGenerate = ({
+				value,
+			}: {
+				value: t.App.Panel.Generate.Key
+			}) => {
+				if (AppPanel[value]) {
+					ctx.setPanel(value)
 				} else {
-					ctx.log(`The script "${cli.flags.script}" does not exist`)
+					u.log(
+						co.red(
+							`Invalid generate operation: "${co.white(value)}"\nSupported ` +
+								`options are: ${co.yellow(u.keys(AppPanel).join(', '))}\n`,
+						),
+					)
+					exit()
+				}
+			}
+
+			const handleScript = (script: string) => {
+				if (script in state.panels) {
+					ctx.setPanel(script)
+				} else {
+					ctx.log(`The script "${script}" does not exist`)
 					ctx.setPanel(c.DEFAULT_PANEL)
 				}
-			} else if (cli.flags.retrieve?.length) {
+			}
+
+			const handleRetrieve = () => {
 				invariant(
 					['json', 'yml'].some((ext) => cli.flags.retrieve?.includes(ext)),
 					`Invalid value for "${u.magenta(`retrieve`)}" ` +
 						`Valid options are: ${u.magenta('json')}, ${u.magenta('yml')}`,
 				)
 				set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
-			} else if (cli.flags.server) {
+			}
+
+			const handleServer = () => {
 				if (cli.flags.fetch) {
 					set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
 				} else {
 					set((d) => void (d.activePanel = c.panel.RUN_SERVER.key))
 				}
 			}
+
+			cli.flags.generate
+				? handleGenerate({
+						value: cli.flags.generate as t.App.PanelKey,
+				  })
+				: cli.flags.script
+				? handleScript(cli.flags.script)
+				: cli.flags.retrieve
+				? handleRetrieve()
+				: cli.flags.server
+				? handleServer()
+				: undefined
+		} else {
+			ctx.setPanel(c.DEFAULT_PANEL)
 		}
 	}, [cli.flags])
+
+	const Panel = AppPanel[state.activePanel]
+
+	if (!Panel) return null
 
 	return (
 		<Provider value={ctx}>
@@ -129,13 +181,10 @@ function Application({
 				</HighlightedText>
 			) : null}
 			{mounted ? (
-				state.activePanel === 'getApp' ? (
-					<GetApp />
-				) : null // state.activePanel === c.panel.FETCH_OBJECTS.key ? (
-			) : // 	<RetrieveObjects
-			// 		onEnd={() => {
+				<Panel /> // 	<RetrieveObjects
+			) : // 		onEnd={() => {
 			// 			if (state.panel.runServer || cli.flags.server) {
-			// 				ctx.updatePanel(c.panel.RUN_SERVER.key, {
+			// 				ctx.update(c.panel.RUN_SERVER.key, {
 			// 					idle: true,
 			// 					mounted: false,
 			// 				})
