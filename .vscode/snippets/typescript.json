@@ -19,28 +19,5 @@
 	"prettyDOM() log": {
 		"prefix": "pdom",
 		"body": "console.info(prettyDOM())"
-	},
-	"new component": {
-		"prefix": "component",
-		"body": [
-			"import React from 'react'",
-			"import * as u from '@jsmanifest/utils'",
-			"import { Box, Newline, Text } from 'ink'",
-			"import Panel from './Panel'",
-			"",
-			"export interface $1Props {",
-			"  $3",
-			"}",
-			"",
-			"function $1(props: $1Props) {",
-			"  return (",
-			"    <Panel header=\"\">",
-			"      ",
-			"    </Panel>",
-			"  )",
-			"}",
-			"",
-			"export default $1"
-		]
 	}
 }

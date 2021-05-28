@@ -1,5 +1,4 @@
 import React from 'react'
-import * as u from '@jsmanifest/utils'
 import { Box } from 'ink'
 import produce, { Draft } from 'immer'
 import path from 'path'
@@ -53,7 +52,7 @@ const initialState: State = {
 	status: 'idle',
 	step: {
 		current: 'set-ext',
-		items: u.values(stepId),
+		items: Object.values(stepId),
 	},
 }
 
@@ -67,11 +66,12 @@ function RetrieveObjectsPanel({
 	onError?(err: Error): void
 }) {
 	const [configInput, setConfigInput] = React.useState('')
-	const { aggregator, cli, settings, log, logError } = useCtx()
+	const { aggregator, cli, cliArgs, settings, setCaption, setErrorCaption } =
+		useCtx()
 	const [state, setState] = React.useState(() => ({
 		...initialState,
 		ext: cli.flags.retrieve || ('' as any),
-		config: cli.flags.config || cli.flags.config || '',
+		config: cli.flags.config || cliArgs.config || '',
 	}))
 
 	const _setState = React.useCallback((fn: (draft: Draft<State>) => void) => {
@@ -84,9 +84,8 @@ function RetrieveObjectsPanel({
 	] as const
 
 	React.useEffect(() => {
-		const config = cli.flags.config || cli.flags.config || state.config
-		// TODO - Added "ext" flag
-		const ext = cli.flags.retrieve || cli.flags.ext || state.ext
+		const config = cli.flags.config || cliArgs.config || state.config
+		const ext = cli.flags.retrieve || cliArgs.ext || state.ext
 
 		if (config && ext) {
 			async function onObject(
@@ -106,20 +105,22 @@ function RetrieveObjectsPanel({
 
 							if (!fs.existsSync(dir)) {
 								await fs.mkdirp(dir)
-								log(`Created folder ${magenta(dir)}`)
+								setCaption(`Created folder ${magenta(dir)}`)
 							}
 
 							saveFn(filepath)(ext === 'json' ? json : yml)
-							log(`Saved ${yellow(`${name}.${ext}`)} to ${magenta(dir)}`)
+							setCaption(`Saved ${yellow(`${name}.${ext}`)} to ${magenta(dir)}`)
 						}
 					} catch (error) {
-						log(`[${chalk.red(`${name} - [${error.name}]`)}]: ${error.message}`)
+						setCaption(
+							`[${chalk.red(`${name} - [${error.name}]`)}]: ${error.message}`,
+						)
 					}
 					savedPageCount++
 				}
 			}
 
-			log(`\nConfig set to ${chalk.magentaBright(state.config)}\n`)
+			setCaption(`\nConfig set to ${chalk.magentaBright(state.config)}\n`)
 
 			let savedPageCount = 0
 
@@ -139,10 +140,10 @@ function RetrieveObjectsPanel({
 					loadPages: { includePreloadPages: true },
 				})
 				.then(() => {
-					log(`\nSaved ${chalk.yellow(String(savedPageCount))} objects`)
+					setCaption(`\nSaved ${chalk.yellow(String(savedPageCount))} objects`)
 				})
 				.catch((err) => {
-					logError(err)
+					setErrorCaption(err)
 					onError?.(err)
 				})
 				.finally(() => {
@@ -154,7 +155,7 @@ function RetrieveObjectsPanel({
 
 	return (
 		<Box padding={1} flexDirection="column">
-			{!(cli.flags.config || cli.flags.server ? true : false) && (
+			{!(cli.flags.config || cliArgs.runServer ? true : false) && (
 				<HighlightedText>
 					{!state.ext
 						? 'Choose file extension(s)'
@@ -164,7 +165,7 @@ function RetrieveObjectsPanel({
 				</HighlightedText>
 			)}
 			<Box paddingTop={1} flexDirection="column">
-				{!cli.flags.config && !cli.flags.server && (
+				{!cli.flags.config && !cliArgs.runServer && (
 					<>
 						{!state.ext ? (
 							<Select
@@ -195,5 +196,7 @@ function RetrieveObjectsPanel({
 		</Box>
 	)
 }
+
+RetrieveObjectsPanel.id = c.panel.RETRIEVE_OBJECTS
 
 export default RetrieveObjectsPanel

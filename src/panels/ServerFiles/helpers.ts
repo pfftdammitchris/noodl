@@ -1,9 +1,9 @@
 import * as T from './types'
 import * as u from '../../utils/common'
 
-export function createInitialGroupedFiles(): T.GetServerFiles.GroupedFiles {
+export function createInitialGroupedFiles(): T.ServerFilesGroupedFiles {
 	return Object.keys(u.createGroupedMetadataObjects()).reduce(
 		(acc, group) => Object.assign(acc, { [group]: {} }),
-		{} as T.GetServerFiles.GroupedFiles,
+		{} as T.ServerFilesGroupedFiles,
 	)
 }

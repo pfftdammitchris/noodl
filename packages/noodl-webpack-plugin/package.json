@@ -1,6 +1,6 @@
 {
 	"name": "noodl-webpack-plugin",
-	"version": "0.0.10",
+	"version": "0.0.9",
 	"description": "NOODL webpack plugin to provide live reload functionality when making changes",
 	"main": "dist/noodl-webpack-plugin.js",
 	"module": "dist/noodl-webpack-plugin.js",
@@ -9,7 +9,7 @@
 		"presample": "rm -rf build",
 		"sample": "npx webpack serve -c webpack.config.js --port 3000 --mode=development",
 		"prebuild": "rm -rf dist",
-		"build": "esbuild src/noodl-webpack-plugin.ts --bundle --outdir=dist --target=node10.4 --platform=node --format=cjs",
+		"build": "esbeuild src/noodl-webpack-plugin.ts --bundle --outdir=dist --target=node10.4 --platform=node --format=cjs",
 		"start": "tsc --watch",
 		"server": "node server.js",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src 'src/**/*.test.ts'"

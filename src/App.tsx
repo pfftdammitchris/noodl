@@ -1,130 +1,133 @@
 import * as u from '@jsmanifest/utils'
 import invariant from 'invariant'
 import React from 'react'
-import produce, { Draft } from 'immer'
+import produce from 'immer'
 import { Spacer, Static, Text } from 'ink'
 import { Provider } from './useCtx'
 import createAggregator from './api/createAggregator'
 import HighlightedText from './components/HighlightedText'
-import GetServerFiles from './panels/GetServerFiles'
 import SelectRoute from './panels/SelectRoute'
+import ServerFiles from './panels/ServerFiles'
 import Spinner from './components/Spinner'
-import RetrieveObjects from './panels/RetrieveObjects'
-// import RetrieveKeywords from './panels/RetrieveKeywords'
+import RetrieveObjects, { Ext } from './panels/RetrieveObjects'
+import RetrieveKeywords from './panels/RetrieveKeywords'
 import RunServer from './panels/RunServer'
 import useSettings from './hooks/useCliConfig'
-import { findByRegexMap, getCliConfig } from './utils/common'
+import { magenta } from './utils/common'
 import * as c from './constants'
-import * as t from './types'
+import * as T from './types'
 
-const aggregator: ReturnType<typeof createAggregator> = createAggregator()
-const injectKeysToIdsAndValues = <
-	V extends Record<string, Partial<t.PanelObject>>,
->(
-	obj: V,
-) =>
-	u.reduce(
-		u.entries(obj),
-		(acc, [key, panel]) =>
-			u.assign(acc, { [key]: { ...panel, id: key, value: key } }),
-		{} as Record<keyof V, t.PanelObject>,
-	)
+let aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
-export const initialState = {
-	caption: [] as string[],
-	activePanel: '',
-	highlightedPanel: '',
-	panel: injectKeysToIdsAndValues({
-		[c.app.panel.FETCH_OBJECTS]: {
-			label: 'Retrieve NOODL objects',
-		},
-		[c.app.panel.FETCH_SERVER_FILES]: {
-			label: 'Retrieve all files involved in the config',
-		},
-		[c.app.panel.RUN_SERVER]: {
-			label: 'Run the server',
-		},
-		[c.app.panel.NOODL_WEBPACK_PLUGIN]: {
-			label: 'Start the noodl webpack plugin',
-		},
-	}),
-	queue: [] as string[],
-	spinner: false as false | string,
+const initialState: T.App.State = {
+	caption: [],
+	panel: {
+		highlightedId: '',
+		value: '',
+		mounted: false,
+		idle: false,
+	},
+	spinner: false,
 }
 
-function Application({ cli }: { cli: t.App.Context['cli'] }) {
-	const [mounted, setMounted] = React.useState(false)
-	const [state, _setState] = React.useState(initialState)
-	const settings = useSettings({ server: { config: cli.flags.config } })
+function reducer(state: T.App.State = initialState, action: T.App.Action) {
+	return produce(state, (draft) => {
+		switch (action.type) {
+			case c.UPDATE_PANEL:
+				return void u.assign(draft.panel, action.panel)
+			case c.app.action.HIGHLIGHT_PANEL:
+				return void (draft.panel.highlightedId = action.panelId)
+			case c.app.action.SET_CAPTION:
+				return void draft.caption.push(action.caption)
+			case c.app.action.SET_SPINNER:
+				return void (draft.spinner = action.spinner)
+		}
+	})
+}
 
-	const setState = React.useCallback(
-		(fn: (draft: Draft<t.App.State>) => void) => void _setState(produce(fn)),
-		[],
-	)
+function Application({
+	cli,
+	config,
+	defaultPanel,
+	ext = 'yml',
+	runServer,
+}: {
+	cli: T.App.Context['cli']
+	config?: string
+	ext?: Ext
+	defaultPanel?: T.App.PanelId
+	runServer?: boolean
+}) {
+	const [state, dispatch] = React.useReducer(reducer, initialState)
+	const settings = useSettings({ server: { config: cli.flags.config } })
 
 	const ctx = {
 		...state,
 		aggregator,
 		cli,
+		cliArgs: { config, defaultPanel, ext, runServer },
 		settings,
-		highlight: (id) => setState((d) => void (d.highlightedPanel = id)),
-		log: (caption) => setState((d) => void d.caption.push(caption)),
-		logError: (err) =>
-			setState(
-				(d) =>
-					void d.caption.push(
-						err instanceof Error
-							? `[${u.red(err.name)}]: ${u.yellow(err.message)}`
-							: err,
-					),
-			),
-		toggleSpinner: (type) =>
-			setState(
-				// prettier-ignore
-				(d) => void (d.spinner = u.isUnd(type) ? 'point' : type === false ? false : type),
-			),
-		setPanel: (id: t.App.PanelId) => setState((d) => void (d.activePanel = id)),
-		updatePanel: (id, p) => setState((d) => void u.assign(d.panel[id], p)),
-	} as t.App.Context
+		highlightPanel: (panelId: T.App.PanelId) => {
+			dispatch({ type: c.app.action.HIGHLIGHT_PANEL, panelId })
+		},
+		setCaption: (caption: Parameters<T.App.Context['setCaption']>[0]) => {
+			dispatch({ type: c.app.action.SET_CAPTION, caption })
+		},
+		setErrorCaption: (err: Parameters<T.App.Context['setErrorCaption']>[0]) => {
+			dispatch({
+				type: c.app.action.SET_CAPTION,
+				caption:
+					err instanceof Error
+						? `[${u.red(err.name)}]: ${u.yellow(err.message)}`
+						: err,
+			})
+		},
+		toggleSpinner: (type?: Parameters<T.App.Context['toggleSpinner']>[0]) => {
+			dispatch({
+				type: c.app.action.SET_SPINNER,
+				spinner: type === undefined ? 'point' : type === false ? false : type,
+			})
+		},
+		updatePanel: (panel: Partial<T.App.State['panel']>) => {
+			dispatch({ type: c.UPDATE_PANEL, panel })
+		},
+	} as T.App.Context
 
 	React.useEffect(() => {
 		if (u.keys(cli.flags).length) {
-			const configObject = getCliConfig()
-			if (cli.flags.retrieve?.length) {
+			const isRetrieving = !!cli.flags.retrieve?.length
+			const isStartingServer = !!cli.flags.server
+
+			if (isRetrieving) {
 				invariant(
 					['json', 'yml'].some((ext) => cli.flags.retrieve?.includes(ext)),
-					`Invalid value for "${u.magenta(`retrieve`)}" ` +
-						`Valid options are: ${u.magenta('json')}, ${u.magenta('yml')}`,
+					`Invalid value for "${magenta(
+						`retrieve`,
+					)}". Valid options are: ${magenta('json')}, ${magenta('yml')}`,
 				)
-				setState((d) => void (d.activePanel = c.app.panel.FETCH_SERVER_FILES))
-			} else if (cli.flags.server) {
-				if (cli.flags.fetch) {
-					setState((d) => void (d.activePanel = c.app.panel.FETCH_SERVER_FILES))
-				} else {
-					setState((d) => void (d.activePanel = c.app.panel.RUN_SERVER))
-				}
-			} else if (cli.flags.start) {
-				const startScript = cli.flags.start
-				if (['np', 'wplugin', 'webpack-plugin', 'wp'].includes(startScript)) {
-					ctx.setPanel(c.app.panel.NOODL_WEBPACK_PLUGIN)
-				}
+				ctx.updatePanel({
+					value: c.panel.RETRIEVE_OBJECTS.value,
+					server: isStartingServer,
+				})
+			} else if (isStartingServer) {
+				ctx.updatePanel({ value: c.panel.SERVER_FILES.value })
 			}
 		} else {
-			if (cli.flags.config || cli.flags.panel) {
+			if (config || defaultPanel) {
 				ctx.settings.set((draft) => {
-					cli.flags.config && (draft.server.config = cli.flags.config)
-					// cli.flags.panel && (draft.defaultPanel = cli.flags.panel)
+					config && (draft.server.config = config)
+					defaultPanel && (draft.defaultPanel = defaultPanel)
 				})
-				if (cli.flags.server) {
-					if (!cli.flags.panel) {
-						// ctx.updatePanel({ value: c.panel.RETRIEVE_OBJECTS.value })
+				if (runServer) {
+					if (!defaultPanel) {
+						ctx.updatePanel({ value: c.panel.RETRIEVE_OBJECTS.value })
 					} else {
-						// ctx.updatePanel({ value: cli.flags.panel })
+						ctx.updatePanel({ value: defaultPanel })
 					}
 				}
 			}
 		}
-	}, [cli.flags])
+	}, [config, defaultPanel])
 
 	return (
 		<Provider value={ctx}>
@@ -133,31 +136,27 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 					<Spinner type={ctx.spinner} />
 				</HighlightedText>
 			) : null}
-			{mounted ? (
-				state.activePanel === c.app.panel.FETCH_OBJECTS ? (
-					<RetrieveObjects
-						onEnd={() => {
-							if (state.panel.runServer || cli.flags.server) {
-								ctx.updatePanel(c.app.panel.RUN_SERVER, {
-									idle: true,
-									mounted: false,
-								})
-							}
-						}}
-					/>
-				) : state.activePanel === c.app.panel.FETCH_SERVER_FILES ? (
-					<GetServerFiles
-						onDownloadedAssets={() =>
-							cli.flags.server &&
-							setState((d) => void (d.activePanel = c.app.panel.RUN_SERVER))
+			{state.panel.value === c.panel.RETRIEVE_OBJECTS.value ? (
+				<RetrieveObjects
+					onEnd={() => {
+						if (state.panel.server || runServer) {
+							ctx.updatePanel({
+								idle: true,
+								mounted: false,
+								value: c.panel.RUN_SERVER.value,
+							})
 						}
-					/>
-				) : state.activePanel === c.app.panel.RUN_SERVER ? (
-					<RunServer />
-				) : (
-					<SelectRoute />
-				)
-			) : null}
+					}}
+				/>
+			) : state.panel.value === c.panel.RETRIEVE_KEYWORDS.value ? (
+				<RetrieveKeywords />
+			) : state.panel.value === c.panel.SERVER_FILES.value ? (
+				<ServerFiles />
+			) : state.panel.value === c.panel.RUN_SERVER.value ? (
+				<RunServer />
+			) : (
+				<SelectRoute />
+			)}
 			<Static items={ctx.caption as string[]}>
 				{(caption, index) => <Text key={index}>{caption}</Text>}
 			</Static>

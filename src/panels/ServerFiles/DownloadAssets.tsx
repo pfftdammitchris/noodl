@@ -1,29 +1,25 @@
-import * as u from '@jsmanifest/utils'
 import React from 'react'
 import produce from 'immer'
 import download from 'download'
 import useCtx from '../../useCtx'
 import useServerFilesCtx from './useServerFilesCtx'
-import * as com from '../../utils/common'
+import { panel as panelId } from '../../constants'
+import * as u from '../../utils/common'
 import * as c from './constants'
-import * as t from './types'
-
-export interface DownloadAssetsProps {
-	onEnd?(): void
-}
+import * as T from './types'
 
 export type Action =
 	| {
 			type: typeof c.action.DOWNLOAD
-			file: t.GetServerFiles.File | t.GetServerFiles.File[]
+			file: T.ServerFilesFile | T.ServerFilesFile[]
 	  }
 	| { type: typeof c.action.DOWNLOADED; link: string }
 	| { type: typeof c.action.DOWNLOAD_FAILED; link: string; error: Error }
 
 export interface State {
-	downloading: { [link: string]: t.GetServerFiles.File }
-	downloaded: { [link: string]: t.GetServerFiles.File }
-	failed: { [link: string]: t.GetServerFiles.File }
+	downloading: { [link: string]: T.ServerFilesFile }
+	downloaded: { [link: string]: T.ServerFilesFile }
+	failed: { [link: string]: T.ServerFilesFile }
 }
 
 const initialState: State = {
@@ -54,41 +50,38 @@ function reducer(state: State = initialState, action: Action) {
 	})
 }
 
-function DownloadAssets(props: DownloadAssetsProps) {
+function DownloadAssets() {
 	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const { log, settings, spinner, toggleSpinner } = useCtx()
-	const { filesMissing } = useServerFilesCtx()
+	const { panel, settings, setCaption, spinner, toggleSpinner, updatePanel } =
+		useCtx()
+	const { files, on } = useServerFilesCtx()
 
 	React.useEffect(() => {
 		const isNew = (link: string) =>
 			!state.downloading[link] && !state.downloaded[link] && !state.failed[link]
 
-		for (const metadataObjs of u.values(filesMissing)) {
-			for (const file of u.values(metadataObjs)) {
+		for (const metadataObjs of Object.values(files.missing)) {
+			for (const file of Object.values(metadataObjs)) {
 				file?.link &&
 					isNew(file.link) &&
 					dispatch({ type: c.action.DOWNLOAD, file })
 			}
 		}
-	}, [filesMissing])
+	}, [files.missing])
 
 	React.useEffect(() => {
-		const pendingLinks = u.keys(state.downloading)
+		const pendingLinks = Object.keys(state.downloading)
 
-		async function downloadAsset(file: t.GetServerFiles.File) {
-			log(
-				`[${u.magenta(file.group)}] Downloading ${u.white(
-					file.link as string,
-				)}`,
-			)
+		async function downloadAsset(file: T.ServerFilesFile) {
+			setCaption(`[${u.magenta(file.group)}] Downloading ${u.white(file.link)}`)
 			if (file?.link) {
 				try {
 					await download(
 						file.link,
-						com.getFilePath(settings.server.dir, 'assets'),
+						u.getFilePath(settings.server.dir, 'assets'),
 					)
 				} catch (error) {
-					log(`[${u.red(file.filename)}]: ${u.yellow(error.message)}`)
+					setCaption(`[${u.red(file.filename)}]: ${u.yellow(error.message)}`)
 				}
 			}
 		}
@@ -101,7 +94,13 @@ function DownloadAssets(props: DownloadAssetsProps) {
 				return acc
 			}, [] as ReturnType<typeof downloadAsset>[]),
 		).finally(() => {
-			props?.onEnd?.()
+			if (
+				on[c.step.DOWNLOAD_ASSETS]?.end?.setPanel ===
+					panelId.RUN_SERVER.value &&
+				panel.value !== panelId.RUN_SERVER.value
+			) {
+				updatePanel({ value: panelId.RUN_SERVER.value })
+			}
 		})
 	}, [state.downloading])
 

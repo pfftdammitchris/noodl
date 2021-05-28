@@ -1,4 +1,4 @@
-defaultOption: null
+defaultOption: SERVER_FILES
 defaultPanel: RETRIEVE_OBJECTS
 objects:
   json:
@@ -10,9 +10,9 @@ objects:
 server:
   host: 127.0.0.1
   dir: server
-  port: 3001
+  port: 3000
   protocol: http
-  config: meet4d
+  config: meet3
 scripts:
   aggregator:
     dataFiles: server
@@ -21,10 +21,3 @@ scripts:
       - actionTypes
       - references
       - urls
-regex:
-  packages:
-    (nui|noodl-ui): noodl-ui
-    (ndom|noodl-ui-dom): noodl-ui-dom
-    (nutil|noodl-utils): noodl-utils
-    (nuitu|ntu|nuitest|noodl-ui-test-utils): noodl-ui-test-utils
-    (nwp|nwplugin|wplugin|webpack-plugin|webpack-plugin|noodl-webpack-plugin): noodl-webpack-plugin
