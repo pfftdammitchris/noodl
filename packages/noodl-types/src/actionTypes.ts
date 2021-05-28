@@ -29,6 +29,7 @@ export type AnyActionObject =
 	| PopupDismissActionObject
 	| RefreshActionObject
 	| SaveActionObject
+	| SaveSignatureActionObject
 	| UpdateActionObject
 
 export interface ActionObject<T extends string = string> {
@@ -110,6 +111,13 @@ export interface SaveActionObject
 	extends ActionObject,
 		Pick<UncommonActionObjectProps, 'object'> {
 	actionType: 'saveObject'
+	[key: string]: any
+}
+
+export interface SaveSignatureActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'dataObject' | 'dataKey'> {
+	actionType: 'saveSignature'
 	[key: string]: any
 }
 
