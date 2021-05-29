@@ -50,6 +50,9 @@ export const Identify = (function () {
 			saveObject(v: unknown): v is T.SaveActionObject {
 				return u.isObj(v) && v.actionType === 'saveObject'
 			},
+			saveSignature(v: unknown): v is T.SaveSignatureActionObject {
+				return u.isObj(v) && v.actionType === 'saveSignature'
+			},
 			updateObject(v: unknown): v is T.UpdateActionObject {
 				return u.isObj(v) && v.actionType === 'updateObject'
 			},
@@ -77,6 +80,9 @@ export const Identify = (function () {
 		component: {
 			button(value: unknown): value is T.ButtonComponentObject {
 				return u.isObj(value) && value.type === 'button'
+			},
+			canvas(value: unknown): value is T.CanvasComponentObject {
+				return u.isObj(value) && value.type === 'canvas'
 			},
 			divider(value: unknown): value is T.DividerComponentObject {
 				return u.isObj(value) && value.type === 'divider'

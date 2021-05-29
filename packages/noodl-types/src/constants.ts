@@ -10,6 +10,7 @@ export const action = {
 	REFRESH: 'refresh',
 	REGISTER: 'register',
 	SAVEOBJECT: 'saveObject',
+	SAVESIGNATURE: 'saveSignature',
 	UPDATEOBJECT: 'updateObject',
 } as const
 
@@ -17,6 +18,7 @@ export const actionTypes = Object.values(action)
 
 export const component = {
 	BUTTON: 'button',
+	CANVAS: 'canvas',
 	CHART: 'chart',
 	CHATLIST: 'chatList',
 	ECOSDOC: 'ecosDoc',
