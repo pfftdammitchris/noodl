@@ -251,8 +251,9 @@ class NoodlWebpackPlugin {
 			appConfigYml = (await request(appConfigUrl)) as string
 		} else {
 			const appConfigFilePath = localFiles.find((filepath) =>
-				filepath.startsWith(parsedRootConfig.cadlMain),
+				filepath.endsWith(parsedRootConfig.cadlMain),
 			)
+			console.log('parsedRootConfig', parsedRootConfig)
 			if (appConfigFilePath) {
 				info(`Loading app config...`)
 				appConfigYml = loadFile(appConfigFilePath)
