@@ -1,4 +1,4 @@
-export interface RootConfig {
+export type RootConfig = {
 	/** Example: albh2.aitmed.io */
 	apiHost: string
 	/** Example: 443 */
@@ -51,8 +51,7 @@ export interface RootConfig {
 		min: number
 		max: number
 	}
-	[key: string]: any
-}
+} & Record<DeviceType, RootConfigDeviceVersionObject> & { [key: string]: any }
 
 export interface AppConfig {
 	assetsUrl: string
@@ -78,6 +77,10 @@ export interface RootConfigDeviceVersionObject {
 		test: string
 	}
 }
+
+export type DeviceType = 'web' | 'ios' | 'android'
+
+export type Env = 'stable' | 'test'
 
 export interface EcosDocument<
 	NF extends NameField = NameField,
