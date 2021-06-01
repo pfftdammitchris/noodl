@@ -28,6 +28,7 @@ export type AnyActionObject =
 	| PopupActionObject
 	| PopupDismissActionObject
 	| RefreshActionObject
+	| RemoveSignatureActionObject
 	| SaveActionObject
 	| SaveSignatureActionObject
 	| UpdateActionObject
@@ -104,6 +105,13 @@ export interface PopupDismissActionObject
 
 export interface RefreshActionObject extends ActionObject {
 	actionType: 'refresh'
+	[key: string]: any
+}
+
+export interface RemoveSignatureActionObject
+	extends ActionObject,
+		Pick<UncommonActionObjectProps, 'dataObject' | 'dataKey'> {
+	actionType: 'removeSignature'
 	[key: string]: any
 }
 
