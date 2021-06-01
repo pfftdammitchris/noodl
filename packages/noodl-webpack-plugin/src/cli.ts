@@ -21,6 +21,7 @@ const cli = meow(
   {
     flags: {
       config: { alias: 'c', type: 'string' },
+      device: {  type: 'string', default: 'web' },
       env: { alias: 'e', type: 'string', default: 'test' },
       port: { alias: 'p', type: 'number', default: 3000 },
       serverDir: {type:'string',default:'server'},

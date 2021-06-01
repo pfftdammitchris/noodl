@@ -1,8 +1,10 @@
 #!/usr/bin/env node
+process.stdout.write('\x1Bc')
 import { config as dotenvConfig } from 'dotenv'
 dotenvConfig()
 import React from 'react'
 import meow from 'meow'
+import ConfigStore from 'configstore'
 import { render } from 'ink'
 import App from './App'
 import CliConfig from './builders/CliConfig'
@@ -26,6 +28,8 @@ const cli = meow(
 	{
 		flags: {
 			config: { type: 'string', alias: 'c' },
+			device: { type: 'string', default: 'web' },
+			env: { type: 'string', alias: 'e', default: 'test' },
 			fetch: { type: 'boolean', alias: 'f' },
 			generate: { type: 'string', alias: 'g' },
 			panel: { type: 'string', alias: 'p' },
@@ -33,6 +37,7 @@ const cli = meow(
 			server: { type: 'boolean' },
 			start: { type: 'string' },
 			script: { type: 'string', alias: 's' },
+			version: { type: 'string', alias: 'v', default: 'latest' },
 		},
 	},
 )
@@ -41,12 +46,16 @@ const config = com
 	.loadFileAsDoc(com.getAbsFilePath('config.yml'))
 	.toJSON() as t.App.Config
 
-console.log(co.cyan(`Flags: `), cli.flags)
+console.log('')
 console.log(co.cyan(`Input: `), cli.input || [])
+console.log(co.cyan(`Flags: `), cli.flags)
 console.log('')
 
 const cliConfig = new CliConfig()
+const settings = new ConfigStore('noodl-cli', undefined, {
+	globalConfigPath: true,
+})
 
 const { cleanup, clear, rerender, unmount, waitUntilExit } = render(
-	<App cli={cli} cliConfig={cliConfig} config={config} />,
+	<App cli={cli} cliConfig={cliConfig} config={config} settings={settings} />,
 )

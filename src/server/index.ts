@@ -9,7 +9,7 @@ import globby from 'globby'
 import createAggregator from '../api/createAggregator'
 import emitResolvers from './resolvers/emit.resolvers'
 import typeDefs from '../generated/typeDefs'
-import { MetadataObject } from '../panels/GetApp/types'
+import { MetadataObject } from '../panels/GenerateApp/types'
 import * as co from '../utils/color'
 import * as com from '../utils/common'
 

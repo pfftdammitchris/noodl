@@ -157,8 +157,6 @@ class NoodlWebpackPlugin {
 			onlyFiles: true,
 		})) as string[]
 
-		//
-
 		let configRegEx = new RegExp(`(${this.config}|${this.config}.yml)`, 'i')
 		let configFilePath = localFiles.find((filepath) =>
 			configRegEx.test(filepath),

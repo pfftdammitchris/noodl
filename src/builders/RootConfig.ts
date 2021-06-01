@@ -1,16 +1,15 @@
+import { RootConfig } from 'noodl-types'
 import axios from 'axios'
 import yaml from 'yaml'
 import NOODLObject from '../api/Object'
 import { Noodl } from '../types'
+import { withSuffix } from '../utils/common'
 import {
 	replaceDesignSuffixPlaceholder,
 	replaceVersionPlaceholder,
-	withSuffix,
-} from '../utils/common'
+} from '../utils/noodl-utils'
 
-class RootConfigBuilder
-	extends NOODLObject<Noodl.RootConfig>
-	implements Noodl.RootConfig {
+class RootConfigBuilder extends NOODLObject<Noodl.RootConfig> {
 	#id = 'aitmed'
 	#hostname: string = 'public.aitmed.com'
 	#protocol = 'https'
@@ -19,6 +18,7 @@ class RootConfigBuilder
 	webApiHost: string = ''
 	appApiHost: string = ''
 	cadlBaseUrl = ''
+	myBaseUrl = ''
 	connectiontimeout: string = ''
 	loadingLevel: number = 0
 	cadlMain = ''

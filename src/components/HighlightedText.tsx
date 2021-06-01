@@ -6,7 +6,7 @@ function HighlightedText({
 	...rest
 }: React.PropsWithChildren<any> & TextProps) {
 	return (
-		<Text color="yellow" {...rest}>
+		<Text color="cyan" {...rest}>
 			{children}
 		</Text>
 	)

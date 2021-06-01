@@ -8,51 +8,22 @@ import chalk from 'chalk'
 import yaml from 'yaml'
 import globby from 'globby'
 import * as co from './color'
-import * as t from '../types'
 
 export const withTag =
 	(colorFunc = co.cyan) =>
 	(s: string) =>
 		`[${colorFunc(s)}]`
 
-export function createGroupedMetadataObjects(
-	init?: Partial<Record<string, any>>,
-): Record<string, any> & {} {
+export function createGroupedMetadataObjects<
+	O extends Record<string, any> = Record<string, any>,
+>(init?: Partial<O>) {
 	return {
-		documents: [],
-		images: [],
-		scripts: [],
-		videos: [],
+		documents: [] as string[],
+		images: [] as string[],
+		scripts: [] as string[],
+		videos: [] as string[],
 		...init,
 	}
-}
-
-export function createPlaceholderReplacer(
-	placeholders: string | string[],
-	flags?: string,
-) {
-	const regexp = new RegExp(
-		(u.isArr(placeholders) ? placeholders : [placeholders]).reduce(
-			(str, placeholder) => str + (!str ? placeholder : `|${placeholder}`),
-			'',
-		),
-		flags,
-	)
-	function replace(str: string, value: string | number): string
-	function replace<Obj extends {} = any>(obj: Obj, value: string | number): Obj
-	function replace<Obj extends {} = any>(
-		str: string | Obj,
-		value: string | number,
-	) {
-		if (u.isStr(str)) {
-			return str.replace(regexp, String(value))
-		} else if (u.isObj(str)) {
-			const stringified = JSON.stringify(str).replace(regexp, String(value))
-			return JSON.parse(stringified)
-		}
-		return ''
-	}
-	return replace
 }
 
 export function forEachDeepKeyValue<O = any>(
@@ -321,23 +292,6 @@ export async function promiseAllSafelySplit(...promises: Promise<any>[]) {
 	return results
 }
 
-export const replaceBaseUrlPlaceholder = createPlaceholderReplacer(
-	'\\${cadlBaseUrl}',
-	'g',
-)
-
-export const replaceDesignSuffixPlaceholder = createPlaceholderReplacer(
-	'\\${designSuffix}',
-	'g',
-)
-
-export const replaceTildePlaceholder = createPlaceholderReplacer('~/')
-
-export const replaceVersionPlaceholder = createPlaceholderReplacer(
-	'\\${cadlVersion}',
-	'g',
-)
-
 export const saveJson = curry((filepath: string, data: any) =>
 	fs.writeJsonSync(filepath, data, { spaces: 2 }),
 )
@@ -359,7 +313,7 @@ export function sortObjPropsByKeys(obj: { [key: string]: any }) {
 
 export function withSuffix(suffix: string) {
 	return function (str: string) {
-		return `${str}${suffix}`
+		return str.endsWith(suffix) ? str : `${str}${suffix}`
 	}
 }
 export const withEngLocale = withSuffix('_en')

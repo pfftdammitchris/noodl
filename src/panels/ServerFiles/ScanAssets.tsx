@@ -23,7 +23,6 @@ function ScanAssets() {
 	const { insertMissingFiles, setOn, setStep } = useServerFilesCtx()
 
 	React.useEffect(() => {
-		const rootConfig = aggregator.builder.rootConfig.json as Noodl.RootConfig
 		const appConfig = aggregator.builder.appConfig.json as Noodl.AppConfig
 		const assetsDir = path.join(settings.server.dir, 'assets')
 

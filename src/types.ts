@@ -1,3 +1,4 @@
+import ConfigStore from 'configstore'
 import { LiteralUnion } from 'type-fest'
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
 import { Draft } from 'immer'
@@ -27,11 +28,18 @@ export namespace App {
 		toggleSpinner(type?: false | string): void
 		set(fn: (draft: Draft<App.State>) => void): void
 		setPanel(panelKey: App.PanelKey | '', props?: Record<string, any>): void
+		settings: Settings
 	}
 
 	export type PanelKey = LiteralUnion<keyof typeof AppPanel, string>
 
 	export type State = typeof initialAppState
+
+	export type Settings = ConfigStore
+
+	export interface SettingsObject {
+		serverDir?: string
+	}
 }
 
 export type PanelType = 'main' | 'generate' | 'retrieve' | 'server'
