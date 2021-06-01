@@ -9,6 +9,7 @@ export const action = {
 	POPUPDISMISS: 'popUpDismiss',
 	REFRESH: 'refresh',
 	REGISTER: 'register',
+	REMOVESIGNATURE: 'removeSignature',
 	SAVEOBJECT: 'saveObject',
 	SAVESIGNATURE: 'saveSignature',
 	UPDATEOBJECT: 'updateObject',

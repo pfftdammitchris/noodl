@@ -47,6 +47,9 @@ export const Identify = (function () {
 			refresh(v: unknown): v is T.RefreshActionObject {
 				return u.isObj(v) && v.actionType === 'refresh'
 			},
+			removeSignature(v: unknown): v is T.RemoveSignatureActionObject {
+				return u.isObj(v) && v.actionType === 'removeSignature'
+			},
 			saveObject(v: unknown): v is T.SaveActionObject {
 				return u.isObj(v) && v.actionType === 'saveObject'
 			},
