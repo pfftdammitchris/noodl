@@ -1,6 +1,12 @@
 {
 	"name": "noodl-cli",
 	"version": "0.0.32",
+	"main": "dist/cli.js",
+	"module": "dist/cli.js",
+	"typings": "dist/cli.d.ts",
+	"bin": {
+		"noodl": "dist/cli.js"
+	},
 	"scripts": {
 		"app": "node dist/cli.js",
 		"prebuild": "rm -rf dist",
@@ -118,10 +124,6 @@
 		"typescript": "^4.2.4",
 		"xo": "^0.40.1",
 		"yaml": "^2.0.0-4"
-	},
-	"main": "dist/cli.js",
-	"bin": {
-		"noodl": "dist/cli.js"
 	},
 	"files": [
 		"dist/cli.js"
