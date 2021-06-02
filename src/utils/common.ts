@@ -1,5 +1,4 @@
 import { AxiosError } from 'axios'
-import { URL } from 'url'
 import * as u from '@jsmanifest/utils'
 import curry from 'lodash/curry'
 import fs from 'fs-extra'
@@ -8,6 +7,7 @@ import chalk from 'chalk'
 import yaml from 'yaml'
 import globby from 'globby'
 import * as co from './color'
+import * as t from '../types'
 
 export const withTag =
 	(colorFunc = co.cyan) =>
@@ -50,75 +50,80 @@ export function getExt(str: string) {
 	return hasDot(str) ? str.substring(str.lastIndexOf('.') + 1) : ''
 }
 
-export function createMetadataExtractor(type: 'filepath' | 'link') {
-	type GetMetadataObjectArgsObject = Partial<{ [K in typeof type]: string }> & {
-		baseUrl?: string
-		prefix?: string
-		tilde?: string
+export const createFileMetadataExtractor = (function () {
+	function getFilename(str: string = '') {
+		return !str.includes('/') ? str : str.substring(str.lastIndexOf('/') + 1)
 	}
+	function getFileMetadataObject(
+		value: string,
+		{ config }: { config?: string } = {},
+	) {
+		const metadata = {} as t.MetadataFileObject
 
-	function getMetadataObject(
-		args: GetMetadataObjectArgsObject,
-	): Record<string, any>
-	function getMetadataObject(str: string): Record<string, any>
-	function getMetadataObject(s: GetMetadataObjectArgsObject | string) {
-		const metadata = {} as Record<string, any>
-
-		const value = (u.isStr(s) ? s : s[type]) as string
-
-		metadata.raw = value as string
 		metadata.ext = getExt(value)
 		metadata.filename = getFilename(value)
+		metadata.filepath = value
 
-		if (value.startsWith('http')) {
-			const url = new URL(value)
-			metadata.pathname = url.pathname
-		} else {
-			metadata.pathname = value.startsWith('/') ? value : `/${value}`
-		}
-
-		if (u.isStr(s)) {
-			if (type === 'link') {
-				if (value.startsWith('http')) metadata.link = value
-				// The link is a pathname, so we need to construct the protocol/hostname
-				// TODO - Find a way to get the hostname here?
-				else metadata.link = value
-			} else {
-				metadata.filepath = getAbsFilePath(value)
+		if (isYml(value)) {
+			if (metadata.filename.endsWith('.yml')) {
+				metadata.filename = metadata.filename.substring(
+					0,
+					metadata.filename.lastIndexOf('.yml'),
+				)
 			}
-		} else {
-			if (type === 'link') {
-				const { baseUrl = '', prefix = '' } = s
-				metadata.link = baseUrl
-				prefix && (metadata.link += `${prefix}`)
-				metadata.link += metadata.pathname.startsWith('/')
-					? metadata.pathname
-					: `/${metadata.pathname}`
-			} else {
-				metadata.filepath = s.prefix
-					? getAbsFilePath(path.join(s.prefix, s[type] as string))
-					: getAbsFilePath(s[type] as string)
-			}
-		}
-
-		if (isImg(value)) {
-			metadata.group = 'images'
-		} else if (isPdf(value)) {
-			metadata.group = 'documents'
+			metadata.group = metadata.filename === config ? 'config' : 'page'
+		} else if (isImg(value)) {
+			metadata.group = 'image'
+		} else if (/(json|pdf)/i.test(value)) {
+			metadata.group = 'document'
 		} else if (isVid(value)) {
-			metadata.group = 'videos'
-		} else if (isHtml(value) || isJs(value)) {
-			metadata.group = 'scripts'
+			metadata.group = 'video'
+		} else if (value.endsWith('.html') || value.endsWith('.js')) {
+			metadata.group = 'script'
 		}
-
 		return metadata
 	}
+	return getFileMetadataObject
+})()
 
-	return getMetadataObject
-}
-
-export const getFilepathMetadata = createMetadataExtractor('filepath')
-export const getLinkMetadata = createMetadataExtractor('link')
+export const createLinkMetadataExtractor = (function () {
+	function getFilename(str: string = '') {
+		return !str.includes('/') ? str : str.substring(str.lastIndexOf('/') + 1)
+	}
+	function getLinkMetadataObject(
+		value: string,
+		{
+			config,
+			ext = getExt(value),
+			filename = getFilename(value),
+			name = value.includes('.')
+				? value.substring(0, value.lastIndexOf('.') + 1)
+				: value,
+			url = '',
+		}: {
+			config?: string
+			ext?: string
+			filename?: string
+			name?: string
+			url?: string
+		} = {},
+	) {
+		name.endsWith('.') && (name = name.substring(0, name.lastIndexOf('.')))
+		name.includes('/') && (name = name.substring(name.lastIndexOf('/') + 1))
+		const metadata = { ext, filename, name, url } as t.MetadataLinkObject
+		if (isImg(`.${ext}`)) {
+			metadata.group = 'image'
+		} else if (/(json|pdf)$/i.test(ext)) {
+			metadata.group = 'document'
+		} else if (isVid(`.${ext}`)) {
+			metadata.group = 'video'
+		} else if (/(html|js)$/i.test(ext)) {
+			metadata.group = 'script'
+		}
+		return metadata
+	}
+	return getLinkMetadataObject
+})()
 
 export function getPathname(str: string) {
 	return hasSlash(str) ? str.substring(str.lastIndexOf('/') + 1) : ''

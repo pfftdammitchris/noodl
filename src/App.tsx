@@ -1,27 +1,16 @@
 import * as u from '@jsmanifest/utils'
 import merge from 'lodash/merge'
-import pick from 'lodash/pick'
-import { LiteralUnion } from 'type-fest'
-import invariant from 'invariant'
-import yaml from 'yaml'
-
+// import invariant from 'invariant'
 import React from 'react'
 import produce, { Draft } from 'immer'
-// import Gradient from 'ink-gradient'
-// import ProgressBar from 'ink-progress-bar'
-import { Box, Spacer, Static, Text, Newline, useApp } from 'ink'
+import { Box, Static, Text, useApp } from 'ink'
 import { Provider } from './useCtx'
 import createAggregator from './api/createAggregator'
-import CliConfig from './builders/CliConfig'
-import Select from './components/Select'
+// import Select from './components/Select'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
 import Settings from './panels/Settings'
 import GenerateApp from './panels/GenerateApp'
-// import RetrieveObjects from './panels/RetrieveObjects'
-// import RunServer from './panels/RunServer'
-// import SelectRoute from './panels/SelectRoute'
-import * as com from './utils/common'
 import * as co from './utils/color'
 import * as c from './constants'
 import * as t from './types'
@@ -38,12 +27,10 @@ export const initialState = {
 
 function Application({
 	cli,
-	cliConfig,
 	config,
 	settings,
 }: {
 	cli: t.App.Context['cli']
-	cliConfig: CliConfig
 	config: t.App.Config
 	settings: t.App.Settings
 }) {
@@ -72,7 +59,6 @@ function Application({
 		aggregator,
 		config,
 		cli,
-		cliConfig,
 		exit,
 		set,
 		highlight: (id) => set((d) => void (d.highlightedPanel = id)),
@@ -102,11 +88,6 @@ function Application({
 	}
 
 	React.useEffect(() => {
-		const timestamp = settings.get('timestamp')
-		// ctx.log(`Global config was created at ${co.magenta(timestamp)}`)
-	}, [])
-
-	React.useEffect(() => {
 		if (u.keys(cli.flags).length) {
 			const handleGenerate = () => {
 				const generate = cli.flags.generate as string
@@ -123,40 +104,40 @@ function Application({
 				}
 			}
 
-			const handleScript = (script: string) => {
-				if (script in state.panels) {
-					ctx.setPanel(script)
-				} else {
-					ctx.log(`The script "${script}" does not exist`)
-					ctx.setPanel(c.DEFAULT_PANEL)
-				}
-			}
+			// const handleScript = (script: string) => {
+			// 	if (script in state.panels) {
+			// 		ctx.setPanel(script)
+			// 	} else {
+			// 		ctx.log(`The script "${script}" does not exist`)
+			// 		ctx.setPanel(c.DEFAULT_PANEL)
+			// 	}
+			// }
 
-			const handleRetrieve = () => {
-				invariant(
-					['json', 'yml'].some((ext) => cli.flags.retrieve?.includes(ext)),
-					`Invalid value for "${co.magenta(
-						`retrieve`,
-					)}". Valid options are: ${co.magenta('json')}, ${co.magenta('yml')}`,
-				)
-				set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
-			}
+			// const handleRetrieve = () => {
+			// 	invariant(
+			// 		['json', 'yml'].some((ext) => cli.flags.retrieve?.includes(ext)),
+			// 		`Invalid value for "${co.magenta(
+			// 			`retrieve`,
+			// 		)}". Valid options are: ${co.magenta('json')}, ${co.magenta('yml')}`,
+			// 	)
+			// 	set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
+			// }
 
 			const handleServer = () => {
 				if (cli.flags.fetch) {
-					set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
+					// set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
 				} else {
-					set((d) => void (d.activePanel = c.panel.RUN_SERVER.key))
+					// set((d) => void (d.activePanel = c.panel.RUN_SERVER.key))
 				}
 			}
 
 			cli.flags.generate
 				? handleGenerate()
-				: cli.flags.script
-				? handleScript(cli.flags.script)
-				: cli.flags.retrieve
-				? handleRetrieve()
-				: cli.flags.server
+				: // : cli.flags.script
+				// ? handleScript(cli.flags.script)
+				// : cli.flags.retrieve
+				// ? handleRetrieve()
+				cli.flags.server
 				? handleServer()
 				: undefined
 		} else {

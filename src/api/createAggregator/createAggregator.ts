@@ -6,13 +6,14 @@ import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
 import * as co from '../../utils/color'
-import { promiseAllSafe, withSuffix } from '../../utils/common'
+import { createLinkMetadataExtractor, withSuffix } from '../../utils/common'
 import {
 	createNoodlPlaceholderReplacer,
 	hasNoodlPlaceholder,
+	isValidAsset,
 } from '../../utils/noodl-utils'
-import createAssetAggregator from './createAssetAggregator'
 import { DEFAULT_CONFIG_HOSTNAME } from '../../constants'
+import { MetadataLinkObject } from '../../types'
 import * as c from './constants'
 import * as t from './types'
 
@@ -28,23 +29,6 @@ const createAggregator = function (options?: string | t.Options) {
 	let deviceType = opts?.deviceType || 'web'
 	let env = opts?.env || 'test'
 	let root = new Map([['Global', new yaml.YAMLMap()]]) as t.Root
-
-	const assetAggregator = createAssetAggregator({
-		root,
-		get assetsUrl() {
-			return o.assetsUrl
-		},
-		get baseUrl() {
-			return o.baseUrl
-		},
-		get configKey() {
-			return o.configKey
-		},
-		get myBaseUrl() {
-			return ((root.get(o.configKey) as yaml.YAMLMap)?.get?.('myBaseUrl') ||
-				o.baseUrl) as string
-		},
-	})
 
 	Object.defineProperty(root, 'toJSON', {
 		value: function () {
@@ -172,7 +156,26 @@ const createAggregator = function (options?: string | t.Options) {
 		}
 	}
 
+	async function loadAsset(
+		url: string | undefined = '',
+		{}: {
+			metadata?: MetadataLinkObject
+		},
+	) {
+		try {
+			//
+		} catch (error) {
+			throw error
+		}
+	}
+
 	const o = {
+		get pageNames() {
+			const appConfig = o.root.get(o.appKey) as yaml.Document
+			const preloadPages = (appConfig?.get('preload') as yaml.YAMLSeq).toJSON()
+			const pages = (appConfig?.get('page') as yaml.YAMLSeq).toJSON()
+			return [...preloadPages, ...pages] as string[]
+		},
 		get assetsUrl() {
 			return `${o.baseUrl}assets`
 		},
@@ -225,6 +228,54 @@ const createAggregator = function (options?: string | t.Options) {
 		get root() {
 			return root
 		},
+		extractAssets() {
+			const assets = [] as MetadataLinkObject[]
+			const commonUrlKeys = ['path', 'resource', 'resourceUrl'] as string[]
+			const visitedAssets = [] as string[]
+
+			function isHttp(s: string | undefined) {
+				return s ? /^https?:\/\/[a-zA-Z]+/i.test(s) : false
+			}
+
+			function toAssetLink(s: string) {
+				return `${o.assetsUrl}/${s}`
+			}
+
+			function addAsset(asset: string) {
+				if (!visitedAssets.includes(asset) && isValidAsset(asset)) {
+					visitedAssets.push(asset)
+					const metadata = createLinkMetadataExtractor(asset, {
+						config: o.configKey,
+						url: !isHttp(asset) ? toAssetLink(asset) : asset,
+					})
+					assets.push(metadata)
+				}
+			}
+
+			for (const [name, visitee] of o.root) {
+				yaml.visit(visitee, {
+					Map(key, node) {
+						for (const key of commonUrlKeys) {
+							if (node.has(key)) {
+								const value = node.get(key)
+								if (u.isStr(value)) {
+									addAsset(value)
+								}
+							}
+						}
+					},
+					Scalar(key, node) {
+						if (u.isStr(node.value)) {
+							if (isHttp(node.value)) {
+								addAsset(node.value)
+							}
+						}
+					},
+				})
+			}
+
+			return assets
+		},
 		getPageUrl(name: string | undefined) {
 			if (name?.endsWith('.yml')) name = name.replace('.yml', '')
 			return name ? `${o.baseUrl}${name}.yml` : ''
@@ -256,7 +307,7 @@ const createAggregator = function (options?: string | t.Options) {
 					}
 				}
 			}
-			await promiseAllSafe(...(preloadPages.map(unary(loadPage)) || []))
+			await Promise.all(preloadPages.map(unary(loadPage)) || [])
 		},
 		loadPage,
 		async loadPages({
@@ -276,10 +327,12 @@ const createAggregator = function (options?: string | t.Options) {
 					}
 				}
 			}
-			const chunkedPageReqs = chunk(pages.map(unary(o.loadPage)), chunks)
 			// Flatten out the promises for parallel reqs
-			await promiseAllSafe(...chunkedPageReqs.map((o) => promiseAllSafe(...o)))
+			await Promise.all(
+				chunk(await Promise.all(pages.map(unary(o.loadPage))), chunks),
+			)
 		},
+		loadAsset,
 		on<Evt extends keyof t.Hooks>(
 			evt: Evt,
 			fn: (args: t.Hooks[Evt]['args']) => void,

@@ -7,7 +7,6 @@ import meow from 'meow'
 import ConfigStore from 'configstore'
 import { render } from 'ink'
 import App from './App'
-import CliConfig from './builders/CliConfig'
 import * as co from './utils/color'
 import * as com from './utils/common'
 import * as t from './types'
@@ -32,6 +31,7 @@ const cli = meow(
 			env: { type: 'string', alias: 'e', default: 'test' },
 			fetch: { type: 'boolean', alias: 'f' },
 			generate: { type: 'string', alias: 'g' },
+			local: { type: 'boolean', default: false },
 			panel: { type: 'string', alias: 'p' },
 			retrieve: { type: 'string', alias: 'r', isMultiple: true },
 			server: { type: 'boolean' },
@@ -51,11 +51,8 @@ console.log(co.cyan(`Input: `), cli.input || [])
 console.log(co.cyan(`Flags: `), cli.flags)
 console.log('')
 
-const cliConfig = new CliConfig()
 const settings = new ConfigStore('noodl-cli', undefined, {
 	globalConfigPath: true,
 })
 
-const { cleanup, clear, rerender, unmount, waitUntilExit } = render(
-	<App cli={cli} cliConfig={cliConfig} config={config} settings={settings} />,
-)
+render(<App cli={cli} config={config} settings={settings} />)

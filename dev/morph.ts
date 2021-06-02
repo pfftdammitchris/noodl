@@ -1,40 +1,24 @@
 process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
-import * as ts from 'ts-morph'
+// import * as ts from 'ts-morph'
 import fs from 'fs-extra'
-import path from 'path'
+// import path from 'path'
 import { getAbsFilePath } from '../src/utils/common'
-import metadata from './aggregator/metadata.json'
-import createAggregator, {
-	RETRIEVED_APP_BASE_URL,
-	RETRIEVED_APP_CONFIG,
-	RETRIEVED_APP_ENDPOINT,
-	RETRIEVED_APP_PAGE,
-	RETRIEVED_ROOT_BASE_URL,
-	RETRIEVED_ROOT_CONFIG,
-	RETRIEVED_VERSION,
-	RETRIEVE_APP_PAGE_FAILED,
-} from '../src/api/createAggregator'
+import createAggregator from '../src/api/createAggregator'
 import * as co from '../src/utils/color'
 
 const paths = {
+	assets: getAbsFilePath('data/generated/assets.json'),
 	metadata: getAbsFilePath('data/generated/metadata.json'),
 	typings: getAbsFilePath('data/generated/typings.d.ts'),
-	dummy: getAbsFilePath('data/generated/test.js'),
 }
 
 const aggregator = createAggregator('meet4d')
 aggregator
-	.init({
-		loadPages: { includePreloadPages: true },
-	})
-	.then(() => {
-		u.newline()
-		u.log(co.green(`DONE`))
-		u.newline()
-	})
-	.then(() => aggregator.loadAssets())
-	.then(console.log)
+	.init({ loadPages: { includePreloadPages: true } })
+	.then(aggregator.extractAssets)
+	.then((assets) => fs.writeJson(paths.assets, assets, { spaces: 2 }))
+	.then(() => u.log('\n' + co.green(`DONE`) + '\n'))
 	.catch((err) => {
 		throw err
 	})

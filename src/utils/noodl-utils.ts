@@ -52,6 +52,11 @@ export function hasPaths(paths: any, node: unknown) {
 	return false
 }
 
+export function isValidAsset(value: string | undefined) {
+	if (value?.endsWith('..tar')) return false
+	return u.isStr(value) && /(.[a-zA-Z]+)$/i.test(value)
+}
+
 export function isActionObj(node: YAMLMap) {
 	return has('actionType', node)
 }
