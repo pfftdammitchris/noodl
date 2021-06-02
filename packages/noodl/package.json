@@ -1,6 +1,6 @@
 {
 	"name": "noodl",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
 	"module": "dist/index.js",
 	"main": "dist/index.js",
@@ -13,8 +13,8 @@
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file src/setupTests.ts --watch --watch-files src"
 	},
 	"dependencies": {
-		"noodl-common": "^0.0.6",
-		"noodl-types": "^1.0.54"
+		"noodl-common": "^0.0.7",
+		"noodl-types": "^1.0.89"
 	},
 	"keywords": [
 		"noodl",
