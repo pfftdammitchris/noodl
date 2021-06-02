@@ -44,5 +44,6 @@
 	"dependencies": {
 		"noodl-ui": "^0.1.75",
 		"noodl-ui-dom": "^0.0.61"
-	}
+	},
+	"gitHead": "3a5b477fa7ff5b34a63aee5b2b84729f0687459a"
 }

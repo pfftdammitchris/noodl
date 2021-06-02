@@ -1,27 +1,29 @@
-// @ts-nocheck
+import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
+import { ApolloServerPlugin } from 'apollo-server-plugin-base'
 import * as u from '@jsmanifest/utils'
+import chokidar from 'chokidar'
+import path from 'path'
 import express from 'express'
 import fs from 'fs-extra'
 import WebSocket from 'ws'
-import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
-import { ApolloServerPlugin } from 'apollo-server-plugin-base'
 import globby from 'globby'
 import createAggregator from '../api/createAggregator'
 import emitResolvers from './resolvers/emit.resolvers'
 import typeDefs from '../generated/typeDefs'
-import { MetadataObject } from '../panels/GenerateApp/types'
+import { MetadataFileObject } from '../types'
 import * as co from '../utils/color'
 import * as com from '../utils/common'
 
 const log = console.log
 
 interface Options {
+	aggregator?: ReturnType<typeof createAggregator>
 	config: string
-	serverDir: string
-	docsDir?: string
+	dir: string
 	host?: string
 	port?: number
 	protocol?: string
+	wss?: boolean
 }
 
 const configureServer = (function () {
@@ -64,7 +66,7 @@ const configureServer = (function () {
 			if (failed.length) {
 				log(
 					`\n${copied.length} files were copied over but ` +
-						`${com.magenta(failed.length)} files failed\n`,
+						`${co.magenta(failed.length)} files failed\n`,
 				)
 			}
 		},
@@ -74,34 +76,39 @@ const configureServer = (function () {
 	}
 
 	return async function createServer({
+		aggregator,
 		config = '',
-		serverDir = '',
+		dir = '',
 		host = 'localhost',
 		port = 3001,
 		protocol = 'http',
+		wss: enableWss = false,
 	}: Options) {
 		if (!config) throw new Error('A config (name) must be set')
-		if (!serverDir) throw new Error(`Please provide a directory for the server`)
+		if (!dir) throw new Error(`Please provide a directory for the server`)
+		dir = path.resolve(dir)
 
-		const aggregator = createAggregator()
-		aggregator.config = config
+		!aggregator && (aggregator = createAggregator({ config }))
+
 		const serverUrl = `${protocol}://${host}:${port}`
-
-		const localFiles = globby.sync(serverDir)
+		const localFiles = globby.sync(dir)
+		let wss: WebSocket.Server | undefined
 
 		const metadata = localFiles.reduce(
 			(acc, filepath) => {
 				const stat = fs.statSync(filepath)
 				if (stat.isFile()) {
 					if (filepath.includes('/assets')) {
-						acc.assets.push(com.getFilepathMetadata(filepath))
+						acc.assets.push(
+							com.createFileMetadataExtractor(filepath, { config }),
+						)
 					} else {
-						acc.yml.push(com.getFilepathMetadata(filepath))
+						acc.yml.push(com.createFileMetadataExtractor(filepath, { config }))
 					}
 				}
 				return acc
 			},
-			{ assets: [] as MetadataObject[], yml: [] as MetadataObject[] },
+			{ assets: [] as MetadataFileObject[], yml: [] as MetadataFileObject[] },
 		)
 
 		const options: ApolloServerExpressConfig = {
@@ -145,8 +152,7 @@ const configureServer = (function () {
 
 		app.get(
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
-			(req, res) =>
-				res.sendFile(com.getFilePath(serverDir, 'cadlEndpoint.yml')),
+			(req, res) => res.sendFile(path.join(dir, 'cadlEndpoint.yml')),
 		)
 
 		metadata.yml.forEach(({ group, filepath, filename }) => {
@@ -154,10 +160,8 @@ const configureServer = (function () {
 			filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
 			group = 'page' as any
 			log(
-				com.white(
-					`Registering ${com.yellow(group)} pathname: ${com.magenta(
-						filename,
-					)} filepath: ${filepath}`,
+				co.white(
+					`Registering route: ${co.yellow(filename)} [${co.magenta(group)}]`,
 				),
 			)
 			const routes = [filename, `${filename}.yml`, `${filename}_en.yml`]
@@ -169,10 +173,8 @@ const configureServer = (function () {
 		metadata.assets.forEach(({ group, filepath, filename }) => {
 			if (!filename.startsWith('/')) filename = `/${filename}`
 			log(
-				com.white(
-					`Registering ${com.yellow(group)} pathname: ${com.magenta(
-						filename,
-					)} filepath: ${filepath}`,
+				co.white(
+					`Registering route: ${co.yellow(filename)} [${co.magenta(group)}]`,
 				),
 			)
 			const routes = [filename, `/assets/${filename.replace('/', '')}`]
@@ -184,73 +186,47 @@ const configureServer = (function () {
 		graphqlServer.applyMiddleware({ app })
 
 		app.listen({ cors: { origin: '*' }, port }, () => {
-			let graphqlPath = graphqlServer.graphqlPath
-			if (!graphqlPath.startsWith('/')) graphqlPath = `/${graphqlPath}`
-
-			const comet = '\u2604\uFE0F'
-			const croissant = '\uD83D\uDE48'
-			const host = `127.0.0.1`
-			const port = 3002
-			const wss = new WebSocket.Server({ host, port })
-			const tags = {
-				ws: co.aquamarine('ws'),
-				host: co.lightGreen(host),
-				port: com.green(String(port)),
-				slash: com.cyan('//'),
-				graphql: co.aquamarine('graphql'),
-				config: com.yellow(config),
-			}
-
 			log(
-				`\n🚀 Server ready at ${com.cyan(`${serverUrl}${graphqlPath}`)} ${
-					config ? `using config ${com.magenta(config)}` : ''
+				`\n🚀 Server ready at ${co.cyan(`${serverUrl}`)} ${
+					config ? `using config ${co.yellow(config)}` : ''
 				}`,
 			)
 
-			const wss = new WebSocket.Server({ port: 3002 })
+			if (enableWss) {
+				const wssPort = 3002
+				wss = new WebSocket.Server({ host, port: wssPort })
 
-			wss.on('listening', () => {
-				com.newline()
-				log(
-					com.brightGreen(
-						`WebSocket server is listening at: ws://127.0.0.1:3002`,
-					),
-				)
-			})
-
-			wss.on('connection', function connection(ws, sender) {
-				const { socket } = sender
-				const ip = socket.remoteAddress
-
-				com.newline()
-				log(co.brightGreen(`Client is connected`), {
-					ip: socket.remoteAddress,
+				wss.on('listening', () => {
+					log(
+						`🚀 WebSocket server is listening at: ${co.cyan(
+							`ws://${host}:${wssPort}`,
+						)}`,
+					)
 				})
-				ws.on('message', (message) => log('Received: %s', message))
-				ws.send('Hello client. I am the WebSocket server you are connected to!')
-			})
 
-			wss.on('close', () => log(com.white(`WebSocket server has closed`)))
-			wss.on('error', (err) => log(com.red(`[${err.name}] ${err.message}`)))
+				wss.on('connection', function connection(ws, sender) {
+					const { socket } = sender
+					const ip = socket.remoteAddress
 
-			app._router.stack.forEach(function ({ route }: any) {
-				if (route) {
-					const { methods, path, stack } = route
-					// console.log(path)
-				}
-			})
+					u.newline()
+					log(co.brightGreen(`Client is connected`), {
+						ip: socket.remoteAddress,
+					})
+					ws.on('message', (message) => log('Received: %s', message))
+					ws.send(
+						'Hello client. I am the WebSocket server you are connected to!',
+					)
+				})
 
-			const watcher = chokidar.watch(com.getFilePath('server/**/*'), {
-				cwd: process.cwd(),
-				followSymlinks: true,
-				ignoreInitial: true,
-			})
+				wss.on('close', () => log(co.white(`WebSocket server has closed`)))
+				wss.on('error', (err) => log(co.red(`[${err.name}] ${err.message}`)))
+			}
 
 			const tag = `[${co.cyan(`watcher`)}]`
 
 			function sendMessage(msg: Record<string, any>) {
 				return new Promise((resolve, reject) => {
-					wss.clients.forEach((client) => {
+					wss?.clients.forEach((client) => {
 						client.send(JSON.stringify(msg, null, 2), (err) => {
 							if (err) reject(err)
 							else resolve(undefined)
@@ -275,65 +251,66 @@ const configureServer = (function () {
 					stats?: fs.Stats
 				}) => void,
 			) {
-				async function onEvent(path: string) {
-					const stats = await fs.stat(com.getFilePath(path))
+				async function onEvent(filepath: string) {
+					const stats = await fs.stat(filepath)
 					return fn({
 						isFile: stats.isFile(),
 						isFolder: stats.isDirectory(),
-						name: getFileName(path),
-						path,
-						stats,
+						name: getFileName(filepath),
+						path: filepath,
 					})
 				}
 				return onEvent
 			}
 
+			const watchGlob = path.join(dir, '**/*')
+			const watcher = chokidar.watch(watchGlob, {
+				followSymlinks: true,
+				ignoreInitial: true,
+			})
+
 			watcher
 				.on('ready', () => {
-					com.log(
-						`${tag} Watching for file changes at ${com.magenta(
-							com.getFilePath(serverDir),
-						)}`,
-					)
+					u.log(`${tag} Watching for file changes at ${co.magenta(dir)}`)
 					sendMessage({ type: 'WATCHING' })
 				})
 				.on(
 					'change',
 					onWatchEvent((args) => {
-						com.log(`${tag} file changed`, args.path)
+						u.log(`${tag} file changed`, args.path)
 						sendMessage({ type: 'FILE_CHANGED', ...args })
 					}),
 				)
 				.on(
 					'add',
 					onWatchEvent((args) => {
-						com.log(`${tag} file added`, args.path)
+						u.log(`${tag} file added`, args.path)
 						sendMessage({ type: 'FILE_ADDED', ...args })
 					}),
 				)
 				.on(
 					'addDir',
 					onWatchEvent((args) => {
-						com.log(`${tag} folder added`, args.path)
+						u.log(`${tag} folder added`, args.path)
 						sendMessage({ type: 'FOLDER_ADDED', ...args })
 					}),
 				)
 				.on(
 					'unlink',
 					onWatchEvent((args) => {
-						com.log(`${tag} file was removed`, args.path)
+						u.log(`${tag} file was removed`, args.path)
 						sendMessage({ type: 'FILE_REMOVED', ...args })
 					}),
 				)
 				.on(
 					'unlinkDir',
 					onWatchEvent((args) => {
-						com.log(`${tag} folder was removed`, args.path)
+						u.log(`${tag} folder was removed`, args.path)
 						sendMessage({ type: 'FOLDER_REMOVED', ...args })
 					}),
 				)
 				.on('error', (err) => {
-					com.log(`${tag} error`, err)
+					u.log(`${tag} error`, err)
 					sendMessage({ type: 'WATCH_ERROR', error: err })
 				})
 		})

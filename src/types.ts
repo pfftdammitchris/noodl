@@ -17,6 +17,7 @@ export namespace App {
 		config: Config
 		cli: Cli
 		exit: (error?: Error | undefined) => void
+		getGenerateDir(configKey?: string): string
 		highlight(panelKey: App.PanelKey | ''): void
 		log(text: string): void
 		logError(text: string | Error): void

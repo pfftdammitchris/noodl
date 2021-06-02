@@ -1,16 +1,17 @@
 import * as u from '@jsmanifest/utils'
+import invariant from 'invariant'
 import merge from 'lodash/merge'
-// import invariant from 'invariant'
+import path from 'path'
 import React from 'react'
 import produce, { Draft } from 'immer'
 import { Box, Static, Text, useApp } from 'ink'
 import { Provider } from './useCtx'
 import createAggregator from './api/createAggregator'
-// import Select from './components/Select'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
 import Settings from './panels/Settings'
 import GenerateApp from './panels/GenerateApp'
+import Server from './panels/Server'
 import * as co from './utils/color'
 import * as c from './constants'
 import * as t from './types'
@@ -60,6 +61,8 @@ function Application({
 		config,
 		cli,
 		exit,
+		getGenerateDir: (configKey: string = cli.flags.config || '') =>
+			path.join(settings.get(c.GENERATE_DIR_KEY), configKey),
 		set,
 		highlight: (id) => set((d) => void (d.highlightedPanel = id)),
 		log: (text) => set((d) => void d.text.push(text)),
@@ -104,42 +107,19 @@ function Application({
 				}
 			}
 
-			// const handleScript = (script: string) => {
-			// 	if (script in state.panels) {
-			// 		ctx.setPanel(script)
-			// 	} else {
-			// 		ctx.log(`The script "${script}" does not exist`)
-			// 		ctx.setPanel(c.DEFAULT_PANEL)
-			// 	}
-			// }
-
-			// const handleRetrieve = () => {
-			// 	invariant(
-			// 		['json', 'yml'].some((ext) => cli.flags.retrieve?.includes(ext)),
-			// 		`Invalid value for "${co.magenta(
-			// 			`retrieve`,
-			// 		)}". Valid options are: ${co.magenta('json')}, ${co.magenta('yml')}`,
-			// 	)
-			// 	set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
-			// }
-
 			const handleServer = () => {
-				if (cli.flags.fetch) {
-					// set((d) => void (d.activePanel = c.panel.FETCH_SERVER_FILES.key))
-				} else {
-					// set((d) => void (d.activePanel = c.panel.RUN_SERVER.key))
-				}
+				invariant(
+					!!cli.flags.config,
+					`Cannot run server without specifing a config via ${co.yellow(
+						`--config`,
+					)} or ${co.yellow(`-c`)}`,
+				)
+				ctx.setPanel('server')
 			}
 
-			cli.flags.generate
-				? handleGenerate()
-				: // : cli.flags.script
-				// ? handleScript(cli.flags.script)
-				// : cli.flags.retrieve
-				// ? handleRetrieve()
-				cli.flags.server
-				? handleServer()
-				: undefined
+			if (cli.flags.generate) handleGenerate()
+			else if (cli.flags.server) handleServer()
+			else ctx.setPanel(c.DEFAULT_PANEL)
 		} else {
 			ctx.setPanel(c.DEFAULT_PANEL)
 		}
@@ -151,10 +131,20 @@ function Application({
 				{
 					!state.ready ? (
 						<Settings
-							onReady={() => set({ ready: true, activePanel: 'generateApp' })}
+							onReady={() =>
+								set({ ready: true, activePanel: state.activePanel })
+							}
 						/>
 					) : state.activePanel === 'generateApp' ? (
-						<GenerateApp />
+						<GenerateApp
+							config={cli.flags.config}
+							configVersion={cli.flags.version}
+							deviceType={cli.flags.device}
+							env={cli.flags.env}
+							isLocal={cli.flags.local}
+						/>
+					) : state.activePanel === 'server' ? (
+						<Server config={cli.flags.config as string} wss={cli.flags.wss} />
 					) : null
 					// <RetrieveObjects
 					// 		onEnd={() => {

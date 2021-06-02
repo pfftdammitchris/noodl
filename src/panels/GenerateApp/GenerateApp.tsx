@@ -1,3 +1,4 @@
+import { LiteralUnion } from 'type-fest'
 import * as u from '@jsmanifest/utils'
 import React from 'react'
 import yaml from 'yaml'
@@ -6,15 +7,9 @@ import fs from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
 import merge from 'lodash/merge'
-import {
-	RootConfig,
-	RootConfigDeviceVersionObject,
-	AppConfig,
-	DeviceType,
-	Env,
-} from 'noodl-types'
+import { DeviceType, Env } from 'noodl-types'
 import produce, { Draft } from 'immer'
-import { Box, Static, Text, Transform } from 'ink'
+import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
 import Panel from '../../components/Panel'
 import useCtx from '../../useCtx'
@@ -31,26 +26,29 @@ import * as co from '../../utils/color'
 import * as r from '../../utils/remote'
 import * as t from './types'
 
-export const initialState = {
-	apiHost: '',
-	apiPort: 443,
-	configKey: '',
-	deviceType: '' as RootConfigDeviceVersionObject | '',
-	rootConfig: {} as RootConfig,
-	appConfig: {} as AppConfig,
-	assets: [] as ({
-		status: 'downloading' | 'downloaded'
-	} & MetadataLinkObject)[],
+export interface Props {
+	config?: string
+	configVersion?: string
+	deviceType?: LiteralUnion<DeviceType | '', string>
+	env?: LiteralUnion<Env, string>
+	isLocal?: boolean
 }
 
-function GetApp() {
-	const { aggregator, cli, log, logError, settings } = useCtx()
+export const initialState = {
+	configKey: '',
+	assets: [] as Array<
+		{ status: 'downloading' | 'downloaded' } & MetadataLinkObject
+	>,
+}
+
+function GenerateApp(props: Props) {
+	const { aggregator, getGenerateDir, log, logError, settings } = useCtx()
 	const [state, _setState] = React.useState(() => {
 		const initState = {
 			...initialState,
-			deviceType: cli.flags.device,
+			deviceType: props.deviceType,
 		} as t.State
-		cli.flags.config && (initState.configKey = cli.flags.config)
+		props.config && (initState.configKey = props.config)
 		return initState
 	})
 
@@ -107,23 +105,19 @@ function GetApp() {
 				log(`Saved ${co.yellow(configFileName)} to folder`)
 
 				aggregator.configKey = configKey
-				aggregator.env = cli.flags.env as Env
-				aggregator.deviceType = cli.flags.device as DeviceType
-				aggregator.configVersion = cli.flags.version
+				aggregator.env = props.env as Env
+				aggregator.deviceType = props.deviceType as DeviceType
+				aggregator.configVersion = props.configVersion as string
 
 				log(
 					`Config version set to ${co.yellow(aggregator.configVersion)}${
-						cli.flags.version === 'latest'
+						props.configVersion === 'latest'
 							? ` (using option "${co.yellow('latest')}")`
 							: ''
 					}`,
 				)
 
-				const dir = path.join(
-					settings.get(c.GENERATE_DIR_KEY),
-					aggregator.configKey,
-				)
-
+				const dir = getGenerateDir(aggregator.configKey)
 				const assetsDir = path.join(dir, 'assets')
 
 				if (!fs.existsSync(dir)) {
@@ -288,7 +282,7 @@ function GetApp() {
 						if (!doc) return u.log(doc)
 
 						if (type === 'root-config') {
-							if (cli.flags.local) {
+							if (props.isLocal) {
 								doc.set('cadlBaseUrl', `http://127.0.0.1:3001/`)
 								if (doc.has('myBaseUrl')) {
 									doc.set('myBaseUrl', `http://127.0.0.1:3001/`)
@@ -299,7 +293,7 @@ function GetApp() {
 							const appKey = doc.get('cadlMain')
 							log(`Base url: ${co.yellow(baseUrl)}`)
 							log(`App config url: ${co.yellow(`${baseUrl}${appKey}`)}`)
-							setState({ configKey, rootConfig: doc.toJS() })
+							setState({ configKey })
 							log(`Saved root config object to ${co.yellow(filepath)}`)
 							incrementProcessedDocs()
 						} else if (type === 'app-config') {
@@ -310,7 +304,6 @@ function GetApp() {
 									numDocsFetching,
 								)}`,
 							)
-							setState({ appConfig: doc?.toJS() })
 							log(`Saved app config to ${co.yellow(filepath)}`)
 							incrementProcessedDocs()
 						} else {
@@ -375,4 +368,4 @@ function GetApp() {
 	)
 }
 
-export default GetApp
+export default GenerateApp

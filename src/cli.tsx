@@ -38,6 +38,7 @@ const cli = meow(
 			start: { type: 'string' },
 			script: { type: 'string', alias: 's' },
 			version: { type: 'string', alias: 'v', default: 'latest' },
+			wss: { type: 'boolean', default: false },
 		},
 	},
 )
