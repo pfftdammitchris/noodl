@@ -66,6 +66,7 @@ export interface MetadataFileObject extends MetadataBaseObject {
 }
 
 export interface MetadataLinkObject extends MetadataBaseObject {
+	isRemote: boolean
 	name: string
 	url: string
 }

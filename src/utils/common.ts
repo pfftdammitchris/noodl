@@ -26,6 +26,16 @@ export function createGroupedMetadataObjects<
 	}
 }
 
+export function ensureSlashPrefix(s: string) {
+	if (!s.startsWith('/')) s = `/${s}`
+	return s
+}
+
+export function ensureSuffix(value: string, s: string) {
+	if (!value.endsWith(s)) value = `${value}${s}`
+	return value
+}
+
 export function forEachDeepKeyValue<O = any>(
 	cb: (key: string, value: any, obj: { [key: string]: any }) => void,
 	obj: O | O[],
@@ -110,7 +120,14 @@ export const createLinkMetadataExtractor = (function () {
 	) {
 		name.endsWith('.') && (name = name.substring(0, name.lastIndexOf('.')))
 		name.includes('/') && (name = name.substring(name.lastIndexOf('/') + 1))
-		const metadata = { ext, filename, name, url } as t.MetadataLinkObject
+		const isRemote = value.startsWith('http')
+		const metadata = {
+			ext,
+			filename,
+			isRemote,
+			name,
+			url,
+		} as t.MetadataLinkObject
 		if (isImg(`.${ext}`)) {
 			metadata.group = 'image'
 		} else if (/(json|pdf)$/i.test(ext)) {
@@ -231,7 +248,7 @@ export function loadFiles({
 }
 
 export function isImg(s: string) {
-	return /([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif|bmp|tif))/i.test(s)
+	return /([a-z-_0-9\/\:\.]*\.(jpg|jpeg|png|gif|bmp|tif))/i.test(s)
 }
 
 export function isPdf(s: string) {

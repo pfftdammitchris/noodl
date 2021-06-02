@@ -1,17 +1,20 @@
+import { Box, Newline, Spacer, Static, Text, useApp } from 'ink'
 import * as u from '@jsmanifest/utils'
 import invariant from 'invariant'
 import merge from 'lodash/merge'
 import path from 'path'
 import React from 'react'
 import produce, { Draft } from 'immer'
-import { Box, Static, Text, useApp } from 'ink'
-import { Provider } from './useCtx'
+import Divider from 'ink-divider'
+import useStdoutDimensions from 'ink-use-stdout-dimensions'
 import createAggregator from './api/createAggregator'
+import Select from './components/Select'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
 import Settings from './panels/Settings'
 import GenerateApp from './panels/GenerateApp'
 import Server from './panels/Server'
+import { Provider } from './useCtx'
 import * as co from './utils/color'
 import * as c from './constants'
 import * as t from './types'
@@ -37,6 +40,7 @@ function Application({
 }) {
 	const [state, _setState] = React.useState<t.App.State>(initialState)
 	const { exit } = useApp()
+	const [columns, rows] = useStdoutDimensions()
 
 	const set = React.useCallback(
 		(
@@ -127,48 +131,55 @@ function Application({
 
 	return (
 		<Provider value={ctx}>
+			{state.activePanel === c.DEFAULT_PANEL && (
+				<Divider title="NOODL CLI" width={columns} dividerColor="magenta" />
+			)}
+			<Spacer />
 			<Box flexDirection="column">
-				{
-					!state.ready ? (
-						<Settings
-							onReady={() =>
-								set({ ready: true, activePanel: state.activePanel })
-							}
+				{!state.ready ? (
+					<Settings
+						onReady={() => set({ ready: true, activePanel: state.activePanel })}
+					/>
+				) : state.activePanel === 'generateApp' ? (
+					<GenerateApp
+						config={cli.flags.config}
+						configVersion={cli.flags.version}
+						deviceType={cli.flags.device}
+						env={cli.flags.env}
+						isLocal={cli.flags.local}
+					/>
+				) : state.activePanel === 'server' ? (
+					<Server
+						config={cli.flags.config as string}
+						wss={cli.flags.wss}
+						watch={cli.flags.watch}
+					/>
+				) : (
+					<Box paddingLeft={1} flexDirection="column">
+						<Text color="whiteBright">What would you like to do?</Text>
+						<Newline />
+						<Select
+							items={[
+								{
+									value: 'generateApp',
+									label: 'Generate an entire noodl app using a config',
+								},
+								{
+									value: 'server',
+									label: 'Start noodl development server',
+								},
+							]}
+							onSelect={(item) => {
+								switch (item.value) {
+									case 'generateApp':
+										return ctx.setPanel('generateApp')
+									case 'server':
+										return ctx.setPanel('server')
+								}
+							}}
 						/>
-					) : state.activePanel === 'generateApp' ? (
-						<GenerateApp
-							config={cli.flags.config}
-							configVersion={cli.flags.version}
-							deviceType={cli.flags.device}
-							env={cli.flags.env}
-							isLocal={cli.flags.local}
-						/>
-					) : state.activePanel === 'server' ? (
-						<Server config={cli.flags.config as string} wss={cli.flags.wss} />
-					) : null
-					// <RetrieveObjects
-					// 		onEnd={() => {
-					// 			if (state.panel.runServer || cli.flags.server) {
-					// 				ctx.update(c.panel.RUN_SERVER.key, {
-					// 					idle: true,
-					// 					mounted: false,
-					// 				})
-					// 			}
-					// 		}}
-					// 	/>
-					// ) : state.activePanel === c.panel.FETCH_SERVER_FILES.key ? (
-					// 	<GetServerFiles
-					// 		onDownloadedAssets={() =>
-					// 			cli.flags.server &&
-					// 			set((d) => void (d.activePanel = c.panel.RUN_SERVER.key))
-					// 		}
-					// 	/>
-					// ) : state.activePanel === c.panel.RUN_SERVER.key ? (
-					// 	<RunServer />
-					// ) : (
-					// 	<SelectRoute />
-					// )
-				}
+					</Box>
+				)}
 				<Static items={ctx.text as string[]}>
 					{(text, index) => <Text key={index}>{text}</Text>}
 				</Static>

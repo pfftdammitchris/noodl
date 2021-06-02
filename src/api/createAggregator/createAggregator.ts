@@ -228,13 +228,13 @@ const createAggregator = function (options?: string | t.Options) {
 		get root() {
 			return root
 		},
-		extractAssets() {
+		extractAssets({ remote = true }: { remote?: boolean } = {}) {
 			const assets = [] as MetadataLinkObject[]
 			const commonUrlKeys = ['path', 'resource', 'resourceUrl'] as string[]
 			const visitedAssets = [] as string[]
 
 			function isHttp(s: string | undefined) {
-				return s ? /^https?:\/\/[a-zA-Z]+/i.test(s) : false
+				return s ? /^https?:\/\/[a-zA-Z0-9]+/gi.test(s) : false
 			}
 
 			function toAssetLink(s: string) {
@@ -243,10 +243,11 @@ const createAggregator = function (options?: string | t.Options) {
 
 			function addAsset(asset: string) {
 				if (!visitedAssets.includes(asset) && isValidAsset(asset)) {
+					if (!remote && asset.startsWith('http')) return
 					visitedAssets.push(asset)
 					const metadata = createLinkMetadataExtractor(asset, {
 						config: o.configKey,
-						url: !isHttp(asset) ? toAssetLink(asset) : asset,
+						url: !asset.includes(o.assetsUrl) ? toAssetLink(asset) : asset,
 					})
 					assets.push(metadata)
 				}
@@ -307,7 +308,7 @@ const createAggregator = function (options?: string | t.Options) {
 					}
 				}
 			}
-			await Promise.all(preloadPages.map(unary(loadPage)) || [])
+			await Promise.all(preloadPages.map(async (_) => loadPage(_)))
 		},
 		loadPage,
 		async loadPages({
@@ -329,7 +330,7 @@ const createAggregator = function (options?: string | t.Options) {
 			}
 			// Flatten out the promises for parallel reqs
 			await Promise.all(
-				chunk(await Promise.all(pages.map(unary(o.loadPage))), chunks),
+				chunk(await Promise.all(pages.map(async (_) => o.loadPage(_))), chunks),
 			)
 		},
 		loadAsset,

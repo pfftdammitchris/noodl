@@ -46,10 +46,10 @@ function Settings({ onReady }: { onReady?(): void }) {
 	)
 
 	React.useEffect(() => {
-		log(
-			`${co.cyan(`Current settings`)}: ` +
-				`${JSON.stringify(settings.all, null, 2)}`,
-		)
+		// log(
+		// 	`${co.cyan(`Global settings`)}: ` +
+		// 		`${JSON.stringify(settings.all, null, 2)}`,
+		// )
 	}, [])
 
 	React.useEffect(() => {

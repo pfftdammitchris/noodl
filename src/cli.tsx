@@ -38,6 +38,7 @@ const cli = meow(
 			start: { type: 'string' },
 			script: { type: 'string', alias: 's' },
 			version: { type: 'string', alias: 'v', default: 'latest' },
+			watch: { type: 'boolean', default: true },
 			wss: { type: 'boolean', default: false },
 		},
 	},
@@ -47,13 +48,13 @@ const config = com
 	.loadFileAsDoc(com.getAbsFilePath('config.yml'))
 	.toJSON() as t.App.Config
 
-console.log('')
-console.log(co.cyan(`Input: `), cli.input || [])
-console.log(co.cyan(`Flags: `), cli.flags)
-console.log('')
+// console.log('')
+// console.log(co.cyan(`Input: `), cli.input || [])
+// console.log(co.cyan(`Flags: `), cli.flags)
+// console.log('')
 
 const settings = new ConfigStore('noodl-cli', undefined, {
 	globalConfigPath: true,
 })
 
-render(<App cli={cli} config={config} settings={settings} />)
+const {} = render(<App cli={cli} config={config} settings={settings} />)
