@@ -47,6 +47,7 @@ interface Options {
 		request: (req: Parameters<express.RequestHandler>[0]) => void,
 		response: (res: Parameters<express.RequestHandler>[1]) => void,
 	][]
+	server?: boolean
 	serverDir?: string
 	serverPort?: number | string
 	version?: 'latest' | number
@@ -78,6 +79,7 @@ class NoodlWebpackPlugin {
 			env = c.DEFAULT_ENV,
 			hostname = c.DEFAULT_HOSTNAME,
 			locale = c.DEFAULT_LOCALE,
+			server = true,
 			serverDir = c.DEFAULT_SERVER_PATH,
 			serverPort = c.DEFAULT_SERVER_PORT,
 			staticPaths,
@@ -316,7 +318,9 @@ class NoodlWebpackPlugin {
 		}
 
 		this.listen({
-			server: (this.#server = express() as express.Express),
+			server: this.options.server
+				? (this.#server = express() as express.Express)
+				: false,
 			wss: (this.#wss = new WebSocket.Server({
 				host: this.options.hostname,
 				port: Number(this.options.wssPort),
@@ -349,7 +353,7 @@ class NoodlWebpackPlugin {
 		wss,
 		watch,
 	}: {
-		server: express.Express
+		server: express.Express | false
 		wss: WebSocket.Server
 		watch: chokidar.FSWatcher
 	}) {
@@ -374,29 +378,32 @@ class NoodlWebpackPlugin {
 				} else {
 					filename = ensurePageName(filename)
 					obj.group = 'page'
-					const route = server.get(
-						(routes = this.getRoutes(obj)),
-						(req, res, next) => {
-							res.send(loadFile(obj.filepath))
-							next()
-						},
-					)
+					if (server) {
+						const route = server.get(
+							(routes = this.getRoutes(obj)),
+							(req, res, next) => {
+								res.send(loadFile(obj.filepath))
+								next()
+							},
+						)
+					}
 				}
 			}
 			return register
 		}
 
-		server.use(express.static(this.options.serverDir))
+		server && server.use(express.static(this.options.serverDir))
 
 		for (const obj of this.options.staticPaths) {
-			server.get(
-				this.getRoutes(getMetadataObject(obj[0])),
-				(req, res, next) => {
-					obj[1]?.(req)
-					obj[2]?.(res)
-					return next()
-				},
-			)
+			server &&
+				server.get(
+					this.getRoutes(getMetadataObject(obj[0])),
+					(req, res, next) => {
+						obj[1]?.(req)
+						obj[2]?.(res)
+						return next()
+					},
+				)
 		}
 
 		const registerAssetRoute = registerRoute('asset')
@@ -405,148 +412,150 @@ class NoodlWebpackPlugin {
 		this.#assets.forEach(registerAssetRoute)
 		this.#yml.forEach(registerPageRoute)
 
-		server.listen(this.options.serverPort, () => {
-			wss
-				.on('listening', () => {})
-				.on('connection', (ws) => {
-					ws.on('message', (message) => {
-						const data = (
-							u.isStr(message) ? JSON.parse(message) : message
-						) as t.Message.Base
+		server &&
+			server.listen(this.options.serverPort, () => {
+				wss
+					.on('listening', () => {})
+					.on('connection', (ws) => {
+						ws.on('message', (message) => {
+							const data = (
+								u.isStr(message) ? JSON.parse(message) : message
+							) as t.Message.Base
 
-						info('Received: ', data)
+							info('Received: ', data)
 
-						if (data.from === 'webext') {
-							switch (data.type) {
-								case 'DOM_LOADED':
-								default:
-									break
+							if (data.from === 'webext') {
+								switch (data.type) {
+									case 'DOM_LOADED':
+									default:
+										break
+								}
+							} else {
+								if (data.type === 'track') {
+									//
+								}
 							}
-						} else {
-							if (data.type === 'track') {
-								//
-							}
-						}
-					})
-				})
-				// .on('headers', (headers, { headers: headersObject, socket, url }) => {
-				// 	info(`Headers string`, headers)
-				// 	info(`Headers string`, headersObject)
-				// 	info(`Socket info`, {
-				// 		...pick(socket, [
-				// 			'localAddress',
-				// 			'localPort',
-				// 			'remoteAddress',
-				// 			'remoteFamily',
-				// 			'remotePort',
-				// 		] as (keyof typeof socket)[]),
-				// 		address: socket.address(),
-				// 	})
-				// })
-				.on('close', () => info(u.white(`WS has closed`)))
-				.on('error', (err) => info(u.red(`[${err.name}] ${err.message}`)))
-
-			function sendMessage(msg: Record<string, any>) {
-				return new Promise((resolve, reject) => {
-					wss.clients.forEach((client) => {
-						client.send(JSON.stringify(msg, null, 2), (err) => {
-							if (err) reject(err)
-							else resolve(undefined)
 						})
 					})
-				})
-			}
+					// .on('headers', (headers, { headers: headersObject, socket, url }) => {
+					// 	info(`Headers string`, headers)
+					// 	info(`Headers string`, headersObject)
+					// 	info(`Socket info`, {
+					// 		...pick(socket, [
+					// 			'localAddress',
+					// 			'localPort',
+					// 			'remoteAddress',
+					// 			'remoteFamily',
+					// 			'remotePort',
+					// 		] as (keyof typeof socket)[]),
+					// 		address: socket.address(),
+					// 	})
+					// })
+					.on('close', () => info(u.white(`WS has closed`)))
+					.on('error', (err) => info(u.red(`[${err.name}] ${err.message}`)))
 
-			function getFileName(path: string) {
-				path.includes('/') && (path = path.substring(path.lastIndexOf('/') + 1))
-				return ensurePageName(path)
-			}
-
-			function onWatchEvent(
-				type: string,
-				fn: (args: {
-					isFile: boolean
-					isFolder: boolean
-					name: string
-					path: string
-					stats: fs.Stats
-				}) => void,
-			) {
-				async function onEvent(path: string) {
-					const stats = await fs.stat(path)
-					const args = {
-						isFile: stats.isFile(),
-						isFolder: stats.isDirectory(),
-						name: ensurePageName(getFileName(path)),
-						path,
-						// stats,
-					} as Parameters<typeof fn>[0]
-					sendMessage({ type, ...args })
-					fn(args)
+				function sendMessage(msg: Record<string, any>) {
+					return new Promise((resolve, reject) => {
+						wss.clients.forEach((client) => {
+							client.send(JSON.stringify(msg, null, 2), (err) => {
+								if (err) reject(err)
+								else resolve(undefined)
+							})
+						})
+					})
 				}
-				return onEvent
-			}
 
-			watch
-				.on('ready', () => {
-					info(
-						`Watching for file changes at ${u.green(this.options.serverDir)}`,
+				function getFileName(path: string) {
+					path.includes('/') &&
+						(path = path.substring(path.lastIndexOf('/') + 1))
+					return ensurePageName(path)
+				}
+
+				function onWatchEvent(
+					type: string,
+					fn: (args: {
+						isFile: boolean
+						isFolder: boolean
+						name: string
+						path: string
+						stats: fs.Stats
+					}) => void,
+				) {
+					async function onEvent(path: string) {
+						const stats = await fs.stat(path)
+						const args = {
+							isFile: stats.isFile(),
+							isFolder: stats.isDirectory(),
+							name: ensurePageName(getFileName(path)),
+							path,
+							// stats,
+						} as Parameters<typeof fn>[0]
+						sendMessage({ type, ...args })
+						fn(args)
+					}
+					return onEvent
+				}
+
+				watch
+					.on('ready', () => {
+						info(
+							`Watching for file changes at ${u.green(this.options.serverDir)}`,
+						)
+						sendMessage({ type: c.WATCHING_FILES })
+					})
+					.on(
+						'change',
+						onWatchEvent(c.FILE_CHANGED, (args) =>
+							info(`File changed`, u.magenta(path.resolve(args.path))),
+						),
 					)
-					sendMessage({ type: c.WATCHING_FILES })
-				})
-				.on(
-					'change',
-					onWatchEvent(c.FILE_CHANGED, (args) =>
-						info(`File changed`, u.magenta(path.resolve(args.path))),
-					),
-				)
-				.on(
-					'add',
-					onWatchEvent(c.FILE_ADDED, (args) => {
-						info(`File added`, u.magenta(path.resolve(args.path)))
-						if (isYml(args.path)) {
-							let filepath = path.resolve(args.path)
-							let filename = args.path
-							isYml(filename) && (filename = filename.replace('.yml', ''))
-							if (filename.split('/')?.length > 2) {
-								filename = filename.substring(filename.lastIndexOf('/'))
+					.on(
+						'add',
+						onWatchEvent(c.FILE_ADDED, (args) => {
+							info(`File added`, u.magenta(path.resolve(args.path)))
+							if (isYml(args.path)) {
+								let filepath = path.resolve(args.path)
+								let filename = args.path
+								isYml(filename) && (filename = filename.replace('.yml', ''))
+								if (filename.split('/')?.length > 2) {
+									filename = filename.substring(filename.lastIndexOf('/'))
+								}
+								info(u.white(`Added new route: ${u.magenta(filename)}`))
+								server?.get(
+									this.getRoutes({
+										ext: 'yml',
+										filepath,
+										filename,
+										group: 'page',
+									}),
+									(req, res) => res.send(loadFile(filepath)),
+								)
 							}
-							info(u.white(`Added new route: ${u.magenta(filename)}`))
-							server?.get(
-								this.getRoutes({
-									ext: 'yml',
-									filepath,
-									filename,
-									group: 'page',
-								}),
-								(req, res) => res.send(loadFile(filepath)),
-							)
-						}
-					}),
-				)
-				.on(
-					'addDir',
-					onWatchEvent(c.FOLDER_ADDED, (args) =>
-						info(`Folder added`, u.magenta(path.resolve(args.path))),
-					),
-				)
-				.on(
-					'unlink',
-					onWatchEvent(c.FILE_REMOVED, (args) =>
-						info(`File was removed`, u.magenta(path.resolve(args.path))),
-					),
-				)
-				.on(
-					'unlinkDir',
-					onWatchEvent(c.FOLDER_REMOVED, (args) =>
-						info(`Folder was removed`, u.magenta(path.resolve(args.path))),
-					),
-				)
-				.on('error', (err) => {
-					info(`Error`, err)
-					sendMessage({ type: c.WATCH_ERROR, error: err })
-				})
-		})
+						}),
+					)
+					.on(
+						'addDir',
+						onWatchEvent(c.FOLDER_ADDED, (args) =>
+							info(`Folder added`, u.magenta(path.resolve(args.path))),
+						),
+					)
+					.on(
+						'unlink',
+						onWatchEvent(c.FILE_REMOVED, (args) =>
+							info(`File was removed`, u.magenta(path.resolve(args.path))),
+						),
+					)
+					.on(
+						'unlinkDir',
+						onWatchEvent(c.FOLDER_REMOVED, (args) =>
+							info(`Folder was removed`, u.magenta(path.resolve(args.path))),
+						),
+					)
+					.on('error', (err) => {
+						info(`Error`, err)
+						sendMessage({ type: c.WATCH_ERROR, error: err })
+					})
+			})
 	}
 
 	/**
