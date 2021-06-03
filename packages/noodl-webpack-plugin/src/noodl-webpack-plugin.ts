@@ -51,6 +51,7 @@ interface Options {
 	serverDir?: string
 	serverPort?: number | string
 	version?: 'latest' | number
+	wss?: boolean
 	wssPort?: number | string
 }
 
@@ -83,6 +84,7 @@ class NoodlWebpackPlugin {
 			serverDir = c.DEFAULT_SERVER_PATH,
 			serverPort = c.DEFAULT_SERVER_PORT,
 			staticPaths,
+			wss = true,
 			wssPort = c.DEFAULT_WSS_PORT,
 			version = c.DEFAULT_CONFIG_VERSION,
 		} = options
@@ -94,10 +96,12 @@ class NoodlWebpackPlugin {
 		this.options.env = env
 		this.options.hostname = hostname
 		this.options.locale = locale
+		this.options.server = server
 		this.options.serverDir = getAbsPath(serverDir)
 		this.options.serverPort = serverPort
 		this.options.staticPaths = staticPaths || []
 		this.options.version = version
+		this.options.wss = wss
 		this.options.wssPort = wssPort
 
 		invariant(
@@ -147,10 +151,12 @@ class NoodlWebpackPlugin {
 			env,
 			hostname,
 			locale,
+			server: enableServer,
 			serverPort,
 			serverDir,
 			staticPaths,
 			version,
+			wss: enableWss,
 		} = this.options
 
 		info(`Searching your directory for the config file...`)
@@ -253,7 +259,6 @@ class NoodlWebpackPlugin {
 			const appConfigFilePath = localFiles.find((filepath) =>
 				filepath.endsWith(parsedRootConfig.cadlMain),
 			)
-			console.log('parsedRootConfig', parsedRootConfig)
 			if (appConfigFilePath) {
 				info(`Loading app config...`)
 				appConfigYml = loadFile(appConfigFilePath)
@@ -318,13 +323,15 @@ class NoodlWebpackPlugin {
 		}
 
 		this.listen({
-			server: this.options.server
+			server: enableServer
 				? (this.#server = express() as express.Express)
 				: false,
-			wss: (this.#wss = new WebSocket.Server({
-				host: this.options.hostname,
-				port: Number(this.options.wssPort),
-			})),
+			wss: enableWss
+				? (this.#wss = new WebSocket.Server({
+						host: this.options.hostname,
+						port: Number(this.options.wssPort),
+				  }))
+				: false,
 			watch: (this.#watch = chokidar.watch(path.join(serverDir, '**/*'), {
 				cwd: process.cwd(),
 				ignoreInitial: true,
@@ -354,7 +361,7 @@ class NoodlWebpackPlugin {
 		watch,
 	}: {
 		server: express.Express | false
-		wss: WebSocket.Server
+		wss: WebSocket.Server | false
 		watch: chokidar.FSWatcher
 	}) {
 		const comet = '\u2604\uFE0F'
@@ -414,54 +421,56 @@ class NoodlWebpackPlugin {
 
 		server &&
 			server.listen(this.options.serverPort, () => {
-				wss
-					.on('listening', () => {})
-					.on('connection', (ws) => {
-						ws.on('message', (message) => {
-							const data = (
-								u.isStr(message) ? JSON.parse(message) : message
-							) as t.Message.Base
+				wss &&
+					wss
+						.on('listening', () => {})
+						.on('connection', (ws) => {
+							ws.on('message', (message) => {
+								const data = (
+									u.isStr(message) ? JSON.parse(message) : message
+								) as t.Message.Base
 
-							info('Received: ', data)
+								info('Received: ', data)
 
-							if (data.from === 'webext') {
-								switch (data.type) {
-									case 'DOM_LOADED':
-									default:
-										break
+								if (data.from === 'webext') {
+									switch (data.type) {
+										case 'DOM_LOADED':
+										default:
+											break
+									}
+								} else {
+									if (data.type === 'track') {
+										//
+									}
 								}
-							} else {
-								if (data.type === 'track') {
-									//
-								}
-							}
+							})
 						})
-					})
-					// .on('headers', (headers, { headers: headersObject, socket, url }) => {
-					// 	info(`Headers string`, headers)
-					// 	info(`Headers string`, headersObject)
-					// 	info(`Socket info`, {
-					// 		...pick(socket, [
-					// 			'localAddress',
-					// 			'localPort',
-					// 			'remoteAddress',
-					// 			'remoteFamily',
-					// 			'remotePort',
-					// 		] as (keyof typeof socket)[]),
-					// 		address: socket.address(),
-					// 	})
-					// })
-					.on('close', () => info(u.white(`WS has closed`)))
-					.on('error', (err) => info(u.red(`[${err.name}] ${err.message}`)))
+						// .on('headers', (headers, { headers: headersObject, socket, url }) => {
+						// 	info(`Headers string`, headers)
+						// 	info(`Headers string`, headersObject)
+						// 	info(`Socket info`, {
+						// 		...pick(socket, [
+						// 			'localAddress',
+						// 			'localPort',
+						// 			'remoteAddress',
+						// 			'remoteFamily',
+						// 			'remotePort',
+						// 		] as (keyof typeof socket)[]),
+						// 		address: socket.address(),
+						// 	})
+						// })
+						.on('close', () => info(u.white(`WS has closed`)))
+						.on('error', (err) => info(u.red(`[${err.name}] ${err.message}`)))
 
 				function sendMessage(msg: Record<string, any>) {
 					return new Promise((resolve, reject) => {
-						wss.clients.forEach((client) => {
-							client.send(JSON.stringify(msg, null, 2), (err) => {
-								if (err) reject(err)
-								else resolve(undefined)
+						wss &&
+							wss.clients.forEach((client) => {
+								client.send(JSON.stringify(msg, null, 2), (err) => {
+									if (err) reject(err)
+									else resolve(undefined)
+								})
 							})
-						})
 					})
 				}
 
@@ -521,15 +530,16 @@ class NoodlWebpackPlugin {
 									filename = filename.substring(filename.lastIndexOf('/'))
 								}
 								info(u.white(`Added new route: ${u.magenta(filename)}`))
-								server?.get(
-									this.getRoutes({
-										ext: 'yml',
-										filepath,
-										filename,
-										group: 'page',
-									}),
-									(req, res) => res.send(loadFile(filepath)),
-								)
+								server &&
+									server?.get(
+										this.getRoutes({
+											ext: 'yml',
+											filepath,
+											filename,
+											group: 'page',
+										}),
+										(req, res) => res.send(loadFile(filepath)),
+									)
 							}
 						}),
 					)
