@@ -1,7 +1,5 @@
 data
 dev
-dist
-output
-scripts
-codegen.yml
-readme
+node_modules
+lerna*
+tsconfig.test.json
