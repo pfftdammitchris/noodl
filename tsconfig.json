@@ -3,10 +3,11 @@
 		"allowSyntheticDefaultImports": true,
 		"baseUrl": "src",
 		"declaration": true,
+		"declarationDir": "dist",
 		"esModuleInterop": true,
 		"suppressImplicitAnyIndexErrors": true,
 		"jsx": "react",
-		"lib": ["es2018"],
+		"lib": ["esnext"],
 		"keyofStringsOnly": true,
 		"module": "commonjs",
 		"moduleResolution": "node",
@@ -17,7 +18,7 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"sourceMap": true,
-		"target": "es2018"
+		"target": "es2015"
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules/**/*"]

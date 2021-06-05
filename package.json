@@ -19,7 +19,6 @@
 		"pub": "node scripts/publish.js -p"
 	},
 	"dependencies": {
-		"cheerio": "^1.0.0-rc.6",
 		"configstore": "^5.0.1",
 		"download": "^8.0.0",
 		"express": "^4.17.1",
@@ -27,12 +26,9 @@
 		"ink": "^3.0.8",
 		"ink-big-text": "^1.2.0",
 		"ink-gradient": "^2.0.0",
-		"ink-link": "^2.0.0",
 		"ink-progress-bar": "^3.0.0",
 		"ink-select-input": "^4.2.0",
 		"ink-spinner": "^4.0.1",
-		"ink-table": "^3.0.0",
-		"ink-task-list": "^1.0.1",
 		"ink-text-input": "^4.0.1",
 		"invariant": "^2.2.4",
 		"noodl": "file:packages/noodl",
