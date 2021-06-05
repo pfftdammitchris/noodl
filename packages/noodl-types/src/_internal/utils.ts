@@ -81,7 +81,7 @@ export function isNil(v: unknown) {
 }
 
 export function isObj(value: unknown): value is Record<string, any> {
-	return exists(value) && !Array.isArray(value) && typeof value === 'object'
+	return value != null && !isArr(value) && typeof value === 'object'
 }
 
 export function isImg(s: string) {
