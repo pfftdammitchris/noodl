@@ -1,6 +1,6 @@
 {
 	"name": "noodl-types",
-	"version": "1.0.92",
+	"version": "1.0.93",
 	"description": "NOODL TypeScript Definitions",
 	"main": "dist/index.js",
 	"module": "dist/index.js",
@@ -23,10 +23,10 @@
 	"gitHead": "3a5b477fa7ff5b34a63aee5b2b84729f0687459a",
 	"dependencies": {
 		"lodash.get": "^4.4.2",
-		"lodash.set": "^4.3.2"
+		"lodash.has": "^4.5.2"
 	},
 	"devDependencies": {
 		"@types/lodash.get": "^4.4.6",
-		"@types/lodash.set": "^4.3.6"
+		"@types/lodash.has": "^4.5.6"
 	}
 }

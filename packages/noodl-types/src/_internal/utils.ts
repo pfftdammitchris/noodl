@@ -1,5 +1,5 @@
-import get from 'lodash/get'
-import has from 'lodash/has'
+import get from 'lodash.get'
+import has from 'lodash.has'
 import { NameField } from '../ecosTypes'
 
 export function excludeKeys(keys1: string[], keys2: string | string[]) {
