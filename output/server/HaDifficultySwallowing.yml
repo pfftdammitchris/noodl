@@ -1,0 +1,69 @@
+HaDifficultySwallowing:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Difficulty swallowing
+        - .HaHeaderLittleLabel:
+          text: Refers to the obstruction of pharyngeal, sternal, or esophageal stagnation caused by food from the mouth to the stomach and during the transportation.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Difficulty swallowing is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/difficulty-swallowing.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency care if:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Have something stuck in your throat."
+            - br: 
+            - text: "⦁ Can't swallow at all."
+            - br: 
+            - text: "⦁ Have trouble breathing."
+        - .HaBodyContent:
+          style: 
+            top: "180px"
+          textBoard: 
+            - text: "Difficulty in swallowing also known as dysphagia, means that when swallowing food or drinking water, it feels laborious or obstructive. Usually, the main performance is that it is laborious to swallow food. The food has a feeling of obstruction when passing through the mouth or the throat. The swallowing time is too long. And in seriously situation, even the food and water cannot be swallowed."
+            - br: 
+            - text: ""
+            - br: 
+            - text: "The diseases that cause difficulty in swallowing can be roughly divided into two categories: mechanical and dynamic:"
+        - .HaBodyContentList:
+          style: 
+            top: "360px"
+          textBoard: 
+            - text: "⦁ Mechanical: any cause of smaller esophageal diameter may cause difficulty in swallowing, including stenosis caused by disease of the esophagus itself and enlargement of the esophagus outside the esophagus, common diseases include throat, esophagus Inflammation, esophageal tumors, thyroid neoplasms, mediastinal tumors, etc."
+            - br: 
+            - text: "⦁ Dynamic: normal swallowing is accomplished by a combination of nerves and muscles. If there is a problem with the nerves or muscles, dysphagia happened. Disease include: cerebrovascular accident (stroke), myasthenia gravis, Parkinson's disease, achalasia, dermatomyositis, etc."
+        - .HaBodyContent:
+          style: 
+            top: "540px"
+          textBoard: 
+            - text: "In addition to the above causes, mental illnesses such as snoring, anxiety, and depression can also cause difficulty swallowing."
+        - .HaBottomTag: 
+          style: 
+            top: "640px"
+        - .HaBottomTagname: 
+          text: "difficulty swallowing"
+          style: 
+            top: "700px"
+        - .HaBottomTagname: 
+          text: "swallowing"
+          style: 
+            top: "700px"
+            left: "0.11"    
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.15"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

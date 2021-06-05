@@ -1,0 +1,131 @@
+HaDiarrheaInChild:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Diarrhea in children
+        - .HaHeaderLittleLabel:
+          text: Is a common symptom of the respiratory tract. Cough is always caused by inflammation, foreign body, physical or chemical stimulation of the trachea, bronchial mucosa or pleura.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Diarrhea in children is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/diarrhea-in-a-child.png
+
+    - .HaBodyCon:
+      children:
+        - .HaBodyContent:
+          text: Diarrhea is frequent, loose, or watery bowel movements that are more frequent, and differ from the child’s normal pattern. Diarrhea is very prevalent in children.
+        - .HaBodyTitle:
+          text: "Seek emergency care immediately if the following:"
+          style:
+            top: "90px"
+        - .HaBodyContentList:
+          style: 
+            top: "150px"
+          textBoard: 
+            - text: "⦁ Blood or Pus in stool"
+            - br: 
+            - text: "⦁ Black tarry stool"
+            - br: 
+            - text: "⦁ Bloody Vomit"
+            - br:  
+            - text: "⦁ Extreme pain in the abdomen when touched"
+            - br: 
+            - text: "⦁ If Diarrhea has lasted more than 3 days"    
+        - .HaBodyContent:
+          style: 
+            top: "330px"
+          textBoard: 
+            - text: "Diarrhea is loose, or watery bowel movements that are more frequent, and differ from the child’s normal pattern. Diarrhea may contain mucus, blood or may simply be watery. Watery diarrhea greater than 24 hours duration is never considered normal. If diarrhea lasts longer than 24 hours, your child may be dehydrated. Severe dehydration may be life threatening and if suspected, please seek emergency medical care ASAP."
+            - br: 
+            - text: ""
+            - br: 
+            - text: "Children with Diarrhea may experience loss of appetite, recent loss of weight, vomiting, and or have a fever."
+            - br: 
+            - text: ""
+            - br: 
+            - text: "Causes of diarrhea in children differ depending on time. Less than 2 weeks (acute) or greater than 2 weeks (chronic). Acute causes are more commonly seen. Children should be evaluated by a medical professional immediately when diarrhea and or dehydration are suspected."
+        - .HaBodyTitle:
+          text: "Acute diarrhea causes:"
+          style: 
+            top: "600px"
+        - .HaBodyContentList:
+          style: 
+            top: "660px"
+          textBoard: 
+            - text: "⦁ Infectious"
+            - br: 
+            - text: "⦁ Food Poisoning (Viral or Bacterial)"
+            - br: 
+            - text: "⦁ Food allergies"
+            - br:  
+            - text: "⦁ Antibiotic use"
+            - br: 
+            - text: "⦁ Less commonly:" 
+        - .HaBodyContentList:
+          style: 
+            top: "840px"
+          textBoard: 
+            - text: "⦁ Appendicitis"
+            - br: 
+            - text: "⦁ Intussusception"
+            - br: 
+            - text: "⦁ HUS"
+        - .HaBodyTitle:
+          text: "Chronic diarrhea causes:"
+          style: 
+            top: "960px"
+        - .HaBodyContentList:
+          style: 
+            top: "1020px"
+          textBoard: 
+            - text: "⦁ Diet"
+            - br: 
+            - text: "⦁ Parasitic infections"
+            - br: 
+            - text: "⦁ Genetic Diseases"
+            - br:  
+            - text: "⦁ Less commonly:"
+        - .HaBodyContentList:
+          style: 
+            top: "1170px"
+          textBoard: 
+            - text: "⦁ Immunodeficiency"
+            - br: 
+            - text: "⦁ Malabsorption"
+            - br: 
+            - text: "⦁ Cystic Fibrosis"     
+        - .HaBodyContent:
+          style: 
+            top: "1290px"
+          textBoard: 
+            - text: "Specific causes of diarrhea in children may require treatment. Dehydration is a main concern and requires immediate re-hydration. Sports drinks and sodas should be avoided. Oral rehydration solutions are frequently sold at pharmacies and most supermarkets. If the child is unable to hold any fluids in due to vomiting, hospitalization may be necessary.`,"
+
+        - .HaBottomTag: 
+          style: 
+            top: "1410px"
+        - .HaBottomTagname: 
+          text: "diarrhea"
+          style: 
+            top: "1470px"
+        - .HaBottomTagname: 
+          text: "children"
+          style: 
+            top: "1470px"
+            left: "0.06"
+        - .HaBottomTagname: 
+          text: "child"
+          style: 
+            top: "1470px"
+            left: "0.12"       
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.95"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

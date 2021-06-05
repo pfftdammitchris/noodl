@@ -1,12 +1,14 @@
 import * as u from '@jsmanifest/utils'
-import unary from 'lodash/unary'
 import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
-import * as co from '../../utils/color'
-import { createLinkMetadataExtractor, withSuffix } from '../../utils/common'
+import {
+	createLinkMetadataExtractor,
+	promiseAllSafe,
+	withSuffix,
+} from '../../utils/common'
 import {
 	createNoodlPlaceholderReplacer,
 	hasNoodlPlaceholder,
@@ -15,6 +17,7 @@ import {
 import { DEFAULT_CONFIG_HOSTNAME } from '../../constants'
 import { MetadataLinkObject } from '../../types'
 import * as c from './constants'
+import * as co from '../../utils/color'
 import * as t from './types'
 
 const createAggregator = function (options?: string | t.Options) {
@@ -58,14 +61,18 @@ const createAggregator = function (options?: string | t.Options) {
 				!!configName,
 				`Cannot retrieve the root config because a config key is not set`,
 			)
-			const { data: yml } = await axios.get(
-				`https://${DEFAULT_CONFIG_HOSTNAME}/config/${withYmlExt(configName)}`,
-			)
+			const url = `https://${DEFAULT_CONFIG_HOSTNAME}/config/${withYmlExt(
+				configName,
+			)}`
+			emit(c.ON_RETRIEVING_ROOT_CONFIG, { url })
+			const { data: yml } = await axios.get(url)
 			const doc = yaml.parseDocument(yml)
+
 			root.set(configName, doc)
 			root.set(`${configName}_raw`, yml)
-			emit(c.RETRIEVED_ROOT_CONFIG, { name: configName, doc })
+			emit(c.ON_RETRIEVED_ROOT_CONFIG, { name: configName, doc, yml })
 			configVersion = getConfigVersion(doc)
+			emit(c.ON_CONFIG_VERSION, configVersion)
 			const replacePlaceholders = createNoodlPlaceholderReplacer({
 				cadlBaseUrl: doc.get('cadlBaseUrl'),
 				cadlVersion: configVersion,
@@ -73,15 +80,29 @@ const createAggregator = function (options?: string | t.Options) {
 			yaml.visit(doc, {
 				Pair(key, node) {
 					if (yaml.isScalar(node.key) && node.key.value === 'cadlBaseUrl') {
-						if (yaml.isScalar(node.value)) {
+						if (
+							yaml.isScalar(node.value) &&
+							u.isStr(node.value) &&
+							hasNoodlPlaceholder(node.value)
+						) {
+							const before = node.value.value as string
 							node.value.value = replacePlaceholders(node.value.value)
+							emit(c.ON_PLACEHOLDER_PURGED, {
+								before,
+								after: node.value.value as string,
+							})
 							return yaml.visit.SKIP
 						}
 					}
 				},
 				Scalar(key, node) {
 					if (u.isStr(node.value) && hasNoodlPlaceholder(node.value)) {
+						const before = node.value
 						node.value = replacePlaceholders(node.value)
+						emit(c.ON_PLACEHOLDER_PURGED, {
+							before,
+							after: node.value as string,
+						})
 					}
 				},
 			})
@@ -99,14 +120,14 @@ const createAggregator = function (options?: string | t.Options) {
 			!!root.get(configKey),
 			'Cannot initiate app config without retrieving the root config',
 		)
-		emit(c.RETRIEVING_APP_CONFIG, { url: appConfigUrl })
+		emit(c.ON_RETRIEVING_APP_CONFIG, { url: appConfigUrl })
 		try {
 			// Placeholders should already have been purged by this time
 			let appConfigYml = ''
 			let appConfigDoc: yaml.Document.Parsed<any> | undefined
 			try {
 				const { data: yml } = await axios.get(appConfigUrl)
-				emit(c.RETRIEVED_APP_CONFIG, (appConfigYml = yml))
+				emit(c.ON_RETRIEVED_APP_CONFIG, (appConfigYml = yml))
 				root.set(`${appKey}_raw`, appConfigYml as any)
 			} catch (error) {
 				throw error
@@ -134,7 +155,7 @@ const createAggregator = function (options?: string | t.Options) {
 				u.log(u.red(`Page "${name}" was not loaded because of bad parameters`))
 			}
 			if (name) {
-				emit(c.RETRIEVED_APP_PAGE, { name, doc: doc as yaml.Document })
+				emit(c.ON_RETRIEVED_APP_PAGE, { name, doc: doc as yaml.Document })
 				return root.get(name || '')
 			}
 		} catch (error) {
@@ -144,7 +165,7 @@ const createAggregator = function (options?: string | t.Options) {
 						name || '',
 					)}`,
 				)
-				emit(c.APP_PAGE_DOES_NOT_EXIST, { name: name as string, error })
+				emit(c.ON_APP_PAGE_DOESNT_EXIST, { name: name as string, error })
 			} else {
 				console.log(
 					`[${chalk.yellow(error.name)}] on page ${co.red(name || '')}: ${
@@ -152,7 +173,7 @@ const createAggregator = function (options?: string | t.Options) {
 					}`,
 				)
 			}
-			emit(c.RETRIEVE_APP_PAGE_FAILED, { name: name as string, error })
+			emit(c.ON_RETRIEVE_APP_PAGE_FAILED, { name: name as string, error })
 		}
 	}
 
@@ -211,7 +232,11 @@ const createAggregator = function (options?: string | t.Options) {
 			return configVersion || ''
 		},
 		set configVersion(version: string) {
-			configVersion = version
+			if (version === 'latest') {
+				configVersion = getConfigVersion(o.root.get(o.configKey))
+			} else {
+				configVersion = version
+			}
 		},
 		get deviceType() {
 			return deviceType
@@ -279,7 +304,7 @@ const createAggregator = function (options?: string | t.Options) {
 		},
 		getPageUrl(name: string | undefined) {
 			if (name?.endsWith('.yml')) name = name.replace('.yml', '')
-			return name ? `${o.baseUrl}${name}.yml` : ''
+			return name ? `${baseUrl}${name}.yml` : ''
 		},
 		async init({
 			loadPages: shouldLoadPages,
@@ -308,7 +333,7 @@ const createAggregator = function (options?: string | t.Options) {
 					}
 				}
 			}
-			await Promise.all(preloadPages.map(async (_) => loadPage(_)))
+			await promiseAllSafe(...preloadPages.map(async (_) => loadPage(_)))
 		},
 		loadPage,
 		async loadPages({

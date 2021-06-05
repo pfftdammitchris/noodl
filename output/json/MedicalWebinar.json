@@ -1,0 +1,332 @@
+{
+  "MedicalWebinar": {
+    "pageNumber": "62",
+    "viewPort": "top",
+    "components": [
+      ".BaseHeader",
+      {
+        "type": "image",
+        "path": "MedicalWebinarEdited.png",
+        "style": {
+          "top": "0.12",
+          "left": "0",
+          "width": "1"
+        }
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "1.2",
+          "height": "0.5",
+          "width": "1",
+          "backgroundColor": "0x388eccff"
+        },
+        "children": [
+          {
+            "type": "label",
+            "text": "Medical Webinar",
+            "style": {
+              "top": "0.08",
+              "left": "0.15",
+              "height": "0.033",
+              "width": "0.72",
+              "fontFamily": "Roboto Bold",
+              "textAlign": {
+                "x": "center"
+              },
+              "color": "0xffffffff",
+              "fontSize": "87",
+              "fontWeight": 600
+            }
+          },
+          {
+            "type": "label",
+            "text": "Discover common medical conditions taught from a doctor's perspective to improve your health",
+            "style": {
+              "left": "0.15",
+              "top": "0.26",
+              "fontFamily": "Helvetical",
+              "width": "0.7",
+              "height": "0.033",
+              "textAlign": {
+                "x": "center"
+              },
+              "color": "0xffffffff",
+              "fontSize": "38",
+              "fontWeight": 500
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "height": "1",
+          "width": "1",
+          "top": "1.7"
+        },
+        "children": [
+          {
+            ".MedicalWebinarVideoButton": null
+          },
+          {
+            ".MedicalWebinarVideoPopup": null
+          },
+          {
+            ".MedicalWebinarVideoView": null
+          },
+          {
+            ".MedicalWebinarVideoButton": null,
+            "style": {
+              "left": "0.35"
+            }
+          },
+          {
+            ".MedicalWebinarVideoPopup": null,
+            "style": {
+              "left": "0.3"
+            }
+          },
+          {
+            ".MedicalWebinarVideoView": null,
+            "style": {
+              "left": "0.301"
+            }
+          },
+          {
+            ".MedicalWebinarVideoButton": null,
+            "style": {
+              "left": "0.65"
+            }
+          },
+          {
+            ".MedicalWebinarVideoPopup": null,
+            "style": {
+              "left": "0.6"
+            }
+          },
+          {
+            ".MedicalWebinarVideoView": null,
+            "style": {
+              "left": "0.602"
+            }
+          },
+          {
+            ".MedicalWebinarVideoButton": null,
+            "style": {
+              "top": "0.6"
+            }
+          },
+          {
+            ".MedicalWebinarVideoPopup": null,
+            "style": {
+              "top": "0.67"
+            }
+          },
+          {
+            ".MedicalWebinarVideoView": null,
+            "style": {
+              "top": "0.69"
+            }
+          },
+          {
+            ".MedicalWebinarVideoButton": null,
+            "style": {
+              "left": "0.35",
+              "top": "0.6"
+            }
+          },
+          {
+            ".MedicalWebinarVideoPopup": null,
+            "style": {
+              "left": "0.3",
+              "top": "0.67"
+            }
+          },
+          {
+            ".MedicalWebinarVideoView": null,
+            "style": {
+              "left": "0.301",
+              "top": "0.69"
+            }
+          },
+          {
+            ".MedicalWebinarVideoButton": null,
+            "style": {
+              "left": "0.65",
+              "top": "0.6"
+            }
+          },
+          {
+            ".MedicalWebinarVideoPopup": null,
+            "style": {
+              "left": "0.6",
+              "top": "0.67"
+            }
+          },
+          {
+            ".MedicalWebinarVideoView": null,
+            "style": {
+              "left": "0.602",
+              "top": "0.69"
+            }
+          },
+          {
+            ".MedicalWebinarVideoButton": null,
+            "style": {
+              "top": "1.2"
+            }
+          },
+          {
+            ".MedicalWebinarVideoPopup": null,
+            "style": {
+              "top": "1.27"
+            }
+          },
+          {
+            ".MedicalWebinarVideoView": null,
+            "style": {
+              "top": "1.29"
+            }
+          },
+          {
+            ".MedicalWebinarVideoButton": null,
+            "style": {
+              "left": "0.35",
+              "top": "1.2"
+            }
+          },
+          {
+            ".MedicalWebinarVideoPopup": null,
+            "style": {
+              "left": "0.3",
+              "top": "1.27"
+            }
+          },
+          {
+            ".MedicalWebinarVideoView": null,
+            "style": {
+              "left": "0.301",
+              "top": "1.29"
+            }
+          },
+          {
+            ".MedicalWebinarVideoButton": null,
+            "style": {
+              "left": "0.65",
+              "top": "1.2"
+            }
+          },
+          {
+            ".MedicalWebinarVideoPopup": null,
+            "style": {
+              "left": "0.6",
+              "top": "1.27"
+            }
+          },
+          {
+            ".MedicalWebinarVideoView": null,
+            "style": {
+              "left": "0.602",
+              "top": "1.29"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "3.5",
+          "width": "1",
+          "height": "0.5"
+        },
+        "children": [
+          {
+            "type": "image",
+            "path": "CommunityBack.png",
+            "style": {
+              "opacity": 0.5,
+              "left": "0",
+              "top": "0",
+              "width": "1",
+              "height": "1"
+            }
+          },
+          {
+            "type": "image",
+            "path": "Logoicon.png",
+            "style": {
+              "left": "0.45",
+              "top": "0.1",
+              "width": "0.1"
+            }
+          },
+          {
+            "type": "label",
+            "textBoard": [
+              {
+                "text": "Book an appointment with a doctor through"
+              },
+              {
+                "text": "AiTmed telemedicine today!"
+              }
+            ],
+            "style": {
+              "left": "0.15",
+              "width": "0.7",
+              "top": "0.4",
+              "height": "0.0315",
+              "fontSize": "36",
+              "fontStyle": "bold",
+              "color": "0x000000ff",
+              "lineHeight": "1.5",
+              "textAlign": {
+                "x": "center"
+              }
+            }
+          },
+          {
+            "type": "button",
+            "text": "Talk to a Doctor",
+            "style": {
+              "border": {
+                "style": "1"
+              },
+              "left": "0.43",
+              "width": "0.14",
+              "height": "0.07",
+              "top": "0.715",
+              "backgroundColor": "0x388eccff",
+              "textAlign": {
+                "x": "center"
+              },
+              "color": "0xffffffff",
+              "fontSize": "22",
+              "display": "inline"
+            },
+            "onClick": [
+              {
+                "goto": "..SignUp.url"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "4.5",
+          "width": "1",
+          "height": "0.5"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

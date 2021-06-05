@@ -5,24 +5,22 @@ import yaml from 'yaml'
 export type CommonEmitEvents =
 	| 'PARSED_APP_CONFIG'
 	| 'RETRIEVED_ROOT_BASE_URL'
-	| 'RETRIEVED_ROOT_CONFIG'
+	| 'ON_RETRIEVED_ROOT_CONFIG'
 	| 'RETRIEVED_APP_ENDPOINT'
 	| 'RETRIEVED_APP_BASE_URL'
-	| 'RETRIEVED_APP_PAGE'
+	| 'ON_RETRIEVED_APP_PAGE'
 	| 'RETRIEVED_CONFIG_VERSION'
 
 export type Hooks = {
-	APP_PAGE_DOES_NOT_EXIST: {
-		args: { name: string; error: Error }
-	}
-	RETRIEVED_APP_CONFIG: {
-		args: string
-	}
-	RETRIEVE_APP_PAGE_FAILED: {
-		args: { name: string; error: Error }
-	}
-	RETRIEVING_APP_CONFIG: {
-		args: { url: string }
+	ON_APP_PAGE_DOESNT_EXIST: { args: { name: string; error: Error } }
+	ON_CONFIG_VERSION: { args: string }
+	ON_PLACEHOLDER_PURGED: { args: { before: string; after: string } }
+	ON_RETRIEVING_APP_CONFIG: { args: { url: string } }
+	ON_RETRIEVED_APP_CONFIG: { args: string }
+	ON_RETRIEVE_APP_PAGE_FAILED: { args: { name: string; error: Error } }
+	ON_RETRIEVING_ROOT_CONFIG: { args: { url: string } }
+	ON_RETRIEVED_ROOT_CONFIG: {
+		args: { doc: yaml.Document; name: string; yml: string }
 	}
 } & Record<CommonEmitEvents, { args: { name: string; doc: yaml.Document } }>
 

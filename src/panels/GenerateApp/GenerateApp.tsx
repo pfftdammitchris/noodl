@@ -1,6 +1,6 @@
 import { LiteralUnion } from 'type-fest'
 import { DeviceType, Env } from 'noodl-types'
-import { Box, Spacer, Static, Text } from 'ink'
+import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
 import * as u from '@jsmanifest/utils'
 import React from 'react'
@@ -12,12 +12,13 @@ import globby from 'globby'
 import merge from 'lodash/merge'
 import produce, { Draft } from 'immer'
 import Panel from '../../components/Panel'
+import useConfigInput from '../../hooks/useConfigInput'
 import useCtx from '../../useCtx'
 import {
-	RETRIEVED_ROOT_CONFIG,
-	RETRIEVE_APP_PAGE_FAILED,
+	ON_RETRIEVED_ROOT_CONFIG,
+	ON_RETRIEVE_APP_PAGE_FAILED,
 	PARSED_APP_CONFIG,
-	RETRIEVED_APP_PAGE,
+	ON_RETRIEVED_APP_PAGE,
 } from '../../api/createAggregator'
 import { MetadataLinkObject } from '../../types'
 import * as com from '../../utils/common'
@@ -31,6 +32,9 @@ export interface Props {
 	deviceType?: LiteralUnion<DeviceType | '', string>
 	env?: LiteralUnion<Env, string>
 	isLocal?: boolean
+	host?: string
+	port?: number
+	onEnd?(): void
 }
 
 export const initialState = {
@@ -43,14 +47,28 @@ export const initialState = {
 }
 
 function GenerateApp(props: Props) {
-	const { aggregator, getGenerateDir, log, logError, spinner, toggleSpinner } =
+	const { aggregator, configuration, log, logError, spinner, toggleSpinner } =
 		useCtx()
+
+	const {
+		config: configValue,
+		lastTried,
+		valid,
+		validate,
+		validating,
+	} = useConfigInput({
+		initialConfig: props.config,
+		onExists: (value) => loadConfig(value),
+		onNotFound: (value) => {},
+		onValidateStart: () => toggleSpinner(),
+		onValidateEnd: () => toggleSpinner(false),
+	})
+
 	const [state, _setState] = React.useState(() => {
 		const initState = {
 			...initialState,
 			deviceType: props.deviceType,
 		} as t.State
-		props.config && (initState.configKey = props.config)
 		return initState
 	})
 
@@ -81,7 +99,7 @@ function GenerateApp(props: Props) {
 					: undefined
 				const fnKey = u.isStr(data) ? 'writeFile' : 'writeJson'
 				const filepath = path.join(
-					getGenerateDir(aggregator.configKey),
+					path.join(configuration.getPathToGenerateDir(), aggregator.configKey),
 					filename,
 				)
 				fs[fnKey] && (await fs[fnKey](filepath, data, optionsArg as any))
@@ -96,9 +114,7 @@ function GenerateApp(props: Props) {
 		async (configKey: string) => {
 			if (configKey) {
 				try {
-					!spinner && toggleSpinner()
 					log(`\nLoading config ${co.yellow(`${configKey}`)}`)
-
 					let yml = await r.getConfig(configKey)
 					let configFileName = !configKey.endsWith('.yml')
 						? `${configKey}.yml`
@@ -112,15 +128,23 @@ function GenerateApp(props: Props) {
 					aggregator.deviceType = props.deviceType as DeviceType
 					aggregator.configVersion = props.configVersion as string
 
-					log(
-						`Config version set to ${co.yellow(aggregator.configVersion)}${
-							props.configVersion === 'latest'
-								? ` (using option "${co.yellow('latest')}")`
-								: ''
-						}`,
-					)
+					if (
+						aggregator.configVersion &&
+						aggregator.configVersion !== 'latest'
+					) {
+						log(
+							`Config version set to ${co.yellow(aggregator.configVersion)}${
+								props.configVersion === 'latest'
+									? ` (using option "${co.yellow('latest')}")`
+									: ''
+							}`,
+						)
+					}
 
-					const dir = getGenerateDir(aggregator.configKey)
+					const dir = path.join(
+						configuration.getPathToGenerateDir(),
+						aggregator.configKey,
+					)
 					const assetsDir = path.join(dir, 'assets')
 
 					if (!fs.existsSync(dir)) {
@@ -246,7 +270,6 @@ function GenerateApp(props: Props) {
 
 										progress.on('response', (res) => {
 											log(`[${co.yellow(asset.filename)}] Response`)
-											console.log(res)
 										})
 
 										progress.on('error', (err) => {
@@ -294,6 +317,7 @@ function GenerateApp(props: Props) {
 							}
 
 							await Promise.all(promises)
+							props.onEnd?.()
 						} else log(`You are not missing any assets.`)
 					}
 
@@ -317,12 +341,6 @@ function GenerateApp(props: Props) {
 							if (!doc) return u.log(doc)
 
 							if (type === 'root-config') {
-								if (props.isLocal) {
-									doc.set('cadlBaseUrl', `http://127.0.0.1:3001/`)
-									if (doc.has('myBaseUrl')) {
-										doc.set('myBaseUrl', `http://127.0.0.1:3001/`)
-									}
-								}
 								await fs.writeFile(filepath, doc.toString(), 'utf8')
 								const baseUrl = doc.get('cadlBaseUrl')
 								const appKey = doc.get('cadlMain')
@@ -335,7 +353,7 @@ function GenerateApp(props: Props) {
 								await fs.writeFile(filepath, doc.toString(), 'utf8')
 								numDocsFetching = aggregator.pageNames.length
 								log(
-									`\nTotal expected number of docs we are retrieving is ${co.yellow(
+									`\nTotal expected number of yml files we are retrieving is ${co.yellow(
 										numDocsFetching,
 									)}`,
 								)
@@ -356,15 +374,31 @@ function GenerateApp(props: Props) {
 					}
 
 					await aggregator
-						.on(RETRIEVED_ROOT_CONFIG, createOnDoc('root-config'))
+						.on(ON_RETRIEVED_ROOT_CONFIG, createOnDoc('root-config'))
 						.on(PARSED_APP_CONFIG, createOnDoc('app-config'))
-						.on(RETRIEVED_APP_PAGE, createOnDoc('app-page'))
-						.on(RETRIEVE_APP_PAGE_FAILED, incrementProcessedDocs)
+						.on(ON_RETRIEVED_APP_PAGE, createOnDoc('app-page'))
+						.on(ON_RETRIEVE_APP_PAGE_FAILED, incrementProcessedDocs)
 						.init({ loadPages: { includePreloadPages: true } })
 				} catch (error) {
 					logError(error)
 				} finally {
-					toggleSpinner(false)
+					const { host, port } = props
+					const doc = aggregator.root.get(aggregator.configKey) as yaml.Document
+					if (props.isLocal) {
+						doc.set('cadlBaseUrl', `http://${host}:${port}/`)
+						if (doc.has('myBaseUrl')) {
+							doc.set('myBaseUrl', `http://${host}:${port}/`)
+						}
+						const dir = path.join(
+							configuration.getPathToGenerateDir(),
+							aggregator.configKey,
+						)
+						const filename = com
+							.withYmlExt(aggregator.configKey)
+							.replace('_en', '')
+						const filepath = path.join(dir, filename)
+						await fs.writeFile(filepath, doc.toString(), 'utf8')
+					}
 				}
 			}
 		},
@@ -372,43 +406,63 @@ function GenerateApp(props: Props) {
 	)
 
 	React.useEffect(() => {
-		state.configKey && loadConfig(state.configKey)
+		configValue && validate(configValue)
 	}, [])
 
-	return (
-		<Panel>
-			{!state.configKey ? (
-				<UncontrolledTextInput
-					placeholder={`Which config should we use? (example: ${co.yellow(
-						`testpage`,
-					)})`}
-					onSubmit={loadConfig}
-				/>
-			) : state.assets.length ? (
-				<Box>
-					<Static paddingTop={3} items={state.assets as t.State['assets']}>
-						{(item) => (
-							<Box key={item.url}>
-								<Text
-									color={
-										item.status === 'downloaded' ? 'greenBright' : 'yellow'
-									}
-								>
-									{item.status.toUpperCase()}
-								</Text>
-								<Text> </Text>
-								<Text color="white">{item.filename}</Text>
-								<Text> </Text>
-								<Text color="blue" dimColor>
-									[{item.group}]
-								</Text>
-							</Box>
-						)}
-					</Static>
-				</Box>
-			) : null}
-		</Panel>
+	const onSubmit = React.useCallback((val: string) => val && validate(val), [])
+
+	const ConfigInput = React.memo(
+		() => (
+			<UncontrolledTextInput
+				placeholder={`Which config should we use? (example: ${co.yellow(
+					`testpage`,
+				)})`}
+				onSubmit={onSubmit}
+			/>
+		),
+		() => true,
 	)
+
+	let children: React.ReactNode = null
+
+	if (!valid) {
+		if (validating) {
+			children = <Text color="white">Validating...</Text>
+		} else if (!configValue && lastTried) {
+			children = (
+				<>
+					<Text color="red">The config "{lastTried}" does not exist</Text>
+					<Box paddingTop={1}>
+						<ConfigInput />
+					</Box>
+				</>
+			)
+		}
+	} else if (state.assets.length) {
+		children = (
+			<Static paddingTop={3} items={state.assets as t.State['assets']}>
+				{(item) => (
+					<Box key={item.url}>
+						<Text
+							color={item.status === 'downloaded' ? 'greenBright' : 'yellow'}
+						>
+							{item.status.toUpperCase()}
+						</Text>
+						<Text> </Text>
+						<Text color="white">{item.filename}</Text>
+						<Text> </Text>
+						<Text color="blue" dimColor>
+							[{item.group}]
+						</Text>
+					</Box>
+				)}
+			</Static>
+		)
+	}
+
+	if (!children && !validating && !configValue) children = <ConfigInput />
+
+	return <Panel>{children}</Panel>
 }
 
 export default GenerateApp

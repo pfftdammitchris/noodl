@@ -1,0 +1,34 @@
+# pageName : BasePage: # This is page name
+WwwBasePage:
+  pageNumber : "1"
+ContactTextField:
+  type: textField
+  style:
+    width: "360px"
+    height: "50px"
+    left: "55px"
+    paddingLeft: "20px"
+    border: "1px solid #8dbcde"
+ContactImgLinkView:
+  type: view
+  style:
+    width: "250px"
+    height: "220px"
+ContactImg:
+  type: image
+  style:
+    width: "80px"
+    height: "80px"
+    left: "90px"
+    top: "35px"
+ContactLink:
+  type: label
+  style:
+    width: "250px"
+    height: "50px"
+    top: "140px"
+    textAlign:
+      x: center
+    color: "0xffffff"
+    fontSize: "25px"
+    textDecoration: "underline"

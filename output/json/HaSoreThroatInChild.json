@@ -1,0 +1,162 @@
+{
+  "HaSoreThroatInChild": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Sore throat in child"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Sore throat is very common in children. Most of the time, it’s nothing to worry about."
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Sore throat in child is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/sore-throat-in-child.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Get emergency medical care if your child has a sore throat and also:"
+          },
+          {
+            ".HaBodyContentList": null,
+            "textBoard": [
+              {
+                "text": "⦁ Has difficulty breathing"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Is drooling or has difficulty swallowing"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Cannot tolerate liquids"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Fever"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Red, swollen tonsils"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ White patches or pus on the back of the throat"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Swollen lymph nodes in the neck"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Blood in saliva or phlegm"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Skin rash"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Hoarse voice"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Signs of dehydration, such as no wet diapers or urine production 'in eight hours, dry skin, dry mouth, or crying without tears"
+              }
+            ],
+            "style": {
+              "top": "60px"
+            }
+          },
+          {
+            ".HaBodyContent": null,
+            "textBoard": [
+              {
+                "text": " Most of the time, they are simply part of a common cold, don’t cause any problems, and get better without any treatment. However, sometimes a sore throat can be a sign of a problem that might need medical treatment. Here are some examples"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": " Influenza is a viral infection that attacks your respiratory system — your nose, throat and lungs. Influenza, commonly called the flu, is not the same as stomach 'flu' viruses that cause diarrhea and vomiting. For most people, influenza resolves on its own. But sometimes, influenza and its complications can be deadly. young children under 5, and especially those under 2 yearsat higher risk of developing flu complications Common signs and symptoms of the flu include:Fever over 100.4 F (38 C)Aching muscles, especially in your back, arms and legs, Chills and sweats, Headache, Dry, persistent cough, Fatigue and weakness, Nasal congestion, Sore throat Strep throat. This infection, caused by a particular kind of streptococcus bacteria, is quite common. Along with a sore throat, children may have a fever, headache, stomachache (sometimes with vomiting), and a fine, pink rash that almost looks like sandpaper. All of these symptoms can also be seen with a viral infection, so the only way to truly know if it’s strep throat is to swab for rapid testing and/or a culture. Strep throat actually can get better without antibiotics, but we give antibiotics to prevent complications, which, while rare, can include heart problems, kidney problems, and arthritis."
+              }
+            ],
+            "style": {
+              "top": "420px"
+            }
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "810px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "urinary",
+            "style": {
+              "top": "870px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "2.3",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

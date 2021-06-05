@@ -1,0 +1,213 @@
+AboutAitmed:
+  pageNumber: "70"
+  viewPort: top
+  components:
+    - .BaseHeader
+    - type: view
+      style:
+        width: "0.8"
+        left: "0.1"
+        top: "0.2"
+      children:
+        - type: label
+          style:
+            color: "0x000000"
+            fontSize: "24"
+            lineHeight: "50px"
+            fontWeight: "500"
+            text-align: justify
+          textBoard:
+            - text: "Our Vision and Mission"
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            text-align: justify
+            top: "50px"
+          textBoard:    
+            - text: Our vision is to become the premier and world leader in telehealth service by using blockchain and Artificial Intelligence technology to give people the most secure and highest level of personal privacy in a faster, more convenient platform that will produce better outcomes for our consumers, physicians, employers, employees, and medical institutions that we serve.
+        - type: label
+          style:
+            color: "0x000000"
+            fontSize: "24"
+            lineHeight: "50px"
+            fontWeight: "500"
+            text-align: justify
+            top: "200px"
+          textBoard:
+            - text: AiTmed's History
+              color: "0x000000"              
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            text-align: justify
+            top: "250px"
+          textBoard: 
+            - text: The company began in 2015 as a telemedicine platform. In 2019 it developed its own ECOS (Edge Computing Operating System) platform, which is integrating blockchain encryption and artificial intelligence technology.              
+        - type: label
+          style:
+            color: "0x000000"
+            fontSize: "24"
+            lineHeight: "50px"
+            fontWeight: "500"
+            text-align: justify
+            top: "350px"
+          textBoard:
+            - text: AiTmed's Foundational Core Technology             
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            text-align: justify
+            top: "400px"
+          textBoard:
+            - text: The ECOS provides fast, secure, and personal privacy, under HIPAA compliance. The core technology was integrated into the companies new Prynote product, where anyone can store and share private notes on a highly secure domain/database, similar to Bitcoin. This revolutionary technology was integrated into the telehealth industry will enable the medical community to share critical information in a secure private setting at high speed with ease. This will then allow compatibility with Electronic Medical Record (EMR) systems to improve the continuum of care process for the consumer, patient, insurance companies, medical providers, or any third parties involved in the patient care.              
+        - type: label
+          style:
+            color: "0x000000"
+            fontSize: "24"
+            lineHeight: "50px"
+            fontWeight: "500"
+            text-align: justify
+            top: "650px"
+          textBoard:
+            - text: AiTmed's Products and Services
+              color: "0x000000"              
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            text-align: justify
+            top: "700px"
+          textBoard:
+            - text: AiTmed is designed to be the telehealth platform for people's illness and wellness.              
+        - type: label
+          style:
+            color: "0x000000"
+            fontSize: "24"
+            lineHeight: "50px"
+            fontWeight: "500"
+            text-align: justify
+            top: "750px"
+          textBoard:
+            - text: For Providers：
+              color: "0x000000"              
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            text-align: justify
+            top: "800px"
+          textBoard:
+            - text: AiTmed's platform offers services to solo/group practices, clinics, nursing homes, surgery centers, hospitals, imaging centers, labs, etc. AiTmed provides many comprehensive telehealth solutions designed to enhance the provider's use：              
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            left: "30px"
+            text-align: justify
+            top: "900px"
+          textBoard:
+            - text: ⦁   Virtual waiting room              
+            - br:
+            - text: ⦁   HD Video              
+            - br:
+            - text: ⦁   E-prescription service add-on              
+            - br:
+            - text: ⦁   Blockchain Encrypted Documentation              
+            - br:
+            - text: ⦁   Premium E-Referral Network              
+            - br:
+            - text: ⦁   Self-scheduling for both providers and patients              
+            - br:
+            - text: ⦁   Customized dashboard for each provider and clinic              
+        - type: label
+          style:
+            color: "0x000000"
+            fontSize: "24"
+            lineHeight: "50px"
+            fontWeight: "500"
+            text-align: justify
+            top: "1250px"
+          textBoard:
+            - text: For Patients/Users：
+              color: "0x000000"              
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            text-align: justify
+            top: "1300px"
+          textBoard:
+            - text: AiTmed encourages patients to continue a healthy lifestyle everyday through the AiTmed Wellness platform. This service allows patients to utilize the most private and secure blockchain-encryption technology to store your medical records and personal information, while allowing you to share documents of your choice instantly. AiTmed has a provider's network that allows users/patients to find a doctor of their choice and the ability to self-schedule.              
+        - type: label
+          style:
+            color: "0x000000"
+            fontSize: "24"
+            lineHeight: "50px"
+            fontWeight: "500"
+            text-align: justify
+            top: "1450px"
+          textBoard:
+            - text: AiTmed Wellness
+              color: "0x000000"              
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            text-align: justify
+            top: "1500px"
+          textBoard:
+            - text: AiTmed's Wellness platform includes several features to improve and maintain your health everyday：              
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            left: "30px"
+            text-align: justify
+            top: "1550px"
+          textBoard:
+            - text: ⦁   Vital Signs Monitoring - simply connect a bluetooth device              
+            - br:
+            - text: ⦁   Health A-Z - Medical Encyclopedia of Diagnosis and Treatment              
+            - br:
+            - text: ⦁   Wellness Community - Support groups to discuss treatments and therapies              
+            - br:
+            - text: ⦁   Medical Webinar - Doctor-led discussions about common ailments and problems              
+            - br:
+            - text: ⦁   Share Your Wellness Story - describe what keeps you motivated and on track to wellness              
+        - type: label
+          style:
+            color: "0x000000"
+            fontSize: "24"
+            lineHeight: "50px"
+            fontWeight: "500"
+            text-align: justify
+            top: "1800px"
+          textBoard:
+            - text: AiTmed Store
+              color: "0x000000"              
+        - type: label
+          style:
+            color: "0x000000cc"
+            fontSize: "18"
+            lineHeight: "50px"
+            text-align: justify
+            top: "1850px"
+          textBoard:
+            - text: AiTmed's E-commerce Store will provide vital monitoring kits that can be integrated directly into our platform. AiTmed also supplies the highest quality nutrition, supplements, and durable medical equipment (DME) for patients/users to benefit their wellness and give them support.              
+    - type: view
+      style:
+        top: "2200px"
+      children:
+        - .BaseFooter

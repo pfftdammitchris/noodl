@@ -1,18 +1,18 @@
-import { Box, Newline, Spacer, Static, Text, useApp } from 'ink'
 import * as u from '@jsmanifest/utils'
+import { Box, Newline, Static, Text, useApp } from 'ink'
 import invariant from 'invariant'
 import merge from 'lodash/merge'
-import path from 'path'
 import React from 'react'
 import produce, { Draft } from 'immer'
-import Divider from 'ink-divider'
-import useStdoutDimensions from 'ink-use-stdout-dimensions'
+import BigText from 'ink-big-text'
+import Gradient from 'ink-gradient'
 import createAggregator from './api/createAggregator'
 import Select from './components/Select'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
 import Settings from './panels/Settings'
 import GenerateApp from './panels/GenerateApp'
+import useConfiguration from './hooks/useConfiguration'
 import Server from './panels/Server'
 import { Provider } from './useCtx'
 import * as co from './utils/color'
@@ -29,18 +29,12 @@ export const initialState = {
 	text: [] as string[],
 }
 
-function Application({
-	cli,
-	config,
-	settings,
-}: {
-	cli: t.App.Context['cli']
-	config: t.App.Config
-	settings: t.App.Settings
-}) {
+function Application({ cli }: { cli: t.App.Context['cli'] }) {
 	const [state, _setState] = React.useState<t.App.State>(initialState)
 	const { exit } = useApp()
-	const [columns, rows] = useStdoutDimensions()
+	const configuration = useConfiguration({
+		cli,
+	})
 
 	const set = React.useCallback(
 		(
@@ -62,11 +56,9 @@ function Application({
 	const ctx: t.App.Context = {
 		...state,
 		aggregator,
-		config,
 		cli,
+		configuration,
 		exit,
-		getGenerateDir: (configKey: string = cli.flags.config || '') =>
-			path.join(settings.get(c.GENERATE_DIR_KEY), configKey),
 		set,
 		highlight: (id) => set((d) => void (d.highlightedPanel = id)),
 		log: (text) => set((d) => void d.text.push(text)),
@@ -91,7 +83,6 @@ function Application({
 		setPanel: (panelKey: t.App.PanelKey | '') => {
 			set((d) => void (d.activePanel = panelKey))
 		},
-		settings,
 	}
 
 	React.useEffect(() => {
@@ -111,18 +102,8 @@ function Application({
 				}
 			}
 
-			const handleServer = () => {
-				invariant(
-					!!cli.flags.config,
-					`Cannot run server without specifing a config via ${co.yellow(
-						`--config`,
-					)} or ${co.yellow(`-c`)}`,
-				)
-				ctx.setPanel('server')
-			}
-
 			if (cli.flags.generate) handleGenerate()
-			else if (cli.flags.server) handleServer()
+			else if (cli.flags.server) ctx.setPanel('server')
 			else ctx.setPanel(c.DEFAULT_PANEL)
 		} else {
 			ctx.setPanel(c.DEFAULT_PANEL)
@@ -132,63 +113,68 @@ function Application({
 	return (
 		<Provider value={ctx}>
 			{state.activePanel === c.DEFAULT_PANEL && (
-				<Divider title="NOODL CLI" width={columns} dividerColor="magenta" />
+				<Gradient name="vice">
+					<BigText text="noodl-cli" font="tiny" letterSpacing={1} />
+				</Gradient>
 			)}
-			<Spacer />
-			<Box flexDirection="column">
-				{!state.ready ? (
-					<Settings
-						onReady={() => set({ ready: true, activePanel: state.activePanel })}
+			{!state.ready ? (
+				<Settings
+					onReady={() => set({ ready: true, activePanel: state.activePanel })}
+				/>
+			) : state.activePanel === 'generateApp' ? (
+				<GenerateApp
+					config={cli.flags.config}
+					configVersion={cli.flags.version}
+					deviceType={cli.flags.device}
+					env={cli.flags.env}
+					host={cli.flags.host}
+					isLocal={cli.flags.local}
+					port={cli.flags.port}
+				/>
+			) : state.activePanel === 'server' ? (
+				<Server
+					config={cli.flags.config as string}
+					host={cli.flags.host}
+					local={cli.flags.local}
+					port={cli.flags.port}
+					wss={cli.flags.wss}
+					watch={cli.flags.watch}
+				/>
+			) : (
+				<Box paddingLeft={1} flexDirection="column">
+					<Text color="whiteBright">What would you like to do?</Text>
+					<Box minHeight={1} />
+					<Select
+						items={[
+							{
+								value: 'generateApp',
+								label: 'Generate an entire noodl app using a config',
+							},
+							{
+								value: 'server',
+								label: 'Start noodl development server',
+							},
+						]}
+						onSelect={(item) => {
+							switch (item.value) {
+								case 'generateApp':
+									return ctx.setPanel('generateApp')
+								case 'server':
+									return ctx.setPanel('server')
+							}
+						}}
 					/>
-				) : state.activePanel === 'generateApp' ? (
-					<GenerateApp
-						config={cli.flags.config}
-						configVersion={cli.flags.version}
-						deviceType={cli.flags.device}
-						env={cli.flags.env}
-						isLocal={cli.flags.local}
-					/>
-				) : state.activePanel === 'server' ? (
-					<Server
-						config={cli.flags.config as string}
-						wss={cli.flags.wss}
-						watch={cli.flags.watch}
-					/>
-				) : (
-					<Box paddingLeft={1} flexDirection="column">
-						<Text color="whiteBright">What would you like to do?</Text>
-						<Newline />
-						<Select
-							items={[
-								{
-									value: 'generateApp',
-									label: 'Generate an entire noodl app using a config',
-								},
-								{
-									value: 'server',
-									label: 'Start noodl development server',
-								},
-							]}
-							onSelect={(item) => {
-								switch (item.value) {
-									case 'generateApp':
-										return ctx.setPanel('generateApp')
-									case 'server':
-										return ctx.setPanel('server')
-								}
-							}}
-						/>
-					</Box>
-				)}
-				<Static items={ctx.text as string[]}>
-					{(text, index) => <Text key={index}>{text}</Text>}
-				</Static>
-				{ctx.spinner ? (
-					<HighlightedText color="whiteBright">
-						<Spinner type={ctx.spinner} />
-					</HighlightedText>
-				) : null}
-			</Box>
+					<Newline count={1} />
+				</Box>
+			)}
+			<Static items={ctx.text as string[]}>
+				{(text, index) => <Text key={index}>{text}</Text>}
+			</Static>
+			{ctx.spinner ? (
+				<HighlightedText color="whiteBright">
+					<Spinner type={ctx.spinner} />
+				</HighlightedText>
+			) : null}
 		</Provider>
 	)
 }

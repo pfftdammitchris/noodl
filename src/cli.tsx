@@ -4,22 +4,31 @@ import { config as dotenvConfig } from 'dotenv'
 dotenvConfig()
 import React from 'react'
 import meow from 'meow'
-import ConfigStore from 'configstore'
 import { render } from 'ink'
 import App from './App'
+import {
+	DEFAULT_GENERATE_DIR,
+	DEFAULT_SERVER_PORT,
+	DEFAULT_SERVER_HOSTNAME,
+} from './constants'
 import * as co from './utils/color'
-import * as com from './utils/common'
-import * as t from './types'
 
 export type Cli = typeof cli
 
+const tag = {
+	$: co.white(`$`),
+	noodl: co.purple(`noodl`),
+}
+
 const cli = meow(
+	// prettier-ignore
 	`
 	${co.aquamarine('Usage')}
-	  ${co.white('$')} noodl <input>
+	  ${tag.$} ${tag.noodl} <input>
 
 	${co.aquamarine(`Examples`)}
-	  ${co.white('$')} noodl -c testpage
+	  ${tag.$} ${tag.noodl} -c testpage (use testpage config for every operation)
+	  ${tag.$} ${tag.noodl} --generatePath '../cadl/output' (changes path to generated files)
 
 	${co.aquamarine(`Options`)}
 	  ${co.white(`--config`)}, ${co.white(`-c`)} NOODL config
@@ -31,8 +40,10 @@ const cli = meow(
 			env: { type: 'string', alias: 'e', default: 'test' },
 			fetch: { type: 'boolean', alias: 'f' },
 			generate: { type: 'string', alias: 'g' },
+			generatePath: { type: 'string', default: DEFAULT_GENERATE_DIR },
+			host: { alias: 'h', type: 'string', default: DEFAULT_SERVER_HOSTNAME },
 			local: { type: 'boolean', default: false },
-			panel: { type: 'string', alias: 'p' },
+			port: { type: 'number', alias: 'p', default: DEFAULT_SERVER_PORT },
 			retrieve: { type: 'string', alias: 'r', isMultiple: true },
 			server: { type: 'boolean' },
 			start: { type: 'string' },
@@ -44,17 +55,4 @@ const cli = meow(
 	},
 )
 
-const config = com
-	.loadFileAsDoc(com.getAbsFilePath('config.yml'))
-	.toJSON() as t.App.Config
-
-// console.log('')
-// console.log(co.cyan(`Input: `), cli.input || [])
-// console.log(co.cyan(`Flags: `), cli.flags)
-// console.log('')
-
-const settings = new ConfigStore('noodl-cli', undefined, {
-	globalConfigPath: true,
-})
-
-const {} = render(<App cli={cli} config={config} settings={settings} />)
+render(<App cli={cli} />)

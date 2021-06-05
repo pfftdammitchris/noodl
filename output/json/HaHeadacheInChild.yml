@@ -1,0 +1,129 @@
+HaHeadacheInChild:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Headaches in children
+        - .HaHeaderLittleLabel:
+          text: Headaches in children are common and usually aren't serious.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Headaches in children is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/headache-in-a-child.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency medical care if:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Is sudden and severe or the 'worst headache ever' "
+            - br: 
+            - text: "⦁ A headache, fever, and a stiff neck are present (Meningitis)"
+            - br: 
+            - text: "⦁ Changes in sensation, vision, sudden weakness, loss of coordination, seizures, difficulty speaking or understanding speech,and drowsiness or confusion"
+            - br: 
+            - text: "⦁ Red eyes and halos around lights"
+            - br: 
+            - text: "⦁ Headaches in people with cancer or weakened immune system (AIDS)"
+        - .HaBodyContent:
+          style: 
+            top: "240px"
+          textBoard: 
+            - text: "Headache can be a pain in any part of the head, including the face, skull, etc. Headaches may interfere with one's ability to work or do ones normal daily activities. Some people have headaches on a daily basis while others hardly ever get them at all. Though headaches can be painful and stressful, they are rarely due to any serious conditions. Headaches not caused by another disorder are usually classified as primary headaches. Headaches caused by another disorder are classified a secondary headaches. Primary headache disorders include migraine, tension type headaches, and cluster headaches. Secondary headaches may result from disorders of the brain, eyes, nose, teeth, sinuses, throat, jaws, ears, and or neck."
+
+        - .HaBodyTitle:
+          text: "Common Causes of Headache:"
+          style: 
+            top: "420px"           
+        - .HaBodyContentList:
+          style: 
+            top: "480px"
+          textBoard: 
+            - text: "⦁ Tension headache (stress related)"
+            - br: 
+            - text: "⦁ Migraine"
+        - .HaBodyTitle:
+          text: "Less common causes of headache:"
+          style: 
+            top: "570px"           
+        - .HaBodyContentList:
+          style: 
+            top: "630px"
+          textBoard: 
+            - text: "⦁ Cluster headache"
+            - br: 
+            - text: "⦁ Meningitis"
+            - br: 
+            - text: "⦁ Brain tumor"       
+            - br: 
+            - text: "⦁ Bleeding in the brain (intracerebral or subarachnoid hemorrhage)"
+            - br: 
+            - text: "⦁ Lyme disease"   
+            - br: 
+            - text: "⦁ Influenza"
+            - br: 
+            - text: "⦁ Caffeine withdrawal"       
+            - br: 
+            - text: "⦁ Withdrawal from pain medication"
+            - br: 
+            - text: "⦁ High blood pressure"    
+            - br: 
+            - text: "⦁ Eye straining"
+            - br: 
+            - text: "⦁ Temporal giant cell arteritis"       
+            - br: 
+            - text: "⦁ Glaucoma– Red eyes and halos seen around lights"
+            - br: 
+            - text: "⦁ Sinusitis"
+            - br: 
+            - text: "⦁ Head injury"
+            - br: 
+            - text: "⦁ Tooth pain"    
+        - .HaBodyContent:
+          style: 
+            top: "1110px"
+          textBoard: 
+            - text: "Headache is a big concern when it occurs suddenly. A severe headache that includes fever and stiff neck suggests Meningitis, which is life-threatening if untreated. A sudden worst headache of your life headache may suggest bleeding in the brain. People should see a doctor if headaches occur as doctors can determine the type and causes headaches based on medical history, symptoms and exam.If your healthcare provider suspect’s that the cause of headache is severe in nature, further testing may be warranted. Treatment may be necessary in some causes of headaches. Pain medication is prescribed but must be taken cautiously."
+            - br: 
+            - text: ""
+            - br:
+            - text: "If you are experiencing a headache, Connect with one of our Healthcare professionals immediately and be seen within minutes from the comfort of your own home, work, or anywhere you may be. Often times our doctors can diagnose, treat, and make recommendations within 15 minutes or less."
+        - .HaBodyTitle:
+          text: "How to prepare and get the most for your AITMED Ⓡ online visit following these helpful tips:"
+          style: 
+            top: "1380px"           
+        - .HaBodyContentList:
+          style: 
+            top: "1470px"
+          textBoard: 
+            - text: "⦁ Find a quiet, private place for your visit"
+            - br: 
+            - text: "⦁ Tell the provider who the visit is for, you or someone else"
+            - br: 
+            - text: "⦁ Write down your questions for the visit before your appointment time"       
+            - br: 
+            - text: "⦁ Bleeding in the brain (intracerebral or subarachnoid hemorrhage)"
+            - br: 
+            - text: "⦁ Be specific about your concerns, symptoms, and questions"   
+            - br: 
+            - text: "⦁ Stay engaged and follow post-visit instructions if any are provided"
+        - .HaBottomTag: 
+          style: 
+            top: "1670px"
+        - .HaBottomTagname: 
+          text: "headaches"
+          style: 
+            top: "1730px"
+    - type: view 
+      style: 
+        left: "0"
+        top: "3.2"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

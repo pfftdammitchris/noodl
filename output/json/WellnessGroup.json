@@ -1,0 +1,522 @@
+{
+  "WellnessGroup": {
+    "pageNumber": "60",
+    "viewPort": "top",
+    "components": [
+      {
+        "type": "view",
+        "style": {
+          "top": "0",
+          "left": "0",
+          "width": "1",
+          "height": "1"
+        },
+        "children": [
+          {
+            ".BaseHeader": null
+          },
+          {
+            "type": "view",
+            "style": {
+              "top": "0.15",
+              "left": "0",
+              "width": "1",
+              "height": "3"
+            },
+            "children": [
+              {
+                "type": "image",
+                "path": "wellnessLandingPage.png",
+                "style": {
+                  "top": "0.15",
+                  "width": "0.7",
+                  "left": "0.15"
+                }
+              },
+              {
+                "type": "label",
+                "text": "Better health through",
+                "style": {
+                  "top": "0.65",
+                  "width": "1",
+                  "fontSize": "68",
+                  "color": "0x388FCD",
+                  "textAlign": {
+                    "x": "center"
+                  }
+                }
+              },
+              {
+                "type": "label",
+                "text": "WELLNESS",
+                "style": {
+                  "top": "0.78",
+                  "width": "1",
+                  "fontSize": "87",
+                  "fontWeight": 700,
+                  "letterSpacing": 30,
+                  "color": "0x000000",
+                  "textAlign": {
+                    "x": "center"
+                  }
+                }
+              },
+              {
+                "type": "label",
+                "text": "Coming Soon!",
+                "style": {
+                  "top": "0.98",
+                  "width": "1",
+                  "fontSize": "62",
+                  "textAlign": {
+                    "x": "center"
+                  }
+                }
+              },
+              {
+                "type": "label",
+                "text": "What is AiTmed",
+                "style": {
+                  "top": "1.25",
+                  "width": "1",
+                  "fontSize": "45",
+                  "textAlign": {
+                    "x": "center"
+                  }
+                }
+              },
+              {
+                "type": "label",
+                "text": "Wellness?",
+                "style": {
+                  "top": "1.35",
+                  "width": "1",
+                  "fontSize": "45",
+                  "color": "0x388FCD",
+                  "textAlign": {
+                    "x": "center"
+                  }
+                }
+              },
+              {
+                "type": "label",
+                "text": "AiTmed Wellness is a place for people to come together virtually in support groups, receive doctor advice and recommendations, and inspire others about a variety of health & wellness related problems.",
+                "style": {
+                  "top": "1.5",
+                  "width": "0.5",
+                  "left": "0.25",
+                  "fontSize": "20",
+                  "lineHeight": "1.8",
+                  "textAlign": {
+                    "x": "center"
+                  }
+                }
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "1.7",
+                  "width": "1",
+                  "height": "0.9",
+                  "backgroundColor": "0xfafafa"
+                },
+                "children": [
+                  {
+                    "type": "view",
+                    "style": {
+                      "top": "0",
+                      "left": "0.04",
+                      "width": "0.2",
+                      "height": "0.9"
+                    },
+                    "children": [
+                      {
+                        "type": "image",
+                        "path": "wellnessMonitorVitalsIcon.png",
+                        "style": {
+                          "top": "0.1",
+                          "width": "0.12",
+                          "left": "0.04"
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "Monitor Your Vitals",
+                        "style": {
+                          "top": "0.45",
+                          "width": "0.15",
+                          "left": "0.025",
+                          "fontSize": "22",
+                          "fontStyle": "bold",
+                          "textAlign": {
+                            "x": "center"
+                          }
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "Heath parameters with up-to-the-minute information",
+                        "style": {
+                          "top": "0.55",
+                          "width": "0.18",
+                          "left": "0.01",
+                          "fontSize": "18",
+                          "fontWeight": "400",
+                          "textAlign": {
+                            "x": "center"
+                          }
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "text": "Check mine now!",
+                        "onClick": [
+                          {
+                            "goto": "Community"
+                          }
+                        ],
+                        "style": {
+                          "top": "0.72",
+                          "width": "0.12",
+                          "height": "0.06",
+                          "left": "0.04",
+                          "fontSize": "14",
+                          "color": "0xffffff",
+                          "backgroundColor": "0x388fcd",
+                          "textAlign": {
+                            "x": "center"
+                          },
+                          "border": {
+                            "style": 5
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "view",
+                    "style": {
+                      "top": "0",
+                      "left": "0.28",
+                      "width": "0.2",
+                      "height": "0.9"
+                    },
+                    "children": [
+                      {
+                        "type": "image",
+                        "path": "wellnessSupportGroupsIcon.png",
+                        "style": {
+                          "top": "0.1",
+                          "width": "0.12",
+                          "left": "0.04"
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "Support groups",
+                        "style": {
+                          "top": "0.45",
+                          "width": "0.15",
+                          "left": "0.025",
+                          "fontSize": "22",
+                          "fontStyle": "bold",
+                          "textAlign": {
+                            "x": "center"
+                          }
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "Maintain high quality wellness to prevent illness by joining a physician-lead support group",
+                        "style": {
+                          "top": "0.55",
+                          "width": "0.18",
+                          "left": "0.01",
+                          "fontSize": "18",
+                          "fontWeight": "400",
+                          "textAlign": {
+                            "x": "center"
+                          }
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "text": "Join a group!",
+                        "onClick": [
+                          {
+                            "goto": "Forum"
+                          }
+                        ],
+                        "style": {
+                          "top": "0.72",
+                          "width": "0.12",
+                          "height": "0.06",
+                          "left": "0.04",
+                          "fontSize": "14",
+                          "color": "0xffffff",
+                          "backgroundColor": "0x388fcd",
+                          "textAlign": {
+                            "x": "center"
+                          },
+                          "border": {
+                            "style": 5
+                          },
+                          "onClick": [
+                            {
+                              "goto": "Forum"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "view",
+                    "style": {
+                      "top": "0",
+                      "left": "0.52",
+                      "width": "0.2",
+                      "height": "0.9"
+                    },
+                    "children": [
+                      {
+                        "type": "image",
+                        "path": "doctorman.png",
+                        "style": {
+                          "top": "0.15",
+                          "width": "0.1",
+                          "left": "0"
+                        }
+                      },
+                      {
+                        "type": "image",
+                        "path": "doctorwoman.png",
+                        "style": {
+                          "top": "0.15",
+                          "width": "0.1",
+                          "left": "0.1"
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "Medical Webinars",
+                        "style": {
+                          "top": "0.45",
+                          "width": "0.15",
+                          "left": "0.025",
+                          "fontSize": "22",
+                          "fontStyle": "bold",
+                          "textAlign": {
+                            "x": "center"
+                          }
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "Discover common medical conditions taught from a doctor's perspective to improve your health",
+                        "style": {
+                          "top": "0.55",
+                          "width": "0.18",
+                          "left": "0.01",
+                          "fontSize": "18",
+                          "textAlign": {
+                            "x": "center"
+                          },
+                          "fontWeight": "400"
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "text": "Watch now!",
+                        "onClick": [
+                          {
+                            "goto": "MedicalWebinar"
+                          }
+                        ],
+                        "style": {
+                          "top": "0.72",
+                          "width": "0.12",
+                          "height": "0.06",
+                          "left": "0.04",
+                          "fontSize": "14",
+                          "color": "0xffffff",
+                          "backgroundColor": "0x388fcd",
+                          "border": {
+                            "style": 5
+                          },
+                          "textAlign": {
+                            "x": "center"
+                          },
+                          "onClick": [
+                            {
+                              "goto": "MedicalWebinar"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "view",
+                    "style": {
+                      "top": "0",
+                      "left": "0.76",
+                      "width": "0.2",
+                      "height": "0.9"
+                    },
+                    "children": [
+                      {
+                        "type": "image",
+                        "path": "wellnessHealthA-ZIcon.png",
+                        "style": {
+                          "top": "0.13",
+                          "width": "0.12",
+                          "left": "0.04"
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "Health A-Z",
+                        "style": {
+                          "top": "0.45",
+                          "width": "0.15",
+                          "left": "0.025",
+                          "fontSize": "22",
+                          "fontStyle": "bold",
+                          "textAlign": {
+                            "x": "center"
+                          }
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "Explore a medical encyclopedia of diagnosis and treatment",
+                        "style": {
+                          "top": "0.55",
+                          "width": "0.18",
+                          "left": "0.01",
+                          "fontSize": "18",
+                          "textAlign": {
+                            "x": "center"
+                          },
+                          "fontWeight": "400"
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "text": "Find a topic!",
+                        "onClick": null,
+                        "style": {
+                          "top": "0.72",
+                          "width": "0.12",
+                          "height": "0.06",
+                          "left": "0.04",
+                          "fontSize": "14",
+                          "color": "0xffffff",
+                          "backgroundColor": "0x388fcd",
+                          "textAlign": {
+                            "x": "center"
+                          },
+                          "border": {
+                            "style": 5
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "2.6",
+                  "left": "0",
+                  "width": "1",
+                  "height": "1"
+                },
+                "children": [
+                  {
+                    "type": "image",
+                    "path": "CommunityBack.png",
+                    "style": {
+                      "width": "1",
+                      "height": "1"
+                    }
+                  },
+                  {
+                    "type": "view",
+                    "style": {
+                      "top": "0",
+                      "left": "0",
+                      "width": "1",
+                      "height": "1",
+                      "background": "0xffffff7f"
+                    }
+                  },
+                  {
+                    "type": "image",
+                    "path": "Logoicon.png",
+                    "style": {
+                      "top": "0.15",
+                      "left": "0.44",
+                      "width": "0.12"
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Book an appointment with a doctor through AiTmed telemedicine today!",
+                    "style": {
+                      "top": "0.48",
+                      "fontSize": "36",
+                      "fontStyle": "bold",
+                      "width": "0.6",
+                      "left": "0.2",
+                      "textAlign": {
+                        "x": "center"
+                      }
+                    }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Talk to a Doctor",
+                    "style": {
+                      "top": "0.7",
+                      "left": "0.43",
+                      "width": "0.14",
+                      "height": "0.07",
+                      "backgroundColor": "0x388fcd",
+                      "fontSize": "20",
+                      "color": "0xffffff",
+                      "borderRadius": "1",
+                      "border": {
+                        "style": 5
+                      }
+                    },
+                    "onClick": [
+                      {
+                        "goto": "..SignIn.url"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "view",
+            "style": {
+              "top": "3.7",
+              "width": "1",
+              "height": "0.7"
+            },
+            "children": [
+              {
+                ".BaseFooter": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

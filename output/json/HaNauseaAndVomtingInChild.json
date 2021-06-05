@@ -1,0 +1,306 @@
+{
+  "HaNauseaAndVomtingInChild": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Nausea or vomiting in child"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Nausea and vomiting are common in children, and are usually part of a mild, short-lived illness, frequently caused by a viral infection."
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Nausea or vomiting in child is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/nausea-or-vomiting-in-child.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Seek emergency medical care for a toddler or older child who has nausea and vomiting that:"
+          },
+          {
+            ".HaBodyContentList": null,
+            "textBoard": [
+              {
+                "text": "⦁ Contains blood or greenish material"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Is accompanied by black or bloody stools"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Is accompanied by a severe headache"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Is accompanied by severe abdominal pain or cramping"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Is accompanied by severe swelling of the abdomen"
+              }
+            ],
+            "style": {
+              "top": "60px"
+            }
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Call your child's doctor if:",
+            "style": {
+              "top": "270px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "textBoard": [
+              {
+                "text": "⦁ Vomiting lasts more than 12 hours for infants"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Vomiting lasts more than 24 hours for children under age 2"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Vomiting lasts more than 48 hours for children age 2 and older"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Vomiting is accompanied by diarrhea"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Your child has recently started a new medication"
+              }
+            ],
+            "style": {
+              "top": "330px"
+            }
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Also, call your doctor if your child shows any signs of dehydration:",
+            "style": {
+              "top": "530px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "textBoard": [
+              {
+                "text": "⦁ No wet diapers or urine production in a period of eight hours"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Dry skin"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Dry mouth"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Crying without tears"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Unusual sleepiness or irritability"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ A sunken appearance to the abdomen, eyes or cheeks"
+              }
+            ],
+            "style": {
+              "top": "610px"
+            }
+          },
+          {
+            ".HaBodyContent": null,
+            "textBoard": [
+              {
+                "text": "Vomiting occurs when nerves in the body or brain sense a trigger, such as food poisoning, certain infections or medicines, or motion. Nausea usually, but not always, occurs before vomiting. Younger children may not be able to recognize nausea, although they may complain of a stomach ache or have other general complaints."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Vomiting often has a benefit since it provides a way for the body to get rid of potentially harmful substances. However, medicines and methods to induce vomiting (eg, syrup of ipecac, placing a finger in the throat) are no longer recommended, even if an infant or child has ingested a harmful substance."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Vomiting can be caused by a number of different problems. The possible causes of vomiting depend upon a child's age."
+              }
+            ],
+            "style": {
+              "top": "810px"
+            }
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Newborns and young infants",
+            "style": {
+              "top": "1040px"
+            }
+          },
+          {
+            ".HaBodyContent": null,
+            "textBoard": [
+              {
+                "text": "In newborns and young infants (up to three months old), forceful vomiting can indicate a serious condition and always requires further evaluation. Potential causes of vomiting in these infants include a blockage or narrowing of the stomach (pyloric stenosis) or a blockage of the intestines (intestinal obstruction)."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Infants can also vomit because of infections of the intestine or other parts of the body. Any young infant (newborn to three months) who develops a temperature of 100.4º F (38º C) or higher, with or without vomiting, should see a doctor or nurse."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Older infants and children — The most common cause of vomiting in older infants and children is infectious gastroenteritis (an infection of the stomach or intestines), usually caused by a virus. Vomiting caused by gastroenteritis usually begins suddenly and resolves quickly, often within 24 to 48 hours. Other signs of gastroenteritis can include nausea, diarrhea, fever, or abdominal pain."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Gastroenteritis can develop after eating contaminated food or putting a contaminated object (or hand) into the mouth. The viruses that commonly cause gastroenteritis are spread easily. Careful hygiene (especially hand washing) can prevent these infections from spreading."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Less commonly, vomiting occurs after consuming improperly stored or prepared foods that contain bacteria or toxins; this is called food poisoning."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Other illnesses can also cause vomiting in older infants and children, including gastroesophageal reflux, peptic ulcer disease, an intestinal blockage (obstruction), cyclic vomiting syndrome, respiratory and urinary tract infections, and others"
+              }
+            ],
+            "style": {
+              "top": "1100px"
+            }
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "1620px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "abdominal",
+            "style": {
+              "top": "1700px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "3.1",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

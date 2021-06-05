@@ -1,0 +1,134 @@
+{
+  "Hospital": {
+    "viewPort": "top",
+    "components": [
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "0",
+          "width": "1",
+          "height": "1"
+        },
+        "children": [
+          {
+            ".BaseHeader": null
+          },
+          {
+            "type": "view",
+            "style": {
+              "top": "0",
+              "left": "0",
+              "width": "1",
+              "height": "1"
+            },
+            "children": [
+              {
+                "type": "image",
+                "path": "medicalFacilitiesHospitals.png",
+                "style": {
+                  "top": "0",
+                  "left": "0",
+                  "width": "1"
+                }
+              },
+              {
+                "type": "view",
+                "style": {
+                  "top": "0.2",
+                  "left": "0",
+                  "width": "1",
+                  "height": "1"
+                },
+                "children": [
+                  {
+                    "type": "label",
+                    "text": "AiTmed Brands Your Hospital",
+                    "style": {
+                      "top": "0.17",
+                      "width": "1",
+                      "fontSize": "50",
+                      "fontWeight": 600,
+                      "fontFamily": "Roboto Bold",
+                      "color": "0x000000",
+                      "textAlign": {
+                        "x": "center"
+                      }
+                    }
+                  },
+                  {
+                    "type": "label",
+                    "text": "Easy, Cost Efficient, Secure",
+                    "style": {
+                      "top": "0.32",
+                      "fontSize": "40",
+                      "fontWeight": 400,
+                      "fontFamily": "Roboto Bold",
+                      "width": "1",
+                      "color": "0x000000",
+                      "textAlign": {
+                        "x": "center"
+                      }
+                    }
+                  },
+                  {
+                    ".BigButton": null,
+                    "text": "Sign In",
+                    "onClick": [
+                      {
+                        "goto": "..SignIn.url"
+                      }
+                    ],
+                    "style": {
+                      "top": "0.57",
+                      "left": "0.215"
+                    }
+                  },
+                  {
+                    ".BigButton": null,
+                    "text": "Request Demo",
+                    "onClick": [
+                      {
+                        "goto": "ContactInformation"
+                      }
+                    ],
+                    "style": {
+                      "top": "0.57",
+                      "left": "0.425"
+                    }
+                  },
+                  {
+                    ".BigButton": null,
+                    "text": "Sign up for free trial",
+                    "onClick": [
+                      {
+                        "goto": "..SignUp.url"
+                      }
+                    ],
+                    "style": {
+                      "top": "0.57",
+                      "left": "0.635"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "view",
+            "style": {
+              "top": "1",
+              "width": "1",
+              "height": "0.7"
+            },
+            "children": [
+              {
+                ".BaseFooter": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

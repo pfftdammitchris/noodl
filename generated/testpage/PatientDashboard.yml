@@ -1,0 +1,149 @@
+PatientDashboard:
+  title: "Dashboard"
+  pageNumber: "80"
+  components:
+    - type: scrollView
+      style:
+        top: "0"
+        left: "0"
+        width: "1"
+        height: "1"
+      children:
+        - .BaseHeader: null
+        - .HeaderRightImg: null
+          path: sideNav2.png
+          # onClick:
+          #   - goto: MenuBar
+        - type: view
+          style:
+            top: "0.1"
+            left: "0"
+            width: "1"
+            height: "0.2"
+          children:
+            - type: view
+              # onClick:
+              #   - goto: WaitingRoom
+              style:
+                top: "0.05"
+                width: "0.6"
+                left: "0.2"
+                height: "0.2"
+                backgroundColor: "0x398ECC"
+                boxShadow: "1px 1px #888888"
+                borderRadius: "5"
+              children:
+                - type: image
+                  path: doctorman.png
+                  style:
+                    top: "0.05"
+                    width: "0.15"
+                    # height: "0.2"
+                    left: "0.15"
+                - type: image
+                  path: doctorwoman.png
+                  style:
+                    top: "0.05"
+                    width: "0.15"
+                    # height: "0.2"
+                    left: "0.30"
+                - type: label
+                  text: Meet width Doctor
+                  style:
+                    top: "0.14"
+                    fontSize: "16"
+                    color: "0xffffff"
+                    fontWeight: 360
+                    width: "0.6"
+                    textAlign:
+                      x: center
+        - type: view
+          style:
+            top: "0.4"
+            width: "1"
+            left: "0"
+            #height: "0.7" # auto
+          children:
+            - .PatientDashboardView: null
+              onClick:
+                - goto: VideoChat
+              children:
+                - .PatientDashboardImage: null
+                  path: visit.history.png
+                - .PatientDashboardLabel: null
+                  text: VideoChat
+            - .PatientDashboardView: null
+              onClick:
+                - goto: LeftPage
+              style:
+                left: "0.55"
+              children:
+                - .PatientDashboardImage: null
+                  path: medical.records.png
+                - .PatientDashboardLabel: null
+                  text: LeftPage
+            - .PatientDashboardView: null
+              onClick:
+                - goto: RightPage
+              style:
+                top: "0.2"
+              children:
+                - .PatientDashboardImage: null
+                  path: profile.png
+                - .PatientDashboardLabel: null
+                  text: RightPage
+            - .PatientDashboardView: null
+              onClick:
+                - goto: StyleObject
+              style:
+                top: "0.2"
+                left: "0.55"
+              children:
+                - .PatientDashboardImage: null
+                  path: remote.health.png
+                - .PatientDashboardLabel: null
+                  text: Test style itemObject
+            - .PatientDashboardView: null
+              onClick:
+                - goto: PatientChart
+              style:
+                top: "0.4"
+              children:
+                - .PatientDashboardImage: null
+                  path: create.appointment.png
+                - .PatientDashboardLabel: null
+                  text: Patient Chart
+            - .PatientDashboardView: null
+              onClick:
+                # - goto: Contacts
+                - goto: EmitRedraw
+              style:
+                top: "0.4"
+                left: "0.55"
+              children:
+                - .PatientDashboardImage: null
+                  path: contacts.png
+                - .PatientDashboardLabel: null
+                  text: EmitRedraw
+            - .PatientDashboardView: null
+              onClick:
+                - goto: GotoViewTag#greenTag
+              style:
+                top: "0.6"
+              children:
+                - .PatientDashboardImage: null
+                  path: create.appointment.png
+                - .PatientDashboardLabel: null
+                  text: goto viewTag
+            - .PatientDashboardView: null
+              onClick:
+                # - goto: Contacts
+                - goto: TestRedraw
+              style:
+                top: "0.6"
+                left: "0.55"
+              children:
+                - .PatientDashboardImage: null
+                  path: contacts.png
+                - .PatientDashboardLabel: null
+                  text: TestRedraw

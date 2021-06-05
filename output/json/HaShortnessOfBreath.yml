@@ -1,0 +1,101 @@
+HaShortnessOfBreath:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Shortness of breath
+        - .HaHeaderLittleLabel:
+          text: Shortness of breath is an uncomfortable condition that makes it difficult to fully get air into your lungs. Problems with your heart and lungs can harm your breathing.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Shortness of breath is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/shortness-of-breath.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Find possible causes of shortness of breath based on specific factors. Use our patient Questionnaire."
+        - .HaBodyContent:
+          textBoard:
+            - text: "Your heart and lungs are involved in transporting oxygen to your tissues and removing carbon dioxide, and problems with either of these processes affect your breathing."
+            - br: 
+            - text: "Sometimes, shortness of breath gets better or worse with certain body positions. For example, lying down can trigger shortness of breath in people who have certain types of heart and lung disease. Keeping track of your symptoms can help your doctor figure out what's wrong and recommend the best treatment."
+            - br: 
+            - text: "According to the time, dyspnea could divide into acute and chronic. The most common causes of acute dyspnea are:"
+          style:
+            top: "90px"
+        - .HaBodyTitle:
+          text: "Asthma"
+          style:
+            top: "290px"
+        - .HaBodyContent:
+          text: "Asthma is a condition in which your airways narrow and swell and produce extra mucus. This can make breathing difficult and trigger coughing, wheezing and shortness of breath. For some people, asthma is a minor nuisance. For others, it can be a major problem that interferes with daily activities and may lead to a life-threatening asthma attack."
+          style:
+            top: "350px"
+        - .HaBodyTitle:
+          text: "Pneumonia"
+          style:
+            top: "480px"
+        - .HaBodyContent:
+          text: "Pneumonia is an infection that inflames the air sacs in one or both lungs. The air sacs may fill with fluid or pus (purulent material), causing cough with phlegm or pus, fever, chills, and difficulty breathing. A variety of organisms, including bacteria, viruses and fungi, can cause pneumonia."
+          style:
+            top: "540px"
+        - .HaBodyTitle:
+          text: "Other cause included"
+          style:
+            top: "630px"
+        - .HaBodyContentList:
+          textBoard:
+            - text: "⦁ Blood clot in your lungs (pulmonary embolism)"
+            - br:
+            - text: "⦁ Choking (blocking of the respiratory tract)"
+            - br:
+            - text: "⦁ Collapsed lung (pneumothorax)"
+            - br:
+            - text: "⦁ Heart attack"
+            - br:
+            - text: "⦁ Heart failure"
+            - br:
+            - text: "⦁ Pregnancy"
+            - br:
+            - text: "⦁ Severe allergic reaction"
+          style:
+            top: "690px"
+        - .HaBodyTitle:
+          text: "For chronic dyspnea common causes in clued:"
+          style:
+            top: "930px"
+        - .HaBodyContentList:
+          textBoard:
+            - text: "⦁ COPD (chronic obstructive pulmonary disease)"
+            - br:
+            - text: "⦁ Heart dysfunction"
+            - br:
+            - text: "⦁ Interstitial lung disease"
+            - br:
+            - text: "⦁ Obesity"
+          style:
+            top: "990px"
+        - .HaBottomTag: 
+          style: 
+            top: "1160px"
+        - .HaBottomTagname: 
+          text: "breath"
+          style: 
+            top: "1220px" 
+        - .HaBottomTagname: 
+          text: "shortness"
+          style: 
+            top: "1220px" 
+            left: "100px"
+        
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.65"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

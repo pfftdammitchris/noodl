@@ -1,0 +1,120 @@
+{
+  "HaWheezingInChild": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Wheezing in children"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Wheezing in children is a common problem encountered by family physicians."
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Wheezing in children is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/wheezing-in-a-child.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Seek emergency care if wheezing:"
+          },
+          {
+            ".HaBodyContentList": null,
+            "textBoard": [
+              {
+                "text": "⦁ Begins suddenly after he or she has been stung by a bee, taken medication or eaten an allergy-causing food"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Is accompanied by severe difficulty breathing or bluish skin color"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Occurs after he or she has choked on a small object or food"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Difficulty breathing"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Rapid breathing"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Briefly bluish skin color"
+              }
+            ],
+            "style": {
+              "top": "60px"
+            }
+          },
+          {
+            ".HaBodyContent": null,
+            "textBoard": [
+              {
+                "text": "Approximately 25 to 30 percent of infants will have at least one wheezing episode, and nearly one half of children have a history of wheezing by six years of age. The most common causes of wheezing in children include asthma, allergies, infections, gastroesophageal reflux disease, and obstructive sleep apnea. Less common causes include congenital abnormalities, foreign body aspiration, and cystic fibrosis. Historical data that help in the diagnosis include family history, age at onset, pattern of wheezing, seasonality, suddenness of onset, and association with feeding, cough, respiratory illnesses, and positional changes. A focused examination and targeted diagnostic testing guided by clinical suspicion also provide useful information. Children with recurrent wheezing or a single episode of unexplained wheezing that does not respond to bronchodilators should undergo chest radiography. Children whose history or physical examination findings suggest asthma should undergo diagnostic pulmonary function testing."
+              }
+            ],
+            "style": {
+              "top": "270px"
+            }
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "540px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "wheezing",
+            "style": {
+              "top": "600px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "1.99",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

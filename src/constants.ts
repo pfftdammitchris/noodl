@@ -1,9 +1,9 @@
-export const DEFAULT_GENERATE_PATH = 'generated'
+export const DEFAULT_GENERATE_DIR = 'generated'
 export const DEFAULT_CONFIG_HOSTNAME = 'public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
 export const DEFAULT_SERVER_HOSTNAME = '127.0.0.1'
 export const DEFAULT_SERVER_PATH = 'server'
-export const DEFAULT_SERVER_PORT = 3000
+export const DEFAULT_SERVER_PORT = 3001
 export const DEFAULT_SERVER_PROTOCOL = 'http'
 export const DEFAULT_PANEL = 'select'
 

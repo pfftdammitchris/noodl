@@ -1,0 +1,21 @@
+apiHost: albh2.aitmed.io
+apiPort: '443'
+webApiHost: apiHost
+appApiHost: apiHost
+connectiontimeout: '5'
+loadingLevel: 1
+# designSuffix:
+#     widthHeightRatioThreshold: 1
+#     greaterEqual: ""
+#     less: v
+# viewWidthHeightRatio:
+#     min: "0.65"
+#     max: "0.75"
+debug: console_log_api
+cadlBaseUrl: https://public.aitmed.com/cadl/testpage0.34/
+cadlMain: cadlEndpoint.yml
+myBaseUrl: https://public.aitmed.com/cadl/testpage0.34/
+timestamp: 12012020
+bodyTopPplugin: ~/bodyTop.html
+bodyTailPplugin: ~/bodyTail.html
+headPlugin: ~/seoKeywords.html

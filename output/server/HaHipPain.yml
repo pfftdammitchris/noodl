@@ -1,0 +1,71 @@
+HaHipPain:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Hip pain
+        - .HaHeaderLittleLabel:
+          text: Hip pain is not uncommon in orthopedic clinics. In fact, there are many clinical diseases that can cause hip pain and limited mobility.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Hip pain is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/hip-pain.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency medical care if:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Hip pain is accompanied by bleeding"
+            - br: 
+            - text: "⦁ Hip pain is severe or sudden swelling around hip"
+            - br: 
+            - text: "⦁ Hips are obviously deformed"
+            - br: 
+            - text: "⦁ Hips pain aggravated the next day after a fall"
+            - br: 
+            - text: "⦁ Hips cannot withstand weight"
+            - br: 
+            - text: "⦁ Osteoporosis patient injuried your hips"
+        - .HaBodyTitle:
+          style:  
+            top: "270px"
+          text: "Hip pain is not uncommon in orthopedic clinics. In fact, there are many clinical diseases that can cause hip pain and limited mobility. Common reasons are:"        
+        - .HaBodyContentList:
+          style: 
+            top: "360px"
+          textBoard: 
+            - text: "⦁ Osteoarthritis: caused by degeneration and injury to the articular cartilage. Cartilage is a firm, slippery tissue that permits nearly frictionless joint motion.In osteoarthritis, the slick surface of the cartilage becomes rough. Eventually, if the cartilage wears down completely, you may be left with bone rubbing on bone. Clinical manifestations include joint pain and inactivity."
+            - br: 
+            - text: "⦁ Avascular necrosis of the femoral head. It is a very challenging disease in orthopedics. Due to the damage or interruption of blood supply to the femoral head, it causes death of bone cells and bone marrow components. The causes of the disease can be divided into two major categories: traumatic and non- traumatic. Traumatic is mainly caused by hip fractures and dislocations. The main cause of non- traumatic is Steroid, Bisphosphonate and Excessive alcohol use,"
+            - br: 
+            - text: "⦁ Hip fracture, the elderly are high-risk groups of hip fractures. Hip fractures include femoral neck fractures and intertrochanteric fractures. It always cause pain in hip and decrease ROM of hip."       
+        - .HaBodyContent:
+          style: 
+            top: "600px"
+          text: "Other cause include hip synovitis, Psoriatic arthritis,Rheumatoid arthritis , Bursitis, Tendinitis, Osteomyelitis, etc."
+        - .HaBottomTag: 
+          style: 
+            top: "690px"
+        - .HaBottomTagname: 
+          text: "hip pain"
+          style: 
+            top: "750px"
+        - .HaBottomTagname: 
+          text: "hip"
+          style: 
+            top: "750px"
+            left: "0.056"        
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.2"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

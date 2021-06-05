@@ -1,0 +1,151 @@
+{
+  "HaPelvicPainFemale": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Pelvic pain in female"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Refers to pain below the belly button in the anterior lower abdomen including the sex organ"
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Pelvic pain in female is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/pelvic-pain-female.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Get emergency care if your child:"
+          },
+          {
+            ".HaBodyContentList": null,
+            "textBoard": [
+              {
+                "text": "⦁ Excessive vaginal bleeding"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Fever"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Nausea or vomiting"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Signs of shock, such as fainting"
+              }
+            ],
+            "style": {
+              "top": "60px"
+            }
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Find possible causes of pelvic pain based on specific factors. Use our patient Questionnaire.",
+            "style": {
+              "top": "210px"
+            }
+          },
+          {
+            ".HaBodyContent": null,
+            "textBoard": [
+              {
+                "text": "Often pelvic pain is not serious and gets better in a few days. If your pain continues or gets worse, you may need tests and treatment. Tell your doctor about any new symptoms. Pelvic pain can arise from your digestive, reproductive or urinary system. In female, reproductive system should address more attention. Common cause included ."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Menstrual cramps (dysmenorrhea) are throbbing or cramping pains in the lower abdomen. Many women have menstrual cramps just before and during their menstrual periods.For some women, the discomfort is merely annoying. For others, menstrual cramps can be severe enough to interfere with everyday activities for a few days every month. Conditions such as endometriosis or uterine fibroids can cause menstrual cramps. Treating the cause is key to reducing the pain. Menstrual cramps that aren't caused by another condition tend to lessen with age and often improve after giving birth."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Pelvic inflammatory disease (PID): is an infection of the female reproductive organs. It usually occurs when sexually transmitted bacteria spread from your vagina to your uterus, fallopian tubes or ovaries. PID might cause only mild signs and symptoms or none at all. When severe, PID might cause fever, chills, severe lower abdominal or pelvic pain — especially during a pelvic exam — and bowel discomfort."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Ovarian cysts are fluid-filled sacs or pockets in an ovary or on its surface. Women have two ovaries — each about the size and shape of an almond — on each side of the uterus. Eggs (ova), which develop and mature in the ovaries, are released in monthly cycles during the childbearing years.Many women have ovarian cysts at some time. Most ovarian cysts present little or no discomfort and are harmless. The majority disappears without treatment within a few months.However, ovarian cysts — especially those that have ruptured — can cause serious symptoms. To protect your health, get regular pelvic exams and know the symptoms that can signal a potentially serious problem."
+              }
+            ],
+            "style": {
+              "top": "310px"
+            }
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "860px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "pelvic",
+            "style": {
+              "top": "920px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "2.35",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

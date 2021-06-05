@@ -2,6 +2,7 @@ import ConfigStore from 'configstore'
 import { Draft } from 'immer'
 import { Cli } from './cli'
 import { initialState as initialAppState } from './App'
+import useConfiguration from './hooks/useConfiguration'
 import createAggregator from './api/createAggregator'
 
 export namespace App {
@@ -14,28 +15,20 @@ export namespace App {
 	}
 	export interface Context extends State {
 		aggregator: ReturnType<typeof createAggregator>
-		config: Config
 		cli: Cli
+		configuration: ReturnType<typeof useConfiguration>
 		exit: (error?: Error | undefined) => void
-		getGenerateDir(configKey?: string): string
 		highlight(panelKey: App.PanelKey | ''): void
 		log(text: string): void
 		logError(text: string | Error): void
 		toggleSpinner(type?: false | string): void
 		set(fn: (draft: Draft<App.State>) => void): void
 		setPanel(panelKey: App.PanelKey | '', props?: Record<string, any>): void
-		settings: Settings
 	}
 
 	export type PanelKey = string
 
 	export type State = typeof initialAppState
-
-	export type Settings = ConfigStore
-
-	export interface SettingsObject {
-		serverDir?: string
-	}
 }
 
 export type PanelType = 'main' | 'generate' | 'retrieve' | 'server'

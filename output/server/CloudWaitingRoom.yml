@@ -1,0 +1,150 @@
+CloudWaitingRoom:
+  viewPort: top
+  components: 
+    - .BaseHeader
+    - type: view
+      style: 
+        top: "0.12"
+        left: "0"
+        width: "1"
+        height: "0.6"
+        # backgroundColor: "0xcdcdcd"
+      children: 
+        - type: view
+          style: 
+            top: "0.1"
+            left: "0.15"
+            width: "0.5"
+            height: "0.4"
+          children: 
+            - type: label
+              textBoard: 
+                - text: "AiTmed Cloud Waiting -"
+                - br: 
+                - text: "Exam Room"
+              style: 
+                left: "0"
+                width: "0.5"
+                fontSize: "60"
+                fontStyle: "bold"
+                textAlign: 
+                  x: center
+            - type: label
+              textBoard: 
+                - text: "Contactless Mobile Check-in and Virtual Waiting Room "
+                - br: 
+                - text: "Virtual Waiting Room"
+              style:
+                top: "0.2"
+                left: "0"
+                width: "0.5"
+                fontSize: "34"
+                fontWeight: "450"
+                # backgroundColor: "0xcdcdcd"
+                textAlign: 
+                  x: center
+            - type: label
+              text: "Patients can pre-register and check-in anytime,anywhere from their mobile device"
+              style: 
+                top: "0.33"
+                left: "0"
+                width: "0.5"
+                fontSize: "24"
+                textAlign: 
+                  x: center
+        - type: button
+          text: Sign In/Sign Up
+          textAlign:
+            x: center
+            y: center
+          onClick: 
+            - goto: ..SignIn.url
+          style:
+            left: "0.25"
+            top: "0.5"
+            width: "0.12"
+            height: "0.06"
+            fontSize: "20"
+            color: "0xfefefe"
+            backgroundColor: "0x30b355"
+            border:
+              style: 5  
+            borderRadius: "5"                           
+        - type: button
+          text: Request For Demo
+          style:
+            left: "0.42"
+            top: "0.5"
+            width: "0.12"
+            height: "0.06"
+            fontSize: "20"
+            color: "0xfefefe"
+            backgroundColor: "0x30b355"
+            border:
+              style: 5  
+            borderRadius: "5"  
+          onClick:
+            - goto: ContactInformation
+        - type: image
+          path: "waiting-room.png"
+          style:
+            left: "0.63"
+            top: "0.07"
+            height: "0.47"
+    - type: view
+      style: 
+        top: "0.78"
+        left: "0.25"
+        width: "0.5"
+        height: "0.8"
+      children: 
+        - type: label
+          text: "Our Features"
+          style: 
+            width: "0.5"
+            top: "0.05"
+            fontSize: "60"
+            fontStyle: "bold"
+            textAlign: 
+              x: center
+        - type: view
+          style: 
+            top: "0.2"
+            width: "0.5"
+            height: "0.6"
+            # backgroundColor: "0xcdcdcd"
+          children: 
+            - .CloudWaitingRoomLabel:
+            - .CloudWaitingRoomImg:
+            - .CloudWaitingRoomLabel:
+              text: "Streamlind Check-in"
+              style: 
+                left: "0.3"
+            - .CloudWaitingRoomImg:
+              path: "book.png"    
+              style: 
+                left: "0.37"
+            - .CloudWaitingRoomLabel:
+              text: "Digitized clinical intake before consult"
+              style:
+                top: "0.27" 
+            - .CloudWaitingRoomImg:
+              path: "notebook.png"    
+              style: 
+                top: "0.38"
+            - .CloudWaitingRoomLabel:
+              text: "Brand your Practice in Your Cloud Room "
+              style: 
+                top: "0.27"
+                left: "0.3"
+            - .CloudWaitingRoomImg:
+              path: "movie.png"    
+              style: 
+                top: "0.39"
+                left: "0.37"
+    - type: view
+      style: 
+        top: "1.6"
+      children: 
+        - .BaseFooter
+        

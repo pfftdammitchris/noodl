@@ -1,0 +1,224 @@
+{
+  "HaFeverInChild": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Fever in a Child"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Fever happens when the body's internal \"thermostat\" raises the body temperature above its normal level. This thermostat is found in a part of the brain called the hypothalamus. The hypothalamus knows what temperature your body should be and will send messages to your body to keep it that way."
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Fever in a Child is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/fever-in-a-child.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Get emergency medical care if:"
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "60px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Your child is younger than 3 months and has a fever"
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Seek medical care if a child of any age shows any of the following:",
+            "style": {
+              "top": "120px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "180px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Fussiness, or acting abnormally, which doesn't improve even after taking medications to bring down the fever"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Signs of dehydration, such as no wet diapers over eight to 10 hours, crying without tears, a dry mouth or refusing to drink any fluids"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Stiff neck or a headache"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Abdominal pain"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Trouble breathing"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Rash"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Joint pain or swelling"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ fever lasts more than five days in a row"
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Children with relatively high fevers may not look or act particularly sick. Treating a fever depends on the degree of discomfort. If your child is uncomfortable or restless, these home care strategies may help:",
+            "style": {
+              "top": "450px",
+              "width": "0.52"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "570px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Encourage your child to drink fluids"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Dress your child in lightweight clothing."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Use a light blanket if your child feels chilled, until the chills end."
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Pain relievers also may help, but note these precautions:",
+            "style": {
+              "top": "690px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "750px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Don't give aspirin to anyone age 18 or younger."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Don't give an infant any type of pain reliever until after you've contacted a medical provider or your child has been evaluated."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Children ages 6 months and older may be given acetaminophen or ibuprofen (Advil, Children's Motrin, others)."
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Follow the directions on the label.",
+            "style": {
+              "top": "870px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "930px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Don't give ibuprofen to children under 6 months."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Don't give acetaminophen to infants under 6 weeks."
+              }
+            ]
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "1080px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "fever",
+            "style": {
+              "top": "1140px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "2.55",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

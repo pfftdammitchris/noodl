@@ -1,0 +1,227 @@
+{
+  "HaDiarrheaInAdult": {
+    "components": [
+      ".BaseHeader",
+      {
+        ".HaHeaderView": null,
+        "children": [
+          {
+            ".HaHeaderBigLabel": null,
+            "text": "Diarrhea"
+          },
+          {
+            ".HaHeaderLittleLabel": null,
+            "text": "Frequent, and differ from the individual's normal pattern of bowel movements."
+          }
+        ]
+      },
+      {
+        ".HaBodyLeftView": null
+      },
+      {
+        ".HaBodyRightAbove": null
+      },
+      {
+        ".HaBodyRightBelow": null,
+        "text": "If Diarrhea is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you."
+      },
+      {
+        ".HaBodyImg": null,
+        "path": "healthAZ/diarrhea-in-adult.png"
+      },
+      {
+        ".HaBodyCon": null,
+        "children": [
+          {
+            ".HaBodyTitle": null,
+            "text": "Signs of dehydration, decreased urination, lethargic, listless, dry mouth, increased thirst."
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "90px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Blood or Pus in stool"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Black tarry stool"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Bloody Vomit"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Extreme pain in the abdomen when touched"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ If Diarrhea has lasted more than 3 days"
+              }
+            ]
+          },
+          {
+            ".HaBodyContent": null,
+            "style": {
+              "top": "270px"
+            },
+            "textBoard": [
+              {
+                "text": "Diarrhea is an increase in the the volume, wateriness and or frequency of bowel movements."
+              },
+              {
+                "br": null
+              },
+              {
+                "text": ""
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "Diarrhea has many causes, but can usually diagnosed and treated by talking to a medical professional. Causes of diarrhea differ depending on time. Less than 2 weeks (acute) or greater than 2 weeks (chronic). Acute causes or more commonly seen."
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Acute Causes:",
+            "style": {
+              "top": "420px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "480px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Viral, bacterial, or Parasitic"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Food poisoning"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Drugs"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Recent Travel"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Other causes..."
+              }
+            ]
+          },
+          {
+            ".HaBodyTitle": null,
+            "text": "Chronic Causes:",
+            "style": {
+              "top": "660px"
+            }
+          },
+          {
+            ".HaBodyContentList": null,
+            "style": {
+              "top": "720px"
+            },
+            "textBoard": [
+              {
+                "text": "⦁ Irritable bowel syndrome"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Dietary factors"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Drugs"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Previous surgery"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Genetic or inherited diseases"
+              },
+              {
+                "br": null
+              },
+              {
+                "text": "⦁ Other causes..."
+              }
+            ]
+          },
+          {
+            ".HaBodyContent": null,
+            "style": {
+              "top": "930px"
+            },
+            "textBoard": [
+              {
+                "text": "Acute watery diarrhea in an otherwise healthy person may be self-limited, however, explosive diarrhea and acute bloody diarrhea require medical management ASAP. Diarrhea may present with vomiting, fever, and bloating. Dehydration is a great concern in a patient with diarrhea as it can be life threatening is severe cases. If you are having diarrhea severely, Schedule a visit now with a Medical Professional that can evaluate and treat you immediately."
+              }
+            ]
+          },
+          {
+            ".HaBottomTag": null,
+            "style": {
+              "top": "1080px"
+            }
+          },
+          {
+            ".HaBottomTagname": null,
+            "text": "Diarrhea",
+            "style": {
+              "top": "1140px"
+            }
+          }
+        ]
+      },
+      {
+        "type": "view",
+        "style": {
+          "left": "0",
+          "top": "2.55",
+          "height": "0.5",
+          "width": "1"
+        },
+        "children": [
+          ".BaseFooter"
+        ]
+      }
+    ]
+  }
+}

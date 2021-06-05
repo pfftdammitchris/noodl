@@ -1,0 +1,119 @@
+HaJointPainOrMusclePainInChild:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Joint pain or muscle pain in child
+        - .HaHeaderLittleLabel:
+          text: When a child complains of joint or muscle pains, parents or caregivers may be concerned. Usually, the discomfort will simply be growing pains that will go away on their own. However, people should be aware of the signs and symptoms that may indicate something more serious.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Joint pain or muscle pain in child is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/joint-pain-or-muscle-pain-in-a-child.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency medical care if:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Limping or impaired activity"
+            - br: 
+            - text: "⦁ Persistent decreased energy or fatigue"
+            - br: 
+            - text: "⦁ Swollen glands (lymph nodes) in the neck, groin or underarms"
+            - br: 
+            - text: "⦁ Swelling or stiffness"
+            - br: 
+            - text: "⦁ Persistent fever or fever with no clear cause"
+            - br: 
+            - text: "⦁ Rash"
+            - br: 
+            - text: "⦁ Abdominal pain"
+            - br: 
+            - text: "⦁ Unexplained weight loss"
+        - .HaBodyContent:
+          style: 
+            top: "330px"
+          textBoard: 
+            - text: "30 percent of school children experience chronic musculoskeletal pain. In around half of these children, the pain is due to growing pains.Growing pains most often occur during a child's preschool and preteen years, and they usually disappear by their teenage years. These pains are harmless and are not a sign of a serious condition.Growing pains typically occur in the thigh and calf muscles or behind the knees, but sometimes can also happen in the arms."        
+        - .HaBodyTitle:
+          style: 
+            top: "450px"
+          text: "Other causes of joint pain in children including:"
+        - .HaBodyTitle:
+          style: 
+            top: "510px"
+          text: "Lyme disease" 
+        - .HaBodyContent:
+          style: 
+            top: "570px" 
+          text: "Insects called ticks can spread a bacterial infection known as Lyme disease. The ticks carry a bacterium called Borrelia burgdorferi that they pass onto people when they bite them. These ticks tend to live in grassy areas and woodlands in particular regions and feed on animals, such as mice and deer. Symptoms of Lyme disease include:"                 
+        - .HaBodyContentList:
+          style: 
+            top: "690px"
+          textBoard: 
+            - text: "⦁ a circular rash around a tick bite, sometimes known as a bull's-eye rash"
+            - br: 
+            - text: "⦁ fatigue"
+            - br: 
+            - text: "⦁ fever or chills"       
+            - br: 
+            - text: "⦁ joint or muscle pain"
+            - br: 
+            - text: "⦁ facial paralysis"      
+        - .HaBodyContent:
+          style: 
+            top: "870px"
+          textBoard:  
+            - text: "Anyone who lives or spends time in an area where Lyme disease occurs can become infected, but children who spend a lot of time playing outside are at greater risk."       
+        - .HaBodyTitle:
+          style: 
+            top: "960px"
+          text: "Juvenile idiopathic arthritis"
+        - .HaBodyContent:
+          style: 
+            top: "1020px" 
+          textBoard: 
+            - text: "If a child frequently complains of joint pain, then juvenile idiopathic arthritis or JIA may be the cause. JIA can cause pain and swelling in one or more joints. Unlike growing pains, it can also affect a child's movement or strength."
+            - text: "There are several different types of JIA and symptoms can vary, so it can be difficult for a doctor to diagnose. However, early diagnosis and treatment are vital because JIA can affect bone growth and lead to permanent complications."                 
+        - .HaBottomTag: 
+          style: 
+            top: "1170px"
+        - .HaBottomTagname: 
+          text: "joint"
+          style: 
+            top: "1230px"
+        - .HaBottomTagname: 
+          text: "pain"
+          style: 
+            top: "1230px"
+            left: "0.042"     
+        - .HaBottomTagname: 
+          text: "joint pain"
+          style: 
+            top: "1230px"
+            left: "0.082"     
+        - .HaBottomTagname: 
+          text: "muscle pain "
+          style: 
+            top: "1230px"
+            left: "0.144"     
+        - .HaBottomTagname: 
+          text: "child"
+          style: 
+            top: "1230px"
+            left: "0.214"     
+
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.7"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

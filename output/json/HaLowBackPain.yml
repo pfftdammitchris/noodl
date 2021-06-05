@@ -1,0 +1,87 @@
+HaLowBackPain:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Low back pain
+        - .HaHeaderLittleLabel:
+          text: Low back pain is the second most common cause in clinical. Up to 84% of adults would have a low back pain experience during their lifetime
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Low back pain is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/low-back-pain.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get your doctor if:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ Pain Is constant or Worsens during rest."
+            - br: 
+            - text: "⦁ Low back pain is caused by trauma."
+            - br: 
+            - text: "⦁ Causes weakness, numbness or tingling in one or both legs."
+            - br: 
+            - text: "⦁ Is associated with new bowel or bladder problems."
+            - br: 
+            - text: "⦁ Is associated with pain or throbbing in the abdomen."
+            - br: 
+            - text: "⦁ Is accompanied by fever."
+        - .HaBodyContent:
+          style: 
+            top: "270px"
+          textBoard: 
+            - text: "Low back pain is the second most common complain in clinical. Up to 84% of adults would have a low back pain experience during their lifetime. The range of diseases and complications associated with low back pain is very wide. For many people, low back pain is self-limiting and can be relieved without special treatment. However, for other people, low back pain is recurrent or long-term, which can cause significant pain. It will have an impact on the quality of work and life."        
+        - .HaBodyContentList:
+          style: 
+            top: "420px"
+          textBoard: 
+            - text: "⦁ Sprains and strains account for most acute back pain. Sprains are caused by overstretching or tearing ligaments, and strains are tears in tendon or muscle. Both can occur from twisting or lifting something improperly, lifting something too heavy, or overstretching. Such movements may also trigger spasms in back muscles, which can also be painful."
+            - br: 
+            - text: "⦁ Lumbar disc degeneration: Degenerative disease refers to the natural aging of the lumbar spine. It is a physiological and pathological process. The lumbar vertebra is the hub of the human trunk, and all physical activities would increase the burden of the lumbar spine. The activity and overload make the lumbar spine accelerate of aging. Severe lumbar degenerative diseases can cause low back pain and even nerve damage, affecting work ability and quality of life."
+        - .HaBodyTitle:
+          style: 
+            top: "660px"
+          text: "Spinal stenosis"
+        - .HaBodyContent:
+          style: 
+            top: "720px" 
+          textBoard: 
+            - text: "Lumbar spinal stenosis refers to a type of disease in which the various diameters of the spinal canal are shortened, the dural sac, spinal cord or nerve roots are compressed. It is one of the causes of common cause for low back pain. Spinal stenosis is mostly found in middle-aged people over 40 years old."
+            - br: 
+            - text: "Myofascial pain syndrome: Myofascial pain syndrome is a chronic pain disorder. In this condition, pressure on sensitive points in your muscles (trigger points) causes pain in the muscle and sometimes in seemingly unrelated parts of your body. This is called referred pain."
+            - br: 
+            - text: "This syndrome typically occurs after a muscle has been contracted repetitively. This can be caused by repetitive motions used in jobs or hobbies or by stress-related muscle tension."
+            - br:
+            - text: "While nearly everyone has experienced muscle tension pain, the discomfort associated with myofascial pain syndrome persists or worsens. Treatment options include physical therapy and trigger point injections. Pain medications and relaxation techniques also can help."
+
+        - .HaBottomTag: 
+          style: 
+            top: "1020px"
+        - .HaBottomTagname:  
+          text: "low back pain"
+          style: 
+            top: "1080px"
+        - .HaBottomTagname: 
+          text: "back"
+          style: 
+            top: "1080px"
+            left: "0.078"     
+        - .HaBottomTagname: 
+          text: "low back"
+          style: 
+            top: "1080px"
+            left: "0.117" 
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.5"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

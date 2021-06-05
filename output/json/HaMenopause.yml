@@ -1,0 +1,57 @@
+HaMenopause:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Menopause
+        - .HaHeaderLittleLabel:
+          text: Womens Health - Menopause is the time in a woman's life when her period stops.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Menopause is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyLabel:
+      text: "Get emergency care if your child:"
+    - .HaBodyCon:
+      style: 
+        top: "0.85"
+      children:      
+        - .HaBodyContent:
+          style: 
+            top: "0px" 
+          textBoard: 
+            - text: "Menopause, also known as the climacteric, is the time in most women's lives when menstrual periods stop permanently, and they are no longer able to bear children."
+            - br: 
+            - text: "Menopause typically occurs between 49 and 52 years of age."
+            - br: 
+            - text: "Medical professionals often define menopause as having occurred when a woman has not had any vaginal bleeding for a year."
+            - br:
+            - text: "It may also be defined by a decrease in hormone production by the ovaries."
+            - br: 
+            - text: "In those who have had surgery to remove their uterus but still have ovaries, menopause may be considered to have occurred at the time of the surgery or when their hormone levels fell."
+            - br: 
+            - text: "Following the removal of the uterus, symptoms typically occur earlier, at an average of 45 years of age."
+        - type: video
+          videoFormat: mp4
+          path: https://public.aitmed.com/commonRes/video/aitmed147.mp4
+          poster: videoBack.png
+          controls: true
+          style: 
+            top: "270px"
+            height: "420px"
+        - .HaBottomTag: 
+          style: 
+            top: "720px"
+        - .HaBottomTagname:  
+          text: "menopause"
+          style: 
+            top: "780px"
+    - type: view 
+      style: 
+        left: "0"
+        top: "1.75"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

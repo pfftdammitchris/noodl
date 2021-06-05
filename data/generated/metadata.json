@@ -1,0 +1,14 @@
+{
+	"actionTypes": [
+		"builtIn",
+		"evalObject",
+		"openCamera",
+		"openDocumentManager",
+		"openPhotoLibrary",
+		"popUp",
+		"popUpDismiss",
+		"updateObject"
+	],
+	"REFERENCES": [],
+	"references": []
+}

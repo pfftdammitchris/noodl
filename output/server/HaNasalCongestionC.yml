@@ -1,0 +1,99 @@
+HaNasalCongestionC:
+  components:
+    - .BaseHeader
+    - .HaHeaderView:
+      children: 
+        - .HaHeaderBigLabel:
+          text: Nasal congestion in child
+        - .HaHeaderLittleLabel:
+          text: Nasal congestion, stuffiness, or obstruction to nasal breathing is one of the oldest and most common human complaints.
+    - .HaBodyLeftView: 
+    - .HaBodyRightAbove:
+    - .HaBodyRightBelow:
+      text: If Nasal congestion in child is interfering with your daily life, log on AITMED and talk to a doctor to receive a treatment plan customized for you.
+    - .HaBodyImg:
+      path: healthAZ/nasal-congestion-in-a-child.png
+    - .HaBodyCon:
+      children:
+        - .HaBodyTitle:
+          text: "Get emergency medical care if:"
+        - .HaBodyContentList:
+          style: 
+            top: "60px"
+          textBoard: 
+            - text: "⦁ A fever in a child younger than 3 months"
+            - br: 
+            - text: "⦁ Fever that lasts more than five days in a row"
+            - br: 
+            - text: "⦁ Chills or sweating"
+            - br: 
+            - text: "⦁ Difficulty breathing"
+            - br: 
+            - text: "⦁ Nausea or vomiting"
+            - br: 
+            - text: "⦁ Greenish or bloody nasal discharge"
+            - br: 
+            - text: "⦁ Unusual sleepiness"
+            - br: 
+            - text: "⦁ Severe headache"
+            - br: 
+            - text: "⦁ Persistent crying"
+            - br: 
+            - text: "⦁ Ear pain"
+        - .HaBodyContent:
+          style: 
+            top: "390px"
+          textBoard: 
+            - text: "Nasal congestion is another term for a stuffy nose. It is often a symptom of another health problem, such as a sinus infection. It may also be caused by the common cold.Nasal congestion is marked by:stuffy or runny nose,sinus pain,mucus buildup,swollen nasal tissue."
+            - br: 
+            - text: "Home remedies may be enough to alleviate nasal congestion, particularly if it is caused by the common cold. However, if you experience chronic, or long-term, congestion, you should seek medical treatment."
+            - br: 
+            - text: "Other common cause of nasal congestion include:"
+        - .HaBodyTitle:
+          style: 
+            top: "570px"
+          text: "Sinusitis:"
+        - .HaBodyContent:
+          style: 
+            top: "630px"
+          textBoard: 
+            - text: "Unlike in adults, pediatric sinusitis is difficult to diagnose because symptoms of sinusitis can be caused by other problems, such as viral illness and allergy. Young children are more prone to infections of the nose, sinus, and ears, especially in the first several years of life. These are most frequently caused by viral infections (colds), and they may be aggravated by allergies. However, if your child remains ill beyond the usual week to ten days, a sinus infection may be the cause."
+            - br: 
+            - text: "You can reduce the risk of sinus infections for your child by reducing exposure to known environmental allergies and pollutants such as tobacco smoke, reducing his/her time at day care, and treating stomach acid reflux disease."      
+        - .HaBodyTitle:
+          style: 
+            top: "840px"
+          text: "Hay fever:"
+        - .HaBodyContent:
+          style: 
+            top: "900px"
+          textBoard: 
+            - text: "Hay fever is a type of allergic reaction. It happens when pollens and dust mites in the air get into your nose and eyes, which can cause inflammation. It usually affects the nose, face, sinus passages, eyes and throat. Common symptoms of hay fever include sniffling, runny nose, blocked nose, mouth breathing and sneezing. Your child might also have itchy eyes, nose, roof of the mouth and back of the throat. Your child’s eyes might be red and sore, and water a lot."
+            - br: 
+            - text: "Hay fever is usually a minor problem. But if your child is very sensitive to pollens in the air, he can develop other symptoms like wheezing, hives and rashes, especially eczema. Hay fever can also lead to poor-quality sleep, tiredness and poor concentration during the daytime."      
+ 
+        - .HaBottomTag: 
+          style: 
+            top: "1110px"
+        - .HaBottomTagname: 
+          text: "nasal"
+          style: 
+            top: "1170px"
+        - .HaBottomTagname: 
+          text: "congestion"
+          style: 
+            top: "1170px"
+            left: "0.042"     
+        - .HaBottomTagname: 
+          text: "nasal congestion"
+          style: 
+            top: "1170px"
+            left: "0.107" 
+    - type: view 
+      style: 
+        left: "0"
+        top: "2.6"
+        height: "0.5"
+        width: "1"
+      children: 
+        - .BaseFooter

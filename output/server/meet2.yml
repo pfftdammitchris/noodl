@@ -1,0 +1,26 @@
+apiHost: albh2.aitmed.io
+apiPort: '443'
+webApiHost: apiHost
+appApiHost: apiHost
+connectiontimeout: '5'
+loadingLevel: 1
+debug: console_log_api
+viewWidthHeightRatio:
+    min: 0.56
+    max: 0.7
+web:
+  cadlVersion :
+    stable: 0.32
+    test : 0.32
+ios:
+  cadlVersion:
+    stable: 0.32
+    test : 0.32
+android:
+  cadlVersion:
+    stable : 0.32
+    test : 0.32
+cadlBaseUrl: https://public.aitmed.com/noodl/aitcom_${cadlVersion}/
+cadlMain: cadlEndpoint.yml
+timestamp: 03032021
+myBaseUrl: https://public.aitmed.com/noodl/aitcom_0.32/

@@ -1,0 +1,195 @@
+Price:
+  pageNumber: "100"
+  viewPort: top
+  components:
+    - .BaseHeader:
+    - type: view
+      style:
+        top: "0.1"
+        height: "0.5"
+        width: "1"
+        backgroundColor: "0x388FCD"
+      children:
+        - type: label
+          text: "AiTmed Pricing"
+          style:
+            top: "0.1"
+            color: "0xFFFFFF"
+            fontSize: "51"
+            width: "1"
+            fontWeight: 600
+            textAlign:
+              x: center
+        - type: label
+          textBoard:
+            - text: "Only pay for what you use, Enjoy full package of Telehealth platform."
+            - br:
+            - text: "Don’t get stalled by contract package and function restriction."
+          style:
+            top: "0.3"
+            color: "0xffffff"
+            fontSize: "25"
+            fontWeight: 400
+            left: "0.05"
+            width: "0.9"
+            textAlign:
+              x: center
+    - type: view
+      style:
+        top: "0.6"
+        width: "1"
+        # left: "0.05"
+        height: "0.8"
+      children:
+        - type: label
+          style:
+            top: "0.05"
+            width: "0.5"
+            left: "0.25"
+            fontSize: "30"
+            fontFaimly: "helvetica-lt-w10-bold,sans-serif"
+            textAlign:
+              x: center
+          textBoard:
+            - text: Sign Up with
+            - text: Free
+              color: "0x388FCD"
+            - text: 120 min Tele-visit
+            - br:
+            - text: Free
+              color: "0x388FCD"
+            - text: 100 Medical Records 
+        - type: view
+          style:
+            top: "0.3"
+            width: "1"
+            height: "0.4"
+            # backgroundColor: "0x388FCD"
+          children:
+            - .PriceCard:
+              children:
+                - .PriceCardLabeltop:
+                - .PriceCardLabelStart:
+                - .PriceCardLabelPrice:
+                - .PriceCardLabelBottom:
+            
+            - .PriceCard:
+              style:
+                left: "0.38"
+              children:
+                - .PriceCardLabeltop:
+                  text: "Medical Record Storage "
+                - .PriceCardLabelStart:
+                - .PriceCardLabelPrice:
+                  text: "$0.002"
+                - .PriceCardLabelBottom:
+                  text: "Record/Month"
+
+            - .PriceCard:
+              style:
+                left: "0.71"
+              children:
+                - .PriceCardLabeltop:
+                  text: "Brand Your Medical Practice"
+                - .PriceCardLabelStart:
+                - .PriceCardLabelPrice:
+                  text: "$1000"
+                - .PriceCardLabelBottom:
+                  text: "one-time setup fee"
+    - type: view
+      style:
+        top: "1.4"
+        width: "1"
+        height: "1"
+        # backgroundColor: "0x388FCD"
+      children:
+        - type: label
+          text: "Our Telehealth Features"
+          style:
+            top: "0.02"
+            width: "1"
+            fontSize: "53"
+            fontFamily: "helvetica-w01-light,helvetica-w02-light,sans-serif"
+            textAlign:
+              x: center
+        - type: view
+          style:
+            top: "0.2"
+            width: "1"
+            height: "0.8"
+            # backgroundColor: "0x388FCD"
+          children:
+            - .PriceLinkCard:
+              style:
+                left: "0.04"
+              children: 
+                - .PriceLinkCardLabel:
+                  text: Provider Portal
+                - .PriceLinkCardLink:
+
+            - .PriceLinkCard:
+              style:
+                left: "0.28"
+              children: 
+                - .PriceLinkCardLabel:
+                  textBoard: 
+                    - text: "Patient Portal"
+                    - br: 
+                    - text: "(Coming Soon)"
+                - .PriceLinkCardLink:
+                  textBoard:
+                    - text: "⦁Self-Monitoring Vital Sign"
+                    - br:
+                    - text: "⦁See Doctor Online "
+                    - br:
+                    - text: "⦁Medical Records Sharing"
+                    - br:
+                    - text: "and Storage"
+            - .PriceLinkCard:
+              style:
+                left: "0.52"
+              children: 
+                - .PriceLinkCardLabel:
+                  text: "Customized Your Medical Practice "
+                - .PriceLinkCardLink:
+                  textBoard:
+                    - text: "⦁Customize your AiTmed  account to match your medical practice"
+                    - br:
+                    - text: "⦁Personalized landing page, logo, "
+                    - br:
+                    - text: "⦁Customized domain "
+                    - br:
+                    - text: "⦁Medical Form, Questionnaire "
+                    - br:
+                    - text: "⦁Functions"
+            - .PriceLinkCard:
+              style:
+                left: "0.76"
+              children: 
+                - .PriceLinkCardLabel:
+                  text: "Security"
+                - .PriceLinkCardLink:
+                  textBoard:
+                    - text: "⦁HIPAA Complaint"
+                    - br:
+                    - text: "⦁Documents Authorized Sharing "
+                    - br:
+                    - text: "⦁Data encryption is leveraged by blockchain encryption technology"
+                    - br:
+                    - text: "⦁ECC Encryption +AES 256"
+                    - br:
+                    - text: "⦁E2EE"              
+    - .BaseFooter:
+      style:
+          top: "2.4"
+
+          
+
+
+
+
+
+
+
+
+

@@ -152,6 +152,8 @@ export function getFilename(str: string) {
 }
 
 export function getAbsFilePath(...paths: string[]) {
+	const filepath = path.join(...paths)
+	if (path.isAbsolute(filepath)) return filepath
 	return path.resolve(path.join(process.cwd(), ...paths))
 }
 
