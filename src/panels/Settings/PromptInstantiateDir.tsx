@@ -21,8 +21,8 @@ function PromptInstantiateDir({ onReady }: PromptInstantiateDirProps) {
 				configuration.setPathToGenerateDir(prompt.dir as string, {
 					onCreated(path) {
 						log(`Created a new folder at ${co.yellow(path)}`)
-						onReady?.()
 						setPrompt({ key: '' })
+						onReady?.()
 					},
 					onError({ error, path: pathToGenerateDir }) {
 						if (error.code == 'EACCES') {
