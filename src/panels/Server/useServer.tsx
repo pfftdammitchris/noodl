@@ -31,6 +31,7 @@ function useServer({
 	wss: enableWss = false,
 	wssPort,
 }: Options) {
+	const server = React.useRef<express.Express | null>(null)
 	const { aggregator, configuration } = useCtx()
 
 	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
@@ -79,6 +80,14 @@ function useServer({
 		},
 		onAdd(args) {
 			u.log(`${watchTag} file added`, args.path)
+			const metadata = com.createFileMetadataExtractor(args.path, {
+				config: aggregator.configKey,
+			})
+			if (args.path.includes('/assets')) {
+				registerRoutes({ assets: [metadata] })
+			} else if (args.path.endsWith('yml')) {
+				registerRoutes({ yml: [metadata] })
+			}
 			sendMessage({ type: 'FILE_ADDED', ...args })
 		},
 		onAddDir(args) {
@@ -138,16 +147,15 @@ function useServer({
 		---- Connect to server
 	-------------------------------------------------------- */
 	const connect = React.useCallback(() => {
-		const server = express()
-		server.get(
+		server.current = express()
+		server.current.get(
 			['/HomePageUrl', '/HomePageUrl_en.yml', '/HomePageUrl.yml'],
 			(req, res) => res.send(''),
 		)
-		server.get(
+		server.current.get(
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
 			(req, res) => res.sendFile(path.join(getDir(), 'cadlEndpoint.yml')),
 		)
-		return server
 	}, [])
 
 	/* -------------------------------------------------------
@@ -155,12 +163,12 @@ function useServer({
 	-------------------------------------------------------- */
 	const listen = React.useCallback(() => {
 		const metadata = getLocalFilesAsMetadata()
-		const server = connect()
-		registerRoutes(server, metadata)
+		connect()
+		registerRoutes(metadata)
 		/* -------------------------------------------------------
 			---- START SERVER
 		-------------------------------------------------------- */
-		server.listen({ cors: { origin: '*' }, port }, () => {
+		server.current?.listen({ cors: { origin: '*' }, port }, () => {
 			const msg = `\n🚀 Server ready at ${co.cyan(getServerUrl())} ${
 				aggregator.configKey
 					? `using config ${co.yellow(aggregator.configKey)}`
@@ -175,66 +183,67 @@ function useServer({
 		---- CREATING THE ROUTES
 	-------------------------------------------------------- */
 	const registerRoutes = React.useCallback(
-		(
-			server: express.Express,
-			metadata: ReturnType<typeof getLocalFilesAsMetadata>,
-		) => {
+		(metadata: Partial<ReturnType<typeof getLocalFilesAsMetadata>>) => {
 			/* -------------------------------------------------------
 				---- YML (Pages and other root level objects)
 			-------------------------------------------------------- */
-			for (let { group, filepath, filename } of metadata.yml) {
-				filename = com.ensureSlashPrefix(filename)
-				filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
-				// Config (ex: meet4d.yml)
-				if (filename.includes(aggregator.configKey)) {
-					group = 'config'
-					if (local) {
-						server.get(
-							[filename, `${filename}.yml`, `${filename}_en.yml`],
-							(req, res) => {
-								const yml = fs.readFileSync(path.resolve(filepath), 'utf8')
-								const doc = yaml.parseDocument(yml)
-								doc.set('cadlBaseUrl', `http://${host}:${port}/`)
-								doc.has('myBaseUrl') &&
-									doc.set('myBaseUrl', `http://${host}:${port}/`)
-								res.send(doc.toString())
-							},
-						)
-					} else {
-						server.get(
+			if (metadata.yml) {
+				for (let { group, filepath, filename } of metadata.yml) {
+					filename = com.ensureSlashPrefix(filename)
+					filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
+					// Config (ex: meet4d.yml)
+					if (filename.includes(aggregator.configKey)) {
+						group = 'config'
+						if (local) {
+							server.current?.get(
+								[filename, `${filename}.yml`, `${filename}_en.yml`],
+								(req, res) => {
+									const yml = fs.readFileSync(path.resolve(filepath), 'utf8')
+									const doc = yaml.parseDocument(yml)
+									doc.set('cadlBaseUrl', `http://${host}:${port}/`)
+									doc.has('myBaseUrl') &&
+										doc.set('myBaseUrl', `http://${host}:${port}/`)
+									res.send(doc.toString())
+								},
+							)
+						} else {
+							server.current?.get(
+								[filename, `${filename}.yml`, `${filename}_en.yml`],
+								(req, res) =>
+									res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
+							)
+						}
+					}
+					// Pages (ex: SignIn.yml)
+					else {
+						group = 'page' as any
+						server.current?.get(
 							[filename, `${filename}.yml`, `${filename}_en.yml`],
 							(req, res) =>
 								res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
 						)
 					}
+					const msg = `Registered route: ${co.yellow(filename)} [${co.magenta(
+						group,
+					)}]`
+					log(co.white(msg))
 				}
-				// Pages (ex: SignIn.yml)
-				else {
-					group = 'page' as any
-					server.get(
-						[filename, `${filename}.yml`, `${filename}_en.yml`],
-						(req, res) =>
-							res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
-					)
-				}
-				const msg = `Registered route: ${co.yellow(filename)} [${co.magenta(
-					group,
-				)}]`
-				log(co.white(msg))
 			}
 			/* -------------------------------------------------------
 				---- ASSETS 
 			-------------------------------------------------------- */
-			for (let { group, filepath, filename } of metadata.assets) {
-				filename = com.ensureSlashPrefix(filename)
-				const msg = `Registering route: ${co.yellow(filename)} [${co.magenta(
-					group,
-				)}]`
-				log(co.white(msg))
-				server.get(
-					[filename, `/assets/${filename.replace('/', '')}`],
-					(req, res) => res.sendFile(path.resolve(filepath)),
-				)
+			if (metadata.assets) {
+				for (let { group, filepath, filename } of metadata.assets) {
+					filename = com.ensureSlashPrefix(filename)
+					const msg = `Registering route: ${co.yellow(filename)} [${co.magenta(
+						group,
+					)}]`
+					log(co.white(msg))
+					server.current?.get(
+						[filename, `/assets/${filename.replace('/', '')}`],
+						(req, res) => res.sendFile(path.resolve(filepath)),
+					)
+				}
 			}
 		},
 		[],
@@ -243,6 +252,7 @@ function useServer({
 	return {
 		dir: getDir(),
 		listen,
+		registerRoutes,
 		url: getServerUrl(),
 	}
 }
