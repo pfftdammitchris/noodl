@@ -156,7 +156,8 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 							},
 							{
 								value: 'server',
-								label: 'Start noodl development server',
+								label:
+									'Start noodl development server (generate files first or provide them)',
 							},
 						]}
 						onSelect={(item) => {
