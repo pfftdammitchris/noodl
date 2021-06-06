@@ -5,7 +5,7 @@
 	"module": "dist/cli.js",
 	"typings": "dist/cli.d.ts",
 	"bin": {
-		"noodl": "cli.js"
+		"noodl": "./cli.js"
 	},
 	"files": [
 		"dist/",
@@ -17,7 +17,6 @@
 		"bootstrap": "lerna bootstrap --hoist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
 		"pretest": "npm run build",
-		"postinstall": "npm run bootstrap",
 		"test": "ava --watch",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files \"src/**/*.ts\"",
 		"pub": "node scripts/publish.js -p"
@@ -116,7 +115,7 @@
 		"url": "https://github.com/pfftdammitchris/noodl-cli"
 	},
 	"engines": {
-		"node": ">=12"
+		"node": ">=14"
 	},
 	"license": "MIT",
 	"prettier": {
