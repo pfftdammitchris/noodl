@@ -2,19 +2,27 @@ process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
 import yaml from 'yaml'
+import globby from 'globby'
 import fs from 'fs-extra'
 import path from 'path'
-import { getAbsFilePath } from '../src/utils/common'
+import {
+	loadFilesAsDocs,
+	loadFileAsDoc,
+	getAbsFilePath,
+} from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
 import getActionsSourceFile from './actions'
 import * as co from '../src/utils/color'
 
 const paths = {
+	docs: getAbsFilePath('generated'),
 	assets: getAbsFilePath('data/generated/assets.json'),
 	metadata: getAbsFilePath('data/generated/metadata.json'),
 	typings: getAbsFilePath('data/generated/typings.d.ts'),
 	actionTypes: getAbsFilePath('data/generated/actionTypes.d.ts'),
 }
+
+fs.existsSync(paths.actionTypes) && fs.removeSync(paths.actionTypes)
 
 const program = new ts.Project({
 	compilerOptions: {
@@ -92,9 +100,17 @@ function formatFile(src: ts.SourceFile) {
 }
 
 const aggregator = createAggregator('meet4d')
+const docFiles = loadFilesAsDocs({
+	as: 'metadataDocs',
+	dir: paths.docs,
+	recursive: true,
+})
 
-aggregator
-	.init({ loadPages: { includePreloadPages: true } })
+for (const { name, doc } of docFiles) {
+	aggregator.root.set(name, doc)
+}
+
+Promise.resolve()
 	.then(() => {
 		for (const [name, doc] of aggregator.root) {
 			yaml.visit(doc, {
@@ -130,9 +146,8 @@ aggregator
 		// 	})),
 		// })
 	})
-	.then(() => formatFile(actions.sourceFile).getText())
-	.then(console.log)
-	// .then(() => u.log('\n' + co.green(`DONE`) + '\n'))
+	.then(() => formatFile(actions.sourceFile).save())
+	.then(() => u.log('\n' + co.green(`DONE`) + '\n'))
 	.catch((err) => {
 		throw err
 	})

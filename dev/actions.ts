@@ -7,6 +7,25 @@ const getActionsSourceFile = function getActionsSourceFile(
 	program: ts.Project,
 	filepath: string,
 ) {
+	const history = new Map<
+		string,
+		{
+			actionType: string
+
+			props: {
+				key: string
+				type: any
+			}[]
+			pages: string[]
+			occurrences: number
+			components: Record<string, { occurrences: number }>
+		}
+	>()
+
+	const suffix = {
+		ActionObject: 'ActionObject',
+	}
+
 	const sourceFile = program.createSourceFile(filepath)
 
 	const uncommonPropsInterface = sourceFile.addInterface({
