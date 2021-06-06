@@ -7,6 +7,7 @@ import Select from '../../components/Select'
 import useCtx from '../../useCtx'
 import useSettingsCtx from './useSettingsCtx'
 import * as co from '../../utils/color'
+import * as c from './constants'
 
 export interface SettingsInitProps {
 	onReady?(): void
@@ -31,7 +32,10 @@ function SettingsInit({ onReady }: SettingsInitProps) {
 							),
 						)
 					} else if (!fs.existsSync(path)) {
-						setPrompt({ key: 'ask-instantiating-generate-path', dir: path })
+						setPrompt({
+							key: c.prompts.ASK_INSTANTIATE_GENERATE_PATH,
+							dir: path,
+						})
 					} else {
 						console.error(`Error creating folder at ${path}: ${error.message}`)
 					}
@@ -39,7 +43,7 @@ function SettingsInit({ onReady }: SettingsInitProps) {
 			})
 			onReady?.()
 		} else {
-			setPrompt({ key: 'ask-generate-path' })
+			setPrompt({ key: c.prompts.ASK_GENERATE_PATH })
 		}
 	}, [])
 

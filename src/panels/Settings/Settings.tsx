@@ -9,16 +9,12 @@ import PromptDir from './PromptDir'
 import PromptInstantiateDir from './PromptInstantiateDir'
 import { Provider as SettingsProvider } from './useSettingsCtx'
 import useCtx from '../../useCtx'
+import * as c from './constants'
 import * as t from './types'
 
 export const initialState = {
 	prompt: {} as {
-		key:
-			| null
-			| ''
-			| 'init'
-			| 'ask-generate-path'
-			| 'ask-instantiating-generate-path'
+		key: null | '' | t.PromptId
 		dir?: string
 	},
 	options: {},
@@ -50,9 +46,9 @@ function Settings({ onReady }: { onReady?(): void }) {
 
 	React.useEffect(() => {
 		if (configuration.isFresh()) {
-			ctx.setPrompt({ key: 'init' })
+			ctx.setPrompt({ key: c.prompts.INIT })
 		} else if (!configuration.getPathToGenerateDir()) {
-			ctx.setPrompt({ key: 'ask-generate-path' })
+			ctx.setPrompt({ key: c.prompts.ASK_GENERATE_PATH })
 		} else {
 			ctx.setPrompt({ key: '' })
 			onReady?.()
@@ -68,11 +64,11 @@ function Settings({ onReady }: { onReady?(): void }) {
 		<SettingsProvider value={ctx}>
 			<Panel newline={false}>
 				{state.prompt?.key ? (
-					state.prompt.key === 'init' ? (
+					state.prompt.key === c.prompts.INIT ? (
 						<Init onReady={onReady} />
-					) : state.prompt.key === 'ask-generate-path' ? (
+					) : state.prompt.key === c.prompts.ASK_GENERATE_PATH ? (
 						<PromptDir onReady={onReady} />
-					) : state.prompt.key === 'ask-instantiating-generate-path' ? (
+					) : state.prompt.key === c.prompts.ASK_INSTANTIATE_GENERATE_PATH ? (
 						<PromptInstantiateDir onReady={onReady} />
 					) : null
 				) : null}

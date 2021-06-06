@@ -1,6 +1,5 @@
 node_modules
 dist
-./data
-./output
-./server
-./generated
+data
+output
+generated

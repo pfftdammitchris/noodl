@@ -4,6 +4,7 @@ import TextInput from 'ink-text-input'
 import useSettingsCtx from './useSettingsCtx'
 import { getAbsFilePath } from '../../utils/common'
 import * as co from '../../utils/color'
+import * as c from './constants'
 
 export interface SettingsInitProps {
 	onReady?(): void
@@ -23,7 +24,7 @@ function SettingsPromptDir({ onReady }: SettingsInitProps) {
 			const pathToGenerateDir = getAbsFilePath(val)
 			if (!fs.existsSync(pathToGenerateDir)) {
 				setPrompt({
-					key: 'ask-instantiating-generate-path',
+					key: c.prompts.ASK_INSTANTIATE_GENERATE_PATH,
 					dir: pathToGenerateDir,
 				})
 			} else {

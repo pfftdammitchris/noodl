@@ -5,6 +5,7 @@ export const DEFAULT_SERVER_HOSTNAME = '127.0.0.1'
 export const DEFAULT_SERVER_PATH = 'server'
 export const DEFAULT_SERVER_PORT = 3001
 export const DEFAULT_SERVER_PROTOCOL = 'http'
+export const DEFAULT_WSS_PORT = 3002
 export const DEFAULT_PANEL = 'select'
 
 export const app = {

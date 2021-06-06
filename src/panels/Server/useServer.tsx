@@ -2,12 +2,12 @@ import * as u from '@jsmanifest/utils'
 import React from 'react'
 import yaml from 'yaml'
 import express from 'express'
-import chokidar from 'chokidar'
 import path from 'path'
 import fs from 'fs-extra'
-import WebSocket from 'ws'
 import globby from 'globby'
 import useCtx from '../../useCtx'
+import useWss from '../../hooks/useWss'
+import useWatcher from '../../hooks/useWatcher'
 import { MetadataFileObject } from '../../types'
 import * as co from '../../utils/color'
 import * as com from '../../utils/common'
@@ -20,6 +20,7 @@ interface Options {
 	port?: number
 	watch?: boolean
 	wss?: boolean
+	wssPort?: number
 }
 
 function useServer({
@@ -28,18 +29,79 @@ function useServer({
 	port = 3001,
 	watch: enableWatch = true,
 	wss: enableWss = false,
+	wssPort,
 }: Options) {
-	const wss = React.useRef<WebSocket.Server | null>(null)
-	const watcher = React.useRef<chokidar.FSWatcher | null>(null)
-
 	const { aggregator, configuration } = useCtx()
 
+	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
 	const getDir = React.useCallback(
 		() => path.join(configuration.getPathToGenerateDir(), aggregator.configKey),
 		[aggregator.configKey],
 	)
 
-	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
+	/* -------------------------------------------------------
+		---- WebSocket
+	-------------------------------------------------------- */
+	const {
+		wss,
+		connect: connectToWss,
+		sendMessage,
+	} = useWss({
+		host,
+		onConnection(socket) {
+			u.newline()
+			socket.on('message', (message) => log('Received: %s', message))
+		},
+		onClose() {
+			log(co.white(`WebSocket server has closed`))
+		},
+		onError(err) {
+			log(co.red(`[${err.name}] ${err.message}`))
+		},
+		onListening() {
+			log(`🚀 Wss is listening at: ${co.cyan(`ws://${host}:${wssPort}`)}`)
+		},
+	})
+
+	/* -------------------------------------------------------
+		---- Watcher
+	-------------------------------------------------------- */
+	const {
+		tag: watchTag,
+		watch,
+		watcher,
+	} = useWatcher({
+		watchGlob: path.join(getDir(), '**/*'),
+		watchOptions: { followSymlinks: true },
+		onReady() {
+			u.log(`${watchTag} Watching for file changes at ${co.magenta(getDir())}`)
+			sendMessage({ type: 'WATCHING' })
+		},
+		onAdd(args) {
+			u.log(`${watchTag} file added`, args.path)
+			sendMessage({ type: 'FILE_ADDED', ...args })
+		},
+		onAddDir(args) {
+			u.log(`${watchTag} folder added`, args.path)
+			sendMessage({ type: 'FOLDER_ADDED', ...args })
+		},
+		onChange(args) {
+			u.log(`${watchTag} file changed`, args.path)
+			sendMessage({ type: 'FILE_CHANGED', ...args })
+		},
+		onError(err) {
+			u.log(`${watchTag} error`, err)
+			sendMessage({ type: 'WATCH_ERROR', error: err })
+		},
+		onUnlink(filepath) {
+			u.log(`${watchTag} file was removed`, filepath)
+			sendMessage({ type: 'FILE_REMOVED', filepath })
+		},
+		onUnlinkDir(filepath) {
+			u.log(`${watchTag} folder was removed`, filepath)
+			sendMessage({ type: 'FOLDER_REMOVED', filepath })
+		},
+	})
 
 	const getLocalFilesAsMetadata = React.useCallback((): {
 		assets: MetadataFileObject[]
@@ -72,202 +134,111 @@ function useServer({
 		return metadata
 	}, [])
 
-	const listen = React.useCallback(() => {
-		const metadata = getLocalFilesAsMetadata()
-		const app = express()
-
-		app.get(
+	/* -------------------------------------------------------
+		---- Connect to server
+	-------------------------------------------------------- */
+	const connect = React.useCallback(() => {
+		const server = express()
+		server.get(
 			['/HomePageUrl', '/HomePageUrl_en.yml', '/HomePageUrl.yml'],
 			(req, res) => res.send(''),
 		)
-
-		app.get(
+		server.get(
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
 			(req, res) => res.sendFile(path.join(getDir(), 'cadlEndpoint.yml')),
 		)
+		return server
+	}, [])
 
-		for (let { group, filepath, filename } of metadata.yml) {
-			filename = com.ensureSlashPrefix(filename)
-			filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
-			// Config (ex: meet4d.yml)
-			if (filename.includes(aggregator.configKey)) {
-				group = 'config'
-				if (local) {
-					app.get(
-						[filename, `${filename}.yml`, `${filename}_en.yml`],
-						(req, res) => {
-							const yml = fs.readFileSync(path.resolve(filepath), 'utf8')
-							const doc = yaml.parseDocument(yml)
-							doc.set('cadlBaseUrl', `http://${host}:${port}/`)
-							doc.has('myBaseUrl') &&
-								doc.set('myBaseUrl', `http://${host}:${port}/`)
-							res.send(doc.toString())
-						},
-					)
-				} else {
-					app.get(
+	/* -------------------------------------------------------
+		---- Start listening on the server
+	-------------------------------------------------------- */
+	const listen = React.useCallback(() => {
+		const metadata = getLocalFilesAsMetadata()
+		const server = connect()
+		registerRoutes(server, metadata)
+		/* -------------------------------------------------------
+			---- START SERVER
+		-------------------------------------------------------- */
+		server.listen({ cors: { origin: '*' }, port }, () => {
+			const msg = `\n🚀 Server ready at ${co.cyan(getServerUrl())} ${
+				aggregator.configKey
+					? `using config ${co.yellow(aggregator.configKey)}`
+					: ''
+			}`
+			log(msg)
+			enableWss && connectToWss()
+			enableWatch && watch()
+		})
+	}, [])
+	/* -------------------------------------------------------
+		---- CREATING THE ROUTES
+	-------------------------------------------------------- */
+	const registerRoutes = React.useCallback(
+		(
+			server: express.Express,
+			metadata: ReturnType<typeof getLocalFilesAsMetadata>,
+		) => {
+			/* -------------------------------------------------------
+				---- YML (Pages and other root level objects)
+			-------------------------------------------------------- */
+			for (let { group, filepath, filename } of metadata.yml) {
+				filename = com.ensureSlashPrefix(filename)
+				filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
+				// Config (ex: meet4d.yml)
+				if (filename.includes(aggregator.configKey)) {
+					group = 'config'
+					if (local) {
+						server.get(
+							[filename, `${filename}.yml`, `${filename}_en.yml`],
+							(req, res) => {
+								const yml = fs.readFileSync(path.resolve(filepath), 'utf8')
+								const doc = yaml.parseDocument(yml)
+								doc.set('cadlBaseUrl', `http://${host}:${port}/`)
+								doc.has('myBaseUrl') &&
+									doc.set('myBaseUrl', `http://${host}:${port}/`)
+								res.send(doc.toString())
+							},
+						)
+					} else {
+						server.get(
+							[filename, `${filename}.yml`, `${filename}_en.yml`],
+							(req, res) =>
+								res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
+						)
+					}
+				}
+				// Pages (ex: SignIn.yml)
+				else {
+					group = 'page' as any
+					server.get(
 						[filename, `${filename}.yml`, `${filename}_en.yml`],
 						(req, res) =>
 							res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
 					)
 				}
+				const msg = `Registered route: ${co.yellow(filename)} [${co.magenta(
+					group,
+				)}]`
+				log(co.white(msg))
 			}
-			// Pages (ex: SignIn.yml)
-			else {
-				group = 'page' as any
-				app.get(
-					[filename, `${filename}.yml`, `${filename}_en.yml`],
-					(req, res) =>
-						res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
+			/* -------------------------------------------------------
+				---- ASSETS 
+			-------------------------------------------------------- */
+			for (let { group, filepath, filename } of metadata.assets) {
+				filename = com.ensureSlashPrefix(filename)
+				const msg = `Registering route: ${co.yellow(filename)} [${co.magenta(
+					group,
+				)}]`
+				log(co.white(msg))
+				server.get(
+					[filename, `/assets/${filename.replace('/', '')}`],
+					(req, res) => res.sendFile(path.resolve(filepath)),
 				)
 			}
-			const msg = `Registered route: ${co.yellow(filename)} [${co.magenta(
-				group,
-			)}]`
-			log(co.white(msg))
-		}
-
-		for (let { group, filepath, filename } of metadata.assets) {
-			filename = com.ensureSlashPrefix(filename)
-			const msg = `Registering route: ${co.yellow(filename)} [${co.magenta(
-				group,
-			)}]`
-			log(co.white(msg))
-			app.get([filename, `/assets/${filename.replace('/', '')}`], (req, res) =>
-				res.sendFile(path.resolve(filepath)),
-			)
-		}
-
-		app.listen({ cors: { origin: '*' }, port }, () => {
-			log(
-				`\n🚀 Server ready at ${co.cyan(`${getServerUrl()}`)} ${
-					aggregator.configKey
-						? `using config ${co.yellow(aggregator.configKey)}`
-						: ''
-				}`,
-			)
-
-			if (enableWss) {
-				const wssPort = 3002
-				wss.current = new WebSocket.Server({ host, port: wssPort })
-
-				wss.current.on('listening', () => {
-					log(`🚀 Wss is listening at: ${co.cyan(`ws://${host}:${wssPort}`)}`)
-				})
-
-				wss.current.on('connection', function connection(ws, sender) {
-					const { socket } = sender
-					const ip = socket.remoteAddress
-
-					u.newline()
-					ws.on('message', (message) => log('Received: %s', message))
-					// ws.send('Hello client. I am your WSS')
-				})
-
-				wss.current.on('close', () =>
-					log(co.white(`WebSocket server has closed`)),
-				)
-				wss.current.on('error', (err) =>
-					log(co.red(`[${err.name}] ${err.message}`)),
-				)
-			}
-
-			const tag = `[${co.cyan(`watcher`)}]`
-
-			function sendMessage(msg: Record<string, any>) {
-				return new Promise((resolve, reject) => {
-					wss.current?.clients.forEach((client) => {
-						client.send(JSON.stringify(msg, null, 2), (err) => {
-							if (err) reject(err)
-							else resolve(undefined)
-						})
-					})
-				})
-			}
-
-			const getFileName = (path: string) => {
-				path.includes('/') && (path = path.substring(path.lastIndexOf('/') + 1))
-				path.endsWith('.yml') &&
-					(path = path.substring(0, path.lastIndexOf('.yml')))
-				return path
-			}
-
-			function onWatchEvent(
-				fn: (opts: {
-					isFile: boolean
-					isFolder: boolean
-					name: string
-					path: string
-					stats?: fs.Stats
-				}) => void,
-			) {
-				async function onEvent(filepath: string) {
-					filepath = path.resolve(filepath)
-					const stats = await fs.stat(filepath)
-					return fn({
-						isFile: stats.isFile(),
-						isFolder: stats.isDirectory(),
-						name: getFileName(filepath),
-						path: filepath,
-					})
-				}
-				return onEvent
-			}
-
-			if (enableWatch) {
-				const watchGlob = path.join(getDir(), '**/*')
-				watcher.current = chokidar.watch(watchGlob, {
-					followSymlinks: true,
-					ignoreInitial: true,
-				})
-
-				watcher.current
-					.on('ready', () => {
-						u.log(`${tag} Watching for file changes at ${co.magenta(getDir())}`)
-						sendMessage({ type: 'WATCHING' })
-					})
-					.on(
-						'change',
-						onWatchEvent((args) => {
-							u.log(`${tag} file changed`, args.path)
-							sendMessage({ type: 'FILE_CHANGED', ...args })
-						}),
-					)
-					.on(
-						'add',
-						onWatchEvent((args) => {
-							u.log(`${tag} file added`, args.path)
-							sendMessage({ type: 'FILE_ADDED', ...args })
-						}),
-					)
-					.on(
-						'addDir',
-						onWatchEvent((args) => {
-							u.log(`${tag} folder added`, args.path)
-							sendMessage({ type: 'FOLDER_ADDED', ...args })
-						}),
-					)
-					.on(
-						'unlink',
-						onWatchEvent((args) => {
-							u.log(`${tag} file was removed`, args.path)
-							sendMessage({ type: 'FILE_REMOVED', ...args })
-						}),
-					)
-					.on(
-						'unlinkDir',
-						onWatchEvent((args) => {
-							u.log(`${tag} folder was removed`, args.path)
-							sendMessage({ type: 'FOLDER_REMOVED', ...args })
-						}),
-					)
-					.on('error', (err) => {
-						u.log(`${tag} error`, err)
-						sendMessage({ type: 'WATCH_ERROR', error: err })
-					})
-			}
-		})
-	}, [])
+		},
+		[],
+	)
 
 	return {
 		dir: getDir(),

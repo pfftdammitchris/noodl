@@ -12,6 +12,7 @@ export interface Props {
 	local?: boolean
 	port?: number
 	wss?: boolean
+	wssPort?: number
 	watch?: boolean
 }
 
@@ -42,9 +43,7 @@ function Server({ config: configProp, host, local, port, watch, wss }: Props) {
 		wss: !!wss,
 	})
 
-	React.useEffect(() => {
-		valid && listen()
-	}, [valid])
+	React.useEffect(() => void (valid && listen()), [valid])
 
 	if (!config) {
 		return (

@@ -5,6 +5,7 @@ import Select from '../../components/Select'
 import useCtx from '../../useCtx'
 import useSettingsCtx from './useSettingsCtx'
 import * as co from '../../utils/color'
+import * as c from './constants'
 
 export interface PromptInstantiateDirProps {
 	onReady?(): void
@@ -37,7 +38,7 @@ function PromptInstantiateDir({ onReady }: PromptInstantiateDirProps) {
 				},
 			})
 		} else {
-			setPrompt({ key: 'ask-generate-path' })
+			setPrompt({ key: c.prompts.ASK_GENERATE_PATH })
 		}
 	}, [])
 

@@ -1,6 +1,5 @@
 import * as u from '@jsmanifest/utils'
 import { Box, Newline, Static, Text, useApp } from 'ink'
-import invariant from 'invariant'
 import merge from 'lodash/merge'
 import React from 'react'
 import produce, { Draft } from 'immer'
@@ -32,9 +31,7 @@ export const initialState = {
 function Application({ cli }: { cli: t.App.Context['cli'] }) {
 	const [state, _setState] = React.useState<t.App.State>(initialState)
 	const { exit } = useApp()
-	const configuration = useConfiguration({
-		cli,
-	})
+	const configuration = useConfiguration({ cli })
 
 	const set = React.useCallback(
 		(
@@ -138,11 +135,18 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 					local={cli.flags.local}
 					port={cli.flags.port}
 					wss={cli.flags.wss}
+					wssPort={cli.flags.wssPort}
 					watch={cli.flags.watch}
 				/>
 			) : (
 				<Box paddingLeft={1} flexDirection="column">
-					<Text color="whiteBright">What would you like to do?</Text>
+					<Text color="whiteBright">
+						What would you like to do? (
+						<Text dimColor>
+							Use <Text color="yellow">--help</Text> to see all options
+						</Text>
+						)
+					</Text>
 					<Box minHeight={1} />
 					<Select
 						items={[

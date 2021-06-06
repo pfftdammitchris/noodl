@@ -5,7 +5,6 @@ import { UncontrolledTextInput } from 'ink-text-input'
 import * as u from '@jsmanifest/utils'
 import React from 'react'
 import yaml from 'yaml'
-import download from 'download'
 import fs from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
@@ -14,6 +13,7 @@ import produce, { Draft } from 'immer'
 import Panel from '../../components/Panel'
 import useConfigInput from '../../hooks/useConfigInput'
 import useCtx from '../../useCtx'
+import useDownload from '../../hooks/useDownload'
 import {
 	ON_RETRIEVED_ROOT_CONFIG,
 	ON_RETRIEVE_APP_PAGE_FAILED,
@@ -50,6 +50,20 @@ function GenerateApp(props: Props) {
 	const { aggregator, configuration, log, logError, spinner, toggleSpinner } =
 		useCtx()
 
+	const { download, downloading, downloaded, urlsDownloaded, urlsInProgress } =
+		useDownload()
+
+	const {
+		config: configProp,
+		configVersion: configVersionProp,
+		env,
+		deviceType,
+		isLocal,
+		host,
+		port,
+		onEnd,
+	} = props
+
 	const {
 		config: configValue,
 		lastTried,
@@ -57,7 +71,7 @@ function GenerateApp(props: Props) {
 		validate,
 		validating,
 	} = useConfigInput({
-		initialConfig: props.config,
+		initialConfig: configProp,
 		onExists: (value) => loadConfig(value),
 		onNotFound: (value) => {},
 		onValidateStart: () => toggleSpinner(),
@@ -67,7 +81,7 @@ function GenerateApp(props: Props) {
 	const [state, _setState] = React.useState(() => {
 		const initState = {
 			...initialState,
-			deviceType: props.deviceType,
+			deviceType,
 		} as t.State
 		return initState
 	})
@@ -115,18 +129,21 @@ function GenerateApp(props: Props) {
 			if (configKey) {
 				try {
 					log(`\nLoading config ${co.yellow(`${configKey}`)}`)
+
 					let yml = await r.getConfig(configKey)
 					let configFileName = !configKey.endsWith('.yml')
 						? `${configKey}.yml`
 						: configKey
 
 					saveFile(configFileName, yml)
-					log(`Saved ${co.yellow(configFileName)} to folder`)
 
+					log(`Saved ${co.yellow(configFileName)} to folder`)
 					aggregator.configKey = configKey
-					aggregator.env = props.env as Env
-					aggregator.deviceType = props.deviceType as DeviceType
-					aggregator.configVersion = props.configVersion as string
+					log(`Setting env to ${co.yellow(env)}`)
+					aggregator.env = env as Env
+					log(`Retrieving the config version for ${co.yellow(deviceType)}`)
+					aggregator.deviceType = deviceType as DeviceType
+					aggregator.configVersion = configVersionProp as string
 
 					if (
 						aggregator.configVersion &&
@@ -134,7 +151,7 @@ function GenerateApp(props: Props) {
 					) {
 						log(
 							`Config version set to ${co.yellow(aggregator.configVersion)}${
-								props.configVersion === 'latest'
+								configVersionProp === 'latest'
 									? ` (using option "${co.yellow('latest')}")`
 									: ''
 							}`,
@@ -145,6 +162,7 @@ function GenerateApp(props: Props) {
 						configuration.getPathToGenerateDir(),
 						aggregator.configKey,
 					)
+
 					const assetsDir = path.join(dir, 'assets')
 
 					if (!fs.existsSync(dir)) {
@@ -238,69 +256,9 @@ function GenerateApp(props: Props) {
 
 							u.newline()
 
-							async function downloadAsset(asset: t.State['assets'][number]) {
-								if (asset.url) {
-									try {
-										const progress = download(asset.url, assetsDir)
-
-										progress.on(
-											'downloadProgress',
-											({
-												percent,
-											}: {
-												percent: number
-												transferred: number
-												total: number
-											}) => {
-												if (percent >= 1) {
-													setState((draft) => {
-														const index = draft.assets.findIndex(
-															(obj) => obj.filename === asset.filename,
-														)
-														if (index > -1) {
-															draft.assets.push({
-																...asset,
-																status: 'downloaded',
-															})
-														}
-													})
-												}
-											},
-										)
-
-										progress.on('response', (res) => {
-											log(`[${co.yellow(asset.filename)}] Response`)
-										})
-
-										progress.on('error', (err) => {
-											const { statusCode, statusMessage } = err
-											// File was not found
-											if (statusCode == 404) {
-												//
-											}
-											console.log(
-												`[${co.red(`Error`)}] [${co.magenta(
-													asset.filename,
-												)}]: ${co.white(statusMessage)}`,
-											)
-										})
-
-										progress.on('finish', () => {
-											log(`Finished with ${co.yellow(asset.filename)}`)
-										})
-
-										// await progress
-									} catch (error) {
-										log(
-											`[${u.red(asset.filename)}]: ${u.yellow(error.message)}`,
-										)
-									}
-								}
-							}
-
 							setState({ assets: missingAssets })
 
-							const promises = [] as Promise<any>[]
+							const promises = [] as any[]
 
 							for (const missingAsset of missingAssets) {
 								if (!missingAsset.url) {
@@ -313,11 +271,14 @@ function GenerateApp(props: Props) {
 									)
 									continue
 								}
-								promises.push(downloadAsset(missingAsset))
+								// promises.push(downloadAsset(missingAsset))
+								promises.push(
+									download({ url: missingAsset.url, destination: assetsDir }),
+								)
 							}
 
 							await Promise.all(promises)
-							props.onEnd?.()
+							onEnd?.()
 						} else log(`You are not missing any assets.`)
 					}
 
@@ -382,9 +343,8 @@ function GenerateApp(props: Props) {
 				} catch (error) {
 					logError(error)
 				} finally {
-					const { host, port } = props
 					const doc = aggregator.root.get(aggregator.configKey) as yaml.Document
-					if (props.isLocal) {
+					if (isLocal) {
 						doc.set('cadlBaseUrl', `http://${host}:${port}/`)
 						if (doc.has('myBaseUrl')) {
 							doc.set('myBaseUrl', `http://${host}:${port}/`)
@@ -409,6 +369,14 @@ function GenerateApp(props: Props) {
 		configValue && validate(configValue)
 	}, [])
 
+	const memoizedUrlsDownloaded = React.useMemo(
+		() => urlsDownloaded,
+		[urlsDownloaded.length],
+	)
+	const memoizedUrlsInProgress = React.useMemo(
+		() => urlsInProgress,
+		[urlsInProgress.length],
+	)
 	const onSubmit = React.useCallback((val: string) => val && validate(val), [])
 
 	const ConfigInput = React.memo(
@@ -438,26 +406,20 @@ function GenerateApp(props: Props) {
 				</>
 			)
 		}
-	} else if (state.assets.length) {
-		children = (
-			<Static paddingTop={3} items={state.assets as t.State['assets']}>
-				{(item) => (
-					<Box key={item.url}>
-						<Text
-							color={item.status === 'downloaded' ? 'greenBright' : 'yellow'}
-						>
-							{item.status.toUpperCase()}
-						</Text>
-						<Text> </Text>
-						<Text color="white">{item.filename}</Text>
-						<Text> </Text>
-						<Text color="blue" dimColor>
-							[{item.group}]
-						</Text>
-					</Box>
-				)}
-			</Static>
-		)
+	} else {
+		if (urlsInProgress.length) {
+			children = (
+				<Static paddingTop={3} items={urlsInProgress}>
+					{(url) => (
+						<Box key={url}>
+							<Text color="yellow">DOWNLOADING</Text>
+							<Text> </Text>
+							<Text color="white">{url}</Text>
+						</Box>
+					)}
+				</Static>
+			)
+		}
 	}
 
 	if (!children && !validating && !configValue) children = <ConfigInput />

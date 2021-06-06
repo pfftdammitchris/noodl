@@ -353,10 +353,18 @@ const createAggregator = function (options?: string | t.Options) {
 					}
 				}
 			}
-			// Flatten out the promises for parallel reqs
+
+			const chunkedPages = chunk(pages, chunks)
 			await Promise.all(
-				chunk(await Promise.all(pages.map(async (_) => o.loadPage(_))), chunks),
+				chunkedPages.map((chunked) =>
+					Promise.all(chunked.map((c) => o.loadPage(c))),
+				),
 			)
+
+			// Flatten out the promises for parallel reqs
+			// await Promise.all(
+			// 	chunk(await Promise.all(pages.map(async (_) => o.loadPage(_))), chunks),
+			// )
 		},
 		loadAsset,
 		on<Evt extends keyof t.Hooks>(
