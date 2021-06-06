@@ -16,8 +16,8 @@ function PromptInstantiateDir({ onReady }: PromptInstantiateDirProps) {
 	const { prompt, setPrompt } = useSettingsCtx()
 
 	const onSelect = React.useCallback(
-		({ value }) => {
-			if (value) {
+		(item) => {
+			if (item.value) {
 				configuration.setPathToGenerateDir(prompt.dir as string, {
 					onCreated(path) {
 						log(`Created a new folder at ${co.yellow(path)}`)
