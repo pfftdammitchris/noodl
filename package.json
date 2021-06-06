@@ -5,8 +5,12 @@
 	"module": "dist/cli.js",
 	"typings": "dist/cli.d.ts",
 	"bin": {
-		"noodl": "dist/cli.js"
+		"noodl": "cli.js"
 	},
+	"files": [
+		"dist/",
+		"cli.js"
+	],
 	"scripts": {
 		"prebuild": "rm -rf dist",
 		"build": "tsc",
@@ -107,9 +111,6 @@
 		"xo": "^0.40.1",
 		"yaml": "^2.0.0-4"
 	},
-	"files": [
-		"dist/cli.js"
-	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/pfftdammitchris/noodl-cli"
