@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 process.stdout.write('\x1Bc')
-import { config as dotenvConfig } from 'dotenv'
-dotenvConfig()
 import React from 'react'
 import meow from 'meow'
 import { render } from 'ink'

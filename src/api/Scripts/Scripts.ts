@@ -1,5 +1,3 @@
-import { config } from 'dotenv'
-config()
 import { AcceptArray } from '@jsmanifest/typefest'
 import curry from 'lodash/curry'
 import * as u from '@jsmanifest/utils'
