@@ -80,9 +80,12 @@ function useServer({
 		},
 		onAdd(args) {
 			u.log(`${watchTag} file added`, args.path)
-			const metadata = com.createFileMetadataExtractor(args.path, {
-				config: aggregator.configKey,
-			})
+			const metadata = com.createFileMetadataExtractor(
+				path.isAbsolute(args.path) ? args.path : com.getAbsFilePath(args.path),
+				{
+					config: aggregator.configKey,
+				},
+			)
 			if (args.path.includes('/assets')) {
 				registerRoutes({ assets: [metadata] })
 			} else if (args.path.endsWith('yml')) {
