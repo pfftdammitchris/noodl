@@ -199,7 +199,7 @@ function useServer({
 							server.current?.get(
 								[filename, `${filename}.yml`, `${filename}_en.yml`],
 								(req, res) => {
-									const yml = fs.readFileSync(path.resolve(filepath), 'utf8')
+									const yml = fs.readFileSync(filepath, 'utf8')
 									const doc = yaml.parseDocument(yml)
 									doc.set('cadlBaseUrl', `http://${host}:${port}/`)
 									doc.has('myBaseUrl') &&
@@ -208,13 +208,11 @@ function useServer({
 								},
 							)
 						} else {
-							const pathToConfigFile = path.isAbsolute(filepath)
-								? filepath
-								: com.getAbsFilePath(filepath)
 							server.current?.get(
 								[filename, `${filename}.yml`, `${filename}_en.yml`],
-								(req, res) =>
-									res.sendFile(fs.readFileSync(pathToConfigFile, 'utf8')),
+								(req, res) => {
+									res.sendFile(filepath)
+								},
 							)
 						}
 					}
@@ -223,8 +221,9 @@ function useServer({
 						group = 'page' as any
 						server.current?.get(
 							[filename, `${filename}.yml`, `${filename}_en.yml`],
-							(req, res) =>
-								res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
+							(req, res) => {
+								res.sendFile(filepath)
+							},
 						)
 					}
 					const msg = `Registered route: ${co.yellow(filename)} [${co.magenta(
@@ -245,7 +244,7 @@ function useServer({
 					log(co.white(msg))
 					server.current?.get(
 						[filename, `/assets/${filename.replace('/', '')}`],
-						(req, res) => res.sendFile(path.resolve(filepath)),
+						(req, res) => res.sendFile(filepath),
 					)
 				}
 			}
