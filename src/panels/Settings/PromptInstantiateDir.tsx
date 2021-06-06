@@ -15,32 +15,35 @@ function PromptInstantiateDir({ onReady }: PromptInstantiateDirProps) {
 	const { configuration, log } = useCtx()
 	const { prompt, setPrompt } = useSettingsCtx()
 
-	const onSelect = React.useCallback(({ value }) => {
-		if (value) {
-			configuration.setPathToGenerateDir(prompt.dir as string, {
-				onCreated(path) {
-					setPrompt({ key: '' })
-					log(`Created a new folder at ${co.yellow(path)}`)
-					onReady?.()
-				},
-				onError({ error, path: pathToGenerateDir }) {
-					if (error.code == 'EACCES') {
-						log(
-							u.red(
-								`Permission was denied to create folder at ${co.yellow(
-									pathToGenerateDir,
-								)}. Try another path`,
-							),
-						)
-					} else {
-						console.error(`[${error.name}/${error.code}] ${error.message}`)
-					}
-				},
-			})
-		} else {
-			setPrompt({ key: c.prompts.ASK_GENERATE_PATH })
-		}
-	}, [])
+	const onSelect = React.useCallback(
+		({ value }) => {
+			if (value) {
+				configuration.setPathToGenerateDir(prompt.dir as string, {
+					onCreated(path) {
+						setPrompt({ key: '' })
+						log(`Created a new folder at ${co.yellow(path)}`)
+						onReady?.()
+					},
+					onError({ error, path: pathToGenerateDir }) {
+						if (error.code == 'EACCES') {
+							log(
+								u.red(
+									`Permission was denied to create folder at ${co.yellow(
+										pathToGenerateDir,
+									)}. Try another path`,
+								),
+							)
+						} else {
+							console.error(`[${error.name}/${error.code}] ${error.message}`)
+						}
+					},
+				})
+			} else {
+				setPrompt({ key: c.prompts.ASK_GENERATE_PATH })
+			}
+		},
+		[configuration, prompt],
+	)
 
 	return (
 		<Box flexDirection="column">
