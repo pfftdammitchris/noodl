@@ -112,10 +112,11 @@ function GenerateApp(props: Props) {
 					? { spaces: 2 }
 					: undefined
 				const fnKey = u.isStr(data) ? 'writeFile' : 'writeJson'
-				const filepath = path.join(
-					path.join(configuration.getPathToGenerateDir(), aggregator.configKey),
-					filename,
+				const configPath = path.join(
+					configuration.getPathToGenerateDir(),
+					aggregator.configKey,
 				)
+				const filepath = path.join(configPath, filename)
 				fs[fnKey] && (await fs[fnKey](filepath, data, optionsArg as any))
 			} catch (error) {
 				console.error(error)
@@ -135,7 +136,15 @@ function GenerateApp(props: Props) {
 						? `${configKey}.yml`
 						: configKey
 
-					saveFile(configFileName, yml)
+					const configDir = path.join(
+						configuration.getPathToGenerateDir(),
+						configKey,
+					)
+					const configFilePath = path.join(configDir, configFileName)
+					const assetsDir = path.join(configDir, 'assets')
+
+					await fs.ensureFile(configFilePath)
+					await fs.writeFile(configFilePath, yml, 'utf8')
 
 					log(`Saved ${co.yellow(configFileName)} to folder`)
 					aggregator.configKey = configKey
@@ -158,16 +167,12 @@ function GenerateApp(props: Props) {
 						)
 					}
 
-					const dir = path.join(
-						configuration.getPathToGenerateDir(),
-						aggregator.configKey,
-					)
+					log(`Yml files will be saved to ${co.yellow(configDir)}`)
+					log(`Asset files will be saved to ${co.yellow(assetsDir)}`)
 
-					const assetsDir = path.join(dir, 'assets')
-
-					if (!fs.existsSync(dir)) {
-						await fs.ensureDir(dir)
-						log(`Created output directory: ${co.yellow(dir)}`)
+					if (!fs.existsSync(configDir)) {
+						await fs.ensureDir(configDir)
+						log(`Created output directory: ${co.yellow(configDir)}`)
 					}
 
 					if (!fs.existsSync(assetsDir)) {
@@ -298,7 +303,7 @@ function GenerateApp(props: Props) {
 							doc: yaml.Document
 						}) {
 							const filename = com.withYmlExt(name).replace('_en', '')
-							const filepath = path.join(dir, filename)
+							const filepath = path.join(configDir, filename)
 							if (!doc) return u.log(doc)
 
 							if (type === 'root-config') {
@@ -345,8 +350,18 @@ function GenerateApp(props: Props) {
 				} finally {
 					const doc = aggregator.root.get(aggregator.configKey) as yaml.Document
 					if (isLocal) {
+						log(
+							`Setting ${co.magenta('cadlBaseUrl')} to ${co.yellow(
+								`http://${host}:${port}/`,
+							)}`,
+						)
 						doc.set('cadlBaseUrl', `http://${host}:${port}/`)
 						if (doc.has('myBaseUrl')) {
+							log(
+								`Setting ${co.magenta('myBaseUrl')} to ${co.yellow(
+									`http://${host}:${port}/`,
+								)}`,
+							)
 							doc.set('myBaseUrl', `http://${host}:${port}/`)
 						}
 						const dir = path.join(

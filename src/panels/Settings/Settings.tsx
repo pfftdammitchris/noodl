@@ -8,7 +8,9 @@ import Init from './Init'
 import PromptDir from './PromptDir'
 import PromptInstantiateDir from './PromptInstantiateDir'
 import { Provider as SettingsProvider } from './useSettingsCtx'
+import { DEFAULT_GENERATE_DIR } from '../../constants'
 import useCtx from '../../useCtx'
+import * as co from '../../utils/color'
 import * as c from './constants'
 import * as t from './types'
 
@@ -21,7 +23,7 @@ export const initialState = {
 }
 
 function Settings({ onReady }: { onReady?(): void }) {
-	const { configuration } = useCtx()
+	const { cli, configuration, log } = useCtx()
 	const [state, _setState] = React.useState(initialState)
 
 	const setState = React.useCallback(
@@ -52,6 +54,30 @@ function Settings({ onReady }: { onReady?(): void }) {
 		} else {
 			ctx.setPrompt({ key: '' })
 			onReady?.()
+		}
+
+		if (cli.flags.generatePath) {
+			u.newline()
+			if (cli.flags.generatePath !== DEFAULT_GENERATE_DIR) {
+				const dirBefore = configuration.getPathToGenerateDir()
+
+				if (dirBefore.endsWith(cli.flags.generatePath)) {
+					log(
+						`The path to generated files was already set to "${co.yellow(
+							dirBefore,
+						)}"`,
+					)
+				} else {
+					configuration.setPathToGenerateDir(cli.flags.generatePath)
+					const dirAfter = configuration.getPathToGenerateDir()
+					log(
+						`Changed path to generated files from "${co.yellow(
+							dirBefore,
+						)}" to "${co.yellow(dirAfter)}"`,
+					)
+				}
+			}
+			u.newline()
 		}
 	}, [])
 

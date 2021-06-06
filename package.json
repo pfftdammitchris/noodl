@@ -41,7 +41,6 @@
 		"invariant": "^2.2.4",
 		"lodash": "^4.17.21",
 		"meow": "^9.0.0",
-		"noodl": "file:packages/noodl",
 		"noodl-types": "file:packages/noodl-types",
 		"react": "^16.14.0",
 		"transducers-js": "^0.4.174",
