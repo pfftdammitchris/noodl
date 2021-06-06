@@ -82,9 +82,7 @@ function useServer({
 			u.log(`${watchTag} file added`, args.path)
 			const metadata = com.createFileMetadataExtractor(
 				path.isAbsolute(args.path) ? args.path : com.getAbsFilePath(args.path),
-				{
-					config: aggregator.configKey,
-				},
+				{ config: aggregator.configKey },
 			)
 			if (args.path.includes('/assets')) {
 				registerRoutes({ assets: [metadata] })
@@ -210,10 +208,13 @@ function useServer({
 								},
 							)
 						} else {
+							const pathToConfigFile = path.isAbsolute(filepath)
+								? filepath
+								: com.getAbsFilePath(filepath)
 							server.current?.get(
 								[filename, `${filename}.yml`, `${filename}_en.yml`],
 								(req, res) =>
-									res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
+									res.sendFile(fs.readFileSync(pathToConfigFile, 'utf8')),
 							)
 						}
 					}
