@@ -127,6 +127,7 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 					host={cli.flags.host}
 					isLocal={cli.flags.local}
 					port={cli.flags.port}
+					onEnd={() => cli.flags.server && ctx.setPanel('server')}
 				/>
 			) : state.activePanel === 'server' ? (
 				<Server

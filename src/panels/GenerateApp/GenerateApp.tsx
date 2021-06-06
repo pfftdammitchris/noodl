@@ -8,8 +8,6 @@ import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
-import merge from 'lodash/merge'
-import produce, { Draft } from 'immer'
 import Panel from '../../components/Panel'
 import useConfigInput from '../../hooks/useConfigInput'
 import useCtx from '../../useCtx'
@@ -77,53 +75,6 @@ function GenerateApp(props: Props) {
 		onValidateStart: () => toggleSpinner(),
 		onValidateEnd: () => toggleSpinner(false),
 	})
-
-	const [state, _setState] = React.useState(() => {
-		const initState = {
-			...initialState,
-			deviceType,
-		} as t.State
-		return initState
-	})
-
-	const setState = React.useCallback(
-		async (
-			fn: ((draft: Draft<typeof initialState>) => void) | Partial<t.State>,
-		) => {
-			_setState(
-				produce((draft) => {
-					if (u.isFnc(fn)) fn(draft)
-					else merge(draft, fn)
-				}),
-			)
-		},
-		[],
-	)
-
-	const saveFile = React.useCallback(
-		async (
-			filename: string,
-			data: string | Record<string, any> | undefined,
-		) => {
-			try {
-				const optionsArg = u.isStr(data)
-					? 'utf8'
-					: u.isObj(data)
-					? { spaces: 2 }
-					: undefined
-				const fnKey = u.isStr(data) ? 'writeFile' : 'writeJson'
-				const configPath = path.join(
-					configuration.getPathToGenerateDir(),
-					aggregator.configKey,
-				)
-				const filepath = path.join(configPath, filename)
-				fs[fnKey] && (await fs[fnKey](filepath, data, optionsArg as any))
-			} catch (error) {
-				console.error(error)
-			}
-		},
-		[],
-	)
 
 	const loadConfig = React.useCallback(
 		async (configKey: string) => {
@@ -261,8 +212,6 @@ function GenerateApp(props: Props) {
 
 							u.newline()
 
-							setState({ assets: missingAssets })
-
 							const promises = [] as any[]
 
 							for (const missingAsset of missingAssets) {
@@ -312,7 +261,6 @@ function GenerateApp(props: Props) {
 								const appKey = doc.get('cadlMain')
 								log(`Base url: ${co.yellow(baseUrl)}`)
 								log(`App config url: ${co.yellow(`${baseUrl}${appKey}`)}`)
-								setState({ configKey })
 								log(`Saved root config object to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else if (type === 'app-config') {
