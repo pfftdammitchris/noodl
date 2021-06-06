@@ -54,7 +54,7 @@ function useConfiguration({ cli, onInit }: Options) {
 			)
 			const pathToGenerateDir = getPathToGenerateDir()
 			refreshLastUpdatedTimestamp()
-			if (!fs.pathExistsSync(pathToGenerateDir)) {
+			if (!fs.existsSync(pathToGenerateDir)) {
 				try {
 					fs.ensureDirSync(pathToGenerateDir)
 					opts?.onCreated?.(pathToGenerateDir)
