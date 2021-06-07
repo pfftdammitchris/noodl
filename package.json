@@ -1,6 +1,6 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.63",
+	"version": "0.0.64",
 	"main": "dist/cli.js",
 	"module": "dist/cli.js",
 	"typings": "dist/cli.d.ts",
