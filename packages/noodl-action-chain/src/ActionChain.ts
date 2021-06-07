@@ -4,7 +4,6 @@ import Action from './Action'
 import createAction from './utils/createAction'
 import { isArray, isPlainObject, isString } from './utils/common'
 import {
-	IActionChain,
 	ActionChainInstancesLoader,
 	ActionChainIteratorResult,
 	ActionChainStatus,
@@ -14,8 +13,8 @@ import * as c from './constants'
 
 class ActionChain<
 	A extends ActionObject = ActionObject,
-	T extends string = string
-> implements IActionChain {
+	T extends string = string,
+> {
 	#abortReason: string | string[] | undefined
 	#actions: A[]
 	#current: Action<A['actionType'], T> | null = null
@@ -54,6 +53,10 @@ class ActionChain<
 		}
 
 		return results
+	}
+
+	[Symbol.for('nodejs.util.inspect.custom')]() {
+		return this.snapshot()
 	}
 
 	constructor(
@@ -340,7 +343,7 @@ class ActionChain<
 			error: this.#error,
 			current: this.current,
 			injected: this.#injected,
-			queue: this.queue,
+			queue: this.queue.map((o) => o.snapshot()),
 			results: this.#results,
 			status: this.#status,
 			trigger: this.trigger,
