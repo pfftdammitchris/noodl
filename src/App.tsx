@@ -99,6 +99,10 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 				}
 			}
 
+			if (cli.flags.pkgVersion) {
+				ctx.log(`\nnoodl-cli version: ${co.cyan(cli.pkg.version)}\n`)
+			}
+
 			if (cli.flags.generate) handleGenerate()
 			else if (cli.flags.server) ctx.setPanel('server')
 			else ctx.setPanel(c.DEFAULT_PANEL)
@@ -111,7 +115,11 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 		<Provider value={ctx}>
 			{state.activePanel === c.DEFAULT_PANEL && (
 				<Gradient name="vice">
-					<BigText text="noodl-cli" font="tiny" letterSpacing={1} />
+					<BigText text="noodl-cli" font="tiny" letterSpacing={1} />{' '}
+					<Text color="white" bold>
+						{cli.pkg.version}
+					</Text>
+					<Newline />
 				</Gradient>
 			)}
 			{!state.ready ? (

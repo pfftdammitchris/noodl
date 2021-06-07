@@ -1,29 +1,12 @@
 ---
-sidebar_position: 1
+sidebar_label: Usage
+sidebar_position: 3
+slug: /usage
+title: Usage
 ---
 
-```
-$ noodl-cli --help
-
-  Usage
-    $ noodl <input>
-
-  Options
-    --config meet4d
-    --device web
-    --env test
-    --fetch
-    --generate app
-    --local
-    --retrieve
-    --server
-    --start
-    --version latest
-    --watch
-    --wss
-
-  Examples
-    $ noodl --config meet4d -e test --server --local --wss --watch
+```bash
+noodl-cli --help
 ```
 
 ## CLI Commands

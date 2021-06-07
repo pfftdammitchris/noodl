@@ -1,7 +1,8 @@
 ---
-id: install
 sidebar_label: Install
-sidebar_position: 1
+sidebar_position: 2
+slug: /installation
+title: Installation
 ---
 
 ```bash

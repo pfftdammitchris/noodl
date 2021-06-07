@@ -25,7 +25,7 @@ function Server({
 	wss,
 	wssPort,
 }: Props) {
-	const { log, toggleSpinner } = useCtx()
+	const { aggregator, log, toggleSpinner } = useCtx()
 	const { config, inputValue, setInputValue, valid, validate, validating } =
 		useConfigInput({
 			initialConfig: configProp,
@@ -52,7 +52,16 @@ function Server({
 		wssPort,
 	})
 
-	React.useEffect(() => void (valid && listen()), [valid])
+	React.useEffect(() => {
+		if (valid) {
+			if (!aggregator.configKey || aggregator.configKey === 'latest') {
+				configProp && (aggregator.configKey = configProp)
+				aggregator.init({}).finally(() => listen())
+			} else {
+				listen()
+			}
+		}
+	}, [valid])
 
 	if (!config) {
 		return (

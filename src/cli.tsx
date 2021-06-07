@@ -12,6 +12,8 @@ import {
 } from './constants'
 import * as co from './utils/color'
 
+const pkg = require('../package.json')
+
 export type Cli = typeof cli
 
 const tag = {
@@ -54,7 +56,7 @@ const cli = meow(
 			env: { type: 'string', alias: 'e', default: 'test' },
 			fetch: { type: 'boolean', alias: 'f' },
 			generate: { type: 'string', alias: 'g' },
-			generatePath: { type: 'string', default: DEFAULT_GENERATE_DIR },
+			generatePath: { type: 'string' },
 			host: { alias: 'h', type: 'string', default: DEFAULT_SERVER_HOSTNAME },
 			local: { type: 'boolean', default: false },
 			port: { type: 'number', alias: 'p', default: DEFAULT_SERVER_PORT },
@@ -62,10 +64,13 @@ const cli = meow(
 			start: { type: 'string' },
 			script: { type: 'string', alias: 's' },
 			version: { type: 'string', alias: 'v', default: 'latest' },
+			pkgVersion: { type: 'string' },
 			watch: { type: 'boolean', default: true },
 			wss: { type: 'boolean', default: true },
 			wssPort: { type: 'number', default: DEFAULT_WSS_PORT },
 		},
+		autoVersion: true,
+		pkg,
 	},
 )
 

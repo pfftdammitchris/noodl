@@ -35,10 +35,8 @@ function useServer({
 	const { aggregator, configuration } = useCtx()
 
 	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
-	const getDir = React.useCallback(
-		() => path.join(configuration.getPathToGenerateDir(), aggregator.configKey),
-		[aggregator.configKey],
-	)
+	const getDir = (...s: string[]) =>
+		path.join(configuration.getPathToGenerateDir(), aggregator.configKey, ...s)
 
 	/* -------------------------------------------------------
 		---- WebSocket
@@ -155,9 +153,9 @@ function useServer({
 		)
 		server.current.get(
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
-			(req, res) => res.sendFile(path.join(getDir(), 'cadlEndpoint.yml')),
+			(req, res) => res.sendFile(getDir('cadlEndpoint.yml')),
 		)
-	}, [])
+	}, [getDir])
 
 	/* -------------------------------------------------------
 		---- Start listening on the server
@@ -249,7 +247,7 @@ function useServer({
 				}
 			}
 		},
-		[],
+		[aggregator.configKey],
 	)
 
 	return {

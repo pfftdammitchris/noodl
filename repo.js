@@ -3,27 +3,54 @@ const execa = require('execa')
 const meow = require('meow')
 const path = require('path')
 
+const getAbsFilePath = (...s) => path.resolve(path.join(...s))
+
+const lib = {
+	docs: { name: 'noodl-cli-docs', path: getAbsFilePath('packages/docs') },
+	nt: { name: 'noodl-types', path: getAbsFilePath('packages/noodl-types') },
+	nac: {
+		name: 'noodl-action-chain',
+		path: getAbsFilePath(`packages/noodl-action-chain`),
+	},
+}
+
 const cli = meow(``, {
 	flags: {
 		docs: { alias: 'd', type: 'string' },
+		nt: { type: 'string' },
+		nac: { type: 'string' },
 	},
 })
-
-const getAbsFilePath = (...s) => path.resolve(path.join(...s))
 
 const paths = {
 	docs: getAbsFilePath('packages/docs'),
 }
 
-const { docs } = cli.flags
-
-if (docs) {
-	const pkg = require('./packages/docs/package.json')
+function run({ pkgPath, scriptCmd, scriptCmdValue }) {
+	const pkg = require(pkgPath)
 	const scriptCmds = u.keys(pkg.scripts)
-	const cmd = scriptCmds.includes(docs) ? `npm run ${docs}` : docs
-	execa.commandSync(`lerna exec --scope noodl-cli-docs "${cmd}"`, {
-		cwd: getAbsFilePath(paths.docs),
-		shell: true,
-		stdio: 'inherit',
-	})
+	const cmd = scriptCmds.includes(scriptCmdValue)
+		? `npm run ${scriptCmdValue}`
+		: scriptCmdValue
+	return execa.commandSync(
+		`lerna exec --scope ${lib[scriptCmd].name} "${cmd}"`,
+		{
+			cwd: getAbsFilePath(paths.docs),
+			shell: true,
+			stdio: 'inherit',
+		},
+	)
+}
+
+for (const scriptCmd of u.keys(cli.flags)) {
+	if (scriptCmd in lib) {
+		const libObject = lib[scriptCmd]
+		run({
+			pkgPath: path.join(libObject.path, 'package.json'),
+			scriptCmd,
+			scriptCmdValue: cli.flags[scriptCmd],
+		})
+	} else {
+		//
+	}
 }

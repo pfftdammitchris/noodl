@@ -11,7 +11,6 @@ const getActionsSourceFile = function getActionsSourceFile(
 		string,
 		{
 			actionType: string
-
 			props: {
 				key: string
 				type: any
