@@ -63,7 +63,7 @@ const cli = meow(
 			script: { type: 'string', alias: 's' },
 			version: { type: 'string', alias: 'v', default: 'latest' },
 			watch: { type: 'boolean', default: true },
-			wss: { type: 'boolean', default: false },
+			wss: { type: 'boolean', default: true },
 			wssPort: { type: 'number', default: DEFAULT_WSS_PORT },
 		},
 	},
