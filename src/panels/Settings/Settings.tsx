@@ -1,8 +1,5 @@
 import * as u from '@jsmanifest/utils'
 import React from 'react'
-import merge from 'lodash/merge'
-import { PartialDeep } from 'type-fest'
-import produce, { Draft } from 'immer'
 import Panel from '../../components/Panel'
 import Init from './Init'
 import PromptDir from './PromptDir'
@@ -13,37 +10,16 @@ import * as co from '../../utils/color'
 import * as c from './constants'
 import * as t from './types'
 
-export const initialState = {
-	prompt: {} as {
-		key: null | '' | t.PromptId
-		dir?: string
-	},
-	options: {},
-}
-
-function Settings({ onReady }: { onReady?(): void }) {
-	const { cli, configuration, log } = useCtx()
-	const [state, _setState] = React.useState(initialState)
-
-	const setState = React.useCallback(
-		(
-			fn:
-				| ((draft: Draft<t.SettingsState>) => void)
-				| Partial<PartialDeep<t.SettingsState>>,
-		) => {
-			_setState(
-				produce((draft) => {
-					if (u.isFnc(fn)) fn(draft)
-					else if (u.isObj(fn)) merge(draft, fn)
-				}),
-			)
-		},
-		[],
-	)
-
-	React.useEffect(() => {
-		// console.log(`${co.cyan(`Global settings`)}: `, configuration.getAll())
-	}, [])
+function Settings({
+	onReady,
+	pathToGenerateDir,
+}: {
+	onReady?(): void
+	pathToGenerateDir?: string
+}) {
+	const [key, setKey] = React.useState('' as '' | t.PromptId)
+	const [dir, setDir] = React.useState('')
+	const { configuration, log } = useCtx()
 
 	React.useEffect(() => {
 		if (configuration.isFresh()) {
@@ -55,10 +31,10 @@ function Settings({ onReady }: { onReady?(): void }) {
 			onReady?.()
 		}
 
-		if (cli.flags.generatePath) {
+		if (pathToGenerateDir) {
 			u.newline()
 			const dirBefore = configuration.getPathToGenerateDir()
-			configuration.setPathToGenerateDir(cli.flags.generatePath)
+			configuration.setPathToGenerateDir(pathToGenerateDir)
 			const dirAfter = configuration.getPathToGenerateDir()
 			log(
 				`Changed path to generated files from "${co.yellow(
@@ -70,19 +46,23 @@ function Settings({ onReady }: { onReady?(): void }) {
 	}, [])
 
 	const ctx: t.SettingsContext = {
-		...state,
-		setPrompt: React.useCallback((prompt) => setState({ prompt }), []),
+		key,
+		dir,
+		setPrompt: React.useCallback((prompt) => {
+			prompt?.key && setKey(prompt.key)
+			prompt?.dir && setDir(prompt.dir)
+		}, []),
 	}
 
 	return (
 		<SettingsProvider value={ctx}>
 			<Panel newline={false}>
-				{state.prompt?.key ? (
-					state.prompt.key === c.prompts.INIT ? (
+				{key ? (
+					key === c.prompts.INIT ? (
 						<Init onReady={onReady} />
-					) : state.prompt.key === c.prompts.ASK_GENERATE_PATH ? (
+					) : key === c.prompts.ASK_GENERATE_PATH ? (
 						<PromptDir onReady={onReady} />
-					) : state.prompt.key === c.prompts.ASK_INSTANTIATE_GENERATE_PATH ? (
+					) : key === c.prompts.ASK_INSTANTIATE_GENERATE_PATH ? (
 						<PromptInstantiateDir onReady={onReady} />
 					) : null
 				) : null}

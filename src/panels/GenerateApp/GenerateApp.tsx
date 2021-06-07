@@ -370,9 +370,9 @@ function GenerateApp(props: Props) {
 			)
 		}
 	} else {
-		if (urlsInProgress.length) {
+		if (memoizedUrlsInProgress.length) {
 			children = (
-				<Static paddingTop={3} items={urlsInProgress}>
+				<Static paddingTop={3} items={memoizedUrlsInProgress}>
 					{(url) => (
 						<Box key={url}>
 							<Text color="yellow">DOWNLOADING</Text>

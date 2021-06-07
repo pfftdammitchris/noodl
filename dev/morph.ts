@@ -119,7 +119,7 @@ Promise.resolve()
 				Pair(key, node, path) {
 					if (yaml.isScalar(node.key) && node.key.value === 'actionType') {
 						if (yaml.isScalar(node.value) && u.isStr(node.value.value)) {
-							actions.addAction(node.value.value, node.value)
+							actions.addAction(node.value.value, node.value as any)
 						}
 						return yaml.visit.SKIP
 					}

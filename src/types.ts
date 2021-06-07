@@ -1,4 +1,3 @@
-import ConfigStore from 'configstore'
 import { Draft } from 'immer'
 import { Cli } from './cli'
 import { initialState as initialAppState } from './App'
@@ -6,13 +5,6 @@ import useConfiguration from './hooks/useConfiguration'
 import createAggregator from './api/createAggregator'
 
 export namespace App {
-	export interface Config {
-		paths?: {
-			json: string
-			yml: string
-		}
-		panels: { component: string; label: string; value: string }[]
-	}
 	export interface Context extends State {
 		aggregator: ReturnType<typeof createAggregator>
 		cli: Cli
