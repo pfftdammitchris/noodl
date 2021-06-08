@@ -1,5 +1,12 @@
+const u = require('@jsmanifest/utils')
 const execa = require('execa')
 const meow = require('meow')
+
+const regex = {
+	'noodl-action-chain': /(nac|noodl-action-chain)/i,
+	'noodl-common': /(nc|ncom|ncommon|noodl-common)/i,
+	'noodl-types': /(nt|types|noodl-types)/i,
+}
 
 const cli = meow(``, {
 	flags: {
@@ -11,30 +18,16 @@ const cli = meow(``, {
 const { message = 'Update(s) to lib', publish } = cli.flags
 
 ;(async () => {
-	const lib = {
-		noodlActionChain: 'noodl-action-chain',
-		noodlTypes: 'noodl-types',
-	}
+	const lib = u.entries(regex).find(([_, regex]) => regex.test(publish))[0]
 
-	const regex = {
-		[lib.noodlActionChain]: /(nac|noodl-action-chain)/i,
-		[lib.noodlTypes]: /(nt|types|noodl-types)/i,
-	}
-
-	const libName = regex[lib.noodlActionChain].test(publish)
-		? lib.noodlActionChain
-		: regex[lib.noodlTypes].test(publish)
-		? lib.noodlTypes
-		: undefined
-
-	if (!libName) throw new Error(`Invalid lib name`)
+	if (!lib) throw new Error(`Invalid lib name`)
 
 	execa.commandSync(
 		[
-			`lerna exec --scope ${libName} "npm version patch"`,
-			`git add packages/${libName}`,
+			`lerna exec --scope ${lib} "npm version patch"`,
+			`git add packages/${lib}`,
 			`git commit -m "${message}"`,
-			`lerna exec --scope ${libName} "npm run build && npm publish"`,
+			`lerna exec --scope ${lib} "npm run build && npm publish"`,
 		].join(' && '),
 		{
 			shell: true,
