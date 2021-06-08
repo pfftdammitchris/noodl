@@ -1,14 +1,28 @@
+process.stdout.write('\x1Bc')
+import * as u from '@jsmanifest/utils'
+import * as ts from 'ts-morph'
+import yaml from 'yaml'
+import globby from 'globby'
 import fs from 'fs-extra'
 import path from 'path'
-import * as ts from 'ts-morph'
+import {
+	loadFilesAsDocs,
+	loadFileAsDoc,
+	getAbsFilePath,
+} from '../src/utils/common'
+import createAggregator from '../src/api/createAggregator'
+import getActionsSourceFile from './actions'
+import * as co from '../src/utils/color'
 
-const metadataFilePath = path.join(
-	process.cwd(),
-	'data/generated/metadata.json',
-)
-const serverFilePath = path.join(__dirname, 'server.ts')
-const scriptFilePath = path.join(__dirname, 'script.ts')
-const typingsFileDir = path.join(__dirname, 'typings')
+const paths = {
+	docs: getAbsFilePath('generated'),
+	assets: getAbsFilePath('data/generated/assets.json'),
+	metadata: getAbsFilePath('data/generated/metadata.json'),
+	typings: getAbsFilePath('data/generated/typings.d.ts'),
+	actionTypes: getAbsFilePath('data/generated/actionTypes.d.ts'),
+}
+
+fs.existsSync(paths.actionTypes) && fs.removeSync(paths.actionTypes)
 
 const program = new ts.Project({
 	compilerOptions: {
@@ -18,51 +32,122 @@ const program = new ts.Project({
 		declaration: true,
 		emitDeclarationOnly: true,
 		baseUrl: __dirname,
-		inlineSourceMap: true,
-		module: ts.ModuleKind.CommonJS,
-		noEmitOnError: true,
+		module: ts.ModuleKind.ESNext,
+		noEmitOnError: false,
 		resolveJsonModule: true,
 		skipLibCheck: true,
-		target: ts.ScriptTarget.ES5,
+		sourceMap: true,
+		target: ts.ScriptTarget.ESNext,
 	},
+	manipulationSettings: {
+		indentationText: ts.IndentationText.TwoSpaces,
+		insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces: true,
+		quoteKind: ts.QuoteKind.Single,
+		newLineKind: ts.NewLineKind.LineFeed,
+		useTrailingCommas: true,
+	},
+	skipAddingFilesFromTsConfig: true,
+	skipLoadingLibFiles: true,
+	skipFileDependencyResolution: true,
+	// useInMemoryFileSystem: true,
 })
 
-const directory = program.createDirectory('./typings')
-const sourceFile = directory.addSourceFileAtPath(metadataFilePath)
-sourceFile.transform((traversal) => {
-	traversal.currentNode.console.log(
-		traversal.currentNode.getText() + '\n------',
-	)
-	return traversal.visitChildren()
+const sourceFile = program.createSourceFile(paths.typings)
+const actions = getActionsSourceFile(program, paths.actionTypes)
+
+// const actionInterface = sourceFile.addInterface({
+// 	name: actionType[0]
+// 		.toUpperCase()
+// 		.concat(actionType.substring(1))
+// 		.concat(`ActionObject`),
+// 	extends: [
+// 		(writer) =>
+// 			writer
+// 				.write(`ActionObject,`)
+// 				.write(`Pick<UncommonActionObjectProps, 'object'>`),
+// 	],
+// 	properties: [
+// 		{
+// 			name: 'actionType',
+// 			type: actionType,
+// 		},
+// 	],
+// 	isExported: true,
+// })
+
+function formatFile(src: ts.SourceFile) {
+	src.formatText({
+		baseIndentSize: 2,
+		convertTabsToSpaces: true,
+		ensureNewLineAtEndOfFile: true,
+		indentMultiLineObjectLiteralBeginningOnBlankLine: true,
+		indentSize: 2,
+		insertSpaceAfterCommaDelimiter: true,
+		insertSpaceAfterConstructor: true,
+		insertSpaceAfterFunctionKeywordForAnonymousFunctions: false,
+		insertSpaceAfterKeywordsInControlFlowStatements: true,
+		insertSpaceAfterOpeningAndBeforeClosingEmptyBraces: true,
+		insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces: true,
+		insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces: true,
+		insertSpaceAfterTypeAssertion: true,
+		insertSpaceBeforeFunctionParenthesis: false,
+		insertSpaceBeforeTypeAnnotation: true,
+		semicolons: ts.ts.SemicolonPreference.Remove,
+		tabSize: 2,
+		trimTrailingWhitespace: true,
+	})
+	return src
+}
+
+const aggregator = createAggregator('meet4d')
+const docFiles = loadFilesAsDocs({
+	as: 'metadataDocs',
+	dir: paths.docs,
+	recursive: true,
 })
-// directory.
-// const directory = program.createDirectory(path.join(__dirname, 'typings'))
-// const sourceFile = directory.getSourceFile('./typings/index.d.ts')
-// console.log(sourceFile.compilerNode)
-// const sourceFiles = directory.getSourceFiles()
 
-// console.log(directory.getSourceFiles())
+for (const { name, doc } of docFiles) {
+	aggregator.root.set(name, doc)
+}
 
-// const sourceFile = program.addSourceFileAtPath(metadataFilePath)
-
-// sourceFile.addImportDeclaration({
-// 	moduleSpecifier: 'hello',
-// 	kind: ts.StructureKind.ImportDeclaration,
-// 	namedImports: ['abc', 'onetwo', 'three'],
-// })
-
-// const emitResult = program.emitToMemory({
-// 	emitOnlyDtsFiles: true,
-// })
-
-// emitResult.getDiagnostics().forEach((diagnostic) => {
-// 	const info = {
-// 		category: diagnostic.getCategory(),
-// 		code: diagnostic.getCode(),
-// 		line: diagnostic.getLineNumber(),
-// 		length: diagnostic.getLength(),
-// 		start: diagnostic.getStart(),
-// 	}
-
-// 	console.log(info)
-// })
+Promise.resolve()
+	.then(() => {
+		for (const [name, doc] of aggregator.root) {
+			yaml.visit(doc, {
+				Node(key, node, path) {},
+				Scalar(key, node, path) {},
+				Pair(key, node, path) {
+					if (yaml.isScalar(node.key) && node.key.value === 'actionType') {
+						if (yaml.isScalar(node.value) && u.isStr(node.value.value)) {
+							actions.addAction(node.value.value, node.value)
+						}
+						return yaml.visit.SKIP
+					}
+				},
+				Map(key, node, path) {
+					if (node.has('actionType')) {
+						const actionType = node.get('actionType') as string
+						actions.addAction(actionType, node)
+					}
+				},
+				Seq(key, node, path) {},
+				Collection(key, node, path) {},
+				Value(key, node, path) {},
+			})
+		}
+	})
+	.then(() => {
+		// sourceFile.addInterface({
+		// 	name: 'ActionTypes',
+		// 	isExported: true,
+		// 	properties: actionTypes.map((actionType) => ({
+		// 		name: actionType,
+		// 		type: 'string',
+		// 	})),
+		// })
+	})
+	.then(() => formatFile(actions.sourceFile).save())
+	.then(() => u.log('\n' + co.green(`DONE`) + '\n'))
+	.catch((err) => {
+		throw err
+	})

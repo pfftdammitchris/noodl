@@ -6,11 +6,11 @@ import xmlParser from 'fast-xml-parser'
 import axios from 'axios'
 import fs from 'fs-extra'
 import prettyBytes from 'pretty-bytes'
-import { getFilePath } from '../src/utils/common'
+import { getAbsFilePath } from '../src/utils/common'
 
 const writeOpts = { spaces: 2 }
-const pathToJsonFolder = getFilePath('./data/objects/json/')
-const pathToYmlFolder = getFilePath('./data/objects/yml/')
+const pathToJsonFolder = getAbsFilePath('./data/objects/json/')
+const pathToYmlFolder = getAbsFilePath('./data/objects/yml/')
 fs.mkdirpSync(pathToJsonFolder)
 fs.mkdirpSync(pathToYmlFolder)
 
@@ -96,7 +96,7 @@ async function getS3Data() {
 		)
 
 		// fs.writeJsonSync(
-		// 	getFilePath('./data/results.json'),
+		// 	getAbsFilePath('./data/results.json'),
 		// 	{ timestamp: new Date().toISOString(), ...store },
 		// 	{ spaces: 2 },
 		// )

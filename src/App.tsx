@@ -1,166 +1,184 @@
 import * as u from '@jsmanifest/utils'
-import invariant from 'invariant'
+import { Box, Newline, Static, Text, useApp } from 'ink'
+import merge from 'lodash/merge'
 import React from 'react'
-import produce from 'immer'
-import { Spacer, Static, Text } from 'ink'
-import { Provider } from './useCtx'
+import produce, { Draft } from 'immer'
+import BigText from 'ink-big-text'
+import Gradient from 'ink-gradient'
 import createAggregator from './api/createAggregator'
+import Select from './components/Select'
 import HighlightedText from './components/HighlightedText'
-import SelectRoute from './panels/SelectRoute'
-import ServerFiles from './panels/ServerFiles'
 import Spinner from './components/Spinner'
-import RetrieveObjects, { Ext } from './panels/RetrieveObjects'
-import RetrieveKeywords from './panels/RetrieveKeywords'
-import RunServer from './panels/RunServer'
-import useSettings from './hooks/useCliConfig'
-import { magenta } from './utils/common'
+import Settings from './panels/Settings'
+import GenerateApp from './panels/GenerateApp'
+import useConfiguration from './hooks/useConfiguration'
+import Server from './panels/Server'
+import { Provider } from './useCtx'
+import * as co from './utils/color'
 import * as c from './constants'
-import * as T from './types'
+import * as t from './types'
 
-let aggregator: ReturnType<typeof createAggregator> = createAggregator()
+const aggregator: ReturnType<typeof createAggregator> = createAggregator()
 
-const initialState: T.App.State = {
-	caption: [],
-	panel: {
-		highlightedId: '',
-		value: '',
-		mounted: false,
-		idle: false,
-	},
-	spinner: false,
+export const initialState = {
+	ready: false,
+	activePanel: '' as t.App.PanelKey,
+	highlightedPanel: '' as t.App.PanelKey,
+	spinner: false as false | string,
+	text: [] as string[],
 }
 
-function reducer(state: T.App.State = initialState, action: T.App.Action) {
-	return produce(state, (draft) => {
-		switch (action.type) {
-			case c.UPDATE_PANEL:
-				return void u.assign(draft.panel, action.panel)
-			case c.app.action.HIGHLIGHT_PANEL:
-				return void (draft.panel.highlightedId = action.panelId)
-			case c.app.action.SET_CAPTION:
-				return void draft.caption.push(action.caption)
-			case c.app.action.SET_SPINNER:
-				return void (draft.spinner = action.spinner)
-		}
-	})
-}
+function Application({ cli }: { cli: t.App.Context['cli'] }) {
+	const [state, _setState] = React.useState<t.App.State>(initialState)
+	const { exit } = useApp()
+	const configuration = useConfiguration({ cli })
 
-function Application({
-	cli,
-	config,
-	defaultPanel,
-	ext = 'yml',
-	runServer,
-}: {
-	cli: T.App.Context['cli']
-	config?: string
-	ext?: Ext
-	defaultPanel?: T.App.PanelId
-	runServer?: boolean
-}) {
-	const [state, dispatch] = React.useReducer(reducer, initialState)
-	const settings = useSettings({ server: { config: cli.flags.config } })
+	const set = React.useCallback(
+		(
+			fn:
+				| ((draft: Draft<t.App.State>) => void)
+				| Partial<t.App.State>
+				| t.App.PanelKey,
+		) =>
+			void _setState(
+				produce((draft) => {
+					if (u.isStr(fn)) draft.activePanel = fn
+					else if (u.isFnc(fn)) fn(draft)
+					else if (u.isObj(fn)) merge(draft, fn)
+				}),
+			),
+		[],
+	)
 
-	const ctx = {
+	const ctx: t.App.Context = {
 		...state,
 		aggregator,
 		cli,
-		cliArgs: { config, defaultPanel, ext, runServer },
-		settings,
-		highlightPanel: (panelId: T.App.PanelId) => {
-			dispatch({ type: c.app.action.HIGHLIGHT_PANEL, panelId })
+		configuration,
+		exit,
+		set,
+		highlight: (id) => set((d) => void (d.highlightedPanel = id)),
+		log: (text) => set((d) => void d.text.push(text)),
+		logError: (err) =>
+			set(
+				(d) =>
+					void d.text.push(
+						err instanceof Error
+							? `[${u.red(err.name)}]: ${u.yellow(err.message)}`
+							: err,
+					),
+			),
+		toggleSpinner: (type) =>
+			set(
+				(d) =>
+					void (d.spinner = u.isUnd(type)
+						? 'point'
+						: type === false
+						? false
+						: type),
+			),
+		setPanel: (panelKey: t.App.PanelKey | '') => {
+			set((d) => void (d.activePanel = panelKey))
 		},
-		setCaption: (caption: Parameters<T.App.Context['setCaption']>[0]) => {
-			dispatch({ type: c.app.action.SET_CAPTION, caption })
-		},
-		setErrorCaption: (err: Parameters<T.App.Context['setErrorCaption']>[0]) => {
-			dispatch({
-				type: c.app.action.SET_CAPTION,
-				caption:
-					err instanceof Error
-						? `[${u.red(err.name)}]: ${u.yellow(err.message)}`
-						: err,
-			})
-		},
-		toggleSpinner: (type?: Parameters<T.App.Context['toggleSpinner']>[0]) => {
-			dispatch({
-				type: c.app.action.SET_SPINNER,
-				spinner: type === undefined ? 'point' : type === false ? false : type,
-			})
-		},
-		updatePanel: (panel: Partial<T.App.State['panel']>) => {
-			dispatch({ type: c.UPDATE_PANEL, panel })
-		},
-	} as T.App.Context
+	}
 
 	React.useEffect(() => {
 		if (u.keys(cli.flags).length) {
-			const isRetrieving = !!cli.flags.retrieve?.length
-			const isStartingServer = !!cli.flags.server
-
-			if (isRetrieving) {
-				invariant(
-					['json', 'yml'].some((ext) => cli.flags.retrieve?.includes(ext)),
-					`Invalid value for "${magenta(
-						`retrieve`,
-					)}". Valid options are: ${magenta('json')}, ${magenta('yml')}`,
-				)
-				ctx.updatePanel({
-					value: c.panel.RETRIEVE_OBJECTS.value,
-					server: isStartingServer,
-				})
-			} else if (isStartingServer) {
-				ctx.updatePanel({ value: c.panel.SERVER_FILES.value })
-			}
-		} else {
-			if (config || defaultPanel) {
-				ctx.settings.set((draft) => {
-					config && (draft.server.config = config)
-					defaultPanel && (draft.defaultPanel = defaultPanel)
-				})
-				if (runServer) {
-					if (!defaultPanel) {
-						ctx.updatePanel({ value: c.panel.RETRIEVE_OBJECTS.value })
-					} else {
-						ctx.updatePanel({ value: defaultPanel })
-					}
+			const handleGenerate = () => {
+				const generate = cli.flags.generate as string
+				if (generate === 'app') {
+					ctx.setPanel('generateApp')
+				} else {
+					u.log(
+						co.red(
+							`Invalid generate operation: "${co.white(generate)}"\n` +
+								`Supported options are: ${co.yellow('app')}\n`,
+						),
+					)
+					exit()
 				}
 			}
+
+			if (cli.flags.generate) handleGenerate()
+			else if (cli.flags.server) ctx.setPanel('server')
+			else ctx.setPanel(c.DEFAULT_PANEL)
+		} else {
+			ctx.setPanel(c.DEFAULT_PANEL)
 		}
-	}, [config, defaultPanel])
+	}, [])
 
 	return (
 		<Provider value={ctx}>
+			{state.activePanel === c.DEFAULT_PANEL && (
+				<Gradient name="vice">
+					<BigText text="noodl-cli" font="tiny" letterSpacing={1} />
+				</Gradient>
+			)}
+			{!state.ready ? (
+				<Settings
+					onReady={() => set({ ready: true, activePanel: state.activePanel })}
+				/>
+			) : state.activePanel === 'generateApp' ? (
+				<GenerateApp
+					config={cli.flags.config}
+					configVersion={cli.flags.version}
+					deviceType={cli.flags.device}
+					env={cli.flags.env}
+					host={cli.flags.host}
+					isLocal={cli.flags.local}
+					port={cli.flags.port}
+				/>
+			) : state.activePanel === 'server' ? (
+				<Server
+					config={cli.flags.config as string}
+					host={cli.flags.host}
+					local={cli.flags.local}
+					port={cli.flags.port}
+					wss={cli.flags.wss}
+					wssPort={cli.flags.wssPort}
+					watch={cli.flags.watch}
+				/>
+			) : (
+				<Box paddingLeft={1} flexDirection="column">
+					<Text color="whiteBright">
+						What would you like to do? (
+						<Text dimColor>
+							Use <Text color="yellow">--help</Text> to see all options
+						</Text>
+						)
+					</Text>
+					<Box minHeight={1} />
+					<Select
+						items={[
+							{
+								value: 'generateApp',
+								label: 'Generate an entire noodl app using a config',
+							},
+							{
+								value: 'server',
+								label: 'Start noodl development server',
+							},
+						]}
+						onSelect={(item) => {
+							switch (item.value) {
+								case 'generateApp':
+									return ctx.setPanel('generateApp')
+								case 'server':
+									return ctx.setPanel('server')
+							}
+						}}
+					/>
+					<Newline count={1} />
+				</Box>
+			)}
+			<Static items={ctx.text as string[]}>
+				{(text, index) => <Text key={index}>{text}</Text>}
+			</Static>
 			{ctx.spinner ? (
 				<HighlightedText color="whiteBright">
 					<Spinner type={ctx.spinner} />
 				</HighlightedText>
 			) : null}
-			{state.panel.value === c.panel.RETRIEVE_OBJECTS.value ? (
-				<RetrieveObjects
-					onEnd={() => {
-						if (state.panel.server || runServer) {
-							ctx.updatePanel({
-								idle: true,
-								mounted: false,
-								value: c.panel.RUN_SERVER.value,
-							})
-						}
-					}}
-				/>
-			) : state.panel.value === c.panel.RETRIEVE_KEYWORDS.value ? (
-				<RetrieveKeywords />
-			) : state.panel.value === c.panel.SERVER_FILES.value ? (
-				<ServerFiles />
-			) : state.panel.value === c.panel.RUN_SERVER.value ? (
-				<RunServer />
-			) : (
-				<SelectRoute />
-			)}
-			<Static items={ctx.caption as string[]}>
-				{(caption, index) => <Text key={index}>{caption}</Text>}
-			</Static>
-			<Spacer />
 		</Provider>
 	)
 }

@@ -1,3 +1,87 @@
+export type RootConfig = {
+	/** Example: albh2.aitmed.io */
+	apiHost: string
+	/** Example: 443 */
+	apiPort: string | number
+	/**
+	 * Can be a variable (example: apiHost which re-uses the value of
+	 * "apiHost" in the config)
+	 */
+	webApiHost: string
+	/**
+	 * Can be a variable (example: apiHost which re-uses the value of
+	 * "appApiHost" in the config)
+	 */
+	appApiHost: string
+	/**
+	 * Base url that links in relative format will resolve from
+	 * For example, if cadlBaseUrl is "http://127.0.0.1:3000", a page referenced
+	 * in a noodl object like "SignIn" will resolve to:
+	 * "http://127.0.0.1:3000/SignIn"
+	 */
+	cadlBaseUrl: string
+	myBaseUrl: string
+	connectiontimeout: string | number
+	loadingLevel: number // Defaulted to 1
+	/**
+	 * The file name/path will be the pathname used to grab the "app" config
+	 * For example, if cadlMain is "cadlEndpoint.yml", the app should pick up
+	 * "${cadlBaseUrl}/cadlEndpoint.yml" where ${cadlBaseUrl} is a placeholder
+	 * for the cadlBaseUrl variable
+	 */
+	cadlMain: string
+	/** Defaults to "console_log_api" */
+	debug: string
+	/** If this is specified the app should transform this to a plugin component */
+	bodyTopPplugin?: string
+	/** If this is specified the app should transform this to a plugin component */
+	bodyTailPplugin?: string
+	/** If this is specified the app should transform this to a plugin component */
+	headPlugin?: string
+	/**
+	 * The timestamp the config was last created or modified.
+	 * This is used to invalidate the config cache
+	 */
+	timestamp: number
+	web: RootConfigDeviceVersionObject
+	ios: RootConfigDeviceVersionObject
+	android: RootConfigDeviceVersionObject
+	keywords: string[]
+	viewWidthHeightRatio?: {
+		min: number
+		max: number
+	}
+} & Record<DeviceType, RootConfigDeviceVersionObject> & { [key: string]: any }
+
+export interface AppConfig {
+	assetsUrl: string
+	/** The equivalent of "cadlBaseUrl" from the root config */
+	baseUrl: string
+	languageSuffix: { [lang: string]: string }
+	fileSuffix: string
+	/**
+	 * The default page for user sessions where they haven't visited any pages
+	 * Also the default page for unauthorized users
+	 */
+	startPage: string
+	/** Pages to be loaded before loading other pages */
+	preload: string[]
+	/** Pages to be loaded and treated as routes in the runtime */
+	page: string[]
+	[key: string]: any
+}
+
+export interface RootConfigDeviceVersionObject {
+	cadlVersion: {
+		stable: string
+		test: string
+	}
+}
+
+export type DeviceType = 'web' | 'ios' | 'android'
+
+export type Env = 'stable' | 'test'
+
 export interface EcosDocument<
 	NF extends NameField = NameField,
 	MT extends MediaType = MediaType,

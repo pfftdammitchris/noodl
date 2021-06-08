@@ -1,8 +1,6 @@
 node_modules
 dist
 data
-output/
-server/
-introspection.json
+output
 generated
-dev/compiler.ts
+server

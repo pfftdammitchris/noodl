@@ -1,6 +1,6 @@
 {
 	"name": "noodl-common",
-	"version": "0.0.6",
+	"version": "0.0.8",
 	"description": "> TODO: description",
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
@@ -26,6 +26,5 @@
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
-	"gitHead": "706e69ec933707daf635b0fea670185493b5c0e5",
-	"dependencies": {}
+	"gitHead": "3a5b477fa7ff5b34a63aee5b2b84729f0687459a"
 }

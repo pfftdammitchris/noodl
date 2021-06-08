@@ -1,8 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
-const NoodlWebpackPlugin = require('.').default
-
-// const NodePolyfillsPlugin = require('node-polyfill-webpack-plugin')
+const NoodlWebpackPlugin = require('.')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const srcDir = path.join(__dirname, './example')
 const publicDir = path.join(srcDir, 'public')
 
@@ -12,7 +11,8 @@ const devServerOptions = {
 	compress: false,
 	contentBase: [srcDir],
 	host: '127.0.0.1',
-	hot: false,
+	hot: true,
+	liveReload: true,
 }
 
 /**
@@ -25,7 +25,6 @@ module.exports = {
 	output: {
 		filename: 'index.js',
 		path: publicDir,
-		publicPath: publicDir,
 	},
 	devServer: devServerOptions,
 	devtool: 'inline-source-map',
@@ -48,31 +47,23 @@ module.exports = {
 			},
 		],
 	},
+
 	resolve: {
 		alias: {
 			fs: path.resolve(__dirname, './node_modules/fs-extra'),
 		},
 		extensions: ['.ts', '.js'],
-		fallback: {
-			constants: require.resolve('constants-browserify'),
-			path: require.resolve('path-browserify'),
-			os: require.resolve('os-browserify/browser'),
-			stream: require.resolve('stream-browserify'),
-		},
 		modules: ['node_modules'],
 	},
-	recordsPath: path.join(__dirname, 'records.json'),
 	plugins: [
-		// new NodePolyfillsPlugin(),
-		new webpack.ProvidePlugin({
-			process: 'process',
-		}),
 		new NoodlWebpackPlugin({
 			config: 'meet4d',
+			serverDir: '../../server',
 		}),
-		// new HtmlWebpackPlugin({
-		// 	publicPath: path.join(__dirname, './example/public'),
-		// }),
+		new HtmlWebpackPlugin({
+			filename: 'index.html',
+			path: path.resolve(__dirname, './example/public'),
+		}),
 		new webpack.ProgressPlugin({
 			percentBy: 'entries',
 		}),

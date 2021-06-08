@@ -1,178 +1,65 @@
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
-import useCliConfig from './hooks/useCliConfig'
-import createAggregator from './api/createAggregator'
+import ConfigStore from 'configstore'
+import { Draft } from 'immer'
 import { Cli } from './cli'
-import * as c from './constants'
+import { initialState as initialAppState } from './App'
+import useConfiguration from './hooks/useConfiguration'
+import createAggregator from './api/createAggregator'
 
 export namespace App {
-	export type Action =
-		| { type: typeof c.UPDATE_PANEL; panel: Partial<State['panel']> }
-		| { type: typeof c.app.action.HIGHLIGHT_PANEL; panelId: PanelId }
-		| { type: typeof c.app.action.SET_CAPTION; caption: string }
-		| { type: typeof c.app.action.SET_SPINNER; spinner: false | string }
-
-	export interface State {
-		caption: string[]
-		panel: {
-			value: PanelId | ''
-			highlightedId: PanelId | ''
-			mounted: boolean
-			idle: boolean
-			[key: string]: any
+	export interface Config {
+		paths?: {
+			json: string
+			yml: string
 		}
-		spinner: false | string
+		panels: { component: string; label: string; value: string }[]
 	}
-
 	export interface Context extends State {
 		aggregator: ReturnType<typeof createAggregator>
 		cli: Cli
-		cliArgs: {
-			config?: string
-			defaultPanel?: App.PanelId
-			ext?: 'json' | 'yml'
-			runServer?: boolean
-		}
-		highlightPanel(id: App.PanelId): void
-		settings: ReturnType<typeof useCliConfig>
-		setCaption(caption: string): void
-		setErrorCaption(caption: string | Error): void
+		configuration: ReturnType<typeof useConfiguration>
+		exit: (error?: Error | undefined) => void
+		highlight(panelKey: App.PanelKey | ''): void
+		log(text: string): void
+		logError(text: string | Error): void
 		toggleSpinner(type?: false | string): void
-		updatePanel(panel: Partial<State['panel']>): void
+		set(fn: (draft: Draft<App.State>) => void): void
+		setPanel(panelKey: App.PanelKey | '', props?: Record<string, any>): void
 	}
 
-	export interface CliConfigObject {
-		defaultOption: App.PanelId | null
-		defaultPanel: App.PanelId | null
-		server: {
-			config?: string
-			dir: string
-			host: string
-			port: number
-			protocol: string
-		}
-		objects: {
-			json: {
-				dir: string[]
-			}
-			yml: {
-				dir: string[]
-			}
-		}
-		scripts?: {
-			aggregator?: {
-				dataFiles?: string
-				outFile?: string
-				use?: string[]
-			}
-		}
-	}
+	export type PanelKey = string
 
-	export type EventId =
-		typeof c.aggregator.event[keyof typeof c.aggregator.event]
-
-	export type PanelId = keyof typeof c.panel
-
-	export type PanelObject = typeof c.panel[PanelId]
+	export type State = typeof initialAppState
 }
 
-/* -------------------------------------------------------
-	---- CONSTANTS
--------------------------------------------------------- */
+export type PanelType = 'main' | 'generate' | 'retrieve' | 'server'
 
-export type MetadataGroup = 'documents' | 'images' | 'scripts' | 'videos'
-
-/* -------------------------------------------------------
-	---- OTHER
--------------------------------------------------------- */
-export interface AnyFn {
-	(...args: any[]): any
+export interface PanelObject<Key extends string = string> {
+	key?: Key
+	value: Key
+	label: string
+	[key: string]: any
 }
 
-export namespace Noodl {
-	export interface RootConfig {
-		apiHost: string
-		apiPort: string
-		designSuffix?: string
-		webApiHost: string
-		appApiHost: string
-		connectiontimeout: string
-		loadingLevel: number
-		versionNumber?: number
-		viewWidthHeightRatio?: {
-			min: number
-			max: number
-		}
-		debug?: string
-		web?: {
-			cadlVersion: { stable: string; test: string }
-		}
-		ios?: {
-			cadlVersion: { stable: string; test: string }
-		}
-		android?: {
-			cadlVersion: { stable: string; test: string }
-		}
-		cadlBaseUrl: string
-		cadlMain?: string
-		myBaseUrl?: string
-		bodyTopPplugin?: string
-		bodyTailPplugin?: string
-		headPlugin?: string
-		timestamp?: number
-		keywords?: string[]
-	}
+export type MetadataGroup =
+	| 'config'
+	| 'document'
+	| 'image'
+	| 'page'
+	| 'script'
+	| 'video'
 
-	export interface AppConfig {
-		host?: string
-		assetsUrl: string
-		baseUrl: string
-		languageSuffix: { [lang: string]: string }
-		fileSuffix: string
-		startPage: string
-		preload: string[]
-		page: string[]
-	}
-
-	export interface EcosGRPC {
-		_credentials: {}
-		hostname: string // https://ecostest.aitmed.com
-		options_: { format: 'text' }
-		methodInfoce: {
-			MethodInfo: EcosGRPCMethodInfo
-		}
-		methodInfore: {
-			MethodInfo: EcosGRPCMethodInfo
-		}
-		methodInfodx: {
-			MethodInfo: EcosGRPCMethodInfo
-		}
-		methodInfocv: {
-			MethodInfo: EcosGRPCMethodInfo
-		}
-		methodInforv: {
-			MethodInfo: EcosGRPCMethodInfo
-		}
-		methodInfocd: {
-			MethodInfo: EcosGRPCMethodInfo
-		}
-		methodInford: {
-			MethodInfo: EcosGRPCMethodInfo
-		}
-	}
-
-	export interface EcosGRPCMethodInfo {
-		name: string | undefined
-		a: AnyFn
-		b: AnyFn
-	}
+export interface MetadataBaseObject {
+	ext: string
+	filename: string
+	group: MetadataGroup
 }
 
-export interface IdentifyFn<N = any> {
-	(node: N): boolean
+export interface MetadataFileObject extends MetadataBaseObject {
+	filepath: string
 }
 
-export type YAMLNode =
-	| Scalar<any>
-	| Pair<any, any>
-	| YAMLMap<any, any>
-	| YAMLSeq<any>
+export interface MetadataLinkObject extends MetadataBaseObject {
+	isRemote: boolean
+	name: string
+	url: string
+}

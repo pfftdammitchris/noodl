@@ -1,5 +1,5 @@
-import get from 'lodash/get'
-import has from 'lodash/has'
+import get from 'lodash.get'
+import has from 'lodash.has'
 import { NameField } from '../ecosTypes'
 
 export function excludeKeys(keys1: string[], keys2: string | string[]) {
@@ -81,7 +81,7 @@ export function isNil(v: unknown) {
 }
 
 export function isObj(value: unknown): value is Record<string, any> {
-	return exists(value) && !Array.isArray(value) && typeof value === 'object'
+	return value != null && !isArr(value) && typeof value === 'object'
 }
 
 export function isImg(s: string) {

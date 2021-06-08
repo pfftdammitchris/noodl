@@ -4,7 +4,7 @@ import invariant from 'invariant'
 import Scripts from '../../src/api/Scripts'
 import {
 	getCliConfig,
-	getFilePath,
+	getAbsFilePath,
 	lightGreen,
 	loadFilesAsDocs,
 	magenta,
@@ -28,7 +28,7 @@ async function aggregate() {
 	invariant(!!settings.outFile, u.red(`Missing ${magenta(`outFile`)} path`))
 
 	const dataDir = settings.dataFiles // loadFilesAsDocs uses path.resolve already
-	const outFile = getFilePath(settings.outFile)
+	const outFile = getAbsFilePath(settings.outFile)
 	const registeredScripts = [] as [
 		ScriptId,
 		Script.Register<t.AggregatorStore>,

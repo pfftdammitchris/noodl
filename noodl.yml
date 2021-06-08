@@ -1,12 +1,3 @@
-defaultOption: SERVER_FILES
-defaultPanel: RETRIEVE_OBJECTS
-objects:
-  json:
-    dir:
-      - output/json
-  yml:
-    dir:
-      - output/server
 server:
   host: 127.0.0.1
   dir: server

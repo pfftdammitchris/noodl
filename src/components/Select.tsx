@@ -2,9 +2,12 @@ import React from 'react'
 import { Text } from 'ink'
 import SelectInput from 'ink-select-input'
 
-export type SelectInputProps = Parameters<typeof SelectInput>[0]
+export type SelectInputProps = Parameters<typeof SelectInput>[0] & {
+	indicatorColor?: string
+}
 
 function Select({
+	indicatorColor = 'magentaBright',
 	isSelected,
 	items = [],
 	...rest
@@ -22,7 +25,7 @@ function Select({
 	return (
 		<SelectInput
 			indicatorComponent={({ children, isSelected }) => (
-				<Text color={isSelected ? 'magentaBright' : undefined}>
+				<Text color={isSelected ? indicatorColor : undefined}>
 					{isSelected ? '>' : ' '} {children}
 				</Text>
 			)}

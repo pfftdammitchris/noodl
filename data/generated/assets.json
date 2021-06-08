@@ -1,0 +1,585 @@
+[
+  {
+    "ext": "jpg",
+    "filename": "JohnDoe.jpg",
+    "isRemote": true,
+    "name": "JohnDoe",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/avatar/JohnDoe.jpg",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "backWhiteArrow.png",
+    "isRemote": false,
+    "name": "backWhiteArrow",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/backWhiteArrow.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "mLogo.png",
+    "isRemote": false,
+    "name": "mLogo",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/mLogo.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "sideNav2.png",
+    "isRemote": false,
+    "name": "sideNav2",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/sideNav2.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "successMark.png",
+    "isRemote": false,
+    "name": "successMark",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/successMark.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "cloud.png",
+    "isRemote": false,
+    "name": "cloud",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/cloud.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "rateapp.png",
+    "isRemote": false,
+    "name": "rateapp",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/rateapp.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "chooseIcon.png",
+    "isRemote": false,
+    "name": "chooseIcon",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/chooseIcon.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "imgpshMobileSave.png",
+    "isRemote": false,
+    "name": "imgpshMobileSave",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/imgpshMobileSave.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "providerOn.png",
+    "isRemote": false,
+    "name": "providerOn",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/providerOn.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "backpic.png",
+    "isRemote": false,
+    "name": "backpic",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/backpic.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "progressBar10persent.png",
+    "isRemote": false,
+    "name": "progressBar10persent",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/progressBar10persent.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "FreePage.png",
+    "isRemote": false,
+    "name": "FreePage",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/FreePage.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "appstore.png",
+    "isRemote": true,
+    "name": "appstore",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/appstore.png",
+    "group": "image"
+  },
+  {
+    "ext": "ameet",
+    "filename": "details?id=com.aitmed.ameet",
+    "isRemote": true,
+    "name": "details?id=com.aitmed",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://play.google.com/store/apps/details?id=com.aitmed.ameet"
+  },
+  {
+    "ext": "png",
+    "filename": "google-play.png",
+    "isRemote": true,
+    "name": "google-play",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/google-play.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "uploading.png",
+    "isRemote": false,
+    "name": "uploading",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/uploading.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "qrCode.png",
+    "isRemote": false,
+    "name": "qrCode",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/qrCode.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "add.png",
+    "isRemote": false,
+    "name": "add",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/add.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "providerOn.png",
+    "isRemote": true,
+    "name": "providerOn",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/providerOn.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "providerOff.png",
+    "isRemote": true,
+    "name": "providerOff",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/providerOff.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "rightYellowArrow.png",
+    "isRemote": false,
+    "name": "rightYellowArrow",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/rightYellowArrow.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "calendar.png",
+    "isRemote": false,
+    "name": "calendar",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/calendar.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "iconOutlineArrowLeft.png",
+    "isRemote": false,
+    "name": "iconOutlineArrowLeft",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/iconOutlineArrowLeft.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "iconOutlineArrowRight.png",
+    "isRemote": false,
+    "name": "iconOutlineArrowRight",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/iconOutlineArrowRight.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "search3.png",
+    "isRemote": false,
+    "name": "search3",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/search3.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "user.png",
+    "isRemote": false,
+    "name": "user",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/user.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "add3.png",
+    "isRemote": false,
+    "name": "add3",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/add3.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "download2.png",
+    "isRemote": false,
+    "name": "download2",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/download2.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "folder2.png",
+    "isRemote": false,
+    "name": "folder2",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/folder2.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "visa.png",
+    "isRemote": false,
+    "name": "visa",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/visa.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "mastercard.png",
+    "isRemote": false,
+    "name": "mastercard",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/mastercard.png",
+    "group": "image"
+  },
+  {
+    "ext": "html",
+    "filename": "privacypolicy.html",
+    "isRemote": true,
+    "name": "privacypolicy",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://www.truevault.com/privacypolicy.html",
+    "group": "script"
+  },
+  {
+    "ext": "png",
+    "filename": "addMeeting.png",
+    "isRemote": false,
+    "name": "addMeeting",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/addMeeting.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "stripe.png",
+    "isRemote": false,
+    "name": "stripe",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/stripe.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "home.png",
+    "isRemote": false,
+    "name": "home",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/home.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "profile2.png",
+    "isRemote": false,
+    "name": "profile2",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/profile2.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "contact2.png",
+    "isRemote": false,
+    "name": "contact2",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/contact2.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "Documents2.png",
+    "isRemote": false,
+    "name": "Documents2",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/Documents2.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "dollar.png",
+    "isRemote": false,
+    "name": "dollar",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/dollar.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "faq2.png",
+    "isRemote": false,
+    "name": "faq2",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/faq2.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "about.png",
+    "isRemote": false,
+    "name": "about",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/about.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "settings.png",
+    "isRemote": false,
+    "name": "settings",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/settings.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "membership.png",
+    "isRemote": false,
+    "name": "membership",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/membership.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "logout.png",
+    "isRemote": false,
+    "name": "logout",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/logout.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "SeviceAgreement.png",
+    "isRemote": false,
+    "name": "SeviceAgreement",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/SeviceAgreement.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "selectOn.png",
+    "isRemote": true,
+    "name": "selectOn",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/selectOn.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "selectOff.png",
+    "isRemote": true,
+    "name": "selectOff",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/selectOff.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "add.file.png",
+    "isRemote": false,
+    "name": "add.file",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/add.file.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "invite.user.png",
+    "isRemote": false,
+    "name": "invite.user",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/invite.user.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "marketIcon.png",
+    "isRemote": false,
+    "name": "marketIcon",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/marketIcon.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "left_arrow_cricle.png",
+    "isRemote": false,
+    "name": "left_arrow_cricle",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/left_arrow_cricle.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "image_circle.png",
+    "isRemote": false,
+    "name": "image_circle",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/image_circle.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "QR.png",
+    "isRemote": false,
+    "name": "QR",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/QR.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "waitingroom.png",
+    "isRemote": false,
+    "name": "waitingroom",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/waitingroom.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "logo.png",
+    "isRemote": false,
+    "name": "logo",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/logo.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "cameraOn.png",
+    "isRemote": true,
+    "name": "cameraOn",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/cameraOn.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "cameraOff.png",
+    "isRemote": true,
+    "name": "cameraOff",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/cameraOff.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "micOn.png",
+    "isRemote": true,
+    "name": "micOn",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/micOn.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "micOff.png",
+    "isRemote": true,
+    "name": "micOff",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/https://public.aitmed.com/commonRes/micOff.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "hangUp.png",
+    "isRemote": false,
+    "name": "hangUp",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/hangUp.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "NavIcMore.png",
+    "isRemote": false,
+    "name": "NavIcMore",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/NavIcMore.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "cancel.png",
+    "isRemote": false,
+    "name": "cancel",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/cancel.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "callcontact.png",
+    "isRemote": false,
+    "name": "callcontact",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/callcontact.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "progressBar100persent.png",
+    "isRemote": false,
+    "name": "progressBar100persent",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/progressBar100persent.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "drImg.png",
+    "isRemote": false,
+    "name": "drImg",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/drImg.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "documents.png",
+    "isRemote": false,
+    "name": "documents",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/documents.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "share.png",
+    "isRemote": false,
+    "name": "share",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/share.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "Icon material-person.png",
+    "isRemote": false,
+    "name": "Icon material-person",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/Icon material-person.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "lock.png",
+    "isRemote": false,
+    "name": "lock",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/lock.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "cross.png",
+    "isRemote": false,
+    "name": "cross",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/cross.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "gallery.png",
+    "isRemote": false,
+    "name": "gallery",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/gallery.png",
+    "group": "image"
+  },
+  {
+    "ext": "png",
+    "filename": "hand.png",
+    "isRemote": false,
+    "name": "hand",
+    "url": "https://public.aitmed.com/cadl/meet3_0.4d/assets/hand.png",
+    "group": "image"
+  }
+]

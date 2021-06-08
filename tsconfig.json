@@ -3,11 +3,11 @@
 		"allowSyntheticDefaultImports": true,
 		"baseUrl": "src",
 		"declaration": true,
+		"declarationDir": "dist",
 		"esModuleInterop": true,
-		"suppressImplicitAnyIndexErrors": true,
 		"jsx": "react",
-		"lib": ["es2018"],
 		"keyofStringsOnly": true,
+		"lib": ["esnext"],
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"noEmitOnError": false,
@@ -15,10 +15,12 @@
 		"outDir": "dist",
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
-		"strict": true,
 		"sourceMap": true,
-		"target": "es2018"
+		"strict": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"target": "es2015"
 	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules/**/*"]
+	"exclude": ["node_modules"],
+	"include": ["src"],
+	"files": ["src/cli.tsx"]
 }

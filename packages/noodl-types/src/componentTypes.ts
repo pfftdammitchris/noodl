@@ -94,6 +94,13 @@ export interface ButtonComponentObject
 	[key: string]: any
 }
 
+export interface CanvasComponentObject
+	extends ComponentObject,
+		Pick<UncommonComponentObjectProps, 'dataKey'> {
+	type: 'canvas'
+	[key: string]: any
+}
+
 export interface DividerComponentObject extends ComponentObject {
 	type: 'divider'
 	[key: string]: any
