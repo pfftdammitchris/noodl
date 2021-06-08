@@ -1,10 +1,10 @@
-import chalk from 'chalk'
+import * as com from 'noodl-common'
 import { expect } from 'chai'
 import * as t from '..'
 
-const label = (s: string) => chalk.italic(chalk.white(s))
+const label = (s: string) => com.italic(com.white(s))
 
-describe(chalk.keyword('navajowhite').italic('Identify'), () => {
+describe(com.coolGold('Identify'), () => {
 	describe(label('actionChain'), () => {
 		it(`should accept emit objects`, () => {
 			expect(
