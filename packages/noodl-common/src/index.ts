@@ -1,9 +1,9 @@
 import * as u from '@jsmanifest/utils'
-import globby from 'globby'
-import fs from 'fs-extra'
+import { sync as globbySync } from 'globby'
+import { readFileSync } from 'fs'
 import path from 'path'
 import chalk from 'chalk'
-import yaml from 'yaml'
+import { Document, parseDocument } from 'yaml'
 import * as t from './types'
 
 export * from './types'
@@ -156,8 +156,8 @@ export function hasSlash(s: string) {
 export function loadFiles(opts: {
 	dir: string
 	ext: 'yml'
-	onFile?(args: { file: yaml.Document; filename: string }): void
-}): yaml.Document[]
+	onFile?(args: { file: Document; filename: string }): void
+}): Document[]
 export function loadFiles(opts: {
 	dir: string
 	ext: 'json'
@@ -171,24 +171,25 @@ export function loadFiles({
 	dir: string
 	ext?: 'json' | 'yml'
 	onFile?(args: {
-		file?: Record<string, any> | yaml.Document
+		file?: Record<string, any> | Document
 		filename: string
 	}): void
 }) {
-	return globby
-		.sync(path.resolve(getAbsFilePath(dir), `**/*.${ext}`))
-		.reduce((acc, filename) => {
+	return globbySync(path.resolve(getAbsFilePath(dir), `**/*.${ext}`)).reduce(
+		(acc, filename) => {
 			const file =
 				ext === 'json'
-					? fs.readJsonSync(filename)
-					: yaml.parseDocument(fs.readFileSync(filename, 'utf8'))
+					? JSON.parse(readFileSync(filename, 'utf8'))
+					: parseDocument(readFileSync(filename, 'utf8'))
 			onFile?.({ file, filename })
 			return acc.concat(file)
-		}, [])
+		},
+		[],
+	)
 }
 
 export function loadFileAsDoc(filepath: string) {
-	return yaml.parseDocument(fs.readFileSync(filepath, 'utf8'))
+	return parseDocument(readFileSync(filepath, 'utf8'))
 }
 
 export function loadFilesAsDocs(opts: {
@@ -196,13 +197,13 @@ export function loadFilesAsDocs(opts: {
 	dir: string
 	includeExt?: boolean
 	recursive: boolean
-}): yaml.Document.Parsed[]
+}): Document.Parsed[]
 export function loadFilesAsDocs(opts: {
 	as: 'metadataDocs'
 	dir: string
 	includeExt?: boolean
 	recursive: boolean
-}): { name: string; doc: yaml.Document.Parsed }[]
+}): { name: string; doc: Document.Parsed }[]
 export function loadFilesAsDocs({
 	as = 'doc',
 	dir,
@@ -225,12 +226,10 @@ export function loadFilesAsDocs({
 						: obj.name,
 			  })
 			: (fpath: string) => loadFileAsDoc(fpath)
-	return globby
-		.sync(path.join(dir, recursive ? '**/*.yml' : '*.yml'), {
-			objectMode: as === 'metadataDocs',
-			onlyFiles: true,
-		})
-		.map((fpath) => xform(fpath))
+	return globbySync(path.join(dir, recursive ? '**/*.yml' : '*.yml'), {
+		objectMode: as === 'metadataDocs',
+		onlyFiles: true,
+	}).map((fpath) => xform(fpath))
 }
 
 export function isImg(s: string) {
