@@ -1,6 +1,6 @@
 {
 	"name": "noodl-common",
-	"version": "0.0.11",
+	"version": "0.0.12",
 	"description": "Common NOODL file system utilities",
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
@@ -31,5 +31,7 @@
 		"globby": "^11.0.2",
 		"yaml": "^2.0.0-4"
 	},
-	"devDependencies": {}
+	"devDependencies": {
+		"typescript": "^4.2.4"
+	}
 }
