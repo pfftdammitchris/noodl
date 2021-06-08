@@ -1,21 +1,17 @@
 import * as u from '@jsmanifest/utils'
+import * as com from 'noodl-common'
+import { MetadataLinkObject } from 'noodl-common'
 import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk'
 import {
-	createLinkMetadataExtractor,
-	promiseAllSafe,
-	withSuffix,
-} from '../../utils/common'
-import {
 	createNoodlPlaceholderReplacer,
 	hasNoodlPlaceholder,
 	isValidAsset,
 } from '../../utils/noodl-utils'
 import { DEFAULT_CONFIG_HOSTNAME } from '../../constants'
-import { MetadataLinkObject } from '../../types'
 import * as c from './constants'
 import * as co from '../../utils/color'
 import * as t from './types'
@@ -49,7 +45,7 @@ const createAggregator = function (options?: string | t.Options) {
 	) {
 		cbs[event]?.forEach?.((fn) => fn(args))
 	}
-	const withYmlExt = withSuffix('.yml')
+	const withYmlExt = com.withSuffix('.yml')
 	const getConfigVersion = (doc = root.get(configKey)) =>
 		(doc as yaml.Document)?.getIn([deviceType, 'cadlVersion', env]) as string
 	const getRawRootConfigYml = (): string => root.get(`${configKey}_raw`) as any
@@ -270,7 +266,7 @@ const createAggregator = function (options?: string | t.Options) {
 				if (!visitedAssets.includes(asset) && isValidAsset(asset)) {
 					if (!remote && asset.startsWith('http')) return
 					visitedAssets.push(asset)
-					const metadata = createLinkMetadataExtractor(asset, {
+					const metadata = com.createLinkMetadataExtractor(asset, {
 						config: o.configKey,
 						url: !asset.includes(o.assetsUrl) ? toAssetLink(asset) : asset,
 					})
@@ -333,7 +329,7 @@ const createAggregator = function (options?: string | t.Options) {
 					}
 				}
 			}
-			await promiseAllSafe(...preloadPages.map(async (_) => loadPage(_)))
+			await com.promiseAllSafe(...preloadPages.map(async (_) => loadPage(_)))
 		},
 		loadPage,
 		async loadPages({

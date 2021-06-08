@@ -1,18 +1,18 @@
+// @ts-nocheck
 import * as u from '@jsmanifest/utils'
+import chalk from 'chalk'
+import * as com from 'noodl-common'
 import { SetRequired } from 'type-fest'
 import invariant from 'invariant'
 import Scripts from '../../src/api/Scripts'
-import {
-	getCliConfig,
-	getAbsFilePath,
-	lightGreen,
-	loadFilesAsDocs,
-	magenta,
-} from '../../src/utils/common'
+import { getCliConfig } from '../../src/utils/common'
 import scriptsToRegister, { ScriptId } from './scripts'
 import { App } from '../../src/types'
 import { Script } from '../../src/api/Scripts/types'
 import * as t from './types'
+
+export const lightGreen = (...s: any[]) => chalk.keyword('lightgreen')(...s)
+export const magenta = (...s: any[]) => chalk.magenta(...s)
 
 async function aggregate() {
 	const settings = getCliConfig().scripts.aggregator as SetRequired<
@@ -28,7 +28,7 @@ async function aggregate() {
 	invariant(!!settings.outFile, u.red(`Missing ${magenta(`outFile`)} path`))
 
 	const dataDir = settings.dataFiles // loadFilesAsDocs uses path.resolve already
-	const outFile = getAbsFilePath(settings.outFile)
+	const outFile = com.getAbsFilePath(settings.outFile)
 	const registeredScripts = [] as [
 		ScriptId,
 		Script.Register<t.AggregatorStore>,
@@ -47,7 +47,7 @@ async function aggregate() {
 
 	const scripts = new Scripts<t.AggregatorStore>({
 		dataFilePath: outFile,
-		docs: loadFilesAsDocs({
+		docs: com.loadFilesAsDocs({
 			as: 'metadataDocs',
 			dir: dataDir,
 			includeExt: false,
@@ -58,7 +58,7 @@ async function aggregate() {
 	scripts
 		.use({
 			script: u.values(scriptsToRegister),
-			onEnd: () => u.log(`${u.withTag(`End`, lightGreen)} script`),
+			onEnd: () => u.log(`${com.withTag(`End`)('')} script`),
 		})
 		.run()
 }

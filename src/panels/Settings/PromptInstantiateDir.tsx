@@ -13,12 +13,12 @@ export interface PromptInstantiateDirProps {
 
 function PromptInstantiateDir({ onReady }: PromptInstantiateDirProps) {
 	const { configuration, log } = useCtx()
-	const { prompt, setPrompt } = useSettingsCtx()
+	const { key, dir, setPrompt } = useSettingsCtx()
 
 	const onSelect = React.useCallback(
 		(item) => {
 			if (item.value) {
-				configuration.setPathToGenerateDir(prompt.dir as string, {
+				configuration.setPathToGenerateDir(dir as string, {
 					onCreated(path) {
 						log(`Created a new folder at ${co.yellow(path)}`)
 						setPrompt({ key: '' })
@@ -42,14 +42,14 @@ function PromptInstantiateDir({ onReady }: PromptInstantiateDirProps) {
 				setPrompt({ key: c.prompts.ASK_GENERATE_PATH })
 			}
 		},
-		[configuration, prompt],
+		[configuration, key, dir],
 	)
 
 	return (
 		<Box flexDirection="column">
 			<Text color="white">
-				The path {co.yellow(prompt.dir)} does not exist. Would you like for it
-				to be created?
+				The path {co.yellow(dir)} does not exist. Would you like for it to be
+				created?
 			</Text>
 			<Newline />
 			<Select

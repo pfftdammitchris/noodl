@@ -12,6 +12,10 @@
 			""
 		]
 	},
+	"noodl-common": {
+		"prefix": "ncommon",
+		"body": "import * as com from 'noodl-common'"
+	},
 	"prettyDOM": {
 		"prefix": "importpdom",
 		"body": "import { prettyDOM } from '@testing-library/dom'"

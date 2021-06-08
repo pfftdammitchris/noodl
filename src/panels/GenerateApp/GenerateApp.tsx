@@ -2,6 +2,8 @@ import { LiteralUnion } from 'type-fest'
 import { DeviceType, Env } from 'noodl-types'
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
+import { MetadataLinkObject } from 'noodl-common'
+import * as com from 'noodl-common'
 import * as u from '@jsmanifest/utils'
 import React from 'react'
 import yaml from 'yaml'
@@ -18,8 +20,6 @@ import {
 	PARSED_APP_CONFIG,
 	ON_RETRIEVED_APP_PAGE,
 } from '../../api/createAggregator'
-import { MetadataLinkObject } from '../../types'
-import * as com from '../../utils/common'
 import * as co from '../../utils/color'
 import * as r from '../../utils/remote'
 import * as t from './types'

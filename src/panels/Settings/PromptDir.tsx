@@ -1,8 +1,8 @@
+import * as com from 'noodl-common'
 import fs from 'fs-extra'
 import React from 'react'
 import TextInput from 'ink-text-input'
 import useSettingsCtx from './useSettingsCtx'
-import { getAbsFilePath } from '../../utils/common'
 import * as co from '../../utils/color'
 import * as c from './constants'
 
@@ -21,7 +21,7 @@ function SettingsPromptDir({ onReady }: SettingsInitProps) {
 
 	const onSubmit = React.useCallback((val: string) => {
 		if (val) {
-			const pathToGenerateDir = getAbsFilePath(val)
+			const pathToGenerateDir = com.getAbsFilePath(val)
 			if (!fs.existsSync(pathToGenerateDir)) {
 				setPrompt({
 					key: c.prompts.ASK_INSTANTIATE_GENERATE_PATH,

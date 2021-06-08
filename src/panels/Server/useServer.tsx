@@ -1,4 +1,6 @@
 import * as u from '@jsmanifest/utils'
+import * as com from 'noodl-common'
+import { MetadataFileObject } from 'noodl-common'
 import React from 'react'
 import yaml from 'yaml'
 import express from 'express'
@@ -8,9 +10,7 @@ import globby from 'globby'
 import useCtx from '../../useCtx'
 import useWss from '../../hooks/useWss'
 import useWatcher from '../../hooks/useWatcher'
-import { MetadataFileObject } from '../../types'
 import * as co from '../../utils/color'
-import * as com from '../../utils/common'
 
 const log = console.log
 

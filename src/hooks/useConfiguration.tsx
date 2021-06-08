@@ -1,14 +1,10 @@
 import { LiteralUnion } from 'type-fest'
 import React from 'react'
 import fs from 'fs-extra'
-import path from 'path'
-import yaml from 'yaml'
+import * as com from 'noodl-common'
 import store from '../store'
 import { Cli } from '../cli'
-import * as com from '../utils/common'
-import * as co from '../utils/color'
 import * as c from '../constants'
-import * as t from '../types'
 
 export interface Options {
 	cli: Cli

@@ -1,25 +1,19 @@
 process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
+import * as com from 'noodl-common'
 import yaml from 'yaml'
-import globby from 'globby'
 import fs from 'fs-extra'
-import path from 'path'
-import {
-	loadFilesAsDocs,
-	loadFileAsDoc,
-	getAbsFilePath,
-} from '../src/utils/common'
 import createAggregator from '../src/api/createAggregator'
 import getActionsSourceFile from './actions'
 import * as co from '../src/utils/color'
 
 const paths = {
-	docs: getAbsFilePath('generated'),
-	assets: getAbsFilePath('data/generated/assets.json'),
-	metadata: getAbsFilePath('data/generated/metadata.json'),
-	typings: getAbsFilePath('data/generated/typings.d.ts'),
-	actionTypes: getAbsFilePath('data/generated/actionTypes.d.ts'),
+	docs: com.getAbsFilePath('generated'),
+	assets: com.getAbsFilePath('data/generated/assets.json'),
+	metadata: com.getAbsFilePath('data/generated/metadata.json'),
+	typings: com.getAbsFilePath('data/generated/typings.d.ts'),
+	actionTypes: com.getAbsFilePath('data/generated/actionTypes.d.ts'),
 }
 
 fs.existsSync(paths.actionTypes) && fs.removeSync(paths.actionTypes)
@@ -100,7 +94,7 @@ function formatFile(src: ts.SourceFile) {
 }
 
 const aggregator = createAggregator('meet4d')
-const docFiles = loadFilesAsDocs({
+const docFiles = com.loadFilesAsDocs({
 	as: 'metadataDocs',
 	dir: paths.docs,
 	recursive: true,

@@ -55,7 +55,7 @@ function Server({
 	React.useEffect(() => {
 		if (valid) {
 			if (!aggregator.configKey || aggregator.configKey === 'latest') {
-				configProp && (aggregator.configKey = configProp)
+				config && (aggregator.configKey = config)
 				aggregator.init({}).finally(() => listen())
 			} else {
 				listen()
