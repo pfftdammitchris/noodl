@@ -1,4 +1,5 @@
 import yaml from 'yaml'
+import upperFirst from 'lodash/upperFirst'
 import * as ts from 'ts-morph'
 import * as u from '@jsmanifest/utils'
 import * as co from '../src/utils/color'
@@ -53,62 +54,81 @@ const getActionsSourceFile = function getActionsSourceFile(
 		],
 	})
 
+	const interfaces = {
+		actionObject: new Map<string, ts.InterfaceDeclaration>(),
+	}
+
+	const createInterfaceName = (s: string) =>
+		`${upperFirst(s)}${suffix.ActionObject}`
+	const getInterfaceName = (s: string) => `${s}${suffix.ActionObject}`
+
+	const _addActionObject = (node: yaml.YAMLMap) => {
+		const actionType = node.get('actionType') as string
+		sourceFile.addInterface({
+			name: `${upperFirst(actionType)}${suffix.ActionObject}`,
+			extends: ['ActionObject'],
+			isExported: true,
+			typeParameters: [{ name: 'T ', default: 'string', constraint: 'string' }],
+		})
+	}
+
 	const o = {
 		get sourceFile() {
 			return sourceFile
 		},
 		getUncommonPropsInterface: () => uncommonPropsInterface,
 		getBaseObjectInterface: () => baseObjectInterface,
-		addAction(actionType: string, node: yaml.YAMLMap | yaml.Pair) {
-			let name = actionType[0]
-				.toUpperCase()
-				.concat(actionType.substring(1) + 'ActionObject')
+		addAction(node: yaml.YAMLMap) {
+			if (yaml.isMap(node)) {
+				const actionType = node.get('actionType') as string
+				let interf = sourceFile.getInterface(getInterfaceName(actionType))
 
-			let actionInterface = sourceFile.getInterface(name)
-			let properties = [] as yaml.Pair[]
+				console.log(getInterfaceName(actionType))
+				console.log(createInterfaceName(actionType))
 
-			if (!actionInterface) {
-				actionInterface = sourceFile.addInterface({
-					name,
-				})
-			}
-
-			if (node.items && node.items.length > 1) {
-				for (const pair of node.items) {
-					if (yaml.isScalar(pair.key) && u.isStr(pair.key.value)) {
-						if (pair.key.value !== 'actionType') {
-							properties.push(pair)
-							if (!actionInterface.getProperty(pair.key.value)) {
-								actionInterface.addProperty({
-									name: pair.key.value,
-									type: 'string',
-								})
-							}
-						}
-					}
+				if (!interf) {
+					interf = sourceFile.addInterface({
+						name: createInterfaceName(actionType),
+					})
 				}
-			}
 
-			return sourceFile.addInterface({
-				name,
-				extends: ['ActionObject'],
-				isExported: true,
-				typeParameters: [
-					{
-						kind: ts.StructureKind.TypeParameter,
-						name: 'T',
-						constraint: actionType,
-					},
-				],
-				properties: [
-					{
-						name: 'actionType',
-						type: 'string',
-						kind: ts.StructureKind.PropertySignature,
-					},
-					{ name: `[key: string]`, type: 'any' },
-				],
-			})
+				if (!interf.hasExportKeyword()) {
+					// interf.setIsExported(true)
+				}
+
+				if (
+					!interf
+						.getExtends()
+						?.some?.((e) => e.getText().includes('ActionObject'))
+				) {
+					// interf.addExtends('ActionObject')
+				}
+
+				// if (!interf.getTypeParameter('T')) {
+				// 	interf.addTypeParameter({
+				// 		name: 'T',
+				// 		default: 'string',
+				// 		constraint: 'string',
+				// 		kind: ts.StructureKind.TypeParameter,
+				// 	})
+				// }
+
+				// if (!interf.getProperty('actionType')) {
+				// 	const property = interf.addProperty({
+				// 		name: 'actionType',
+				// 		type: 'T',
+				// 		kind: ts.StructureKind.PropertySignature,
+				// 	})
+				// }
+
+				// if (!interf.getProperty('[key: string]')) {
+				// 	interf.addProperty({
+				// 		name: '[key: string]',
+				// 		type: 'any',
+				// 		kind: ts.StructureKind.PropertySignature,
+				// 	})
+				// }
+			}
 		},
 	}
 

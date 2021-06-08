@@ -1,15 +1,14 @@
-const childProcess = require('child_process')
-const { Command } = require('commander')
+const execa = require('execa')
+const meow = require('meow')
 
-const program = new Command()
+const cli = meow(``, {
+	flags: {
+		publish: { alias: 'p', type: 'string' },
+		message: { alias: 'm', type: 'string' },
+	},
+})
 
-program
-	.option('-p --publish [pkg]', 'Quickly publish a library')
-	.option('-m --message [message]', 'Commit message')
-
-program.parse(process.argv)
-
-const args = program.opts()
+const { message = 'Update(s) to lib', publish } = cli.flags
 
 ;(async () => {
 	const lib = {
@@ -22,27 +21,24 @@ const args = program.opts()
 		[lib.noodlTypes]: /(nt|types|noodl-types)/i,
 	}
 
-	const libName = regex[lib.noodlActionChain].test(args.publish)
+	const libName = regex[lib.noodlActionChain].test(publish)
 		? lib.noodlActionChain
-		: regex[lib.noodlTypes].test(args.publish)
+		: regex[lib.noodlTypes].test(publish)
 		? lib.noodlTypes
 		: undefined
 
-	if (!libName) {
-		throw new Error(`Invalid lib name`)
-	}
+	if (!libName) throw new Error(`Invalid lib name`)
 
-	const message = args.message || 'Update(s) to lib'
-	const commands = [
-		`lerna exec --scope ${libName} "npm version patch"`,
-		`git add packages/${libName}`,
-		`git commit -m "${message}"`,
-		`lerna exec --scope ${libName} "npm run build && npm publish"`,
-	]
-	const commandString = commands.join(' && ')
-	const shell = childProcess.spawn(commandString, {
-		shell: true,
-		stdio: 'inherit',
-	})
-	return
+	execa.commandSync(
+		[
+			`lerna exec --scope ${libName} "npm version patch"`,
+			`git add packages/${libName}`,
+			`git commit -m "${message}"`,
+			`lerna exec --scope ${libName} "npm run build && npm publish"`,
+		].join(' && '),
+		{
+			shell: true,
+			stdio: 'inherit',
+		},
+	)
 })()
