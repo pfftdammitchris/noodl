@@ -11,7 +11,7 @@
 		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --file src/setupTests.ts --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
 	"dependencies": {
-		"noodl-types": "^1.0.90"
+		"noodl-types": "^1.0.96"
 	},
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
