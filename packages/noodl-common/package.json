@@ -1,6 +1,6 @@
 {
 	"name": "noodl-common",
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"description": "Common NOODL file system utilities",
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
@@ -23,5 +23,13 @@
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
-	"gitHead": "3a5b477fa7ff5b34a63aee5b2b84729f0687459a"
+	"gitHead": "3a5b477fa7ff5b34a63aee5b2b84729f0687459a",
+	"dependencies": {
+		"@jsmanifest/utils": "^1.0.7",
+		"chalk": "^2.4.2",
+		"fs-extra": "^10.0.0",
+		"globby": "^11.0.2",
+		"yaml": "^2.0.0-4"
+	},
+	"devDependencies": {}
 }
