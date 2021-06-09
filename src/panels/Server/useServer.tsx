@@ -11,7 +11,6 @@ import useWatcher from '../../hooks/useWatcher'
 import { MetadataFileObject } from '../../types'
 import * as co from '../../utils/color'
 import * as com from '../../utils/common'
-import useConfigInput from 'hooks/useConfigInput'
 
 const log = console.log
 
@@ -41,7 +40,6 @@ function useServer({
 		[aggregator.configKey, configuration],
 	)
 	const watchGlob = path.join(getDir(), '**/*')
-
 
 	/* -------------------------------------------------------
 		---- WebSocket
@@ -134,11 +132,10 @@ function useServer({
 			}
 			return acc
 		}
-	const localFiles = globby.sync(watchGlob, {extglob:true})
-		console.log(`Local files`,localFiles)
+		const localFiles = globby.sync(watchGlob.replace(/\\/g, '/'))
 		const metadata = u.reduce(localFiles, reducer, { assets: [], yml: [] })
 		return metadata
-	}, [getDir])
+	}, [])
 
 	/* -------------------------------------------------------
 		---- Connect to server
@@ -161,7 +158,6 @@ function useServer({
 	-------------------------------------------------------- */
 	const listen = React.useCallback(() => {
 		const metadata = getLocalFilesAsMetadata()
-		console.log(`listen[metadata]`, metadata)
 		const server = connect()
 		registerRoutes(server, metadata)
 		/* -------------------------------------------------------
@@ -177,10 +173,9 @@ function useServer({
 			enableWss && connectToWss()
 			enableWatch && watch()
 		})
-	}, [connect, enableWss, enableWatch, watch, getServerUrl])
-	/* -------------------------------------------------------
-		---- CREATING THE ROUTES
-	-------------------------------------------------------- */
+	}, [])
+
+	// Create the routes
 	const registerRoutes = React.useCallback(
 		(
 			server: express.Express,
@@ -251,14 +246,13 @@ function useServer({
 		!aggregator.configKey && (aggregator.configKey = cli.flags.config as string)
 	}, [])
 
-
 	return {
 		dir: getDir(),
 		listen,
 		url: getServerUrl(),
 		server,
 		watching,
-		wss
+		wss,
 	}
 }
 

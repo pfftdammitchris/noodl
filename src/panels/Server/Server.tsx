@@ -16,10 +16,17 @@ export interface Props {
 	watch?: boolean
 }
 
-function Server({ config: configProp, host, local, port, watch: enableWatch, wss: enableWss }: Props) {
+function Server({
+	config: configProp,
+	host,
+	local,
+	port,
+	watch: enableWatch,
+	wss: enableWss,
+}: Props) {
 	const { log, toggleSpinner } = useCtx()
 
-	const { config, inputValue, setInputValue, valid, validate, validating, } =
+	const { config, inputValue, setInputValue, valid, validate, validating } =
 		useConfigInput({
 			initialConfig: configProp,
 			onValidateStart() {
@@ -45,13 +52,11 @@ function Server({ config: configProp, host, local, port, watch: enableWatch, wss
 	})
 
 	React.useEffect(() => {
-		if (!valid || server.current) return
-		if (enableWatch && !watching) return
-		if (enableWss && !wss.current) return
-		listen()
-	}, [enableWatch, enableWss, server, valid, watching, wss])
-
-	
+		// if (!valid || server.current) return
+		// if (enableWatch && !watching) return
+		// if (enableWss && !wss.current) return
+		valid && listen()
+	}, [valid])
 
 	if (!config) {
 		return (

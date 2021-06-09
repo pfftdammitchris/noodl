@@ -64,7 +64,6 @@ function useWatcher({
 			return onEvent
 		}
 
-
 		watcher.current = chokidar.watch(watchGlob, {
 			ignoreInitial: true,
 			...watchOptions,
@@ -75,10 +74,11 @@ function useWatcher({
 		onAdd && watcher.current.on('add', onWatchEvent(onAdd))
 		onAddDir && watcher.current.on('addDir', onWatchEvent(onAddDir))
 		onChange && watcher.current.on('change', onWatchEvent(onChange))
-		onError && watcher.current.on('error', (err) => {
-			setWatching(false)
-			onError(err)
-		})
+		onError &&
+			watcher.current.on('error', (err) => {
+				setWatching(false)
+				onError(err)
+			})
 		onReady && watcher.current.on('ready', onReady)
 		onUnlink && watcher.current.on('unlink', onUnlink)
 		onUnlinkDir && watcher.current.on('unlinkDir', onUnlinkDir)

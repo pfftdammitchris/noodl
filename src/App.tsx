@@ -120,7 +120,7 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 				/>
 			) : state.activePanel === 'generateApp' ? (
 				<GenerateApp
-					config={cli.flags.config}
+					config={cli.flags.config as string}
 					configVersion={cli.flags.version}
 					deviceType={cli.flags.device}
 					env={cli.flags.env}

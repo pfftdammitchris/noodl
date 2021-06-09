@@ -75,7 +75,7 @@ export function getFilename(str: string) {
 }
 
 export function getAbsFilePath(...paths: string[]) {
-	return path.normalize(path.resolve(path.join(process.cwd(), ...paths)))
+	return path.resolve(path.join(process.cwd(), ...paths))
 }
 
 export function hasDot(s: string) {

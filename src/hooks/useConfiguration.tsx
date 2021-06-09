@@ -19,26 +19,15 @@ function useConfiguration({ cli, onInit }: Options) {
 	const clear = React.useCallback(store.clear, [])
 	const getAll = React.useCallback(() => store.all, [])
 
-	/** Returns relative path */
 	const getDefaultGenerateDir = React.useCallback(
 		() => com.getAbsFilePath(c.DEFAULT_GENERATE_DIR),
 		[],
 	)
 
-	/** Returns  */
-	const getPathToGenerateDir = React.useCallback(() => {
-		// Temp. backwards compatibility
-		const ymlCfg = fs.readFileSync(com.getAbsFilePath('noodl.yml'), 'utf8')
-		const docCfg = yaml.parseDocument(ymlCfg)
-		if (docCfg.hasIn(['objects', 'yml', 'dir'])) {
-			const dir = docCfg.getIn(['objects', 'yml', 'dir'])
-			if (yaml.isScalar(dir) && dir.value)
-				return com.getAbsFilePath(dir.value as string)
-			else if (yaml.isSeq(dir))
-				return com.getAbsFilePath(dir.toJSON()[0] as string)
-		}
-		return store.get(c.GENERATE_DIR_KEY) || ''
-	}, [])
+	const getPathToGenerateDir = React.useCallback(
+		() => store.get(c.GENERATE_DIR_KEY) || '',
+		[],
+	)
 
 	const setPathToGenerateDir = React.useCallback(
 		(
@@ -59,7 +48,10 @@ function useConfiguration({ cli, onInit }: Options) {
 					fs.ensureDirSync(pathToGenerateDir)
 					opts?.onCreated?.(pathToGenerateDir)
 				} catch (error) {
-					opts?.onError?.({ error, path: pathToGenerateDir })
+					opts?.onError?.({
+						error: error as Error & { code: string },
+						path: pathToGenerateDir,
+					})
 				}
 			}
 			return pathToGenerateDir
