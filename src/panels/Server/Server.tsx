@@ -1,8 +1,7 @@
 import React from 'react'
-import * as u from '@jsmanifest/utils'
 import { Box, Newline, Text } from 'ink'
 import TextInput from 'ink-text-input'
-import useConfigInput from '../../hooks/useConfigInput'
+import * as co from '../../utils/color'
 import useCtx from '../../useCtx'
 import useServer from './useServer'
 
@@ -17,7 +16,7 @@ export interface Props {
 }
 
 function Server({
-	config: configProp,
+	config: consumerConfigValue,
 	host,
 	local,
 	port,
@@ -25,25 +24,18 @@ function Server({
 	wss,
 	wssPort,
 }: Props) {
-	const { aggregator, log, toggleSpinner } = useCtx()
-	const { config, inputValue, setInputValue, valid, validate, validating } =
-		useConfigInput({
-			initialConfig: configProp,
-			onValidateStart() {
-				toggleSpinner()
-			},
-			onValidateEnd() {
-				toggleSpinner(false)
-			},
-			onNotFound(configKey) {
-				log(u.red(`The config "${configKey}" does not exist`))
-			},
-			onError(error) {
-				log(`[${u.red(error.name)}] ${u.yellow(error.message)}`)
-			},
-		})
-
-	const { listen } = useServer({
+	const { aggregator, log } = useCtx()
+	const {
+		status,
+		config,
+		configInput,
+		listen,
+		setConfigInputValue,
+		valid,
+		validating,
+		validate,
+	} = useServer({
+		consumerConfigValue,
 		host,
 		local: !!local,
 		port,
@@ -51,17 +43,6 @@ function Server({
 		wss: !!wss,
 		wssPort,
 	})
-
-	React.useEffect(() => {
-		if (valid) {
-			if (!aggregator.configKey || aggregator.configKey === 'latest') {
-				config && (aggregator.configKey = config)
-				aggregator.init({}).finally(() => listen())
-			} else {
-				listen()
-			}
-		}
-	}, [valid])
 
 	if (!config) {
 		return (
@@ -79,8 +60,8 @@ function Server({
 						</Text>
 						<Newline />
 						<TextInput
-							value={inputValue}
-							onChange={setInputValue}
+							value={configInput}
+							onChange={setConfigInputValue}
 							onSubmit={validate}
 							placeholder={`Enter config`}
 						/>

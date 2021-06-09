@@ -37,6 +37,7 @@ function useConfigInput({
 	)
 
 	const validate = React.useCallback(async (configKey: string) => {
+		let isValid = false
 		if (configKey) {
 			onValidateStart?.(configKey)
 			setState((draft) => {
@@ -46,6 +47,7 @@ function useConfigInput({
 			setInputValue('')
 			const exists = await configExists(configKey)
 			if (exists === true) {
+				isValid = true
 				setState((draft) => {
 					draft.config = configKey
 					draft.valid = true
@@ -62,6 +64,7 @@ function useConfigInput({
 			}
 			onValidateEnd?.(configKey)
 		}
+		return isValid
 	}, [])
 
 	React.useEffect(() => {

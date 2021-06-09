@@ -24,7 +24,10 @@ export interface Options {
 	onAddDir?(args: Parameters<onAddOrChangeFn>[0]): void
 	onChange?(args: Parameters<onAddOrChangeFn>[0]): void
 	onError?(err: Error): void
-	onReady?(): void
+	onReady?(
+		watchedFiles: { [directory: string]: string[] } | undefined,
+		watchCount: number,
+	): void
 	onUnlink?(filepath: string): void
 	onUnlinkDir?(filepath: string): void
 }
@@ -75,7 +78,18 @@ function useWatcher({
 		onAddDir && watcher.current.on('addDir', onWatchEvent(onAddDir))
 		onChange && watcher.current.on('change', onWatchEvent(onChange))
 		onError && watcher.current.on('error', onError)
-		onReady && watcher.current.on('ready', onReady)
+		onReady &&
+			watcher.current.on('ready', () => {
+				const watchedFiles = watcher.current?.getWatched()
+				const watchCount = watchedFiles
+					? u.reduce(
+							u.values(watchedFiles),
+							(count, files) => (count += files.length || 0),
+							0,
+					  )
+					: 0
+				onReady?.(watchedFiles, watchCount)
+			})
 		onUnlink && watcher.current.on('unlink', onUnlink)
 		onUnlinkDir && watcher.current.on('unlinkDir', onUnlinkDir)
 	}, [])

@@ -21,18 +21,7 @@ function useConfiguration({ cli, onInit }: Options) {
 		[],
 	)
 
-	/** Returns  */
 	const getPathToGenerateDir = React.useCallback(() => {
-		// Temp. backwards compatibility
-		// const ymlCfg = fs.readFileSync(com.getAbsFilePath('noodl.yml'), 'utf8')
-		// const docCfg = yaml.parseDocument(ymlCfg)
-		// if (docCfg.hasIn(['objects', 'yml', 'dir'])) {
-		// 	const dir = docCfg.getIn(['objects', 'yml', 'dir'])
-		// 	if (yaml.isScalar(dir) && dir.value)
-		// 		return com.getAbsFilePath(dir.value as string)
-		// 	else if (yaml.isSeq(dir))
-		// 		return com.getAbsFilePath(dir.toJSON()[0] as string)
-		// }
 		return store.get(c.GENERATE_DIR_KEY) || ''
 	}, [])
 
@@ -70,6 +59,11 @@ function useConfiguration({ cli, onInit }: Options) {
 		return store.get('timestamp')
 	}, [])
 
+	const getLastUsedConfigKey = React.useCallback(
+		(): string | undefined => store.get('configKey'),
+		[],
+	)
+
 	const refreshLastUpdatedTimestamp = React.useCallback(() => {
 		store.set('lastUpdated', new Date().toISOString())
 		return store.get('lastUpdated')
@@ -83,6 +77,7 @@ function useConfiguration({ cli, onInit }: Options) {
 		clear,
 		getAll,
 		getDefaultGenerateDir,
+		getLastUsedConfigKey,
 		getPathToGenerateDir,
 		initTimestamp,
 		isFresh,

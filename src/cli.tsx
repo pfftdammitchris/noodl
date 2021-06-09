@@ -10,6 +10,7 @@ import {
 	DEFAULT_WSS_PORT,
 } from './constants'
 import * as co from './utils/color'
+import store from './store'
 
 const pkg = require('../package.json')
 
@@ -50,7 +51,11 @@ const cli = meow(
 `,
 	{
 		flags: {
-			config: { type: 'string', alias: 'c' },
+			config: {
+				type: 'string',
+				alias: 'c',
+				default: store.get('configKey') || '',
+			},
 			device: { type: 'string', default: 'web' },
 			env: { type: 'string', alias: 'e', default: 'test' },
 			fetch: { type: 'boolean', alias: 'f' },
@@ -59,7 +64,7 @@ const cli = meow(
 			host: { alias: 'h', type: 'string', default: DEFAULT_SERVER_HOSTNAME },
 			local: { type: 'boolean', default: false },
 			port: { type: 'number', alias: 'p', default: DEFAULT_SERVER_PORT },
-			server: { type: 'boolean' },
+			server: {},
 			start: { type: 'string' },
 			script: { type: 'string', alias: 's' },
 			version: { type: 'string', alias: 'v', default: 'latest' },
@@ -72,5 +77,7 @@ const cli = meow(
 		pkg,
 	},
 )
+
+console.log(cli.input)
 
 render(<App cli={cli} />)

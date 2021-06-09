@@ -1,6 +1,8 @@
 import * as u from '@jsmanifest/utils'
 import * as com from 'noodl-common'
+import merge from 'lodash/merge'
 import { MetadataFileObject } from 'noodl-common'
+import produce, { Draft } from 'immer'
 import React from 'react'
 import yaml from 'yaml'
 import express from 'express'
@@ -8,13 +10,13 @@ import path from 'path'
 import fs from 'fs-extra'
 import globby from 'globby'
 import useCtx from '../../useCtx'
+import useConfigInput from '../../hooks/useConfigInput'
 import useWss from '../../hooks/useWss'
 import useWatcher from '../../hooks/useWatcher'
 import * as co from '../../utils/color'
 
-const log = console.log
-
 interface Options {
+	consumerConfigValue?: string
 	host?: string
 	local?: boolean
 	port?: number
@@ -23,7 +25,18 @@ interface Options {
 	wssPort?: number
 }
 
+const initialState = {
+	status: {
+		rootConfig: {
+			remote: null as null | boolean,
+			loading: false,
+			loaded: false,
+		},
+	},
+}
+
 function useServer({
+	consumerConfigValue,
 	host = 'localhost',
 	local = false,
 	port = 3001,
@@ -31,8 +44,56 @@ function useServer({
 	wss: enableWss = false,
 	wssPort,
 }: Options) {
+	const [state, _setState] = React.useState(initialState)
 	const server = React.useRef<express.Express | null>(null)
-	const { aggregator, configuration } = useCtx()
+	const { aggregator, configuration, log, toggleSpinner } = useCtx()
+
+	/* -------------------------------------------------------
+		---- Config Input
+	-------------------------------------------------------- */
+	const {
+		config,
+		inputValue: configInput,
+		setInputValue: setConfigInputValue,
+		valid,
+		validate,
+		validating,
+	} = useConfigInput({
+		initialConfig: consumerConfigValue,
+		onExists(configKey) {
+			if (aggregator.configKey !== configKey) {
+				aggregator.configKey = configKey
+				aggregator.init({}).finally(() => listen())
+			} else {
+				listen()
+			}
+		},
+		onValidateStart() {
+			toggleSpinner()
+		},
+		onValidateEnd() {
+			toggleSpinner(false)
+		},
+		onNotFound(configKey) {
+			log(u.red(`The config "${configKey}" does not exist`))
+		},
+		onError(error) {
+			log(`[${u.red(error.name)}] ${u.yellow(error.message)}`)
+		},
+	})
+
+	const setState = React.useCallback(
+		(
+			fn: (
+				draft: Draft<typeof initialState> | Partial<typeof initialState>,
+			) => void,
+		) => {
+			_setState(
+				produce((draft) => void (u.isFnc(fn) ? fn(draft) : merge(draft, fn))),
+			)
+		},
+		[],
+	)
 
 	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
 	const getDir = (...s: string[]) =>
@@ -49,7 +110,7 @@ function useServer({
 		host,
 		onConnection(socket) {
 			u.newline()
-			socket.on('message', (message) => log('Received: %s', message))
+			socket.on('message', (message) => log(`Received: ${message}`))
 		},
 		onClose() {
 			log(co.white(`WebSocket server has closed`))
@@ -72,8 +133,12 @@ function useServer({
 	} = useWatcher({
 		watchGlob: path.join(getDir(), '**/*'),
 		watchOptions: { followSymlinks: true },
-		onReady() {
-			u.log(`${watchTag} Watching for file changes at ${co.magenta(getDir())}`)
+		onReady(watchedFiles, watchCount) {
+			log(
+				`${watchTag} Watching ${co.yellow(
+					watchCount,
+				)} files for changes at ${co.magenta(getDir())}`,
+			)
 			sendMessage({ type: 'WATCHING' })
 		},
 		onAdd(args) {
@@ -155,7 +220,7 @@ function useServer({
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
 			(req, res) => res.sendFile(getDir('cadlEndpoint.yml')),
 		)
-	}, [getDir])
+	}, [])
 
 	/* -------------------------------------------------------
 		---- Start listening on the server
@@ -165,7 +230,7 @@ function useServer({
 		connect()
 		registerRoutes(metadata)
 		/* -------------------------------------------------------
-			---- START SERVER
+			---- Start server
 		-------------------------------------------------------- */
 		server.current?.listen({ cors: { origin: '*' }, port }, () => {
 			const msg = `\n🚀 Server ready at ${co.cyan(getServerUrl())} ${
@@ -179,7 +244,7 @@ function useServer({
 		})
 	}, [])
 	/* -------------------------------------------------------
-		---- CREATING THE ROUTES
+		---- Creating the routes
 	-------------------------------------------------------- */
 	const registerRoutes = React.useCallback(
 		(metadata: Partial<ReturnType<typeof getLocalFilesAsMetadata>>) => {
@@ -250,10 +315,44 @@ function useServer({
 		[aggregator.configKey],
 	)
 
+	// React.useEffect(() => {
+	// 	const loadConfig = async () => {
+	// 		try {
+	// 			const updatedState = {} as typeof initialState
+
+	// 			if (state.status.rootConfig.remote === null) {
+	// 				log(`Checking locally for ${config}.yml`)
+	// 				const localConfigFilePath = getDir(`${config}.yml`)
+	// 				const isRemote = fs.existsSync(localConfigFilePath)
+
+	// 				updatedState.status.rootConfig.remote = isRemote
+
+	// 				if (isRemote) {
+	// 					log(`Found ${co.yellow(localConfigFilePath)}`)
+	// 					const configObject = fs.readJsonSync(getDir(config))
+	// 					console.log(`${config} config`, configObject)
+	// 				} else {
+	// 					log(`Retrieving ${co.yellow(config)}.yml remotely`)
+	// 				}
+	// 			}
+	// 		} catch (error) {
+	// 			console.error(error)
+	// 		}
+	// 	}
+
+	// 	valid && loadConfig()
+	// }, [state, valid])
+
 	return {
+		...state,
+		config,
+		configInput,
 		dir: getDir(),
 		listen,
-		registerRoutes,
+		setConfigInputValue,
+		valid,
+		validate,
+		validating,
 		url: getServerUrl(),
 	}
 }

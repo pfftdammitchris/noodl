@@ -223,6 +223,7 @@ const createAggregator = function (options?: string | t.Options) {
 		},
 		set configKey(config: string) {
 			configKey = config
+			emit(c.ON_SET_CONFIG_KEY, config)
 		},
 		get configVersion() {
 			return configVersion || ''

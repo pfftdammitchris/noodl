@@ -35,4 +35,4 @@ export interface Options {
 export type Root = Map<
 	LiteralUnion<'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage', string>,
 	yaml.Node | yaml.Document
->
+> & { toJSON(): Record<string, any> }

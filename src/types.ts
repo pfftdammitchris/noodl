@@ -2,11 +2,13 @@ import { Draft } from 'immer'
 import { Cli } from './cli'
 import { initialState as initialAppState } from './App'
 import useConfiguration from './hooks/useConfiguration'
-import createAggregator from './api/createAggregator'
+import Aggregator from './api/Aggregator'
+// import createAggregator from './api/createAggregator'
 
 export namespace App {
 	export interface Context extends State {
-		aggregator: ReturnType<typeof createAggregator>
+		aggregator: Aggregator
+		// aggregator: ReturnType<typeof createAggregator>
 		cli: Cli
 		configuration: ReturnType<typeof useConfiguration>
 		exit: (error?: Error | undefined) => void
