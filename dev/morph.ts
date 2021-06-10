@@ -2,10 +2,12 @@ process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
 import * as com from 'noodl-common'
+import prettier from 'prettier'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import createAggregator from '../src/api/createAggregator'
 import getActionsSourceFile from './actions'
+import pkg from '../package.json'
 import * as co from '../src/utils/color'
 
 const paths = {
@@ -46,7 +48,9 @@ const program = new ts.Project({
 	// useInMemoryFileSystem: true,
 })
 
-const sourceFile = program.createSourceFile(paths.typings)
+const sourceFile = program.createSourceFile(paths.typings, undefined, {
+	overwrite: true,
+})
 const actions = getActionsSourceFile(program, paths.actionTypes)
 
 // const actionInterface = sourceFile.addInterface({
@@ -90,7 +94,10 @@ function formatFile(src: ts.SourceFile) {
 		tabSize: 2,
 		trimTrailingWhitespace: true,
 	})
-	return src
+	return prettier.format(src.getText(), {
+		...pkg.prettier,
+		parser: 'typescript',
+	} as prettier.Options)
 }
 
 const aggregator = createAggregator('meet4d')
@@ -120,7 +127,7 @@ Promise.resolve()
 				},
 				Map(key, node, path) {
 					if (node.has('actionType')) {
-						actions.addAction(node)
+						return actions.addAction(node)
 					}
 				},
 				Seq(key, node, path) {},
@@ -130,6 +137,54 @@ Promise.resolve()
 		}
 	})
 	.then(() => {
+		for (const [key, metadata] of actions.metadata.properties) {
+			console.log(key, metadata.value)
+		}
+
+		for (const interf of actions.sourceFile.getInterfaces()) {
+			const members = interf.getMembers()
+			for (const member of members) {
+				if (member.getText().replace(';', '') === `[key: string]: any`) {
+					member.setOrder(members.length - 1)
+				}
+			}
+
+			for (const property of interf.getProperties()) {
+				const name = property.getName()
+				const typeValues = []
+				if (name !== 'actionType') {
+					if (actions.metadata.properties.has(name)) {
+						const metadata = actions.metadata.properties.get(name)
+						if (u.isObj(metadata.value)) {
+							const propertyNode = property.getTypeNode()
+							const propertyValue = propertyNode.getText()
+
+							for (const [key, val] of u.entries(metadata.value)) {
+								if (val) {
+									if (!propertyValue.includes(key)) {
+										typeValues.push(key)
+									}
+								}
+							}
+						}
+					}
+					if (typeValues.length) {
+						property.remove()
+						interf.insertProperty(interf.getMembers().length - 1, {
+							name,
+							type: typeValues.reduce((acc, val) => {
+								if (val == 'array') acc += `| any[]`
+								else if (val == 'function') acc += `| ((...args: any[]) => any)`
+								else if (val == 'object') acc += `| Record<string, any>`
+								else acc += `| ${val}`
+								return acc
+							}, ''),
+						})
+					}
+				}
+			}
+		}
+
 		// sourceFile.addInterface({
 		// 	name: 'ActionTypes',
 		// 	isExported: true,
@@ -139,7 +194,8 @@ Promise.resolve()
 		// 	})),
 		// })
 	})
-	.then(() => formatFile(actions.sourceFile).save())
+	.then(() => formatFile(actions.sourceFile))
+	.then((srcCode) => fs.writeFile(sourceFile.getFilePath(), srcCode, 'utf8'))
 	.then(() => u.log('\n' + co.green(`DONE`) + '\n'))
 	.catch((err) => {
 		throw err
