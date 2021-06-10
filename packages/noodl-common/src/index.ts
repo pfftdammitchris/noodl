@@ -140,9 +140,9 @@ export function getFilename(str: string) {
 }
 
 export function getAbsFilePath(...paths: string[]) {
-	const filepath = path.join(...paths)
+	const filepath = normalizePath(...paths)
 	if (path.isAbsolute(filepath)) return filepath
-	return path.resolve(path.join(process.cwd(), ...paths))
+	return path.resolve(normalizePath(process.cwd(), ...paths))
 }
 
 export function hasDot(s: string) {
@@ -218,7 +218,7 @@ export function loadFilesAsDocs({
 	const xform =
 		as === 'metadataDocs'
 			? (obj: any) => ({
-					doc: loadFileAsDoc(obj.path),
+					doc: loadFileAsDoc(normalizePath(obj.path)),
 					name: includeExt
 						? obj.name
 						: obj.name.includes('.')
@@ -226,7 +226,7 @@ export function loadFilesAsDocs({
 						: obj.name,
 			  })
 			: (fpath: string) => loadFileAsDoc(fpath)
-	return globbySync(path.join(dir, recursive ? '**/*.yml' : '*.yml'), {
+	return globbySync(normalizePath(dir, recursive ? '**/*.yml' : '*.yml'), {
 		objectMode: as === 'metadataDocs',
 		onlyFiles: true,
 	}).map((fpath) => xform(fpath))
@@ -258,6 +258,11 @@ export function isJs(s: string = '') {
 
 export function isHtml(s: string = '') {
 	return s.endsWith('.html')
+}
+
+// Normalizes the path (compatible with win). Useful for globs to work expectedly
+export function normalizePath(...s: string[]) {
+	return (s.length > 1 ? path.join(...s) : s[0]).replace(/\\/g, '/')
 }
 
 /**

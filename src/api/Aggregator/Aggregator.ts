@@ -54,7 +54,7 @@ class NoodlAggregator {
 		this.root = new Map([['Global', new yaml.YAMLMap()]]) as t.Root
 
 		Object.defineProperty(this.root, 'toJSON', {
-			value: function () {
+			value: () => {
 				const result = {}
 				for (const [name, doc] of this.root) {
 					yaml.isDocument(doc) && (result[name] = doc.toJSON())
@@ -279,21 +279,26 @@ class NoodlAggregator {
 				return this.root.get(name || '')
 			}
 		} catch (error) {
-			if (error.response?.status === 404) {
-				console.log(
-					`[${chalk.red(error.name)}]: Could not find page ${co.red(
-						name || '',
-					)}`,
-				)
-				this.emit(c.ON_APP_PAGE_DOESNT_EXIST, { name: name as string, error })
-			} else {
-				console.log(
-					`[${chalk.yellow(error.name)}] on page ${co.red(name || '')}: ${
-						error.message
-					}`,
-				)
+			if (error instanceof Error) {
+				if ((error as any).response?.status === 404) {
+					console.log(
+						`[${chalk.red(error.name)}]: Could not find page ${co.red(
+							name || '',
+						)}`,
+					)
+					this.emit(c.ON_APP_PAGE_DOESNT_EXIST, { name: name as string, error })
+				} else {
+					console.log(
+						`[${chalk.yellow(error.name)}] on page ${co.red(name || '')}: ${
+							error.message
+						}`,
+					)
+				}
+				this.emit(c.ON_RETRIEVE_APP_PAGE_FAILED, {
+					name: name as string,
+					error,
+				})
 			}
-			this.emit(c.ON_RETRIEVE_APP_PAGE_FAILED, { name: name as string, error })
 		}
 	}
 
