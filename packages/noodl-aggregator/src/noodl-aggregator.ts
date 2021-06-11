@@ -10,7 +10,7 @@ import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
-import chunk from 'lodash/chunk'
+import chunk from 'lodash.chunk'
 import * as c from './constants'
 import * as t from './types'
 
