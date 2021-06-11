@@ -2,7 +2,8 @@ import yaml from 'yaml'
 import upperFirst from 'lodash/upperFirst'
 import * as ts from 'ts-morph'
 import * as u from '@jsmanifest/utils'
-import * as co from '../src/utils/color'
+import * as co from '../../src/utils/color'
+import { isSerializableStr } from './utils'
 
 type MetadataObject = ReturnType<typeof createMetadataObject>
 
@@ -36,7 +37,7 @@ const createMetadataObject = () => {
 	return o
 }
 
-const getActionsSourceFile = function getActionsSourceFile(
+const getCommponentsSourceFile = function getCommponentsSourceFile(
 	program: ts.Project,
 	filepath: string,
 ) {
@@ -45,18 +46,18 @@ const getActionsSourceFile = function getActionsSourceFile(
 	}
 
 	const suffix = {
-		ActionObject: 'ActionObject',
+		ComponentObject: 'ComponentObject',
 	}
 
 	const sourceFile = program.createSourceFile(filepath)
 
 	const uncommonPropsInterface = sourceFile.addInterface({
-		name: 'UncommonActionObjectProps',
+		name: 'uncommonComponentObjectProps',
 		isExported: true,
 	})
 
 	const baseObjectInterface = sourceFile.addInterface({
-		name: 'ActionObject',
+		name: 'ComponentObject',
 		isExported: true,
 		typeParameters: [
 			{
@@ -68,7 +69,7 @@ const getActionsSourceFile = function getActionsSourceFile(
 		],
 		properties: [
 			{
-				name: 'actionType',
+				name: 'type',
 				type: 'T',
 				kind: ts.StructureKind.PropertySignature,
 			},
@@ -83,7 +84,7 @@ const getActionsSourceFile = function getActionsSourceFile(
 	})
 
 	const getInterfaceName = (s: string) =>
-		`${upperFirst(s)}${suffix.ActionObject}`
+		`${upperFirst(s)}${suffix.ComponentObject}`
 
 	function createIsExtending(value: string) {
 		const isExtending = (interf: ts.InterfaceDeclaration) =>
@@ -91,7 +92,7 @@ const getActionsSourceFile = function getActionsSourceFile(
 		return isExtending
 	}
 
-	const isExtendingActionObject = createIsExtending('ActionObject')
+	const isExtendingActionObject = createIsExtending('ComponentObject')
 
 	const o = {
 		get metadata() {
@@ -102,21 +103,21 @@ const getActionsSourceFile = function getActionsSourceFile(
 		},
 		getUncommonPropsInterface: () => uncommonPropsInterface,
 		getBaseObjectInterface: () => baseObjectInterface,
-		addAction(node: yaml.YAMLMap) {
+		addComponent(node: yaml.YAMLMap) {
 			if (yaml.isMap(node)) {
-				const actionType = node.get('actionType') as string
-				let interf = sourceFile.getInterface(getInterfaceName(actionType))
+				const type = node.get('type') as string
+				let interf = sourceFile.getInterface(getInterfaceName(type))
 
 				if (!interf) {
 					interf = sourceFile.addInterface({
-						name: getInterfaceName(actionType),
+						name: getInterfaceName(type),
 					})
 				}
 
 				!interf.hasExportKeyword() && interf.setIsExported(true)
 
 				if (!isExtendingActionObject(interf)) {
-					interf.addExtends(`ActionObject`)
+					interf.addExtends(`ComponentObject`)
 				}
 
 				const members = interf.getMembers()
@@ -139,21 +140,28 @@ const getActionsSourceFile = function getActionsSourceFile(
 					if (yaml.isScalar(pair.key)) {
 						const key = pair.key.value as string
 
+						if (key === 'text=func') {
+							//
+						}
+
 						if (!interf.getProperty(key)) {
+							if (key === 'text=func') {
+								console.log(pair.toJSON())
+							}
 							if (yaml.isScalar(pair.value)) {
-								const type =
-									key === 'actionType'
-										? `'${actionType}'`
+								const componentType =
+									key === 'type'
+										? `'${type}'`
 										: key === 'object'
 										? referenceType.getName()
 										: 'string'
 
 								interf.addMember({
-									name: key,
-									hasQuestionToken: key !== 'actionType',
+									name: key === 'text=func' ? `'text=func'` : key,
+									hasQuestionToken: key !== 'type',
 									isReadonly: false,
 									kind: ts.StructureKind.PropertySignature,
-									type,
+									type: componentType,
 								})
 							}
 						}
@@ -197,4 +205,4 @@ const getActionsSourceFile = function getActionsSourceFile(
 	return o
 }
 
-export default getActionsSourceFile
+export default getCommponentsSourceFile

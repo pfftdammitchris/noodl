@@ -2,7 +2,7 @@ import yaml from 'yaml'
 import upperFirst from 'lodash/upperFirst'
 import * as ts from 'ts-morph'
 import * as u from '@jsmanifest/utils'
-import * as co from '../src/utils/color'
+import * as co from '../../src/utils/color'
 
 type MetadataObject = ReturnType<typeof createMetadataObject>
 
@@ -36,7 +36,7 @@ const createMetadataObject = () => {
 	return o
 }
 
-const getCommponentsSourceFile = function getCommponentsSourceFile(
+const getActionsSourceFile = function getActionsSourceFile(
 	program: ts.Project,
 	filepath: string,
 ) {
@@ -45,18 +45,18 @@ const getCommponentsSourceFile = function getCommponentsSourceFile(
 	}
 
 	const suffix = {
-		ComponentObject: 'ComponentObject',
+		ActionObject: 'ActionObject',
 	}
 
 	const sourceFile = program.createSourceFile(filepath)
 
 	const uncommonPropsInterface = sourceFile.addInterface({
-		name: 'uncommonComponentObjectProps',
+		name: 'UncommonActionObjectProps',
 		isExported: true,
 	})
 
 	const baseObjectInterface = sourceFile.addInterface({
-		name: 'ComponentObject',
+		name: 'ActionObject',
 		isExported: true,
 		typeParameters: [
 			{
@@ -68,7 +68,7 @@ const getCommponentsSourceFile = function getCommponentsSourceFile(
 		],
 		properties: [
 			{
-				name: 'type',
+				name: 'actionType',
 				type: 'T',
 				kind: ts.StructureKind.PropertySignature,
 			},
@@ -83,7 +83,7 @@ const getCommponentsSourceFile = function getCommponentsSourceFile(
 	})
 
 	const getInterfaceName = (s: string) =>
-		`${upperFirst(s)}${suffix.ComponentObject}`
+		`${upperFirst(s)}${suffix.ActionObject}`
 
 	function createIsExtending(value: string) {
 		const isExtending = (interf: ts.InterfaceDeclaration) =>
@@ -91,7 +91,7 @@ const getCommponentsSourceFile = function getCommponentsSourceFile(
 		return isExtending
 	}
 
-	const isExtendingActionObject = createIsExtending('ComponentObject')
+	const isExtendingActionObject = createIsExtending('ActionObject')
 
 	const o = {
 		get metadata() {
@@ -102,21 +102,21 @@ const getCommponentsSourceFile = function getCommponentsSourceFile(
 		},
 		getUncommonPropsInterface: () => uncommonPropsInterface,
 		getBaseObjectInterface: () => baseObjectInterface,
-		addComponent(node: yaml.YAMLMap) {
+		addAction(node: yaml.YAMLMap) {
 			if (yaml.isMap(node)) {
-				const type = node.get('type') as string
-				let interf = sourceFile.getInterface(getInterfaceName(type))
+				const actionType = node.get('actionType') as string
+				let interf = sourceFile.getInterface(getInterfaceName(actionType))
 
 				if (!interf) {
 					interf = sourceFile.addInterface({
-						name: getInterfaceName(type),
+						name: getInterfaceName(actionType),
 					})
 				}
 
 				!interf.hasExportKeyword() && interf.setIsExported(true)
 
 				if (!isExtendingActionObject(interf)) {
-					interf.addExtends(`ComponentObject`)
+					interf.addExtends(`ActionObject`)
 				}
 
 				const members = interf.getMembers()
@@ -141,19 +141,19 @@ const getCommponentsSourceFile = function getCommponentsSourceFile(
 
 						if (!interf.getProperty(key)) {
 							if (yaml.isScalar(pair.value)) {
-								const componentType =
-									key === 'type'
-										? `'${type}'`
+								const type =
+									key === 'actionType'
+										? `'${actionType}'`
 										: key === 'object'
 										? referenceType.getName()
 										: 'string'
 
 								interf.addMember({
 									name: key,
-									hasQuestionToken: key !== 'type',
+									hasQuestionToken: key !== 'actionType',
 									isReadonly: false,
 									kind: ts.StructureKind.PropertySignature,
-									type: componentType,
+									type,
 								})
 							}
 						}
@@ -197,4 +197,4 @@ const getCommponentsSourceFile = function getCommponentsSourceFile(
 	return o
 }
 
-export default getCommponentsSourceFile
+export default getActionsSourceFile

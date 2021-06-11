@@ -6,8 +6,8 @@ import prettier from 'prettier'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import Aggregator from '../src/api/Aggregator'
-import getActionsSourceFile from './actions'
-import getComponentsSourceFile from './components'
+// import getActionsSourceFile from './actions'
+import getComponentsSourceFile from './Generator/components'
 import pkg from '../package.json'
 import * as co from '../src/utils/color'
 
@@ -59,7 +59,7 @@ const sourceFile = program.createSourceFile(paths.typings, undefined, {
 	overwrite: true,
 })
 
-const actions = getActionsSourceFile(program, paths.actionTypes)
+// const actions = getActionsSourceFile(program, paths.actionTypes)
 const components = getComponentsSourceFile(program, paths.componentTypes)
 
 // const actionInterface = sourceFile.addInterface({
@@ -137,7 +137,7 @@ Promise.resolve()
 				},
 				Map(key, node, path) {
 					if (node.has('actionType')) {
-						return actions.addAction(node)
+						// return actions.addAction(node)
 					}
 
 					if (node.has('type') && (node.has('children') || node.has('style'))) {
@@ -152,49 +152,49 @@ Promise.resolve()
 	})
 	.then(() => {
 		// Action typings
-		for (const interf of actions.sourceFile.getInterfaces()) {
-			const members = interf.getMembers()
-			for (const member of members) {
-				if (member.getText().replace(';', '') === `[key: string]: any`) {
-					member.setOrder(members.length - 1)
-				}
-			}
+		// for (const interf of actions.sourceFile.getInterfaces()) {
+		// 	const members = interf.getMembers()
+		// 	for (const member of members) {
+		// 		if (member.getText().replace(';', '') === `[key: string]: any`) {
+		// 			member.setOrder(members.length - 1)
+		// 		}
+		// 	}
 
-			for (const property of interf.getProperties()) {
-				const name = property.getName()
-				const typeValues = []
-				if (name !== 'actionType') {
-					if (actions.metadata.properties.has(name)) {
-						const metadata = actions.metadata.properties.get(name)
-						if (u.isObj(metadata.value)) {
-							const propertyNode = property.getTypeNode()
-							const propertyValue = propertyNode.getText()
+		// 	for (const property of interf.getProperties()) {
+		// 		const name = property.getName()
+		// 		const typeValues = []
+		// 		if (name !== 'actionType') {
+		// 			if (actions.metadata.properties.has(name)) {
+		// 				const metadata = actions.metadata.properties.get(name)
+		// 				if (u.isObj(metadata.value)) {
+		// 					const propertyNode = property.getTypeNode()
+		// 					const propertyValue = propertyNode.getText()
 
-							for (const [key, val] of u.entries(metadata.value)) {
-								if (val) {
-									if (!propertyValue.includes(key)) {
-										typeValues.push(key)
-									}
-								}
-							}
-						}
-					}
-					if (typeValues.length) {
-						property.remove()
-						interf.insertProperty(interf.getMembers().length - 1, {
-							name,
-							type: typeValues.reduce((acc, val) => {
-								if (val == 'array') acc += `| any[]`
-								else if (val == 'function') acc += `| ((...args: any[]) => any)`
-								else if (val == 'object') acc += `| Record<string, any>`
-								else acc += `| ${val}`
-								return acc
-							}, ''),
-						})
-					}
-				}
-			}
-		}
+		// 					for (const [key, val] of u.entries(metadata.value)) {
+		// 						if (val) {
+		// 							if (!propertyValue.includes(key)) {
+		// 								typeValues.push(key)
+		// 							}
+		// 						}
+		// 					}
+		// 				}
+		// 			}
+		// 			if (typeValues.length) {
+		// 				property.remove()
+		// 				interf.insertProperty(interf.getMembers().length - 1, {
+		// 					name,
+		// 					type: typeValues.reduce((acc, val) => {
+		// 						if (val == 'array') acc += `| any[]`
+		// 						else if (val == 'function') acc += `| ((...args: any[]) => any)`
+		// 						else if (val == 'object') acc += `| Record<string, any>`
+		// 						else acc += `| ${val}`
+		// 						return acc
+		// 					}, ''),
+		// 				})
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		// Component typings
 		for (const interf of components.sourceFile.getInterfaces()) {
@@ -209,6 +209,11 @@ Promise.resolve()
 				const name = property.getName()
 				const typeValues = []
 				if (name !== 'type') {
+					if (name.includes('text=func')) {
+						console.log(name)
+						console.log(name)
+						console.log(name)
+					}
 					if (components.metadata.properties.has(name)) {
 						const metadata = components.metadata.properties.get(name)
 						if (u.isObj(metadata.value)) {
