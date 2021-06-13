@@ -1,33 +1,63 @@
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
-import * as com from 'noodl-common'
-import Aggregator from 'noodl-aggregator'
-import prettier from 'prettier'
 import yaml from 'yaml'
-import fs from 'fs-extra'
-import actions from './actions'
-import components from './components'
+import ActionTypings from './ActionTypings'
 import * as util from './utils'
 
-const paths = {
-	docs: com.getAbsFilePath('generated'),
-	assets: com.getAbsFilePath('data/generated/assets.json'),
-	metadata: com.getAbsFilePath('data/generated/metadata.json'),
-	typings: com.getAbsFilePath('data/generated/typings.d.ts'),
-	actionTypes: com.getAbsFilePath('data/generated/actionTypes.d.ts'),
-	componentTypes: com.getAbsFilePath('data/generated/componentTypes.d.ts'),
-}
-
-for (const [key, filepath] of u.entries(paths)) {
-	paths[key] = com.normalizePath(filepath)
-}
-
-fs.existsSync(paths.actionTypes) && fs.removeSync(paths.actionTypes)
-fs.existsSync(paths.componentTypes) && fs.removeSync(paths.componentTypes)
-
 const generator = (function () {
+	let docs = [] as yaml.Document[]
+
+	let program = new ts.Project({
+		compilerOptions: {
+			allowJs: true,
+			allowSyntheticDefaultImports: true,
+			charset: 'utf8',
+			declaration: true,
+			emitDeclarationOnly: true,
+			baseUrl: __dirname,
+			module: ts.ModuleKind.ESNext,
+			noEmitOnError: false,
+			resolveJsonModule: true,
+			skipLibCheck: true,
+			sourceMap: true,
+			target: ts.ScriptTarget.ESNext,
+		},
+		manipulationSettings: {
+			indentationText: ts.IndentationText.TwoSpaces,
+			insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces: true,
+			quoteKind: ts.QuoteKind.Single,
+			newLineKind: ts.NewLineKind.LineFeed,
+			useTrailingCommas: true,
+		},
+		skipAddingFilesFromTsConfig: true,
+		skipLoadingLibFiles: true,
+		skipFileDependencyResolution: true,
+		// useInMemoryFileSystem: true,
+	})
+
+	const source = function createSource(sourceFile: ts.SourceFile) {
+		const _o = {
+			sourceFile,
+			actionTypings() {
+				return new ActionTypings(sourceFile)
+			},
+			componentTypings() {},
+		}
+		return _o
+	}
+
 	const o = {
-		//
+		load(_docs: yaml.Document[]) {
+			docs = docs
+			return o
+		},
+		createFile(filepath: string) {
+			return source(
+				program.createSourceFile(filepath, undefined, {
+					overwrite: true,
+				}),
+			)
+		},
 	}
 
 	return o

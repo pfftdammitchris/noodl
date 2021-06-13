@@ -1,4 +1,5 @@
 import * as u from '@jsmanifest/utils'
+import { AcceptArray } from '@jsmanifest/typefest'
 import * as com from 'noodl-common'
 import { DeviceType, Env } from 'noodl-types'
 import {
@@ -167,6 +168,13 @@ class NoodlAggregator {
 		} catch (error) {
 			throw error
 		}
+	}
+
+	loadDocs(objs: AcceptArray<{ name: string; doc: yaml.Document }>) {
+		for (const { name, doc } of u.array(objs)) {
+			this.root.set(name, doc)
+		}
+		return this
 	}
 
 	async loadRootConfig(configName?: string) {

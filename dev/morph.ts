@@ -2,6 +2,7 @@ process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
 import * as com from 'noodl-common'
+import generator from 'generator'
 import prettier from 'prettier'
 import yaml from 'yaml'
 import fs from 'fs-extra'
