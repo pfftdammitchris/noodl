@@ -70,6 +70,9 @@ describe(com.coolGold(`noodl-aggregator`), () => {
 				expect(aggregator.root.has(preloadPage as string)).to.be.false
 			})
 			await aggregator.init()
+			preloadPages.forEach((preloadPage) => {
+				expect(aggregator.root.has(preloadPage as string)).to.be.false
+			})
 		})
 
 		xit(`should load all the pages if loadPages === true`, async () => {
