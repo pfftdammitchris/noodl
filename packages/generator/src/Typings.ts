@@ -11,6 +11,7 @@ import * as t from './types'
 class Typings {
 	hooks = new Map()
 	interfaces: Map<string, ts.InterfaceDeclaration>
+	typeAliases: Map<string, ts.TypeAliasDeclaration>
 	metadata = {
 		properties: new Map<string, t.MetadataObject>(),
 	}
@@ -19,12 +20,25 @@ class Typings {
 	constructor(sourceFile: ts.SourceFile) {
 		this.sourceFile = sourceFile
 		this.interfaces = new Map()
+		this.typeAliases = new Map()
 	}
 
-	formatFile() {
+	formatFile({
+		onAfterSort,
+	}: {
+		onAfterSort?(args: {
+			sourceFile: ts.SourceFile
+			sortedInterfaces: ts.InterfaceDeclaration[]
+			sortedTypeAliases: ts.TypeAliasDeclaration[]
+		}): void
+	} = {}) {
 		const sortedInterfaces = sortAlphabetically(
 			(node) => node.getName(),
 			this.sourceFile.getInterfaces(),
+		)
+		const sortedTypeAliases = sortAlphabetically(
+			(node) => node.getName(),
+			this.sourceFile.getTypeAliases(),
 		)
 
 		const numInterfaces = sortedInterfaces.length
@@ -34,6 +48,12 @@ class Typings {
 			interf.setOrder(index)
 			sortInterfaceProperties(interf)
 		}
+
+		onAfterSort?.({
+			sourceFile: this.sourceFile,
+			sortedInterfaces,
+			sortedTypeAliases,
+		})
 
 		this.sourceFile.formatText({
 			baseIndentSize: 2,
@@ -91,8 +111,8 @@ class Typings {
 		return metadata
 	}
 
-	toString() {
-		this.formatFile()
+	toString(opts?: { formatOptions?: Parameters<Typings['formatFile']>[0] }) {
+		this.formatFile(opts?.formatOptions)
 		return prettier.format(this.sourceFile.getText(), {
 			arrowParens: 'always',
 			endOfLine: 'lf',

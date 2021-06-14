@@ -11,15 +11,16 @@ const suffix = {
 }
 
 class ActionTypings extends Typings {
-	options = {}
-	props = {
-		main: {},
-		optional: {},
-	}
 	isExtendingBaseObject = createIsExtending(suffix.actionObject)
 
 	constructor(sourceFile: ts.SourceFile) {
 		super(sourceFile)
+
+		const anyActionObject = sourceFile.addTypeAlias({
+			name: 'AnyActionObject',
+			isExported: true,
+			type: '""',
+		})
 
 		const baseActionObjectInterface = sourceFile.addInterface({
 			name: `ActionObject`,
@@ -47,10 +48,13 @@ class ActionTypings extends Typings {
 			isExported: true,
 		})
 
+		this.typeAliases.set(anyActionObject.getName(), anyActionObject)
+
 		this.interfaces.set(
 			baseActionObjectInterface.getName(),
 			baseActionObjectInterface,
 		)
+
 		this.interfaces.set(
 			uncommonPropsInterface.getName(),
 			uncommonPropsInterface,
@@ -132,7 +136,29 @@ class ActionTypings extends Typings {
 				},
 			})
 		}
-		return this.toString()
+		return this.toString({
+			formatOptions: {
+				onAfterSort({ sortedInterfaces, sortedTypeAliases }) {
+					const anyActionObjectTypeAlias = sortedTypeAliases.find(
+						(typeDec) => typeDec.getName() === 'AnyActionObject',
+					)
+					if (anyActionObjectTypeAlias) {
+						const actionObjectInterface = sortedInterfaces.find(
+							(interf) => interf.getName() === 'ActionObject',
+						)
+
+						if (actionObjectInterface) {
+							// Places 'AnyActionObject' right after 'ActionObject
+							const actionObjInterfIndex = actionObjectInterface.getChildIndex()
+							const anyActionObjTypeAliasIndex = actionObjInterfIndex + 1
+							anyActionObjectTypeAlias.setOrder(anyActionObjTypeAliasIndex)
+						} else {
+							anyActionObjectTypeAlias.setOrder(0)
+						}
+					}
+				},
+			},
+		})
 	}
 
 	getActionTypes() {}
