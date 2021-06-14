@@ -157,9 +157,11 @@ class NoodlAggregator {
 	}
 
 	async init({
-		loadPages: shouldLoadPages,
+		loadPages: shouldLoadPages = true,
+		loadPreloadPages: shouldLoadPreloadPages = true,
 	}: {
-		loadPages?: boolean | { includePreloadPages?: boolean }
+		loadPages?: boolean
+		loadPreloadPages?: boolean
 	} = {}) {
 		invariant(
 			!!this.configKey,
@@ -167,6 +169,18 @@ class NoodlAggregator {
 		)
 		const rootConfigDoc = await this.loadRootConfig()
 		const appConfigDoc = await this.loadAppConfig()
+		if (shouldLoadPreloadPages) {
+			const preloadPages = (
+				appConfigDoc?.get('preload') as yaml.YAMLSeq
+			).toJSON() as string[]
+			const preloadPromises = preloadPages.map(async (preloadPage) =>
+				this.loadPage(preloadPage),
+			)
+			const preloadPagesAsDocs = (await Promise.all(
+				preloadPromises,
+			)) as yaml.Document[]
+			console.log(preloadPagesAsDocs)
+		}
 		if (shouldLoadPages) {
 			const params = { includePreloadPages: true }
 			u.isObj(shouldLoadPages) && u.assign(params, shouldLoadPages)

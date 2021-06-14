@@ -32,10 +32,17 @@ beforeEach(() => {
 	nock(baseUrl).get('/cadlEndpoint.yml').reply(200, cadlEndpointYml)
 })
 
+afterEach(() => {
+	nock.cleanAll()
+})
+
+const init = async (_aggregator = aggregator) =>
+	_aggregator.init({ loadPages: false, loadPreloadPages: false })
+
 describe(com.coolGold(`noodl-aggregator`), () => {
 	describe(com.italic(`init`), () => {
 		it(`should initiate both the root config and app config`, async () => {
-			const { doc } = await aggregator.init()
+			const { doc } = await init()
 			expect(doc.root?.has('cadlMain')).to.be.true
 			expect(doc.app?.has('preload')).to.be.true
 			expect(doc.app?.has('page')).to.be.true
@@ -43,39 +50,56 @@ describe(com.coolGold(`noodl-aggregator`), () => {
 
 		it(`should be able to get the assets url`, async () => {
 			expect(aggregator.assetsUrl).not.to.eq(assetsUrl)
-			await aggregator.init()
+			await init()
 			expect(aggregator.assetsUrl).to.eq(assetsUrl)
 		})
 
 		it(`should be able to get the baseUrl`, async () => {
 			expect(aggregator.baseUrl).not.to.eq(baseUrl)
-			await aggregator.init()
+			await init()
 			expect(aggregator.baseUrl).to.eq(baseUrl)
 		})
 
 		it(`should be able to get the config version (latest)`, async () => {
 			expect(aggregator.configVersion).to.eq('')
-			await aggregator.init()
+			await init()
 			expect(aggregator.configVersion).to.eq('0.45d')
 		})
 
 		it(`should be able to get the app config url`, async () => {
 			expect(aggregator.appConfigUrl).to.eq('')
-			await aggregator.init()
+			await init()
 			expect(aggregator.configVersion).to.eq('0.45d')
 		})
 
-		it(`should load all the preload pages if loadPages === true and includePreloadPages === true`, async () => {
+		it(`should load all the preload pages by default`, async () => {
+			const { doc } = await aggregator.init({ loadPages: false })
+			const appConfig = doc.app?.toJS()
+
+			for (const name of appConfig.preload) {
+				nock(baseUrl)
+					.get(new RegExp(`\/(${name}|${name}_en).yml`, 'gi'))
+					.reply(
+						200,
+						`
+					${name}:
+						VoidObj: vVoOiIdD
+						Style:
+							top: '0'
+					`,
+					)
+			}
+
 			preloadPages.forEach((preloadPage) => {
-				expect(aggregator.root.has(preloadPage as string)).to.be.false
+				expect(aggregator.root.get(preloadPage as string)).to.exist
 			})
-			await aggregator.init()
-			preloadPages.forEach((preloadPage) => {
-				expect(aggregator.root.has(preloadPage as string)).to.be.false
-			})
+
+			for (const [name, doc] of aggregator.root) {
+				console.log(`${name}`, doc.toJSON?.())
+			}
 		})
 
-		xit(`should load all the pages if loadPages === true`, async () => {
+		xit(`should load all the pages by default`, async () => {
 			//
 		})
 	})
