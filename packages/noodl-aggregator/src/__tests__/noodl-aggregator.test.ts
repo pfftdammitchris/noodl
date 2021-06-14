@@ -3,7 +3,6 @@ import * as com from 'noodl-common'
 import fs from 'fs-extra'
 import path from 'path'
 import { expect } from 'chai'
-import sinon from 'sinon'
 import nock from 'nock'
 import yaml from 'yaml'
 import Aggregator from '../noodl-aggregator'
@@ -106,9 +105,9 @@ describe(com.coolGold(`noodl-aggregator`), () => {
 					})
 			}
 			await aggregator.init({ loadPreloadPages: false })
-			pages.forEach((page) => {
-				expect(aggregator.root.get(`${page}_en`)).to.exist
-			})
+			pages.forEach(
+				(page) => expect(aggregator.root.get(`${page}_en`)).to.exist,
+			)
 		})
 	})
 
