@@ -20,7 +20,7 @@ import { getAbsFilePath, loadFilesAsDocs } from 'noodl-common'
 	const actionTypings = file.actionTypings()
 	const sourceFile = file.sourceFile
 
-	console.log(actionTypings.generate(docs))
+	console.log('', actionTypings.generate(docs))
 
 	await sourceFile.save()
 })()

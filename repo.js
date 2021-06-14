@@ -9,6 +9,10 @@ const lib = {
 	docs: { name: 'noodl-cli-docs', path: getAbsFilePath('packages/docs') },
 	nt: { name: 'noodl-types', path: getAbsFilePath('packages/noodl-types') },
 	gen: { name: 'generator', path: getAbsFilePath('packages/generator') },
+	nag: {
+		name: 'noodl-aggregator',
+		path: getAbsFilePath('packages/noodl-aggregator'),
+	},
 	nac: {
 		name: 'noodl-action-chain',
 		path: getAbsFilePath(`packages/noodl-action-chain`),

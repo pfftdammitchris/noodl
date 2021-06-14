@@ -43,7 +43,7 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"start": "tsc -w",
-		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --file src/setupTests.ts --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
+		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl/issues"
