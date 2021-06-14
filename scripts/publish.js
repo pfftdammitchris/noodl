@@ -1,48 +1,38 @@
-const childProcess = require('child_process')
-const { Command } = require('commander')
+const u = require('@jsmanifest/utils')
+const execa = require('execa')
+const meow = require('meow')
 
-const program = new Command()
+const regex = {
+	'noodl-action-chain': /(nac|noodl-action-chain)/i,
+	'noodl-aggregator': /(aggr|na|aggregator|noodl-aggregator)/i,
+	'noodl-common': /(nc|ncom|ncommon|noodl-common)/i,
+	'noodl-types': /(nt|types|noodl-types)/i,
+}
 
-program
-	.option('-p --publish [pkg]', 'Quickly publish a library')
-	.option('-m --message [message]', 'Commit message')
+const cli = meow(``, {
+	flags: {
+		publish: { alias: 'p', type: 'string' },
+		message: { alias: 'm', type: 'string' },
+	},
+})
 
-program.parse(process.argv)
-
-const args = program.opts()
+const { message = 'Update(s) to lib', publish } = cli.flags
 
 ;(async () => {
-	const lib = {
-		noodlActionChain: 'noodl-action-chain',
-		noodlTypes: 'noodl-types',
-	}
+	const lib = u.entries(regex).find(([_, regex]) => regex.test(publish))[0]
 
-	const regex = {
-		[lib.noodlActionChain]: /(nac|noodl-action-chain)/i,
-		[lib.noodlTypes]: /(nt|types|noodl-types)/i,
-	}
+	if (!lib) throw new Error(`Invalid lib name`)
 
-	const libName = regex[lib.noodlActionChain].test(args.publish)
-		? lib.noodlActionChain
-		: regex[lib.noodlTypes].test(args.publish)
-		? lib.noodlTypes
-		: undefined
-
-	if (!libName) {
-		throw new Error(`Invalid lib name`)
-	}
-
-	const message = args.message || 'Update(s) to lib'
-	const commands = [
-		`lerna exec --scope ${libName} "npm version patch"`,
-		`git add packages/${libName}`,
-		`git commit -m "${message}"`,
-		`lerna exec --scope ${libName} "npm run build && npm publish"`,
-	]
-	const commandString = commands.join(' && ')
-	const shell = childProcess.spawn(commandString, {
-		shell: true,
-		stdio: 'inherit',
-	})
-	return
+	execa.commandSync(
+		[
+			`lerna exec --scope ${lib} "npm version patch"`,
+			`git add packages/${lib}`,
+			`git commit -m "${message}"`,
+			`lerna exec --scope ${lib} "npm run build && npm publish"`,
+		].join(' && '),
+		{
+			shell: true,
+			stdio: 'inherit',
+		},
+	)
 })()

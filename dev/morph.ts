@@ -1,28 +1,32 @@
 process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
+import * as com from 'noodl-common'
+import generator from 'generator'
+import prettier from 'prettier'
 import yaml from 'yaml'
-import globby from 'globby'
 import fs from 'fs-extra'
-import path from 'path'
-import {
-	loadFilesAsDocs,
-	loadFileAsDoc,
-	getAbsFilePath,
-} from '../src/utils/common'
-import createAggregator from '../src/api/createAggregator'
-import getActionsSourceFile from './actions'
+import Aggregator from '../src/api/Aggregator'
+// import getActionsSourceFile from './actions'
+import getComponentsSourceFile from './Generator/components'
+import pkg from '../package.json'
 import * as co from '../src/utils/color'
 
 const paths = {
-	docs: getAbsFilePath('generated'),
-	assets: getAbsFilePath('data/generated/assets.json'),
-	metadata: getAbsFilePath('data/generated/metadata.json'),
-	typings: getAbsFilePath('data/generated/typings.d.ts'),
-	actionTypes: getAbsFilePath('data/generated/actionTypes.d.ts'),
+	docs: com.getAbsFilePath('generated'),
+	assets: com.getAbsFilePath('data/generated/assets.json'),
+	metadata: com.getAbsFilePath('data/generated/metadata.json'),
+	typings: com.getAbsFilePath('data/generated/typings.d.ts'),
+	actionTypes: com.getAbsFilePath('data/generated/actionTypes.d.ts'),
+	componentTypes: com.getAbsFilePath('data/generated/componentTypes.d.ts'),
+}
+
+for (const [key, filepath] of u.entries(paths)) {
+	paths[key] = com.normalizePath(filepath)
 }
 
 fs.existsSync(paths.actionTypes) && fs.removeSync(paths.actionTypes)
+fs.existsSync(paths.componentTypes) && fs.removeSync(paths.componentTypes)
 
 const program = new ts.Project({
 	compilerOptions: {
@@ -52,8 +56,12 @@ const program = new ts.Project({
 	// useInMemoryFileSystem: true,
 })
 
-const sourceFile = program.createSourceFile(paths.typings)
-const actions = getActionsSourceFile(program, paths.actionTypes)
+const sourceFile = program.createSourceFile(paths.typings, undefined, {
+	overwrite: true,
+})
+
+// const actions = getActionsSourceFile(program, paths.actionTypes)
+const components = getComponentsSourceFile(program, paths.componentTypes)
 
 // const actionInterface = sourceFile.addInterface({
 // 	name: actionType[0]
@@ -96,11 +104,15 @@ function formatFile(src: ts.SourceFile) {
 		tabSize: 2,
 		trimTrailingWhitespace: true,
 	})
-	return src
+	const srcCode = prettier.format(src.getText(), {
+		...pkg.prettier,
+		parser: 'typescript',
+	} as prettier.Options)
+	return srcCode
 }
 
-const aggregator = createAggregator('meet4d')
-const docFiles = loadFilesAsDocs({
+const aggregator = new Aggregator('meet4d')
+const docFiles = com.loadFilesAsDocs({
 	as: 'metadataDocs',
 	dir: paths.docs,
 	recursive: true,
@@ -117,17 +129,20 @@ Promise.resolve()
 				Node(key, node, path) {},
 				Scalar(key, node, path) {},
 				Pair(key, node, path) {
-					if (yaml.isScalar(node.key) && node.key.value === 'actionType') {
-						if (yaml.isScalar(node.value) && u.isStr(node.value.value)) {
-							actions.addAction(node.value.value, node.value)
-						}
-						return yaml.visit.SKIP
-					}
+					// if (yaml.isScalar(node.key) && node.key.value === 'actionType') {
+					// 	if (yaml.isScalar(node.value) && u.isStr(node.value.value)) {
+					// 		actions.addAction(node.value.value, node.value as any)
+					// 	}
+					// 	return yaml.visit.SKIP
+					// }
 				},
 				Map(key, node, path) {
 					if (node.has('actionType')) {
-						const actionType = node.get('actionType') as string
-						actions.addAction(actionType, node)
+						// return actions.addAction(node)
+					}
+
+					if (node.has('type') && (node.has('children') || node.has('style'))) {
+						return components.addComponent(node)
 					}
 				},
 				Seq(key, node, path) {},
@@ -137,16 +152,113 @@ Promise.resolve()
 		}
 	})
 	.then(() => {
-		// sourceFile.addInterface({
-		// 	name: 'ActionTypes',
-		// 	isExported: true,
-		// 	properties: actionTypes.map((actionType) => ({
-		// 		name: actionType,
-		// 		type: 'string',
-		// 	})),
-		// })
+		// Action typings
+		// for (const interf of actions.sourceFile.getInterfaces()) {
+		// 	const members = interf.getMembers()
+		// 	for (const member of members) {
+		// 		if (member.getText().replace(';', '') === `[key: string]: any`) {
+		// 			member.setOrder(members.length - 1)
+		// 		}
+		// 	}
+
+		// 	for (const property of interf.getProperties()) {
+		// 		const name = property.getName()
+		// 		const typeValues = []
+		// 		if (name !== 'actionType') {
+		// 			if (actions.metadata.properties.has(name)) {
+		// 				const metadata = actions.metadata.properties.get(name)
+		// 				if (u.isObj(metadata.value)) {
+		// 					const propertyNode = property.getTypeNode()
+		// 					const propertyValue = propertyNode.getText()
+
+		// 					for (const [key, val] of u.entries(metadata.value)) {
+		// 						if (val) {
+		// 							if (!propertyValue.includes(key)) {
+		// 								typeValues.push(key)
+		// 							}
+		// 						}
+		// 					}
+		// 				}
+		// 			}
+		// 			if (typeValues.length) {
+		// 				property.remove()
+		// 				interf.insertProperty(interf.getMembers().length - 1, {
+		// 					name,
+		// 					type: typeValues.reduce((acc, val) => {
+		// 						if (val == 'array') acc += `| any[]`
+		// 						else if (val == 'function') acc += `| ((...args: any[]) => any)`
+		// 						else if (val == 'object') acc += `| Record<string, any>`
+		// 						else acc += `| ${val}`
+		// 						return acc
+		// 					}, ''),
+		// 				})
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		// Component typings
+		for (const interf of components.sourceFile.getInterfaces()) {
+			const members = interf.getMembers()
+			for (const member of members) {
+				if (member.getText().replace(';', '') === `[key: string]: any`) {
+					member.setOrder(members.length - 1)
+				}
+			}
+
+			for (const property of interf.getProperties()) {
+				const name = property.getName()
+				const typeValues = []
+				if (name !== 'type') {
+					if (name.includes('text=func')) {
+						console.log(name)
+						console.log(name)
+						console.log(name)
+					}
+					if (components.metadata.properties.has(name)) {
+						const metadata = components.metadata.properties.get(name)
+						if (u.isObj(metadata.value)) {
+							const propertyNode = property.getTypeNode()
+							const propertyValue = propertyNode.getText()
+
+							for (const [key, val] of u.entries(metadata.value)) {
+								if (val) {
+									if (!propertyValue.includes(key)) {
+										typeValues.push(key)
+									}
+								}
+							}
+						}
+					}
+					if (typeValues.length) {
+						property.remove()
+						interf.insertProperty(interf.getMembers().length - 1, {
+							name,
+							type: typeValues.reduce((acc, val) => {
+								if (val == 'array') acc += `| any[]`
+								else if (val == 'function') acc += `| ((...args: any[]) => any)`
+								else if (val == 'object') acc += `| Record<string, any>`
+								else acc += `| ${val}`
+								return acc
+							}, ''),
+						})
+					}
+				}
+			}
+		}
 	})
-	.then(() => formatFile(actions.sourceFile).save())
+	.then(() => ({
+		// actionsSourceCode: formatFile(actions.sourceFile),
+		componentsSourceCode: formatFile(components.sourceFile),
+	}))
+	.then(({ actionsSourceCode, componentsSourceCode }) => {
+		let srcCode = ''
+
+		// srcCode += `${actionsSourceCode}\n\n`
+		srcCode += `${componentsSourceCode}\n\n`
+
+		fs.writeFile(sourceFile.getFilePath(), srcCode, 'utf8')
+	})
 	.then(() => u.log('\n' + co.green(`DONE`) + '\n'))
 	.catch((err) => {
 		throw err

@@ -1,6 +1,6 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.37",
+	"version": "0.0.70",
 	"main": "dist/cli.js",
 	"module": "dist/cli.js",
 	"typings": "dist/cli.d.ts",
@@ -12,36 +12,55 @@
 		"cli.js"
 	],
 	"scripts": {
+		"postinstall": "lerna exec --scope noodl-common --scope noodl-aggregator --scope generator 'npm run build'",
 		"prebuild": "rm -rf dist",
 		"build": "tsc",
 		"bootstrap": "lerna bootstrap --hoist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
+		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",
 		"pretest": "npm run build",
-		"postinstall": "npm run bootstrap",
 		"test": "ava --watch",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files \"src/**/*.ts\"",
 		"pub": "node scripts/publish.js -p"
 	},
 	"dependencies": {
+<<<<<<< HEAD
 		"axios": "^0.21.1",
 		"configstore": "^5.0.1",
 		"download": "^8.0.0",
 		"express": "^4.17.1",
 		"graphql": "^15.5.0",
+=======
+		"@jsmanifest/utils": "^1.0.7",
+		"axios": "^0.21.1",
+		"chokidar": "^3.5.1",
+		"configstore": "^5.0.1",
+		"download": "^8.0.0",
+		"express": "^4.17.1",
+		"fast-xml-parser": "^3.19.0",
+		"fs-extra": "^10.0.0",
+		"globby": "^11.0.2",
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 		"immer": "^9.0.1",
 		"ink": "^3.0.8",
 		"ink-big-text": "^1.2.0",
 		"ink-gradient": "^2.0.0",
+		"ink-multi-select": "^2.0.0",
 		"ink-progress-bar": "^3.0.0",
 		"ink-select-input": "^4.2.0",
 		"ink-spinner": "^4.0.1",
 		"ink-text-input": "^4.0.1",
 		"invariant": "^2.2.4",
-		"noodl": "file:packages/noodl",
+		"lodash": "^4.17.21",
+		"meow": "^9.0.0",
+		"noodl-aggregator": "file:packages/noodl-aggregator",
+		"noodl-common": "file:packages/noodl-common",
 		"noodl-types": "file:packages/noodl-types",
+		"noodl-utils": "^0.0.52",
 		"react": "^16.14.0",
 		"transducers-js": "^0.4.174",
-		"ws": "^7.4.5"
+		"ws": "^7.4.5",
+		"yaml": "^2.0.0-4"
 	},
 	"devDependencies": {
 		"@aitmed/ecos-lvl2-sdk": "^1.4.123",
@@ -52,7 +71,6 @@
 		"@babel/preset-typescript": "^7.12.17",
 		"@babel/register": "^7.12.13",
 		"@jsmanifest/typefest": "^1.0.1",
-		"@jsmanifest/utils": "^1.0.7",
 		"@rollup/plugin-babel": "^5.3.0",
 		"@rollup/plugin-commonjs": "^18.0.0",
 		"@rollup/plugin-node-resolve": "^11.2.0",
@@ -69,6 +87,7 @@
 		"@types/lodash": "^4.14.168",
 		"@types/mocha": "^8.2.0",
 		"@types/node": "^14.14.22",
+		"@types/prettier": "^2.2.3",
 		"@types/react": "^17.0.0",
 		"@types/sinon": "^9.0.10",
 		"@types/sinon-chai": "^3.2.5",
@@ -81,23 +100,25 @@
 		"babel-plugin-lodash": "^3.3.4",
 		"chai": "^4.2.0",
 		"chai-as-promised": "^7.1.1",
-		"commander": "^7.2.0",
+		"chalk": "^2.4.2",
 		"copy-webpack-plugin": "^5.1.2",
 		"cross-env": "^7.0.3",
-		"dotenv": "^10.0.0",
 		"esbuild": "^0.11.20",
 		"eslint-config-xo-react": "^0.25.0",
 		"eslint-plugin-ava": "^12.0.0",
 		"eslint-plugin-react": "^7.21.5",
 		"eslint-plugin-react-hooks": "^4.2.0",
-		"fast-xml-parser": "^3.17.6",
-		"fs-extra": "^10.0.0",
-		"globby": "^11.0.2",
+		"generator": "file:packages/generator",
 		"ink-testing-library": "^2.1.0",
 		"lerna": "^4.0.0",
+<<<<<<< HEAD
 		"lodash": "^4.17.21",
 		"meow": "^9.0.0",
 		"mocha": "^8.2.1",
+=======
+		"mocha": "^8.4.0",
+		"nock": "^13.1.0",
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 		"prettier": "^2.3.1",
 		"rollup": "^2.39.0",
 		"rollup-plugin-filesize": "^9.1.0",
@@ -111,15 +132,14 @@
 		"ts-node-dev": "^1.1.1",
 		"type-fest": "^1.0.1",
 		"typescript": "^4.2.4",
-		"xo": "^0.40.1",
-		"yaml": "^2.0.0-4"
+		"xo": "^0.40.1"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/pfftdammitchris/noodl-cli"
 	},
 	"engines": {
-		"node": ">=12"
+		"node": ">=14"
 	},
 	"license": "MIT",
 	"prettier": {

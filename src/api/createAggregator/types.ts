@@ -13,6 +13,7 @@ export type CommonEmitEvents =
 
 export type Hooks = {
 	ON_APP_PAGE_DOESNT_EXIST: { args: { name: string; error: Error } }
+	ON_SET_CONFIG_KEY: { args: string }
 	ON_CONFIG_VERSION: { args: string }
 	ON_PLACEHOLDER_PURGED: { args: { before: string; after: string } }
 	ON_RETRIEVING_APP_CONFIG: { args: { url: string } }

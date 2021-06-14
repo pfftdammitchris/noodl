@@ -5,7 +5,7 @@ import React from 'react'
 import produce, { Draft } from 'immer'
 import BigText from 'ink-big-text'
 import Gradient from 'ink-gradient'
-import createAggregator from './api/createAggregator'
+import Aggregator from './api/Aggregator'
 import Select from './components/Select'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
@@ -13,12 +13,13 @@ import Settings from './panels/Settings'
 import GenerateApp from './panels/GenerateApp'
 import useConfiguration from './hooks/useConfiguration'
 import Server from './panels/Server'
+import store from './store'
 import { Provider } from './useCtx'
 import * as co from './utils/color'
 import * as c from './constants'
 import * as t from './types'
 
-const aggregator: ReturnType<typeof createAggregator> = createAggregator()
+const aggregator = new Aggregator()
 
 export const initialState = {
 	ready: false,
@@ -99,24 +100,46 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 				}
 			}
 
+			const handleServer = () => {
+				if (cli.flags.server === true) {
+					ctx.setPanel('server')
+				} else if (u.isStr(cli.flags.server)) {
+					ctx.setPanel('server')
+				}
+			}
+
 			if (cli.flags.generate) handleGenerate()
-			else if (cli.flags.server) ctx.setPanel('server')
+			else if (cli.flags.server) handleServer()
 			else ctx.setPanel(c.DEFAULT_PANEL)
 		} else {
 			ctx.setPanel(c.DEFAULT_PANEL)
 		}
 	}, [])
 
+	React.useEffect(() => {
+		// if (store.get('configKey')) {
+		// 	aggregator.configKey = store.get('configKey')
+		// }
+		aggregator.on('ON_SET_CONFIG_KEY', (configKey) =>
+			store.set('configKey', configKey),
+		)
+	}, [])
+
 	return (
 		<Provider value={ctx}>
 			{state.activePanel === c.DEFAULT_PANEL && (
 				<Gradient name="vice">
-					<BigText text="noodl-cli" font="tiny" letterSpacing={1} />
+					<BigText text="noodl-cli" font="tiny" letterSpacing={1} />{' '}
+					<Text color="white" bold>
+						{cli.pkg.version}
+					</Text>
+					<Newline />
 				</Gradient>
 			)}
 			{!state.ready ? (
 				<Settings
 					onReady={() => set({ ready: true, activePanel: state.activePanel })}
+					pathToGenerateDir={cli.flags.generatePath}
 				/>
 			) : state.activePanel === 'generateApp' ? (
 				<GenerateApp
@@ -127,10 +150,16 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 					host={cli.flags.host}
 					isLocal={cli.flags.local}
 					port={cli.flags.port}
+					onEnd={() => cli.flags.server && ctx.setPanel('server')}
 				/>
 			) : state.activePanel === 'server' ? (
 				<Server
-					config={cli.flags.config as string}
+					config={
+						(u.isStr(cli.flags.server) &&
+							cli.flags.server &&
+							cli.flags.server) ||
+						(cli.flags.config as string)
+					}
 					host={cli.flags.host}
 					local={cli.flags.local}
 					port={cli.flags.port}
@@ -156,7 +185,8 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 							},
 							{
 								value: 'server',
-								label: 'Start noodl development server',
+								label:
+									'Start noodl development server (generate files first or provide them)',
 							},
 						]}
 						onSelect={(item) => {

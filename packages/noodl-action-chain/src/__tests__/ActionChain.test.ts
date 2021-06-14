@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { coolGold, italic, magenta } from 'noodl-common'
 import chalk from 'chalk'
 import sinon from 'sinon'
 import Action from '../Action'
@@ -16,6 +15,10 @@ import {
 	getUpdateObjectAction,
 } from './helpers'
 import createAction from '../utils/createAction'
+
+export const coolGold = (...s: any[]) => chalk.keyword('navajowhite')(...s)
+export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
+export const magenta = (...s: any[]) => chalk.magenta(...s)
 
 describe(coolGold(`ActionChain`), () => {
 	describe(italic(`Generator`), () => {

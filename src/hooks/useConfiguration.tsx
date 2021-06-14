@@ -1,14 +1,10 @@
 import { LiteralUnion } from 'type-fest'
 import React from 'react'
 import fs from 'fs-extra'
-import path from 'path'
-import yaml from 'yaml'
+import * as com from 'noodl-common'
 import store from '../store'
 import { Cli } from '../cli'
-import * as com from '../utils/common'
-import * as co from '../utils/color'
 import * as c from '../constants'
-import * as t from '../types'
 
 export interface Options {
 	cli: Cli
@@ -24,10 +20,16 @@ function useConfiguration({ cli, onInit }: Options) {
 		[],
 	)
 
+<<<<<<< HEAD
 	const getPathToGenerateDir = React.useCallback(
 		() => store.get(c.GENERATE_DIR_KEY) || '',
 		[],
 	)
+=======
+	const getPathToGenerateDir = React.useCallback(() => {
+		return store.get(c.GENERATE_DIR_KEY) || ''
+	}, [])
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 
 	const setPathToGenerateDir = React.useCallback(
 		(
@@ -43,7 +45,7 @@ function useConfiguration({ cli, onInit }: Options) {
 			)
 			const pathToGenerateDir = getPathToGenerateDir()
 			refreshLastUpdatedTimestamp()
-			if (!fs.pathExistsSync(pathToGenerateDir)) {
+			if (!fs.existsSync(pathToGenerateDir)) {
 				try {
 					fs.ensureDirSync(pathToGenerateDir)
 					opts?.onCreated?.(pathToGenerateDir)
@@ -66,6 +68,11 @@ function useConfiguration({ cli, onInit }: Options) {
 		return store.get('timestamp')
 	}, [])
 
+	const getLastUsedConfigKey = React.useCallback(
+		(): string | undefined => store.get('configKey'),
+		[],
+	)
+
 	const refreshLastUpdatedTimestamp = React.useCallback(() => {
 		store.set('lastUpdated', new Date().toISOString())
 		return store.get('lastUpdated')
@@ -79,6 +86,7 @@ function useConfiguration({ cli, onInit }: Options) {
 		clear,
 		getAll,
 		getDefaultGenerateDir,
+		getLastUsedConfigKey,
 		getPathToGenerateDir,
 		initTimestamp,
 		isFresh,

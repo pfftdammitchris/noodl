@@ -2,14 +2,14 @@ import { LiteralUnion } from 'type-fest'
 import { DeviceType, Env } from 'noodl-types'
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
+import { MetadataLinkObject } from 'noodl-common'
+import * as com from 'noodl-common'
 import * as u from '@jsmanifest/utils'
 import React from 'react'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
-import merge from 'lodash/merge'
-import produce, { Draft } from 'immer'
 import Panel from '../../components/Panel'
 import useConfigInput from '../../hooks/useConfigInput'
 import useCtx from '../../useCtx'
@@ -20,8 +20,6 @@ import {
 	PARSED_APP_CONFIG,
 	ON_RETRIEVED_APP_PAGE,
 } from '../../api/createAggregator'
-import { MetadataLinkObject } from '../../types'
-import * as com from '../../utils/common'
 import * as co from '../../utils/color'
 import * as r from '../../utils/remote'
 import * as t from './types'
@@ -78,52 +76,6 @@ function GenerateApp(props: Props) {
 		onValidateEnd: () => toggleSpinner(false),
 	})
 
-	const [state, _setState] = React.useState(() => {
-		const initState = {
-			...initialState,
-			deviceType,
-		} as t.State
-		return initState
-	})
-
-	const setState = React.useCallback(
-		async (
-			fn: ((draft: Draft<typeof initialState>) => void) | Partial<t.State>,
-		) => {
-			_setState(
-				produce((draft) => {
-					if (u.isFnc(fn)) fn(draft)
-					else merge(draft, fn)
-				}),
-			)
-		},
-		[],
-	)
-
-	const saveFile = React.useCallback(
-		async (
-			filename: string,
-			data: string | Record<string, any> | undefined,
-		) => {
-			try {
-				const optionsArg = u.isStr(data)
-					? 'utf8'
-					: u.isObj(data)
-					? { spaces: 2 }
-					: undefined
-				const fnKey = u.isStr(data) ? 'writeFile' : 'writeJson'
-				const filepath = path.join(
-					path.join(configuration.getPathToGenerateDir(), aggregator.configKey),
-					filename,
-				)
-				fs[fnKey] && (await fs[fnKey](filepath, data, optionsArg as any))
-			} catch (error) {
-				console.error(error)
-			}
-		},
-		[],
-	)
-
 	const loadConfig = React.useCallback(
 		async (configKey: string) => {
 			if (configKey) {
@@ -135,7 +87,15 @@ function GenerateApp(props: Props) {
 						? `${configKey}.yml`
 						: configKey
 
-					saveFile(configFileName, yml)
+					const configDir = path.join(
+						configuration.getPathToGenerateDir(),
+						configKey,
+					)
+					const configFilePath = path.join(configDir, configFileName)
+					const assetsDir = path.join(configDir, 'assets')
+
+					await fs.ensureFile(configFilePath)
+					await fs.writeFile(configFilePath, yml, 'utf8')
 
 					log(`Saved ${co.yellow(configFileName)} to folder`)
 					aggregator.configKey = configKey
@@ -158,16 +118,12 @@ function GenerateApp(props: Props) {
 						)
 					}
 
-					const dir = path.join(
-						configuration.getPathToGenerateDir(),
-						aggregator.configKey,
-					)
+					log(`Yml files will be saved to ${co.yellow(configDir)}`)
+					log(`Asset files will be saved to ${co.yellow(assetsDir)}`)
 
-					const assetsDir = path.join(dir, 'assets')
-
-					if (!fs.existsSync(dir)) {
-						await fs.ensureDir(dir)
-						log(`Created output directory: ${co.yellow(dir)}`)
+					if (!fs.existsSync(configDir)) {
+						await fs.ensureDir(configDir)
+						log(`Created output directory: ${co.yellow(configDir)}`)
 					}
 
 					if (!fs.existsSync(assetsDir)) {
@@ -256,8 +212,6 @@ function GenerateApp(props: Props) {
 
 							u.newline()
 
-							setState({ assets: missingAssets })
-
 							const promises = [] as any[]
 
 							for (const missingAsset of missingAssets) {
@@ -298,7 +252,7 @@ function GenerateApp(props: Props) {
 							doc: yaml.Document
 						}) {
 							const filename = com.withYmlExt(name).replace('_en', '')
-							const filepath = path.join(dir, filename)
+							const filepath = path.join(configDir, filename)
 							if (!doc) return u.log(doc)
 
 							if (type === 'root-config') {
@@ -307,7 +261,6 @@ function GenerateApp(props: Props) {
 								const appKey = doc.get('cadlMain')
 								log(`Base url: ${co.yellow(baseUrl)}`)
 								log(`App config url: ${co.yellow(`${baseUrl}${appKey}`)}`)
-								setState({ configKey })
 								log(`Saved root config object to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else if (type === 'app-config') {
@@ -345,8 +298,18 @@ function GenerateApp(props: Props) {
 				} finally {
 					const doc = aggregator.root.get(aggregator.configKey) as yaml.Document
 					if (isLocal) {
+						log(
+							`Setting ${co.magenta('cadlBaseUrl')} to ${co.yellow(
+								`http://${host}:${port}/`,
+							)}`,
+						)
 						doc.set('cadlBaseUrl', `http://${host}:${port}/`)
 						if (doc.has('myBaseUrl')) {
+							log(
+								`Setting ${co.magenta('myBaseUrl')} to ${co.yellow(
+									`http://${host}:${port}/`,
+								)}`,
+							)
 							doc.set('myBaseUrl', `http://${host}:${port}/`)
 						}
 						const dir = path.join(
@@ -407,9 +370,9 @@ function GenerateApp(props: Props) {
 			)
 		}
 	} else {
-		if (urlsInProgress.length) {
+		if (memoizedUrlsInProgress.length) {
 			children = (
-				<Static paddingTop={3} items={urlsInProgress}>
+				<Static paddingTop={3} items={memoizedUrlsInProgress}>
 					{(url) => (
 						<Box key={url}>
 							<Text color="yellow">DOWNLOADING</Text>

@@ -7,7 +7,8 @@ import * as c from './constants'
 const DEFAULT_TIMEOUT = 8000
 
 class Action<AType extends string = string, T extends string = string>
-	implements IAction<AType, T> {
+	implements IAction<AType, T>
+{
 	#id: string
 	#actionType: AType
 	#aborted = false
@@ -23,7 +24,11 @@ class Action<AType extends string = string, T extends string = string>
 	hasExecutor = false
 	result: any
 	receivedResult = false
-	timeout = DEFAULT_TIMEOUT
+	timeout = DEFAULT_TIMEOUT;
+
+	[Symbol.for('nodejs.util.inspect.custom')]() {
+		return this.snapshot()
+	}
 
 	constructor(trigger: T, action: ActionObject<AType>) {
 		this.#id = createId()

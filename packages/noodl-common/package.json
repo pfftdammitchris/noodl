@@ -1,17 +1,13 @@
 {
 	"name": "noodl-common",
-	"version": "0.0.8",
-	"description": "> TODO: description",
+	"version": "0.0.16",
+	"description": "Common NOODL file system utilities",
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"license": "ISC",
 	"main": "dist/index.js",
 	"module": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"directories": {
-		"dist": "dist",
-		"test": "__tests__"
-	},
+	"typings": "dist/index.d.ts",
 	"files": [
 		"dist"
 	],
@@ -21,10 +17,21 @@
 	},
 	"scripts": {
 		"build": "tsc",
+		"start": "tsc --watch",
 		"test": "echo \"Error: run tests from root\" && exit 1"
 	},
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
-	"gitHead": "3a5b477fa7ff5b34a63aee5b2b84729f0687459a"
+	"gitHead": "3a5b477fa7ff5b34a63aee5b2b84729f0687459a",
+	"dependencies": {
+		"@jsmanifest/utils": "^1.0.7",
+		"chalk": "^2.4.2",
+		"fs-extra": "^10.0.0",
+		"globby": "^11.0.2",
+		"yaml": "^2.0.0-4"
+	},
+	"devDependencies": {
+		"typescript": "^4.2.4"
+	}
 }

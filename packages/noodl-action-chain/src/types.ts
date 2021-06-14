@@ -1,11 +1,10 @@
 import { ActionObject } from 'noodl-types'
-import { LiteralUnion } from 'type-fest'
 import AbortExecuteError from './AbortExecuteError'
 import * as c from './constants'
 
 export interface IAction<
 	AType extends string = string,
-	T extends string = string
+	T extends string = string,
 > {
 	actionType: AType
 	abort(reason?: string | string[]): void
@@ -25,33 +24,6 @@ export type ActionStatus =
 	| typeof c.RESOLVED
 	| typeof c.TIMED_OUT
 
-export interface IActionChain<
-	A extends ActionObject = ActionObject,
-	T extends string = string
-> {
-	abort(reason?: string | string[]): Promise<ActionChainIteratorResult[]>
-	actions: A[]
-	current: IAction<A['actionType'], T> | null
-	execute(args?: any): Promise<ActionChainIteratorResult[]>
-	inject(action: A): IAction<A['actionType'], T>
-	queue: IAction<A['actionType'], T>[]
-	load(action: A): IAction<A['actionType'], T>
-	load(actions: A[]): IAction<A['actionType'], T>[]
-	loadQueue(): IAction<A['actionType'], T>[]
-	snapshot(): {
-		abortReason?: string | string[]
-		actions: A[]
-		error: null | Error | AbortExecuteError
-		current: IAction<A['actionType'], T> | null
-		injected: A[]
-		queue: IAction<A['actionType'], T>[]
-		results: any[]
-		status: ActionChainStatus
-		trigger: LiteralUnion<T, string>
-	}
-	trigger: LiteralUnion<T, string>
-}
-
 export type ActionChainStatus =
 	| typeof c.IDLE
 	| typeof c.IN_PROGRESS
@@ -60,7 +32,7 @@ export type ActionChainStatus =
 
 export type ActionChainIteratorResult<
 	A extends ActionObject = ActionObject,
-	T extends string = string
+	T extends string = string,
 > = {
 	action: IAction<A['actionType'], T>
 	result: any
@@ -68,7 +40,7 @@ export type ActionChainIteratorResult<
 
 export interface ActionChainInstancesLoader<
 	A extends ActionObject = ActionObject,
-	RT = IAction<A['actionType']>
+	RT = IAction<A['actionType']>,
 > {
 	(actions: A[]): RT[]
 }

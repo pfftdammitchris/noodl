@@ -1,8 +1,7 @@
 import React from 'react'
-import * as u from '@jsmanifest/utils'
 import { Box, Newline, Text } from 'ink'
 import TextInput from 'ink-text-input'
-import useConfigInput from '../../hooks/useConfigInput'
+import * as co from '../../utils/color'
 import useCtx from '../../useCtx'
 import useServer from './useServer'
 
@@ -17,6 +16,7 @@ export interface Props {
 }
 
 function Server({
+<<<<<<< HEAD
 	config: configProp,
 	host,
 	local,
@@ -58,6 +58,36 @@ function Server({
 		valid && listen()
 	}, [valid])
 
+=======
+	config: consumerConfigValue,
+	host,
+	local,
+	port,
+	watch,
+	wss,
+	wssPort,
+}: Props) {
+	const { aggregator, log } = useCtx()
+	const {
+		status,
+		config,
+		configInput,
+		listen,
+		setConfigInputValue,
+		valid,
+		validating,
+		validate,
+	} = useServer({
+		consumerConfigValue,
+		host,
+		local: !!local,
+		port,
+		watch: !!watch,
+		wss: !!wss,
+		wssPort,
+	})
+
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 	if (!config) {
 		return (
 			<Box padding={1} flexDirection="column">
@@ -74,8 +104,8 @@ function Server({
 						</Text>
 						<Newline />
 						<TextInput
-							value={inputValue}
-							onChange={setInputValue}
+							value={configInput}
+							onChange={setConfigInputValue}
 							onSubmit={validate}
 							placeholder={`Enter config`}
 						/>

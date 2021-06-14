@@ -1,4 +1,8 @@
 import * as u from '@jsmanifest/utils'
+import * as com from 'noodl-common'
+import merge from 'lodash/merge'
+import { MetadataFileObject } from 'noodl-common'
+import produce, { Draft } from 'immer'
 import React from 'react'
 import yaml from 'yaml'
 import express from 'express'
@@ -6,15 +10,13 @@ import path from 'path'
 import fs from 'fs-extra'
 import globby from 'globby'
 import useCtx from '../../useCtx'
+import useConfigInput from '../../hooks/useConfigInput'
 import useWss from '../../hooks/useWss'
 import useWatcher from '../../hooks/useWatcher'
-import { MetadataFileObject } from '../../types'
 import * as co from '../../utils/color'
-import * as com from '../../utils/common'
-
-const log = console.log
 
 interface Options {
+	consumerConfigValue?: string
 	host?: string
 	local?: boolean
 	port?: number
@@ -23,7 +25,18 @@ interface Options {
 	wssPort?: number
 }
 
+const initialState = {
+	status: {
+		rootConfig: {
+			remote: null as null | boolean,
+			loading: false,
+			loaded: false,
+		},
+	},
+}
+
 function useServer({
+	consumerConfigValue,
 	host = 'localhost',
 	local = false,
 	port = 3001,
@@ -31,6 +44,7 @@ function useServer({
 	wss: enableWss = false,
 	wssPort,
 }: Options) {
+<<<<<<< HEAD
 	const server = React.useRef<express.Express | null>(null)
 	const { aggregator, cli, configuration, toggleSpinner } = useCtx()
 
@@ -38,8 +52,63 @@ function useServer({
 	const getDir = React.useCallback(
 		() => path.join(configuration.getPathToGenerateDir(), aggregator.configKey),
 		[aggregator.configKey, configuration],
+=======
+	const [state, _setState] = React.useState(initialState)
+	const server = React.useRef<express.Express | null>(null)
+	const { aggregator, configuration, log, toggleSpinner } = useCtx()
+
+	/* -------------------------------------------------------
+		---- Config Input
+	-------------------------------------------------------- */
+	const {
+		config,
+		inputValue: configInput,
+		setInputValue: setConfigInputValue,
+		valid,
+		validate,
+		validating,
+	} = useConfigInput({
+		initialConfig: consumerConfigValue,
+		onExists(configKey) {
+			if (aggregator.configKey !== configKey) {
+				aggregator.configKey = configKey
+				aggregator.init({}).finally(() => listen())
+			} else {
+				listen()
+			}
+		},
+		onValidateStart() {
+			toggleSpinner()
+		},
+		onValidateEnd() {
+			toggleSpinner(false)
+		},
+		onNotFound(configKey) {
+			log(u.red(`The config "${configKey}" does not exist`))
+		},
+		onError(error) {
+			log(`[${u.red(error.name)}] ${u.yellow(error.message)}`)
+		},
+	})
+
+	const setState = React.useCallback(
+		(
+			fn: (
+				draft: Draft<typeof initialState> | Partial<typeof initialState>,
+			) => void,
+		) => {
+			_setState(
+				produce((draft) => void (u.isFnc(fn) ? fn(draft) : merge(draft, fn))),
+			)
+		},
+		[],
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 	)
 	const watchGlob = path.join(getDir(), '**/*')
+
+	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
+	const getDir = (...s: string[]) =>
+		path.join(configuration.getPathToGenerateDir(), aggregator.configKey, ...s)
 
 	/* -------------------------------------------------------
 		---- WebSocket
@@ -52,7 +121,7 @@ function useServer({
 		host,
 		onConnection(socket) {
 			u.newline()
-			socket.on('message', (message) => log('Received: %s', message))
+			socket.on('message', (message) => log(`Received: ${message}`))
 		},
 		onClose() {
 			log(co.white(`WebSocket server has closed`))
@@ -76,12 +145,25 @@ function useServer({
 	} = useWatcher({
 		watchGlob,
 		watchOptions: { followSymlinks: true },
-		onReady() {
-			u.log(`${watchTag} Watching for file changes at ${co.magenta(getDir())}`)
+		onReady(watchedFiles, watchCount) {
+			log(
+				`${watchTag} Watching ${co.yellow(
+					watchCount,
+				)} files for changes at ${co.magenta(getDir())}`,
+			)
 			sendMessage({ type: 'WATCHING' })
 		},
 		onAdd(args) {
 			u.log(`${watchTag} file added`, args.path)
+			const metadata = com.createFileMetadataExtractor(
+				path.isAbsolute(args.path) ? args.path : com.getAbsFilePath(args.path),
+				{ config: aggregator.configKey },
+			)
+			if (args.path.includes('/assets')) {
+				registerRoutes({ assets: [metadata] })
+			} else if (args.path.endsWith('yml')) {
+				registerRoutes({ yml: [metadata] })
+			}
 			sendMessage({ type: 'FILE_ADDED', ...args })
 		},
 		onAddDir(args) {
@@ -148,9 +230,12 @@ function useServer({
 		)
 		server.current.get(
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
-			(req, res) => res.sendFile(path.join(getDir(), 'cadlEndpoint.yml')),
+			(req, res) => res.sendFile(getDir('cadlEndpoint.yml')),
 		)
+<<<<<<< HEAD
 		return server.current
+=======
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 	}, [])
 
 	/* -------------------------------------------------------
@@ -158,12 +243,16 @@ function useServer({
 	-------------------------------------------------------- */
 	const listen = React.useCallback(() => {
 		const metadata = getLocalFilesAsMetadata()
-		const server = connect()
-		registerRoutes(server, metadata)
+		connect()
+		registerRoutes(metadata)
 		/* -------------------------------------------------------
-			---- START SERVER
+			---- Start server
 		-------------------------------------------------------- */
+<<<<<<< HEAD
 		server?.listen({ cors: { origin: '*' }, port }, () => {
+=======
+		server.current?.listen({ cors: { origin: '*' }, port }, () => {
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 			const msg = `\n🚀 Server ready at ${co.cyan(getServerUrl())} ${
 				aggregator.configKey
 					? `using config ${co.yellow(aggregator.configKey)}`
@@ -174,81 +263,130 @@ function useServer({
 			enableWatch && watch()
 		})
 	}, [])
+<<<<<<< HEAD
 
 	// Create the routes
+=======
+	/* -------------------------------------------------------
+		---- Creating the routes
+	-------------------------------------------------------- */
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 	const registerRoutes = React.useCallback(
-		(
-			server: express.Express,
-			metadata: ReturnType<typeof getLocalFilesAsMetadata>,
-		) => {
+		(metadata: Partial<ReturnType<typeof getLocalFilesAsMetadata>>) => {
 			/* -------------------------------------------------------
 				---- YML (Pages and other root level objects)
 			-------------------------------------------------------- */
-			for (let { group, filepath, filename } of metadata.yml) {
-				filename = com.ensureSlashPrefix(filename)
-				filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
-				// Config (ex: meet4d.yml)
-				if (filename.includes(aggregator.configKey)) {
-					group = 'config'
-					if (local) {
-						server.get(
+			if (metadata.yml) {
+				for (let { group, filepath, filename } of metadata.yml) {
+					filename = com.ensureSlashPrefix(filename)
+					filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
+					// Config (ex: meet4d.yml)
+					if (filename.includes(aggregator.configKey)) {
+						group = 'config'
+						if (local) {
+							server.current?.get(
+								[filename, `${filename}.yml`, `${filename}_en.yml`],
+								(req, res) => {
+									const yml = fs.readFileSync(filepath, 'utf8')
+									const doc = yaml.parseDocument(yml)
+									doc.set('cadlBaseUrl', `http://${host}:${port}/`)
+									doc.has('myBaseUrl') &&
+										doc.set('myBaseUrl', `http://${host}:${port}/`)
+									res.send(doc.toString())
+								},
+							)
+						} else {
+							server.current?.get(
+								[filename, `${filename}.yml`, `${filename}_en.yml`],
+								(req, res) => {
+									res.sendFile(filepath)
+								},
+							)
+						}
+					}
+					// Pages (ex: SignIn.yml)
+					else {
+						group = 'page' as any
+						server.current?.get(
 							[filename, `${filename}.yml`, `${filename}_en.yml`],
 							(req, res) => {
-								const yml = fs.readFileSync(path.resolve(filepath), 'utf8')
-								const doc = yaml.parseDocument(yml)
-								doc.set('cadlBaseUrl', `http://${host}:${port}/`)
-								doc.has('myBaseUrl') &&
-									doc.set('myBaseUrl', `http://${host}:${port}/`)
-								res.send(doc.toString())
+								res.sendFile(filepath)
 							},
 						)
-					} else {
-						server.get(
-							[filename, `${filename}.yml`, `${filename}_en.yml`],
-							(req, res) =>
-								res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
-						)
 					}
+					const msg = `Registered route: ${co.yellow(filename)} [${co.magenta(
+						group,
+					)}]`
+					log(co.white(msg))
 				}
-				// Pages (ex: SignIn.yml)
-				else {
-					group = 'page' as any
-					server.get(
-						[filename, `${filename}.yml`, `${filename}_en.yml`],
-						(req, res) =>
-							res.sendFile(fs.readFileSync(path.resolve(filepath), 'utf8')),
-					)
-				}
-				const msg = `Registered route: ${co.yellow(filename)} [${co.magenta(
-					group,
-				)}]`
-				log(co.white(msg))
 			}
 			/* -------------------------------------------------------
 				---- ASSETS 
 			-------------------------------------------------------- */
-			for (let { group, filepath, filename } of metadata.assets) {
-				filename = com.ensureSlashPrefix(filename)
-				const msg = `Registering route: ${co.yellow(filename)} [${co.magenta(
-					group,
-				)}]`
-				log(co.white(msg))
-				server.get(
-					[filename, `/assets/${filename.replace('/', '')}`],
-					(req, res) => res.sendFile(path.resolve(filepath)),
-				)
+			if (metadata.assets) {
+				for (let { group, filepath, filename } of metadata.assets) {
+					filename = com.ensureSlashPrefix(filename)
+					const msg = `Registering route: ${co.yellow(filename)} [${co.magenta(
+						group,
+					)}]`
+					log(co.white(msg))
+					server.current?.get(
+						[filename, `/assets/${filename.replace('/', '')}`],
+						(req, res) => res.sendFile(filepath),
+					)
+				}
 			}
 		},
+<<<<<<< HEAD
 		[aggregator],
 	)
 
 	React.useEffect(() => {
 		!aggregator.configKey && (aggregator.configKey = cli.flags.config as string)
 	}, [])
+=======
+		[aggregator.configKey],
+	)
+
+	// React.useEffect(() => {
+	// 	const loadConfig = async () => {
+	// 		try {
+	// 			const updatedState = {} as typeof initialState
+
+	// 			if (state.status.rootConfig.remote === null) {
+	// 				log(`Checking locally for ${config}.yml`)
+	// 				const localConfigFilePath = getDir(`${config}.yml`)
+	// 				const isRemote = fs.existsSync(localConfigFilePath)
+
+	// 				updatedState.status.rootConfig.remote = isRemote
+
+	// 				if (isRemote) {
+	// 					log(`Found ${co.yellow(localConfigFilePath)}`)
+	// 					const configObject = fs.readJsonSync(getDir(config))
+	// 					console.log(`${config} config`, configObject)
+	// 				} else {
+	// 					log(`Retrieving ${co.yellow(config)}.yml remotely`)
+	// 				}
+	// 			}
+	// 		} catch (error) {
+	// 			console.error(error)
+	// 		}
+	// 	}
+
+	// 	valid && loadConfig()
+	// }, [state, valid])
+>>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 
 	return {
+		...state,
+		config,
+		configInput,
 		dir: getDir(),
 		listen,
+		setConfigInputValue,
+		valid,
+		validate,
+		validating,
 		url: getServerUrl(),
 		server,
 		watching,

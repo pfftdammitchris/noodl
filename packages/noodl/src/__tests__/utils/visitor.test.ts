@@ -1,28 +1,30 @@
 import { YAMLMap } from 'yaml'
 import { expect } from 'chai'
 import path from 'path'
-import { coolGold, italic, loadFilesAsDocs } from 'noodl-common'
+import * as com from 'noodl-common'
 import { noodl, visitor } from '../../utils/test-utils'
 
 before(() => {
-	loadFilesAsDocs({
-		as: 'metadataDocs',
-		dir: path.resolve(
-			path.join(process.cwd(), 'dev/noodl-morph/__tests__/fixtures'),
-		),
-		recursive: false,
-	}).forEach((obj: any) => {
-		const name = obj.name.substring(0, obj.name.indexOf('.'))
-		noodl.createPage({
-			name,
-			doc: obj.doc,
-			spread: /(BaseCSS|BaseDataModel)/.test(name),
+	com
+		.loadFilesAsDocs({
+			as: 'metadataDocs',
+			dir: path.resolve(
+				path.join(process.cwd(), 'dev/noodl-morph/__tests__/fixtures'),
+			),
+			recursive: false,
 		})
-	})
+		.forEach((obj: any) => {
+			const name = obj.name.substring(0, obj.name.indexOf('.'))
+			noodl.createPage({
+				name,
+				doc: obj.doc,
+				spread: /(BaseCSS|BaseDataModel)/.test(name),
+			})
+		})
 })
 
-describe(coolGold('visitor utils'), () => {
-	describe(italic('getValueFromRoot'), () => {
+describe(com.coolGold('visitor utils'), () => {
+	describe(com.italic('getValueFromRoot'), () => {
 		it(`should get values from root`, () => {
 			const v = visitor.utils()
 			const style = v.getValueFromRoot('Style') as YAMLMap

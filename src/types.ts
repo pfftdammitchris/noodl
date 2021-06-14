@@ -1,20 +1,14 @@
-import ConfigStore from 'configstore'
 import { Draft } from 'immer'
 import { Cli } from './cli'
 import { initialState as initialAppState } from './App'
 import useConfiguration from './hooks/useConfiguration'
-import createAggregator from './api/createAggregator'
+import Aggregator from './api/Aggregator'
+// import createAggregator from './api/createAggregator'
 
 export namespace App {
-	export interface Config {
-		paths?: {
-			json: string
-			yml: string
-		}
-		panels: { component: string; label: string; value: string }[]
-	}
 	export interface Context extends State {
-		aggregator: ReturnType<typeof createAggregator>
+		aggregator: Aggregator
+		// aggregator: ReturnType<typeof createAggregator>
 		cli: Cli
 		configuration: ReturnType<typeof useConfiguration>
 		exit: (error?: Error | undefined) => void
@@ -38,28 +32,4 @@ export interface PanelObject<Key extends string = string> {
 	value: Key
 	label: string
 	[key: string]: any
-}
-
-export type MetadataGroup =
-	| 'config'
-	| 'document'
-	| 'image'
-	| 'page'
-	| 'script'
-	| 'video'
-
-export interface MetadataBaseObject {
-	ext: string
-	filename: string
-	group: MetadataGroup
-}
-
-export interface MetadataFileObject extends MetadataBaseObject {
-	filepath: string
-}
-
-export interface MetadataLinkObject extends MetadataBaseObject {
-	isRemote: boolean
-	name: string
-	url: string
 }

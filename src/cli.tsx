@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 process.stdout.write('\x1Bc')
-import { config as dotenvConfig } from 'dotenv'
-dotenvConfig()
 import React from 'react'
 import meow from 'meow'
 import { render } from 'ink'
 import App from './App'
 import {
-	DEFAULT_GENERATE_DIR,
 	DEFAULT_SERVER_PORT,
 	DEFAULT_SERVER_HOSTNAME,
 	DEFAULT_WSS_PORT,
 } from './constants'
 import * as co from './utils/color'
+import store from './store'
+
+const pkg = require('../package.json')
 
 export type Cli = typeof cli
 
@@ -51,24 +51,33 @@ const cli = meow(
 `,
 	{
 		flags: {
-			config: { type: 'string', alias: 'c' },
+			config: {
+				type: 'string',
+				alias: 'c',
+				default: store.get('configKey') || '',
+			},
 			device: { type: 'string', default: 'web' },
 			env: { type: 'string', alias: 'e', default: 'test' },
 			fetch: { type: 'boolean', alias: 'f' },
 			generate: { type: 'string', alias: 'g' },
-			generatePath: { type: 'string', default: DEFAULT_GENERATE_DIR },
+			generatePath: { type: 'string' },
 			host: { alias: 'h', type: 'string', default: DEFAULT_SERVER_HOSTNAME },
 			local: { type: 'boolean', default: false },
 			port: { type: 'number', alias: 'p', default: DEFAULT_SERVER_PORT },
-			server: { type: 'boolean' },
+			server: {},
 			start: { type: 'string' },
 			script: { type: 'string', alias: 's' },
 			version: { type: 'string', alias: 'v', default: 'latest' },
+			pkgVersion: { type: 'string' },
 			watch: { type: 'boolean', default: true },
-			wss: { type: 'boolean', default: false },
+			wss: { type: 'boolean', default: true },
 			wssPort: { type: 'number', default: DEFAULT_WSS_PORT },
 		},
+		autoVersion: true,
+		pkg,
 	},
 )
+
+console.log(cli.input)
 
 render(<App cli={cli} />)
