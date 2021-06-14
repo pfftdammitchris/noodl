@@ -1,7 +1,6 @@
 import React from 'react'
 import { Box, Newline, Text } from 'ink'
 import TextInput from 'ink-text-input'
-import * as co from '../../utils/color'
 import useCtx from '../../useCtx'
 import useServer from './useServer'
 
@@ -24,25 +23,16 @@ function Server({
 	wss,
 	wssPort,
 }: Props) {
-	const { aggregator, log } = useCtx()
-	const {
-		status,
-		config,
-		configInput,
-		listen,
-		setConfigInputValue,
-		valid,
-		validating,
-		validate,
-	} = useServer({
-		consumerConfigValue,
-		host,
-		local: !!local,
-		port,
-		watch: !!watch,
-		wss: !!wss,
-		wssPort,
-	})
+	const { config, configInput, setConfigInputValue, validating, validate } =
+		useServer({
+			consumerConfigValue,
+			host,
+			local: !!local,
+			port,
+			watch: !!watch,
+			wss: !!wss,
+			wssPort,
+		})
 
 	if (!config) {
 		return (
