@@ -20,16 +20,9 @@ function useConfiguration({ cli, onInit }: Options) {
 		[],
 	)
 
-<<<<<<< HEAD
-	const getPathToGenerateDir = React.useCallback(
-		() => store.get(c.GENERATE_DIR_KEY) || '',
-		[],
-	)
-=======
 	const getPathToGenerateDir = React.useCallback(() => {
 		return store.get(c.GENERATE_DIR_KEY) || ''
 	}, [])
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 
 	const setPathToGenerateDir = React.useCallback(
 		(

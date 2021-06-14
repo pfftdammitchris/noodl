@@ -77,14 +77,6 @@ function useWatcher({
 		onAdd && watcher.current.on('add', onWatchEvent(onAdd))
 		onAddDir && watcher.current.on('addDir', onWatchEvent(onAddDir))
 		onChange && watcher.current.on('change', onWatchEvent(onChange))
-<<<<<<< HEAD
-		onError &&
-			watcher.current.on('error', (err) => {
-				setWatching(false)
-				onError(err)
-			})
-		onReady && watcher.current.on('ready', onReady)
-=======
 		onError && watcher.current.on('error', onError)
 		onReady &&
 			watcher.current.on('ready', () => {
@@ -98,7 +90,6 @@ function useWatcher({
 					: 0
 				onReady?.(watchedFiles, watchCount)
 			})
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 		onUnlink && watcher.current.on('unlink', onUnlink)
 		onUnlinkDir && watcher.current.on('unlinkDir', onUnlinkDir)
 	}, [])
