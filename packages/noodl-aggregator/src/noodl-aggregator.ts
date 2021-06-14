@@ -1,5 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import { AcceptArray } from '@jsmanifest/typefest'
+import curry from 'lodash/curry'
 import * as com from 'noodl-common'
 import { DeviceType, Env } from 'noodl-types'
 import {
@@ -9,11 +10,14 @@ import {
 } from 'noodl-utils'
 import invariant from 'invariant'
 import axios from 'axios'
+import globby from 'globby'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash.chunk'
+import * as util from './utils'
 import * as c from './constants'
 import * as t from './types'
+import { LiteralUnion } from 'type-fest'
 
 class NoodlAggregator {
 	#configVersion = 'latest'
@@ -167,29 +171,28 @@ class NoodlAggregator {
 			!!this.configKey,
 			`Cannot initiate the aggregator without setting a config key first`,
 		)
-		const rootConfigDoc = await this.loadRootConfig()
-		const appConfigDoc = await this.loadAppConfig()
-		if (shouldLoadPreloadPages) {
-			const preloadPages = (
-				appConfigDoc?.get('preload') as yaml.YAMLSeq
-			).toJSON() as string[]
-			const preloadPromises = preloadPages.map(async (preloadPage) =>
-				this.loadPage(preloadPage),
-			)
-			const preloadPagesAsDocs = (await Promise.all(
-				preloadPromises,
-			)) as yaml.Document[]
-			console.log(preloadPagesAsDocs)
-		}
-		if (shouldLoadPages) {
-			const params = { includePreloadPages: true }
-			u.isObj(shouldLoadPages) && u.assign(params, shouldLoadPages)
-			await this.loadPages(params)
-		}
-		return {
-			doc: { root: rootConfigDoc, app: appConfigDoc },
+
+		const result = {
+			doc: {
+				root: await this.loadRootConfig(),
+				app: await this.loadAppConfig(),
+			},
 			raw: { root: this.getRawRootConfigYml(), app: this.getRawAppConfigYml() },
 		}
+
+		if (shouldLoadPreloadPages) {
+			;(await Promise.all(
+				util
+					.extractPreloadPages(result.doc.app)
+					.map(async (preloadPage) => this.loadPage(preloadPage)),
+			)) as yaml.Document[]
+		}
+
+		if (shouldLoadPages) {
+			await this.loadPages()
+		}
+
+		return result
 	}
 
 	getRawRootConfigYml(): string {
@@ -213,10 +216,29 @@ class NoodlAggregator {
 		}
 	}
 
-	loadDocs(objs: AcceptArray<{ name: string; doc: yaml.Document }>) {
-		for (const { name, doc } of u.array(objs)) {
-			this.root.set(name, doc)
-		}
+	#load = curry(
+		(type: LiteralUnion<'doc' | 'yml', string>, items: t.LoadOptions) => {
+			if (u.isStr(items)) {
+				// Load from local folder
+			} else {
+				items
+				const typeKey = type === 'doc' ? 'doc' : type === 'yml' ? 'yml' : ''
+				for (const item of u.array(items)) {
+					const name = item.name
+					const data = item[typeKey]
+					this.root.set(name, type === 'yml' ? yaml.parseDocument(data) : data)
+				}
+			}
+		},
+	)
+
+	loadDocs(value: t.LoadOptions<'doc'>) {
+		this.#load('doc', value)
+		return this
+	}
+
+	loadYmls(value: t.LoadOptions<'yml'>) {
+		this.#load('yml', value)
 		return this
 	}
 
@@ -361,12 +383,9 @@ class NoodlAggregator {
 
 	async loadPages({
 		chunks = 4,
-		includePreloadPages = true,
 	}: {
 		chunks?: number
-		includePreloadPages?: boolean
 	} = {}) {
-		if (includePreloadPages) await this.loadPreloadPages()
 		const pages = [] as string[]
 		const nodes = (this.root.get(this.appKey) as yaml.Document)?.get('page')
 		if (yaml.isSeq(nodes)) {

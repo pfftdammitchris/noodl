@@ -44,15 +44,6 @@ function useServer({
 	wss: enableWss = false,
 	wssPort,
 }: Options) {
-<<<<<<< HEAD
-	const server = React.useRef<express.Express | null>(null)
-	const { aggregator, cli, configuration, toggleSpinner } = useCtx()
-
-	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
-	const getDir = React.useCallback(
-		() => path.join(configuration.getPathToGenerateDir(), aggregator.configKey),
-		[aggregator.configKey, configuration],
-=======
 	const [state, _setState] = React.useState(initialState)
 	const server = React.useRef<express.Express | null>(null)
 	const { aggregator, configuration, log, toggleSpinner } = useCtx()
@@ -102,7 +93,6 @@ function useServer({
 			)
 		},
 		[],
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 	)
 	const watchGlob = path.join(getDir(), '**/*')
 
@@ -232,10 +222,6 @@ function useServer({
 			['/cadlEndpoint', '/cadlEndpoint.yml', '/cadlEndpoint_en.yml'],
 			(req, res) => res.sendFile(getDir('cadlEndpoint.yml')),
 		)
-<<<<<<< HEAD
-		return server.current
-=======
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 	}, [])
 
 	/* -------------------------------------------------------
@@ -248,11 +234,7 @@ function useServer({
 		/* -------------------------------------------------------
 			---- Start server
 		-------------------------------------------------------- */
-<<<<<<< HEAD
-		server?.listen({ cors: { origin: '*' }, port }, () => {
-=======
 		server.current?.listen({ cors: { origin: '*' }, port }, () => {
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 			const msg = `\n🚀 Server ready at ${co.cyan(getServerUrl())} ${
 				aggregator.configKey
 					? `using config ${co.yellow(aggregator.configKey)}`
@@ -263,14 +245,9 @@ function useServer({
 			enableWatch && watch()
 		})
 	}, [])
-<<<<<<< HEAD
-
-	// Create the routes
-=======
 	/* -------------------------------------------------------
 		---- Creating the routes
 	-------------------------------------------------------- */
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 	const registerRoutes = React.useCallback(
 		(metadata: Partial<ReturnType<typeof getLocalFilesAsMetadata>>) => {
 			/* -------------------------------------------------------
@@ -337,14 +314,6 @@ function useServer({
 				}
 			}
 		},
-<<<<<<< HEAD
-		[aggregator],
-	)
-
-	React.useEffect(() => {
-		!aggregator.configKey && (aggregator.configKey = cli.flags.config as string)
-	}, [])
-=======
 		[aggregator.configKey],
 	)
 
@@ -375,7 +344,6 @@ function useServer({
 
 	// 	valid && loadConfig()
 	// }, [state, valid])
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 
 	return {
 		...state,

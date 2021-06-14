@@ -16,49 +16,6 @@ export interface Props {
 }
 
 function Server({
-<<<<<<< HEAD
-	config: configProp,
-	host,
-	local,
-	port,
-	watch: enableWatch,
-	wss: enableWss,
-}: Props) {
-	const { log, toggleSpinner } = useCtx()
-
-	const { config, inputValue, setInputValue, valid, validate, validating } =
-		useConfigInput({
-			initialConfig: configProp,
-			onValidateStart() {
-				toggleSpinner()
-			},
-			onValidateEnd() {
-				toggleSpinner(false)
-			},
-			onNotFound(configKey) {
-				log(u.red(`The config "${configKey}" does not exist`))
-			},
-			onError(error) {
-				log(`[${u.red(error.name)}] ${u.yellow(error.message)}`)
-			},
-		})
-
-	const { listen, server, watching, wss } = useServer({
-		host: host as string,
-		local: !!local,
-		port: port as number,
-		watch: !!enableWss,
-		wss: !!enableWss,
-	})
-
-	React.useEffect(() => {
-		// if (!valid || server.current) return
-		// if (enableWatch && !watching) return
-		// if (enableWss && !wss.current) return
-		valid && listen()
-	}, [valid])
-
-=======
 	config: consumerConfigValue,
 	host,
 	local,
@@ -87,7 +44,6 @@ function Server({
 		wssPort,
 	})
 
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 	if (!config) {
 		return (
 			<Box padding={1} flexDirection="column">

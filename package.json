@@ -12,7 +12,7 @@
 		"cli.js"
 	],
 	"scripts": {
-		"postinstall": "lerna exec --scope noodl-common --scope noodl-aggregator --scope generator 'npm run build'",
+		"postinstall": "lerna exec --scope noodl-types --scope noodl-common --scope noodl-aggregator --scope generator \"npm run build\"",
 		"prebuild": "rm -rf dist",
 		"build": "tsc",
 		"bootstrap": "lerna bootstrap --hoist",
@@ -24,23 +24,16 @@
 		"pub": "node scripts/publish.js -p"
 	},
 	"dependencies": {
-<<<<<<< HEAD
-		"axios": "^0.21.1",
-		"configstore": "^5.0.1",
-		"download": "^8.0.0",
-		"express": "^4.17.1",
-		"graphql": "^15.5.0",
-=======
 		"@jsmanifest/utils": "^1.0.7",
 		"axios": "^0.21.1",
 		"chokidar": "^3.5.1",
 		"configstore": "^5.0.1",
 		"download": "^8.0.0",
+		"execa": "^5.1.1",
 		"express": "^4.17.1",
 		"fast-xml-parser": "^3.19.0",
 		"fs-extra": "^10.0.0",
 		"globby": "^11.0.2",
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 		"immer": "^9.0.1",
 		"ink": "^3.0.8",
 		"ink-big-text": "^1.2.0",
@@ -111,14 +104,8 @@
 		"generator": "file:packages/generator",
 		"ink-testing-library": "^2.1.0",
 		"lerna": "^4.0.0",
-<<<<<<< HEAD
-		"lodash": "^4.17.21",
-		"meow": "^9.0.0",
-		"mocha": "^8.2.1",
-=======
 		"mocha": "^8.4.0",
 		"nock": "^13.1.0",
->>>>>>> 989ad35151a741f787214b6fac3fd05a822c1d49
 		"prettier": "^2.3.1",
 		"rollup": "^2.39.0",
 		"rollup-plugin-filesize": "^9.1.0",

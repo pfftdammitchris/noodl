@@ -73,12 +73,9 @@ describe(com.coolGold(`noodl-aggregator`), () => {
 		})
 
 		it(`should load all the preload pages by default`, async () => {
-			const { doc } = await aggregator.init({ loadPages: false })
-			const appConfig = doc.app?.toJS()
-
-			for (const name of appConfig.preload) {
+			for (const name of preloadPages) {
 				nock(baseUrl)
-					.get(new RegExp(`\/(${name}|${name}_en).yml`, 'gi'))
+					.get(new RegExp(name as string, 'gi'))
 					.reply(
 						200,
 						`
@@ -89,18 +86,33 @@ describe(com.coolGold(`noodl-aggregator`), () => {
 					`,
 					)
 			}
-
+			await aggregator.init({ loadPages: false })
 			preloadPages.forEach((preloadPage) => {
 				expect(aggregator.root.get(preloadPage as string)).to.exist
 			})
+		})
 
-			for (const [name, doc] of aggregator.root) {
-				console.log(`${name}`, doc.toJSON?.())
+		it(`should load all the pages by default`, async () => {
+			for (const name of pages) {
+				nock(baseUrl)
+					.get(`/${name}_en.yml`)
+					.reply(200, {
+						data: `
+					${name}:
+						VoidObj: vVoOiIdD
+						Style:
+							top: '0'
+					`,
+					})
 			}
+			await aggregator.init({ loadPreloadPages: false })
+			pages.forEach((page) => {
+				expect(aggregator.root.get(`${page}_en`)).to.exist
+			})
 		})
+	})
 
-		xit(`should load all the pages by default`, async () => {
-			//
-		})
+	xit(`should set the page key as $\{pageName\}_en`, () => {
+		//
 	})
 })
