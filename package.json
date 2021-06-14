@@ -12,7 +12,7 @@
 		"cli.js"
 	],
 	"scripts": {
-		"postinstall": "lerna exec --scope noodl-types --scope noodl-common --scope noodl-aggregator --scope generator \"npm run build\"",
+		"postinstall": "lerna exec --scope noodl-types --scope noodl-common --scope noodl-aggregator \"npm run build\"",
 		"prebuild": "rm -rf dist",
 		"build": "tsc",
 		"bootstrap": "lerna bootstrap --hoist",
@@ -28,6 +28,7 @@
 		"axios": "^0.21.1",
 		"chokidar": "^3.5.1",
 		"configstore": "^5.0.1",
+		"dotenv": "^10.0.0",
 		"download": "^8.0.0",
 		"execa": "^5.1.1",
 		"express": "^4.17.1",

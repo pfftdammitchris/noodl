@@ -94,11 +94,11 @@ function useServer({
 		},
 		[],
 	)
-	const watchGlob = path.join(getDir(), '**/*')
 
 	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
 	const getDir = (...s: string[]) =>
 		path.join(configuration.getPathToGenerateDir(), aggregator.configKey, ...s)
+	const watchGlob = path.join(getDir(), '**/*')
 
 	/* -------------------------------------------------------
 		---- WebSocket
