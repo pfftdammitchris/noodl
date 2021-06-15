@@ -9,7 +9,7 @@ import aggregateActions from './aggregators/aggregateActions'
 import * as co from '../src/utils/color'
 
 const paths = {
-	docs: com.getAbsFilePath('generated'),
+	docs: com.getAbsFilePath('generated/test'),
 	metadata: com.getAbsFilePath('data/generated/metadata.json'),
 	typings: com.getAbsFilePath('data/generated/typings.d.ts'),
 	stats: com.getAbsFilePath('data/generated/data.json'),
