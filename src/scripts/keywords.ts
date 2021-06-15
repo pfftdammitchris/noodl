@@ -98,7 +98,7 @@ async function getAllKeywordOccurrences({
 function createAccumulator(keywords: string[]) {
 	const stats: {
 		[pageName: string]: {
-			occurences: {
+			occurrences: {
 				[keyword: string]: number
 			}
 			results: {
@@ -117,7 +117,7 @@ function createAccumulator(keywords: string[]) {
 	function _add(pageName: string, { key, value }: { key: string; value: any }) {
 		if (!stats[pageName]) {
 			stats[pageName] = {
-				occurences: createObjWithKeys(keywords, 0),
+				occurrences: createObjWithKeys(keywords, 0),
 				results: createObjWithKeys(keywords, {}),
 			}
 		}
@@ -137,7 +137,7 @@ function createAccumulator(keywords: string[]) {
 		forEachDeepEntries(obj, (key, value) => {
 			if (isMatch(key)) {
 				_add(pageName, { key, value })
-				stats[pageName].occurences[key]++
+				stats[pageName].occurrences[key]++
 			}
 		})
 
