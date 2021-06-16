@@ -86,14 +86,6 @@ function createGetReference(root: Aggregator['root']) {
 	}
 }
 
-class Reference {
-	node: yaml.Scalar<string>
-
-	constructor(node: yaml.Scalar<string>) {
-		this.node = node
-	}
-}
-
 for (const { name, doc } of docFiles) {
 	aggregator.root.set(name, doc)
 	// aggregateActions({ name, doc, data })
