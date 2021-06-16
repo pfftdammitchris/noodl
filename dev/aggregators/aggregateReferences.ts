@@ -4,6 +4,7 @@ import flowRight from 'lodash/flowRight'
 import yaml from 'yaml'
 import { data as stats } from '../morph'
 import visit from '../visit'
+import * as util from '../utils'
 import * as t from '../types'
 
 class Reference {
@@ -26,7 +27,7 @@ const getReference: t.NoodlVisitFn<yaml.Scalar> = ({
 		const { value } = node
 		if (Identify.reference(value)) {
 			const reference = new Reference(node)
-
+			const parsedReference = util.parseReference.call(doc, node)
 			if (!(value in data.references)) {
 				data.references[value] = { page: name }
 			}
