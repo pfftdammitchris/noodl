@@ -7,6 +7,7 @@ const getAbsFilePath = (...s) => path.resolve(path.join(...s))
 
 const lib = {
 	docs: { name: 'noodl-cli-docs', path: getAbsFilePath('packages/docs') },
+	noodl: { name: 'noodl', path: getAbsFilePath('packages/noodl') },
 	nt: { name: 'noodl-types', path: getAbsFilePath('packages/noodl-types') },
 	gen: { name: 'generator', path: getAbsFilePath('packages/generator') },
 	nag: {
@@ -23,6 +24,7 @@ const cli = meow(``, {
 	flags: {
 		docs: { alias: 'd', type: 'string' },
 		gen: { alias: 'g', type: 'string' },
+		noodl: { type: 'string' },
 		nt: { type: 'string' },
 		nac: { type: 'string' },
 	},

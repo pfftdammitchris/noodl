@@ -1,11 +1,13 @@
 process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
 import * as com from 'noodl-common'
+import { Identify } from 'noodl-types'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import Aggregator from '../src/api/Aggregator'
 import pkg from '../package.json'
 import aggregateActions from './aggregators/aggregateActions'
+import aggregateReferences from './aggregators/aggregateReferences'
 import * as co from '../src/utils/color'
 
 const paths = {
@@ -64,11 +66,38 @@ export const data = {
 			}[]
 		}
 	>,
+	references: {},
+}
+
+function createGetReference(root: Aggregator['root']) {
+	function _get(key: string) {
+		if (Identify.reference(key)) {
+			if (key.startsWith('..')) {
+				const dataKey = key.strike
+			} else if (key.startsWith('.')) {
+				//
+			} else if (key.startsWith('=')) {
+				//
+			} else if (key.startsWith('@')) {
+				//
+			}
+		}
+		return root.get(key)
+	}
+}
+
+class Reference {
+	node: yaml.Scalar<string>
+
+	constructor(node: yaml.Scalar<string>) {
+		this.node = node
+	}
 }
 
 for (const { name, doc } of docFiles) {
 	aggregator.root.set(name, doc)
-	aggregateActions({ name, doc, data })
+	// aggregateActions({ name, doc, data })
+	aggregateReferences({ name, doc, data })
 }
 
 Promise.resolve()

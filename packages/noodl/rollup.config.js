@@ -1,37 +1,41 @@
+import { DEFAULT_EXTENSIONS } from '@babel/core'
 import babel from '@rollup/plugin-babel'
-import typescript from '@rollup/plugin-typescript'
 import resolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
+import typescript from 'rollup-plugin-typescript2'
 import filesize from 'rollup-plugin-filesize'
 import external from 'rollup-plugin-peer-deps-external'
 import progress from 'rollup-plugin-progress'
+
+const extensions = [...DEFAULT_EXTENSIONS, '.ts']
 
 export default {
 	input: 'src/index.ts',
 	output: {
 		dir: 'dist',
-		format: 'cjs',
-		sourcemap: 'inline',
+		exports: 'named',
+		format: 'umd',
+		name: 'noodl',
+		sourcemap: true,
 	},
 	plugins: [
-		commonjs(),
-		typescript(),
 		filesize(),
 		external(),
 		progress(),
-		resolve(),
+		resolve({
+			extensions,
+			moduleDirectories: ['node_modules'],
+		}),
+		typescript({
+			rollupCommonJSResolveHack: true,
+			check: false,
+			abortOnError: false,
+			clean: true,
+		}),
 		babel({
 			babelHelpers: 'runtime',
-			exclude: ['node_modules/**/*'],
-			extensions: ['.ts'],
-			presets: ['@babel/env', '@babel/typescript'],
-			plugins: [
-				'lodash',
-				'@babel/proposal-class-properties',
-				'@babel/plugin-proposal-private-methods',
-				'@babel/proposal-object-rest-spread',
-				'@babel/plugin-transform-runtime',
-			],
+			exclude: ['node_modules'],
+			include: ['src/**/*'],
+			extensions: ['.js'],
 		}),
 	],
 }

@@ -1,6 +1,2 @@
-export { default as Noodl } from './Noodl'
-export { default as Page } from './Page'
-export { default as Root } from './Root'
-export { default as Visitor } from './Visitor'
-export { default as Identify } from './utils/Identify'
-export * from './types/types'
+export * from './types'
+export * from './utils/scalar'

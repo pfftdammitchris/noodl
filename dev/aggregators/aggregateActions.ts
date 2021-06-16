@@ -3,29 +3,10 @@ import { Identify } from 'noodl-types'
 import flowRight from 'lodash/flowRight'
 import yaml from 'yaml'
 import { data as stats } from '../morph'
+import visit from '../visit'
+import * as t from '../types'
 
-export interface NoodlVisitFn<N extends yaml.Node = yaml.Node> {
-	(args: {
-		name: string
-		doc: yaml.Document
-		data: typeof stats
-		key: Parameters<yaml.visitorFn<N>>[0]
-		node: Parameters<yaml.visitorFn<N>>[1]
-		path: Parameters<yaml.visitorFn<N>>[2]
-	}): ReturnType<yaml.visitorFn<N>>
-}
-
-export const visit = <N extends yaml.Node = any>(
-	{ name, doc, data },
-	fn: NoodlVisitFn<N>,
-) => {
-	const visitNode: yaml.visitorFn<N> = (key, node, path) => {
-		return fn({ name, doc, data, key, node, path })
-	}
-	return visitNode
-}
-
-export const handleActionType: NoodlVisitFn<yaml.Pair> = ({
+export const handleActionType: t.NoodlVisitFn<yaml.Pair> = ({
 	name,
 	doc,
 	data,
@@ -65,7 +46,7 @@ export const handleActionType: NoodlVisitFn<yaml.Pair> = ({
 	}
 }
 
-export const handleActionProperty: NoodlVisitFn<yaml.YAMLMap> = ({
+export const handleActionProperty: t.NoodlVisitFn<yaml.YAMLMap> = ({
 	name,
 	data,
 	node,
