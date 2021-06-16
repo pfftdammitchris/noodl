@@ -1,7 +1,7 @@
 import * as u from '@jsmanifest/utils'
-import { AcceptArray } from '@jsmanifest/typefest'
-import curry from 'lodash/curry'
 import * as com from 'noodl-common'
+import curry from 'lodash/curry'
+import { LiteralUnion } from 'type-fest'
 import { DeviceType, Env, RootConfig } from 'noodl-types'
 import {
 	createNoodlPlaceholderReplacer,
@@ -17,12 +17,10 @@ import chunk from 'lodash.chunk'
 import * as util from './utils'
 import * as c from './constants'
 import * as t from './types'
-import { LiteralUnion } from 'type-fest'
 
 class NoodlAggregator {
 	#configVersion = 'latest'
 	configKey = ''
-	cbIds = [] as string[]
 	cbs = {} as Record<string, ((...args: any[]) => any)[]>
 	deviceType: DeviceType = 'web'
 	env: Env = 'test'
@@ -426,14 +424,9 @@ class NoodlAggregator {
 	on<Evt extends keyof t.Hooks>(
 		evt: Evt,
 		fn: (args: t.Hooks[Evt]['args']) => void,
-		id?: string,
 	) {
 		!u.isArr(this.cbs[evt]) && (this.cbs[evt] = [])
-		if (!this.cbs[evt]?.includes(fn)) {
-			if (id && this.cbIds.includes(id)) return this
-			this.cbs[evt]?.push(fn)
-		}
-		id && !this.cbIds.includes(id) && this.cbIds.push(id)
+		this.cbs[evt]?.push(fn)
 		return this
 	}
 

@@ -3,6 +3,7 @@ import * as com from 'noodl-common'
 import fs from 'fs-extra'
 import path from 'path'
 import { expect } from 'chai'
+import globby from 'globby'
 import nock from 'nock'
 import yaml from 'yaml'
 import Aggregator from '../noodl-aggregator'
@@ -12,13 +13,32 @@ const cadlEndpointYml = fs.readFileSync(
 	path.join(__dirname, './fixtures/cadlEndpoint.yml'),
 	'utf8',
 )
+
 const meet4dYml = fs.readFileSync(
 	path.join(__dirname, './fixtures/meet4d.yml'),
 	'utf8',
 )
+
+const preloadPagesAsYmls = com.loadFiles({
+	ext: 'yml',
+	dir: path.join(__dirname, './fixtures'),
+	raw: true,
+})
+
+const pagesAsYmls = com.loadFiles({
+	ext: 'yml',
+	dir: path.join(__dirname, './fixtures'),
+	raw: true,
+})
+
 const cadlEndpointDoc = yaml.parseDocument(cadlEndpointYml)
 const preloadPages = (cadlEndpointDoc.get('preload') as yaml.YAMLSeq).toJSON()
 const pages = (cadlEndpointDoc.get('page') as yaml.YAMLSeq).toJSON()
+const mockAllPageRequests = () => {
+	for (const page of [...preloadPages, ...pages]) {
+		nock(baseUrl).get(`/${page}.yml`).reply(200)
+	}
+}
 
 let aggregator: Aggregator
 let assetsUrl = `https://public.aitmed.com/cadl/meet3_0.45d/assets`
@@ -111,7 +131,8 @@ describe(com.coolGold(`noodl-aggregator`), () => {
 		})
 	})
 
-	xit(`should set the page key as $\{pageName\}_en`, () => {
-		//
+	it(`should set keys without the ext when inserting to the root $\{pageName\}_en`, async () => {
+		await aggregator.init()
+		console.log(aggregator.root)
 	})
 })

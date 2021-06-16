@@ -9,6 +9,7 @@ const lib = {
 	docs: { name: 'noodl-cli-docs', path: getAbsFilePath('packages/docs') },
 	noodl: { name: 'noodl', path: getAbsFilePath('packages/noodl') },
 	nt: { name: 'noodl-types', path: getAbsFilePath('packages/noodl-types') },
+	nc: { name: 'noodl-common', path: getAbsFilePath('packages/noodl-common') },
 	gen: { name: 'generator', path: getAbsFilePath('packages/generator') },
 	nag: {
 		name: 'noodl-aggregator',
@@ -27,6 +28,7 @@ const cli = meow(``, {
 		noodl: { type: 'string' },
 		nt: { type: 'string' },
 		nac: { type: 'string' },
+		nc: { type: 'string' },
 	},
 })
 

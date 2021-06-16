@@ -13,7 +13,7 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "es5"
+		"target": "es2015"
 	},
 	"exclude": ["node_modules"],
 	"include": ["src"]

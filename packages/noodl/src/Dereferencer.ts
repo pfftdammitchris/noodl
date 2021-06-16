@@ -1,4 +1,5 @@
 import { isScalar, Scalar, YAMLMap } from 'yaml'
+import Aggregator from 'noodl-aggregator'
 import { YAMLNode } from './types'
 import NoodlUtils from './Utils'
 import {

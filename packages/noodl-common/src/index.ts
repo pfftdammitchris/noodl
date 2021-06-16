@@ -1,9 +1,14 @@
+import { JsonObject, LiteralUnion } from 'type-fest'
 import * as u from '@jsmanifest/utils'
 import { sync as globbySync } from 'globby'
-import { readFileSync } from 'fs'
+import { existsSync, readFile, readFileSync, readJsonSync } from 'fs-extra'
 import path from 'path'
 import chalk from 'chalk'
-import { Document, parseDocument } from 'yaml'
+import {
+	Document,
+	parse as parseYmlToJson,
+	parseDocument as parseYmlToDoc,
+} from 'yaml'
 import * as t from './types'
 
 export * from './types'
@@ -153,43 +158,107 @@ export function hasSlash(s: string) {
 	return !!s?.includes('/')
 }
 
-export function loadFiles(opts: {
+export type LoadFileType = 'doc' | 'yml' | 'json'
+
+/**
+ * Loads a file at filepath relative to the current file
+ * @param { string } filepath - File path of file to be loaded
+ */
+export function loadFile<T extends 'yml'>(
+	filepath: string,
+	type?: LiteralUnion<T, string>,
+): string
+
+export function loadFile<T extends 'doc'>(
+	filepath: string,
+	type: LiteralUnion<T, string>,
+): Document
+
+export function loadFile<T extends 'json'>(
+	filepath: string,
+	type: LiteralUnion<T, string>,
+): Record<string, any>
+
+export function loadFile<T extends LoadFileType = LoadFileType>(
+	filepath: string,
+	type: T,
+) {
+	if (u.isStr(filepath)) {
+		if (!path.isAbsolute(filepath)) filepath = getAbsFilePath(filepath)
+		if (existsSync(filepath)) {
+			if (type) {
+				if (type === 'doc') return parseYmlToDoc(readFileSync(filepath, 'utf8'))
+				if (type === 'json')
+					return parseYmlToJson(readFileSync(filepath, 'utf8'))
+			}
+			return readFileSync(filepath, 'utf8')
+		}
+	}
+}
+
+export function loadFiles(filepath: string, type?: 'yml'): string[]
+export function loadFiles(filepath: string, type: 'doc'): Document[]
+export function loadFiles(filepath: string, type: 'json'): Record<string, any>[]
+export function loadFiles<T extends LoadFileType>(
+	filepath: string,
+	opts: {
+		metadata?: boolean
+		type?: T
+	},
+): typeof opts.metadata extends true
+	? t.MetadataFileObject[]
+	: ReturnType<typeof loadFile>[]
+
+export function loadFiles<Raw extends true | undefined = undefined>(opts: {
 	dir: string
 	ext: 'yml'
 	onFile?(args: { file: Document; filename: string }): void
-}): Document[]
+	raw?: Raw
+}): Raw extends true ? string[] : Document[]
+
 export function loadFiles(opts: {
 	dir: string
 	ext: 'json'
 	onFile?(args: { file: Record<string, any>; filename: string }): void
 }): Record<string, any>[]
-export function loadFiles({
-	dir,
-	ext = 'json',
-	onFile,
-}: {
-	dir: string
-	ext?: 'json' | 'yml'
-	onFile?(args: {
-		file?: Record<string, any> | Document
-		filename: string
-	}): void
-}) {
-	return globbySync(path.resolve(getAbsFilePath(dir), `**/*.${ext}`)).reduce(
-		(acc, filename) => {
-			const file =
-				ext === 'json'
-					? JSON.parse(readFileSync(filename, 'utf8'))
-					: parseDocument(readFileSync(filename, 'utf8'))
-			onFile?.({ file, filename })
-			return acc.concat(file)
-		},
-		[],
-	)
+
+export function loadFiles(
+	args:
+		| string
+		| {
+				dir: string
+				ext?: 'json' | 'yml'
+				onFile?(args: {
+					file?: Record<string, any> | Document
+					filename: string
+				}): void
+				raw?: boolean
+		  },
+	type: LoadFileType = 'yml',
+) {
+	let ext = 'yml'
+
+	if (u.isStr(args)) {
+		return globbySync((getAbsFilePath(args), `**/*.${ext}`)).map((filepath) =>
+			loadFile(filepath, type),
+		)
+	}
+	return
+	// const { dir, ext = 'json', onFile, raw } = args
+	return globbySync((getAbsFilePath(dir), glob)).reduce((acc, filename) => {
+		const file =
+			ext === 'json'
+				? JSON.parse(readFileSync(filename, 'utf8'))
+				: raw
+				? readFileSync(filename, 'utf8')
+				: parseYmlToDoc(readFileSync(filename, 'utf8'))
+		onFile?.({ file, filename })
+		return acc.concat(file)
+	}, [])
 }
 
 export function loadFileAsDoc(filepath: string) {
-	return parseDocument(readFileSync(filepath, 'utf8'))
+	return parseYmlToDoc(readFileSync(filepath, 'utf8'))
 }
 
 export function loadFilesAsDocs(opts: {
@@ -198,12 +267,14 @@ export function loadFilesAsDocs(opts: {
 	includeExt?: boolean
 	recursive: boolean
 }): Document.Parsed[]
+
 export function loadFilesAsDocs(opts: {
 	as: 'metadataDocs'
 	dir: string
 	includeExt?: boolean
 	recursive: boolean
 }): { name: string; doc: Document.Parsed }[]
+
 export function loadFilesAsDocs({
 	as = 'doc',
 	dir,
