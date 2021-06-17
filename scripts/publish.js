@@ -3,10 +3,12 @@ const execa = require('execa')
 const meow = require('meow')
 
 const regex = {
+	noodl: /(noodl)/i,
 	'noodl-action-chain': /(nac|noodl-action-chain)/i,
 	'noodl-aggregator': /(aggr|na|aggregator|noodl-aggregator)/i,
 	'noodl-common': /(nc|ncom|ncommon|noodl-common)/i,
 	'noodl-types': /(nt|types|noodl-types)/i,
+	generator: /(gen|generator)/i,
 }
 
 const cli = meow(``, {
@@ -30,9 +32,6 @@ const { message = 'Update(s) to lib', publish } = cli.flags
 			`git commit -m "${message}"`,
 			`lerna exec --scope ${lib} "npm run build && npm publish"`,
 		].join(' && '),
-		{
-			shell: true,
-			stdio: 'inherit',
-		},
+		{ shell: true, stdio: 'inherit' },
 	)
 })()
