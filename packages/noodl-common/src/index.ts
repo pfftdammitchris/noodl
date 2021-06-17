@@ -269,15 +269,46 @@ export function loadFiles<
 		  } = 'yml',
 ) {
 	let ext = 'yml'
-	if (u.isStr(args) && (!opts || u.isStr(opts))) {
-		if (opts === 'json') ext = 'json'
+	let type = 'yml'
+
+	if (u.isStr(args)) {
+		opts === 'json' && (ext = 'json')
 		const dir = getAbsFilePath(args)
 		const glob = `**/*.${ext}`
-		return globbySync(path.join(dir, glob)).map((filepath) =>
-			loadFile(filepath, opts),
-		)
-	}
-	if (u.isObj(args)) {
+		if (u.isStr(opts)) {
+			return globbySync(path.join(dir, glob), { onlyFiles: true }).map(
+				(filepath) => loadFile(filepath, opts),
+			)
+		} else if (u.isObj(opts)) {
+			function listReducer(acc: any[] = [], filepath: string) {
+				return acc.concat(loadFile(filepath, opts.type))
+			}
+			function mapReducer(acc: Map<string, any>, filepath: string) {
+				const filename = path.posix.basename(filepath)
+				acc.set(filename, loadFile(filepath, opts.type))
+				return acc
+			}
+			function objectReducer(acc: Record<string, any>, filepath: string) {
+				const metadata = getFileMetadataObject(filepath)
+				acc[metadata.filename] = loadFile(filepath, opts.type)
+				return acc
+			}
+			const reducer =
+				opts.as === 'list'
+					? listReducer
+					: opts.as === 'map'
+					? mapReducer
+					: objectReducer
+			const globPath = path.posix.join(dir, glob)
+			console.log(`dir: ${u.yellow(dir)}`)
+			console.log(`globpath: ${u.yellow(globPath)}`)
+			return u.reduce(
+				globbySync(globPath, { onlyFiles: true }),
+				reducer,
+				opts.as === 'list' ? [] : opts.as === 'map' ? new Map() : {},
+			)
+		}
+	} else if (u.isObj(args)) {
 		ext = args.ext || ext
 		const result = {}
 		const dir = getAbsFilePath(args.dir)

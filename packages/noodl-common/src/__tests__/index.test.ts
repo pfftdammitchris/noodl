@@ -53,10 +53,9 @@ describe(nc.coolGold(`noodl-common`), () => {
 				ymls.forEach((yml) => expect(yaml.isDocument(yml)).to.be.true)
 			})
 
-			xit(`should return an array of objects when 2nd arg is "json"`, () => {
+			it(`should return an array of objects when 2nd arg is "json"`, () => {
 				const ymls = nc.loadFiles(pathNameToFixtures, 'json')
-				expect(ymls).to.have.lengthOf(filenames.length)
-				ymls.forEach((yml) => expect(yml).to.be.an('object'))
+				expect(ymls).to.be.an('array')
 			})
 
 			// it(`should not include the ext in the keys by default`, () => {
@@ -68,24 +67,20 @@ describe(nc.coolGold(`noodl-common`), () => {
 			// 	)
 			// })
 
-			xit(`should load them into an array if as is "list"`, () => {
-				const result = nc.loadFiles(pathnameToAboutAitmedPage, { as: 'list' })
-				const keys = u.keys(result)
-				expect(result).to.be.an('object')
-				expect(keys).to.have.lengthOf(filenames.length)
+			it(`should load them into an array if as is "list"`, () => {
+				const result = nc.loadFiles(pathNameToFixtures, { as: 'list' })
+				expect(result).to.be.an('array').with.lengthOf(filenames.length)
 				u.eachEntries(result, (filename, yml) => expect(yml).to.be.a.string)
 			})
 
-			xit(`should load them into an object if as is "map"`, () => {
-				const result = nc.loadFiles(pathnameToAboutAitmedPage)
-				const keys = u.keys(result)
-				expect(result).to.be.an('object')
-				expect(keys).to.have.lengthOf(filenames.length)
-				u.eachEntries(result, (filename, yml) => expect(yml).to.be.a.string)
+			it(`should load them into a map if as is "map"`, () => {
+				const result = nc.loadFiles(pathNameToFixtures, { as: 'map' })
+				expect(result).to.be.instanceOf(Map)
+				expect(result.keys()).to.have.lengthOf(filenames.length)
 			})
 
 			xit(`should load them into an object if as is "object"`, () => {
-				const result = nc.loadFiles(pathnameToAboutAitmedPage)
+				const result = nc.loadFiles(pathNameToFixtures)
 				const keys = u.keys(result)
 				expect(result).to.be.an('object')
 				expect(keys).to.have.lengthOf(filenames.length)
@@ -95,7 +90,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		describe(`when passing in the filepath as 1st arg and the return type as the 2nd`, () => {
 			it(`should return an array of docs by default if 2nd arg is "doc"`, () => {
-				const docs = nc.loadFiles(pathnameToAboutAitmedPage, 'doc')
+				const docs = nc.loadFiles(pathNameToFixtures, 'doc')
 				for (const doc of docs) {
 					expect(yaml.isDocument(doc))
 				}
