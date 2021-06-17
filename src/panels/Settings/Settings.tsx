@@ -2,20 +2,22 @@ import * as u from '@jsmanifest/utils'
 import React from 'react'
 import Panel from '../../components/Panel'
 import Init from './Init'
+import OutputDir from './OutputDir'
 import PromptDir from './PromptDir'
 import PromptInstantiateDir from './PromptInstantiateDir'
 import { Provider as SettingsProvider } from './useSettingsCtx'
 import useCtx from '../../useCtx'
+import { DEFAULT_OUTPUT_DIR } from '../../constants'
 import * as co from '../../utils/color'
 import * as c from './constants'
 import * as t from './types'
 
 function Settings({
 	onReady,
-	pathToGenerateDir,
+	pathToOutputDir,
 }: {
 	onReady?(): void
-	pathToGenerateDir?: string
+	pathToOutputDir?: string
 }) {
 	const [key, setKey] = React.useState('' as '' | t.PromptId)
 	const [dir, setDir] = React.useState('')
@@ -24,24 +26,13 @@ function Settings({
 	React.useEffect(() => {
 		if (configuration.isFresh()) {
 			ctx.setPrompt({ key: c.prompts.INIT })
+		} else if (pathToOutputDir) {
+			ctx.setPrompt({ key: c.prompts.SET_OUTPUT_DIR })
 		} else if (!configuration.getPathToGenerateDir()) {
 			ctx.setPrompt({ key: c.prompts.ASK_GENERATE_PATH })
 		} else {
 			ctx.setPrompt({ key: '' })
 			onReady?.()
-		}
-
-		if (pathToGenerateDir) {
-			u.newline()
-			const dirBefore = configuration.getPathToGenerateDir()
-			configuration.setPathToGenerateDir(pathToGenerateDir)
-			const dirAfter = configuration.getPathToGenerateDir()
-			log(
-				`Changed path to generated files from "${co.yellow(
-					dirBefore,
-				)}" to "${co.yellow(dirAfter)}"`,
-			)
-			u.newline()
 		}
 	}, [])
 
@@ -60,6 +51,11 @@ function Settings({
 				{key ? (
 					key === c.prompts.INIT ? (
 						<Init onReady={onReady} />
+					) : key === c.prompts.SET_OUTPUT_DIR ? (
+						<OutputDir
+							value={pathToOutputDir || DEFAULT_OUTPUT_DIR}
+							onConfirm={onReady}
+						/>
 					) : key === c.prompts.ASK_GENERATE_PATH ? (
 						<PromptDir onReady={onReady} />
 					) : key === c.prompts.ASK_INSTANTIATE_GENERATE_PATH ? (

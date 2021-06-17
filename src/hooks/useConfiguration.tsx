@@ -16,7 +16,7 @@ function useConfiguration({ cli, onInit }: Options) {
 	const getAll = React.useCallback(() => store.all, [])
 
 	const getDefaultGenerateDir = React.useCallback(
-		() => com.getAbsFilePath(c.DEFAULT_GENERATE_DIR),
+		() => com.getAbsFilePath(c.DEFAULT_OUTPUT_DIR),
 		[],
 	)
 

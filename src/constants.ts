@@ -1,4 +1,4 @@
-export const DEFAULT_GENERATE_DIR = 'generated'
+export const DEFAULT_OUTPUT_DIR = 'generated'
 export const DEFAULT_CONFIG_HOSTNAME = 'public.aitmed.com'
 export const DEFAULT_CONFIG = 'aitmed'
 export const DEFAULT_SERVER_HOSTNAME = '127.0.0.1'

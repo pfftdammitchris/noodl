@@ -139,7 +139,9 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 			{!state.ready ? (
 				<Settings
 					onReady={() => set({ ready: true, activePanel: state.activePanel })}
-					pathToGenerateDir={cli.flags.generatePath}
+					pathToOutputDir={
+						(cli.flags.outDir || cli.flags.generatePath) as string
+					}
 				/>
 			) : state.activePanel === 'generateApp' ? (
 				<GenerateApp
