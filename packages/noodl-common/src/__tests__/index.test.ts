@@ -2,10 +2,6 @@ import * as u from '@jsmanifest/utils'
 import { expect } from 'chai'
 import yaml from 'yaml'
 import fs from 'fs-extra'
-import globby from 'globby'
-import nock from 'nock'
-import path from 'path'
-import sinon from 'sinon'
 import * as nc from '..'
 
 const pathNameToFixtures = './src/__tests__/fixtures'
@@ -40,7 +36,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 	})
 
 	describe(nc.italic(`loadFiles`), () => {
-		describe.only(`when passing in filepath and 2nd arg type`, () => {
+		describe(`when passing in filepath and 2nd arg type`, () => {
 			it(`should return an array of yml data by default`, () => {
 				const ymls = nc.loadFiles(pathNameToFixtures)
 				expect(ymls).to.have.lengthOf(filenames.length)
@@ -76,35 +72,15 @@ describe(nc.coolGold(`noodl-common`), () => {
 			it(`should load them into a map if as is "map"`, () => {
 				const result = nc.loadFiles(pathNameToFixtures, { as: 'map' })
 				expect(result).to.be.instanceOf(Map)
-				expect(result.keys()).to.have.lengthOf(filenames.length)
+				expect(result.size).to.eq(filenames.length)
 			})
 
-			xit(`should load them into an object if as is "object"`, () => {
-				const result = nc.loadFiles(pathNameToFixtures)
+			it(`should load them into an object if as is "object"`, () => {
+				const result = nc.loadFiles(pathNameToFixtures, { as: 'object' })
 				const keys = u.keys(result)
 				expect(result).to.be.an('object')
 				expect(keys).to.have.lengthOf(filenames.length)
 				u.eachEntries(result, (filename, yml) => expect(yml).to.be.a.string)
-			})
-		})
-
-		describe(`when passing in the filepath as 1st arg and the return type as the 2nd`, () => {
-			it(`should return an array of docs by default if 2nd arg is "doc"`, () => {
-				const docs = nc.loadFiles(pathNameToFixtures, 'doc')
-				for (const doc of docs) {
-					expect(yaml.isDocument(doc))
-				}
-				expect(docs).to.have.lengthOf(filenames.length)
-			})
-
-			xit(`should return an array of docs by default if 2nd arg is "json"`, () => {
-				//
-			})
-		})
-
-		describe(`when passing in the filepath and the return type option as an object`, () => {
-			xit(``, () => {
-				//
 			})
 		})
 	})
