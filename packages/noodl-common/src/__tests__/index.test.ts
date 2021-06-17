@@ -68,13 +68,29 @@ describe(nc.coolGold(`noodl-common`), () => {
 			// 	)
 			// })
 
-			// it(`should load them into an object by default where each value is the yml`, () => {
-			// 	const result = nc.loadFiles(pathnameToAboutAitmedPage)
-			// 	const keys = u.keys(result)
-			// 	expect(result).to.be.an('object')
-			// 	expect(keys).to.have.lengthOf(filenames.length)
-			// 	u.eachEntries(result, (filename, yml) => expect(yml).to.be.a.string)
-			// })
+			it(`should load them into an array if as is "list"`, () => {
+				const result = nc.loadFiles(pathnameToAboutAitmedPage)
+				const keys = u.keys(result)
+				expect(result).to.be.an('object')
+				expect(keys).to.have.lengthOf(filenames.length)
+				u.eachEntries(result, (filename, yml) => expect(yml).to.be.a.string)
+			})
+
+			xit(`should load them into an object if as is "map"`, () => {
+				const result = nc.loadFiles(pathnameToAboutAitmedPage)
+				const keys = u.keys(result)
+				expect(result).to.be.an('object')
+				expect(keys).to.have.lengthOf(filenames.length)
+				u.eachEntries(result, (filename, yml) => expect(yml).to.be.a.string)
+			})
+
+			xit(`should load them into an object if as is "object"`, () => {
+				const result = nc.loadFiles(pathnameToAboutAitmedPage)
+				const keys = u.keys(result)
+				expect(result).to.be.an('object')
+				expect(keys).to.have.lengthOf(filenames.length)
+				u.eachEntries(result, (filename, yml) => expect(yml).to.be.a.string)
+			})
 		})
 
 		describe(`when passing in the filepath as 1st arg and the return type as the 2nd`, () => {
