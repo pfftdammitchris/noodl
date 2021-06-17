@@ -52,6 +52,7 @@
 		"noodl-common": "file:packages/noodl-common",
 		"noodl-types": "file:packages/noodl-types",
 		"noodl-utils": "^0.0.52",
+		"pretty-error": "^3.0.4",
 		"react": "^16.14.0",
 		"transducers-js": "^0.4.174",
 		"ws": "^7.4.5",

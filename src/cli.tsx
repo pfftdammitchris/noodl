@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 process.stdout.write('\x1Bc')
 import React from 'react'
+import PrettyError from 'pretty-error'
 import meow from 'meow'
 import { render } from 'ink'
 import App from './App'
@@ -13,6 +14,7 @@ import * as co from './utils/color'
 import store from './store'
 
 const pkg = require('../package.json')
+const pe = new PrettyError()
 
 export type Cli = typeof cli
 
@@ -79,5 +81,7 @@ const cli = meow(
 )
 
 console.log(cli.input)
+
+pe.start()
 
 render(<App cli={cli} />)

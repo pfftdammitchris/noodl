@@ -228,9 +228,9 @@ export function loadFile<T extends t.LoadType = t.LoadType>(
 	}
 }
 
-export function loadFiles<LType extends t.LoadType>(
+export function loadFiles<LType extends t.LoadType = 'yml'>(
 	dir: string,
-	type: LType,
+	type?: LType,
 ): LType extends 'doc'
 	? Document[]
 	: LType extends 'json'
@@ -242,7 +242,7 @@ export function loadFiles<
 	LFType extends t.LoadFilesAs,
 >(
 	dir: string,
-	opts: {
+	opts?: {
 		as?: LFType
 		onFile?(args: { file: Document; filename: string }): void
 		type?: LType
@@ -260,7 +260,7 @@ export function loadFiles<
 	LFType extends t.LoadFilesAs = t.LoadFilesAs,
 >(
 	args: string,
-	type:
+	opts:
 		| t.LoadType
 		| {
 				as?: LFType
@@ -269,11 +269,12 @@ export function loadFiles<
 		  } = 'yml',
 ) {
 	let ext = 'yml'
-	if (u.isStr(args)) {
+	if (u.isStr(args) && (!opts || u.isStr(opts))) {
+		if (opts === 'json') ext = 'json'
 		const dir = getAbsFilePath(args)
 		const glob = `**/*.${ext}`
 		return globbySync(path.join(dir, glob)).map((filepath) =>
-			loadFile(filepath, type),
+			loadFile(filepath, opts),
 		)
 	}
 	if (u.isObj(args)) {

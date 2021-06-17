@@ -37,3 +37,4 @@ $ noodl-cli --help
 - https://github.com/sindresorhus/first-run
 - https://github.com/sindresorhus/latest-version
 - https://github.com/sindresorhus/clipboardy
+- https://github.com/AriaMinaei/pretty-error
