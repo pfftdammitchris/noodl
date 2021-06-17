@@ -39,6 +39,40 @@ export const white = (...s: any[]) => chalk.whiteBright(...s)
 export const yellow = (...s: any[]) => chalk.yellow(...s)
 export const newline = () => console.log('')
 
+export function getFileMetadataObject(
+	filepath: string,
+	opts?: { config?: string },
+) {
+	const parsed = path.parse(filepath)
+	const metadata = {
+		dir: parsed.dir,
+		ext: parsed.ext,
+		filename: parsed.name,
+		filepath,
+		rootDir: parsed.root,
+	} as t.MetadataFileObject
+
+	if (parsed.ext === '.yml') {
+		if (opts?.config === parsed.name || opts?.config === parsed.base) {
+			metadata.group = 'config'
+		} else {
+			metadata.group = 'page'
+		}
+	} else if (/.(json|docx|doc|pdf)$/i.test(parsed.ext)) {
+		metadata.group = 'document'
+	} else if (/.(jpg|jpeg|gif|png|tif|svg|)$/i.test(parsed.ext)) {
+		metadata.group = 'image'
+	} else if (parsed.ext === '.js') {
+		metadata.group = 'script'
+	} else if (isVid(parsed.base)) {
+		metadata.group = 'video'
+	} else {
+		metadata.group = 'unknown'
+	}
+
+	return metadata
+}
+
 export const createFileMetadataExtractor = (function () {
 	function getFilename(str: string = '') {
 		return !str.includes('/') ? str : str.substring(str.lastIndexOf('/') + 1)
@@ -158,8 +192,6 @@ export function hasSlash(s: string) {
 	return !!s?.includes('/')
 }
 
-export type LoadFileType = 'doc' | 'yml' | 'json'
-
 /**
  * Loads a file at filepath relative to the current file
  * @param { string } filepath - File path of file to be loaded
@@ -179,7 +211,7 @@ export function loadFile<T extends 'json'>(
 	type: LiteralUnion<T, string>,
 ): Record<string, any>
 
-export function loadFile<T extends LoadFileType = LoadFileType>(
+export function loadFile<T extends t.LoadType = t.LoadType>(
 	filepath: string,
 	type: T,
 ) {
@@ -196,65 +228,74 @@ export function loadFile<T extends LoadFileType = LoadFileType>(
 	}
 }
 
-export function loadFiles(filepath: string, type?: 'yml'): string[]
-export function loadFiles(filepath: string, type: 'doc'): Document[]
-export function loadFiles(filepath: string, type: 'json'): Record<string, any>[]
-export function loadFiles<T extends LoadFileType>(
-	filepath: string,
+export function loadFiles<LType extends t.LoadType>(
+	dir: string,
+	type: LType,
+): LType extends 'doc'
+	? Document[]
+	: LType extends 'json'
+	? Record<string, any>[]
+	: string[]
+
+export function loadFiles<
+	LType extends t.LoadType,
+	LFType extends t.LoadFilesAs,
+>(
+	dir: string,
 	opts: {
-		metadata?: boolean
-		type?: T
+		as?: LFType
+		onFile?(args: { file: Document; filename: string }): void
+		type?: LType
 	},
-): typeof opts.metadata extends true
+): LFType extends 'list'
 	? t.MetadataFileObject[]
-	: ReturnType<typeof loadFile>[]
+	: LFType extends 'map'
+	? Map<string, t.MetadataFileObject>
+	: LFType extends 'object'
+	? Record<string, t.MetadataFileObject>
+	: Record<string, t.MetadataFileObject>
 
-export function loadFiles<Raw extends true | undefined = undefined>(opts: {
-	dir: string
-	ext: 'yml'
-	onFile?(args: { file: Document; filename: string }): void
-	raw?: Raw
-}): Raw extends true ? string[] : Document[]
-
-export function loadFiles(opts: {
-	dir: string
-	ext: 'json'
-	onFile?(args: { file: Record<string, any>; filename: string }): void
-}): Record<string, any>[]
-
-export function loadFiles(
-	args:
-		| string
+export function loadFiles<
+	LType extends t.LoadType = t.LoadType,
+	LFType extends t.LoadFilesAs = t.LoadFilesAs,
+>(
+	args: string,
+	type:
+		| t.LoadType
 		| {
-				dir: string
-				ext?: 'json' | 'yml'
-				onFile?(args: {
-					file?: Record<string, any> | Document
-					filename: string
-				}): void
-				raw?: boolean
-		  },
-	type: LoadFileType = 'yml',
+				as?: LFType
+				onFile?(args: { file: Document; filename: string }): void
+				type?: LType
+		  } = 'yml',
 ) {
 	let ext = 'yml'
-
 	if (u.isStr(args)) {
-		return globbySync((getAbsFilePath(args), `**/*.${ext}`)).map((filepath) =>
+		const dir = getAbsFilePath(args)
+		const glob = `**/*.${ext}`
+		return globbySync(path.join(dir, glob)).map((filepath) =>
 			loadFile(filepath, type),
 		)
 	}
-	return
-	// const { dir, ext = 'json', onFile, raw } = args
-	return globbySync((getAbsFilePath(dir), glob)).reduce((acc, filename) => {
-		const file =
-			ext === 'json'
-				? JSON.parse(readFileSync(filename, 'utf8'))
-				: raw
-				? readFileSync(filename, 'utf8')
-				: parseYmlToDoc(readFileSync(filename, 'utf8'))
-		onFile?.({ file, filename })
-		return acc.concat(file)
-	}, [])
+	if (u.isObj(args)) {
+		ext = args.ext || ext
+		const result = {}
+		const dir = getAbsFilePath(args.dir)
+		const glob = `**/*.${ext}`
+		const filepaths = globbySync(
+			path.normalize(path.join(getAbsFilePath(dir), glob)),
+			{ onlyFiles: true },
+		)
+		for (const filepath of filepaths) {
+			const metadata = getFileMetadataObject(filepath)
+			const filedata =
+				ext === 'json'
+					? JSON.parse(readFileSync(filepath, 'utf8'))
+					: args.raw
+					? readFileSync(filepath, 'utf8')
+					: parseYmlToDoc(readFileSync(filepath, 'utf8'))
+			result[filepath] = filedata
+		}
+	}
 }
 
 export function loadFileAsDoc(filepath: string) {

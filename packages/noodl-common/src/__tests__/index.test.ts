@@ -13,6 +13,12 @@ const pathnameToAboutAitmedPage = `${pathNameToFixtures}/AboutAitmed.yml`
 const filenames = fs.readdirSync(pathNameToFixtures, 'utf8')
 
 describe(nc.coolGold(`noodl-common`), () => {
+	describe(nc.italic(`getFileMetadataObject`), () => {
+		xit(``, () => {
+			console.log(nc.getFileMetadataObject(pathnameToAboutAitmedPage))
+		})
+	})
+
 	describe(nc.italic(`loadFile`), () => {
 		it(`should return the raw file data as string by default when given only the filepath`, () => {
 			const data = nc.loadFile(pathnameToAboutAitmedPage)
@@ -33,8 +39,8 @@ describe(nc.coolGold(`noodl-common`), () => {
 		})
 	})
 
-	describe.only(nc.italic(`loadFiles`), () => {
-		describe(`when passing in filepath and 2nd arg type`, () => {
+	describe(nc.italic(`loadFiles`), () => {
+		describe.only(`when passing in filepath and 2nd arg type`, () => {
 			it(`should return an array of yml data by default`, () => {
 				const ymls = nc.loadFiles(pathNameToFixtures)
 				expect(ymls).to.have.lengthOf(filenames.length)

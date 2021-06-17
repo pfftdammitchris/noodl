@@ -1,3 +1,6 @@
+export type LoadType = 'doc' | 'json' | 'yml'
+export type LoadFilesAs = 'list' | 'map' | 'object'
+
 export type MetadataGroup =
 	| 'config'
 	| 'document'
@@ -5,6 +8,7 @@ export type MetadataGroup =
 	| 'page'
 	| 'script'
 	| 'video'
+	| 'unknown'
 
 export interface MetadataBaseObject {
 	ext: string
@@ -13,7 +17,9 @@ export interface MetadataBaseObject {
 }
 
 export interface MetadataFileObject extends MetadataBaseObject {
+	dir: string
 	filepath: string
+	rootDir: string
 }
 
 export interface MetadataLinkObject extends MetadataBaseObject {
