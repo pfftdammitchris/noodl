@@ -131,7 +131,7 @@ class Action<AType extends string = string, T extends string = string>
 
 			return this.result
 		} catch (error) {
-			this.error = error
+			this.error = error as Error
 			this.status = c.ERROR
 			throw error
 		} finally {

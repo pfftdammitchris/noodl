@@ -121,8 +121,8 @@ class ActionChain<
 					action?.abort(reason || '')
 					this.#obs.onAfterAbortAction?.({ action, queue: this.#queue })
 				} catch (error) {
-					this.#error = error
-					this.#obs.onAbortError?.({ action, error })
+					this.#error = error as Error
+					this.#obs.onAbortError?.({ action, error: error as Error })
 				} finally {
 					this.#results.push({
 						action,
@@ -176,7 +176,7 @@ class ActionChain<
 							try {
 								this.abort(msg)
 							} catch (error) {
-								throw new AbortExecuteError(error.message)
+								throw new AbortExecuteError((error as Error).message)
 							}
 						}, timeout)
 
@@ -214,7 +214,7 @@ class ActionChain<
 							)
 						}
 					} catch (error) {
-						this.#obs.onExecuteError?.(this.current as Action, error)
+						this.#obs.onExecuteError?.(this.current as Action, error as Error)
 						// TODO - replace throw with appending the error to the result item instead
 						throw error
 					} finally {
@@ -223,7 +223,7 @@ class ActionChain<
 				}
 			}
 		} catch (error) {
-			await this.abort?.(error.message)
+			await this.abort?.((error as Error).message)
 			// throw new AbortExecuteError(error.message)
 		} finally {
 			this.#refresh?.()
@@ -336,10 +336,11 @@ class ActionChain<
 	}
 
 	/** Returns a snapshot of the overall state */
-	snapshot() {
-		return {
+	snapshot<SnapshotResult extends Record<string, any>>(opts?: SnapshotResult) {
+		const snapshot = {
 			abortReason: this.#abortReason,
 			actions: this.actions,
+			data: Array.from(this.data.values()),
 			error: this.#error,
 			current: this.current,
 			injected: this.#injected,
@@ -347,7 +348,9 @@ class ActionChain<
 			results: this.#results,
 			status: this.#status,
 			trigger: this.trigger,
+			...opts,
 		}
+		return snapshot as typeof snapshot & SnapshotResult
 	}
 
 	use(obj?: Partial<ActionChainObserver>) {

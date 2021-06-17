@@ -375,6 +375,21 @@ describe(coolGold(`ActionChain`), () => {
 		})
 	})
 
+	describe(italic(`snapshot`), () => {
+		it(`should convert the data to an array`, async () => {
+			const ac = getActionChain({
+				actions: [getEvalObjectAction()],
+				trigger: 'onChange',
+			})
+			const buff = new ArrayBuffer(3)
+			ac.data.set('abc', buff)
+			const snapshot = ac.snapshot()
+			expect(snapshot.data).to.be.an('array')
+			expect(snapshot.data).to.have.lengthOf(1)
+			expect(snapshot.data[0]).to.eq(buff)
+		})
+	})
+
 	xdescribe(italic(`Timing out`), () => {
 		describe.skip(`when action chains don't respond or don't finish`, () => {
 			xit(`should call the timeout setTimeout callback`, async function () {
