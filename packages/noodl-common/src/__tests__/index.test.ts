@@ -40,7 +40,6 @@ describe(nc.coolGold(`noodl-common`), () => {
 			it(`should return an array of yml data by default`, () => {
 				const ymls = nc.loadFiles(pathNameToFixtures)
 				expect(ymls).to.have.lengthOf(filenames.length)
-				ymls.forEach((yml) => expect(yml).to.be.a.string)
 			})
 
 			it(`should return an array of docs when 2nd arg is "doc"`, () => {
