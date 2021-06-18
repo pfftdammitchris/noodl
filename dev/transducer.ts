@@ -1,7 +1,6 @@
 import fs from 'fs-extra'
 import path from 'path'
 import chalk from 'chalk'
-import t from 'transducers-js'
 import createObjectScripts from '../src/api/createObjectScripts'
 import {
 	createActionPropComboScripts,

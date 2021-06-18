@@ -12,8 +12,8 @@
 		"cli.js"
 	],
 	"scripts": {
-		"clean": "rm -rf node_modules package-lock.json && lerna clean",
-		"postinstall": "lerna exec --scope noodl-types --scope noodl-common --scope noodl-aggregator \"npm run build\" && npm run bootstrap",
+		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
+		"postinstall": "lerna exec --scope noodl-types --scope noodl-common \"npm run build\" && npm run bootstrap",
 		"prebuild": "rm -rf dist",
 		"build": "tsc",
 		"bootstrap": "lerna bootstrap --hoist",
@@ -60,14 +60,9 @@
 		"yaml": "^2.0.0-4"
 	},
 	"devDependencies": {
-		"@aitmed/ecos-lvl2-sdk": "^1.4.123",
 		"@babel/core": "^7.14.6",
-		"@babel/plugin-proposal-private-methods": "^7.12.13",
 		"@babel/plugin-transform-runtime": "^7.14.2",
-		"@babel/polyfill": "^7.12.1",
 		"@babel/preset-env": "^7.14.2",
-		"@babel/preset-typescript": "^7.12.17",
-		"@babel/register": "^7.12.13",
 		"@jsmanifest/typefest": "^1.0.1",
 		"@rollup/plugin-babel": "^5.3.0",
 		"@rollup/plugin-commonjs": "^18.0.0",
