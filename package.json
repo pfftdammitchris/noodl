@@ -12,7 +12,8 @@
 		"cli.js"
 	],
 	"scripts": {
-		"postinstall": "lerna exec --scope noodl-types --scope noodl-common --scope noodl-aggregator \"npm run build\"",
+		"clean": "rm -rf node_modules package-lock.json && lerna clean",
+		"postinstall": "lerna exec --scope noodl-types --scope noodl-common --scope noodl-aggregator \"npm run build\" && npm run bootstrap",
 		"prebuild": "rm -rf dist",
 		"build": "tsc",
 		"bootstrap": "lerna bootstrap --hoist",
