@@ -31,16 +31,14 @@ function loadFile<T extends 'json'>(
 
 function loadFile<T extends t.LoadType = t.LoadType>(
 	filepath: string,
-	type: T,
+	type?: T,
 ) {
 	if (u.isStr(filepath)) {
 		if (!path.isAbsolute(filepath)) filepath = getAbsFilePath(filepath)
 		if (existsSync(filepath)) {
-			if (type) {
-				if (type === 'doc') return parseYmlToDoc(readFileSync(filepath, 'utf8'))
-				if (type === 'json')
-					return parseYmlToJson(readFileSync(filepath, 'utf8'))
-			}
+			const yml = readFileSync(filepath, 'utf8')
+			if (type === 'doc') return parseYmlToDoc(yml)
+			if (type === 'json') return parseYmlToJson(yml)
 			return readFileSync(filepath, 'utf8')
 		}
 	}

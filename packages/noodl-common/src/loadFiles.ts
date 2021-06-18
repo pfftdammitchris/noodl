@@ -2,7 +2,8 @@ import * as u from '@jsmanifest/utils'
 import { sync as globbySync } from 'globby'
 import path from 'path'
 import getAbsFilePath from './getAbsFilePath'
-import getFileMetadataObject from './getFileMetadataObject'
+import getBasename from './getBasename'
+import getFileStructure from './getFileStructure'
 import loadFile from './loadFile'
 import normalizePath from './normalizePath'
 import * as t from './types'
@@ -18,18 +19,14 @@ import * as t from './types'
 
 function loadFiles<LType extends t.LoadType, LFType extends t.LoadFilesAs>(
 	dir: string,
-	opts?: {
-		as?: LFType
-		onFile?(args: { file: Document; filename: string }): void
-		type?: LType
-	},
+	opts?: t.LoadFilesOptions<LType, LFType>,
 ): LFType extends 'list'
-	? t.MetadataFileObject[]
+	? t.FileStructure[]
 	: LFType extends 'map'
-	? Map<string, t.MetadataFileObject>
+	? Map<string, t.FileStructure>
 	: LFType extends 'object'
-	? Record<string, t.MetadataFileObject>
-	: Record<string, t.MetadataFileObject>
+	? Record<string, t.FileStructure>
+	: Record<string, t.FileStructure>
 
 /**
  * Load files from dir and optionally a second argument as one of: "doc", "json", or "yml"
@@ -43,51 +40,55 @@ function loadFiles<LType extends t.LoadType = 'yml'>(
 	? Record<string, any>[]
 	: string[]
 
+/**
+ *
+ * @param { string } args
+ */
 function loadFiles<
 	LType extends t.LoadType = t.LoadType,
 	LFType extends t.LoadFilesAs = t.LoadFilesAs,
->(
-	args: string,
-	opts:
-		| t.LoadType
-		| {
-				as?: LFType
-				onFile?(args: { file: Document; filename: string }): void
-				type?: LType
-		  } = 'yml',
-) {
+>(dir: string, opts: t.LoadType | t.LoadFilesOptions<LType, LFType> = 'yml') {
 	let ext = 'yml'
 
-	if (u.isStr(args)) {
+	if (u.isStr(dir)) {
 		opts === 'json' && (ext = 'json')
-		const dir = args
 		const glob = `**/*.${ext}`
 		const _path = normalizePath(getAbsFilePath(path.join(dir, glob)))
+
 		if (u.isStr(opts)) {
 			return globbySync(_path, { onlyFiles: true }).map((filepath) =>
 				loadFile(filepath, opts),
 			)
 		} else if (u.isObj(opts)) {
+			const includeExt = opts?.includeExt
 			opts.type === 'json' && (ext = 'json')
+
+			function getKey(metadata: t.FileStructure) {
+				return includeExt ? getBasename(metadata.filepath) : metadata.filename
+			}
+
 			function listReducer(acc: any[] = [], filepath: string) {
 				return acc.concat(loadFile(filepath, ext))
 			}
+
 			function mapReducer(acc: Map<string, any>, filepath: string) {
-				const filename = path.posix.basename(filepath)
-				acc.set(filename, loadFile(filepath, ext))
+				const metadata = getFileStructure(filepath)
+				acc.set(getKey(metadata), loadFile(filepath, ext))
 				return acc
 			}
+
 			function objectReducer(acc: Record<string, any>, filepath: string) {
-				const metadata = getFileMetadataObject(filepath)
-				acc[metadata.filename] = loadFile(filepath, ext)
+				const metadata = getFileStructure(filepath)
+				acc[getKey(metadata)] = loadFile(filepath, ext)
 				return acc
 			}
+
 			const items = globbySync(_path, { onlyFiles: true })
 			if (opts.as === 'list') return u.reduce(items, listReducer, [])
 			if (opts.as === 'map') return u.reduce(items, mapReducer, new Map())
 			return u.reduce(items, objectReducer, {})
 		}
-	} else if (u.isObj(args)) {
+	} else if (u.isObj(dir)) {
 		// ext = args.ext || ext
 		// const result = {}
 		// const dir = getAbsFilePath(args.dir)
@@ -97,7 +98,7 @@ function loadFiles<
 		// 	{ onlyFiles: true },
 		// )
 		// for (const filepath of filepaths) {
-		// 	const metadata = getFileMetadataObject(filepath)
+		// 	const metadata = getFileStructure(filepath)
 		// 	const filedata =
 		// 		ext === 'json'
 		// 			? JSON.parse(readFileSync(filepath, 'utf8'))

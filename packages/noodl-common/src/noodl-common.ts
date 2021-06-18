@@ -9,12 +9,6 @@ import isVid from './isVid'
 import normalizePath from './normalizePath'
 import * as t from './types'
 
-export { default as getAbsFilePath } from './getAbsFilePath'
-export { default as loadFile } from './loadFile'
-export { default as loadFiles } from './loadFiles'
-export { default as normalizePath } from './normalizePath'
-
-export * from './types'
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
 export const highlight = (...s: any[]) => chalk.yellow(...s)
 export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
@@ -50,7 +44,7 @@ export const createFileMetadataExtractor = (function () {
 		value: string,
 		{ config }: { config?: string } = {},
 	) {
-		const metadata = {} as t.MetadataFileObject
+		const metadata = {} as t.FileStructure
 
 		metadata.ext = getExt(value)
 		metadata.filename = getFilename(value)
@@ -76,52 +70,6 @@ export const createFileMetadataExtractor = (function () {
 		return metadata
 	}
 	return getFileMetadataObject
-})()
-
-export const createLinkMetadataExtractor = (function () {
-	function getFilename(str: string = '') {
-		return !str.includes('/') ? str : str.substring(str.lastIndexOf('/') + 1)
-	}
-	function getLinkMetadataObject(
-		value: string,
-		{
-			config,
-			ext = getExt(value),
-			filename = getFilename(value),
-			name = value.includes('.')
-				? value.substring(0, value.lastIndexOf('.') + 1)
-				: value,
-			url = '',
-		}: {
-			config?: string
-			ext?: string
-			filename?: string
-			name?: string
-			url?: string
-		} = {},
-	) {
-		name.endsWith('.') && (name = name.substring(0, name.lastIndexOf('.')))
-		name.includes('/') && (name = name.substring(name.lastIndexOf('/') + 1))
-		const isRemote = value.startsWith('http')
-		const metadata = {
-			ext,
-			filename,
-			isRemote,
-			name,
-			url,
-		} as t.MetadataLinkObject
-		if (isImg(`.${ext}`)) {
-			metadata.group = 'image'
-		} else if (/(json|pdf)$/i.test(ext)) {
-			metadata.group = 'document'
-		} else if (isVid(`.${ext}`)) {
-			metadata.group = 'video'
-		} else if (/(html|js)$/i.test(ext)) {
-			metadata.group = 'script'
-		}
-		return metadata
-	}
-	return getLinkMetadataObject
 })()
 
 export function ensureSlashPrefix(s: string) {

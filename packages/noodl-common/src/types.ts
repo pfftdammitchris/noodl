@@ -1,7 +1,21 @@
-export type LoadType = 'doc' | 'json' | 'yml'
-export type LoadFilesAs = 'list' | 'map' | 'object'
+export interface BaseStructure {
+	ext: string
+	filename: string
+	group: StructureGroup
+}
 
-export type MetadataGroup =
+export interface FileStructure extends BaseStructure {
+	dir: string
+	filepath: string
+	rootDir: string
+}
+
+export interface LinkStructure extends BaseStructure {
+	isRemote: boolean
+	url: string
+}
+
+export type StructureGroup =
 	| 'config'
 	| 'document'
 	| 'image'
@@ -10,20 +24,15 @@ export type MetadataGroup =
 	| 'video'
 	| 'unknown'
 
-export interface MetadataBaseObject {
-	ext: string
-	filename: string
-	group: MetadataGroup
-}
+export type LoadType = 'doc' | 'json' | 'yml'
+export type LoadFilesAs = 'list' | 'map' | 'object'
 
-export interface MetadataFileObject extends MetadataBaseObject {
-	dir: string
-	filepath: string
-	rootDir: string
-}
-
-export interface MetadataLinkObject extends MetadataBaseObject {
-	isRemote: boolean
-	name: string
-	url: string
+export interface LoadFilesOptions<
+	LType extends LoadType = 'yml',
+	LFType extends LoadFilesAs = 'list',
+> {
+	as?: LFType
+	includeExt?: boolean
+	onFile?(args: { file: Document; filename: string }): void
+	type?: LType
 }
