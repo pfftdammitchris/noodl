@@ -1,13 +1,16 @@
 import path from 'path'
 import { LinkStructure } from './types'
 
-function getLinkStructure(link: string, opts?: { config?: string }) {
+function getLinkStructure(
+	link: string,
+	opts?: { config?: string; prefix?: string },
+) {
 	const parsed = path.posix.parse(link)
 	const structure = {
 		ext: parsed.ext,
 		filename: parsed.name,
-		isRemote: link.startsWith('http'),
-		url: link,
+		isRemote: /^(http|www)/i.test(link),
+		url: opts?.prefix ? `${opts.prefix}${link}` : link,
 	} as LinkStructure
 
 	if (opts?.config === structure.filename) {
