@@ -10,7 +10,9 @@ function getLinkStructure(
 		ext: parsed.ext,
 		filename: parsed.name,
 		isRemote: /^(http|www)/i.test(link),
-		url: opts?.prefix ? `${opts.prefix}${link}` : link,
+		url: opts?.prefix
+			? `${opts.prefix}${opts.prefix.endsWith('/') ? link : `/${link}`}`
+			: link,
 	} as LinkStructure
 
 	if (opts?.config === structure.filename) {

@@ -2,7 +2,13 @@ import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
 import { sync as globbySync } from 'globby'
 import { join as joinPaths, resolve as resolvePath } from 'path'
-import { readdirSync as _readdirSync, readFileSync, statSync } from 'fs-extra'
+import {
+	readdirSync as _readdirSync,
+	readFileSync,
+	statSync,
+	writeFileSync as _writeFileSync,
+	WriteFileOptions,
+} from 'fs-extra'
 import { Document, parseDocument as parseYmlToDoc } from 'yaml'
 import minimatch from 'minimatch'
 import isImg from './isImg'
@@ -29,7 +35,6 @@ export const fadedSalmon = (...s: any[]) => chalk.keyword('darksalmon')(...s)
 export const magenta = (...s: any[]) => chalk.magenta(...s)
 export const orange = (...s: any[]) => chalk.keyword('lightsalmon')(...s)
 export const deepOrange = (...s: any[]) => chalk.hex('#FF8B3F')(...s)
-export const purple = (...s: any[]) => chalk.keyword('purple')(...s)
 export const lightRed = (...s: any[]) => chalk.keyword('lightpink')(...s)
 export const coolRed = (...s: any[]) => chalk.keyword('lightcoral')(...s)
 export const red = (...s: any[]) => chalk.keyword('tomato')(...s)
@@ -178,7 +183,7 @@ export function readdirSync(
 	const filepaths = _readdirSync(dir, args)
 	const glob = opts?.glob || '**/*'
 	for (let filepath of filepaths) {
-		filepath = resolvePath(joinPaths(dir, filepath))
+		filepath = normalizePath(resolvePath(joinPaths(dir, filepath)))
 		const stat = statSync(filepath)
 		if (stat.isFile()) {
 			if (minimatch(filepath, glob)) files.push(filepath)
@@ -203,6 +208,20 @@ export function sortObjPropsByKeys<O extends Record<string, any>>(obj: {
 			(acc: O, [key, value]) => Object.assign(acc, { [key]: value }),
 			{} as O,
 		)
+}
+
+export function writeFileSync(
+	filepath: string = '',
+	data: string,
+	options?: WriteFileOptions,
+) {
+	_writeFileSync(
+		normalizePath(filepath),
+		data,
+		u.isStr(options)
+			? { encoding: options as BufferEncoding }
+			: { encoding: 'utf8', ...(options as any) },
+	)
 }
 
 export function withSuffix(suffix: string) {

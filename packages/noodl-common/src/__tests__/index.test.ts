@@ -3,7 +3,6 @@ import { expect } from 'chai'
 import path from 'path'
 import yaml from 'yaml'
 import fs from 'fs-extra'
-import minimatch, { Minimatch } from 'minimatch'
 import * as nc from '..'
 
 const pathNameToFixtures = './src/__tests__/fixtures'
@@ -158,12 +157,6 @@ describe(nc.coolGold(`noodl-common`), () => {
 		})
 	})
 
-	it.only('hello', () => {
-		const dir = path.join(__dirname, 'fixtures')
-		console.log(dir)
-		console.log(nc.readdirSync(dir))
-	})
-
 	describe(nc.italic(`loadFiles`), () => {
 		describe(`when passing in filepath and 2nd arg type`, () => {
 			it(`should return an array of yml data by default`, () => {
@@ -241,6 +234,15 @@ describe(nc.coolGold(`noodl-common`), () => {
 					expect(filename.endsWith('.yml')).to.be.true
 				})
 			})
+		})
+	})
+
+	describe(nc.italic(`normalizePath`), () => {
+		it(`should erase the myBaseUrl tilde (~/)`, () => {
+			const filepath = `https://public.aitmed.com/cadl/meet3_0.45d/~/HomePageUrl.yml`
+			expect(nc.normalizePath(filepath)).to.eq(
+				`https://public.aitmed.com/cadl/meet3_0.45d/HomePageUrl.yml`,
+			)
 		})
 	})
 })
