@@ -3,6 +3,7 @@ import { expect } from 'chai'
 import path from 'path'
 import yaml from 'yaml'
 import fs from 'fs-extra'
+import minimatch, { Minimatch } from 'minimatch'
 import * as nc from '..'
 
 const pathNameToFixtures = './src/__tests__/fixtures'
@@ -155,6 +156,12 @@ describe(nc.coolGold(`noodl-common`), () => {
 			expect(u.isObj(data)).to.be.true
 			expect(data).to.have.property('AboutAitmed')
 		})
+	})
+
+	it.only('hello', () => {
+		const dir = path.join(__dirname, 'fixtures')
+		console.log(dir)
+		console.log(nc.readdirSync(dir))
 	})
 
 	describe(nc.italic(`loadFiles`), () => {

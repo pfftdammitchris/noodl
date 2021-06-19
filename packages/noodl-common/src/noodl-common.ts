@@ -1,8 +1,10 @@
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
 import { sync as globbySync } from 'globby'
-import { readFileSync } from 'fs-extra'
+import { join as joinPaths, resolve as resolvePath } from 'path'
+import { readdirSync as _readdirSync, readFileSync, statSync } from 'fs-extra'
 import { Document, parseDocument as parseYmlToDoc } from 'yaml'
+import minimatch from 'minimatch'
 import isImg from './isImg'
 import isYml from './isYml'
 import isVid from './isVid'
@@ -165,6 +167,26 @@ export async function promiseAllSafe(...promises: Promise<any>[]) {
 		}
 	}
 	return results
+}
+
+export function readdirSync(
+	dir: string | undefined = __dirname,
+	opts?: { concat?: string[]; glob?: string },
+) {
+	const args = { encoding: 'utf8' as BufferEncoding }
+	const files = [] as string[]
+	const filepaths = _readdirSync(dir, args)
+	const glob = opts?.glob || '**/*'
+	for (let filepath of filepaths) {
+		filepath = resolvePath(joinPaths(dir, filepath))
+		const stat = statSync(filepath)
+		if (stat.isFile()) {
+			if (minimatch(filepath, glob)) files.push(filepath)
+		} else if (stat.isDirectory()) {
+			files.push(...readdirSync(filepath, opts))
+		}
+	}
+	return files
 }
 
 export function sortObjPropsByKeys<O extends Record<string, any>>(obj: {
