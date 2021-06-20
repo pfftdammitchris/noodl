@@ -119,32 +119,35 @@ function loadFiles<
 	LFType extends t.LoadFilesAs = t.LoadFilesAs,
 >(dir: string, opts: t.LoadType | t.LoadFilesOptions<LType, LFType> = 'yml') {
 	let ext = 'yml'
+	let type = 'yml'
 
 	if (u.isStr(dir)) {
 		opts === 'json' && (ext = 'json')
+
 		const glob = `**/*.${ext}`
 		const _path = normalizePath(getAbsFilePath(path.join(dir, glob)))
 
 		if (u.isStr(opts)) {
+			type = opts === 'json' ? 'json' : opts === 'doc' ? 'doc' : type
 			return globbySync(_path, { onlyFiles: true }).map((filepath) =>
-				loadFile(filepath, opts),
+				loadFile(filepath, type),
 			)
 		} else if (u.isObj(opts)) {
+			type = opts.type || type
 			const includeExt = opts?.includeExt
-			opts.type === 'json' && (ext = 'json')
 
 			function getKey(metadata: t.FileStructure) {
 				return includeExt ? getBasename(metadata.filepath) : metadata.filename
 			}
 
 			function listReducer(acc: any[] = [], filepath: string) {
-				return acc.concat(loadFile(filepath, ext))
+				return acc.concat(loadFile(filepath, type))
 			}
 
 			function mapReducer(acc: Map<string, any>, filepath: string) {
 				const metadata = getFileStructure(filepath)
 				const key = getKey(metadata)
-				let data = loadFile(filepath, ext)
+				let data = loadFile(filepath, type)
 				isDocument(data) && data.has(data) && (data.contents = data.get(key))
 				acc.set(key, data)
 				return acc
@@ -153,7 +156,7 @@ function loadFiles<
 			function objectReducer(acc: Record<string, any>, filepath: string) {
 				const metadata = getFileStructure(filepath)
 				const key = getKey(metadata)
-				let data = loadFile(filepath, ext)
+				let data = loadFile(filepath, type)
 				u.isObj(data) && key in data && (data = data[key])
 				acc[key] = data
 				return acc
