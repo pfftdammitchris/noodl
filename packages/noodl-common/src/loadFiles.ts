@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import { sync as globbySync } from 'globby'
-import { isDocument } from 'yaml'
+import { Document as YAMLDocument, isDocument, Node as YAMLNode } from 'yaml'
 import path from 'path'
 import getAbsFilePath from './getAbsFilePath'
 import getBasename from './getBasename'
@@ -18,40 +18,97 @@ import * as t from './types'
  * - type: Return each data in the from of "doc", "json", or "yml" (Defaults to "yml")
  */
 
-function loadFiles(
+/**
+ * Load files into an array of strings as raw yml
+ */
+function loadFiles<T extends 'yml', A extends 'list'>(
 	dir: string,
-	opts?: t.LoadFilesOptions<'yml', undefined | 'list'>,
-): t.FileStructure[]
-
-function loadFiles(
-	dir: string,
-	opts?: t.LoadFilesOptions<'json', undefined | 'list'>,
-): Record<string, t.FileStructure>
-
-function loadFiles(
-	dir: string,
-	opts?: t.LoadFilesOptions<'doc', undefined | 'list'>,
-): Map<string, t.FileStructure>
-
-function loadFiles<LType extends t.LoadType, LFType extends t.LoadFilesAs>(
-	dir: string,
-	opts?: t.LoadFilesOptions<LType, LFType>,
-):
-	| t.FileStructure[]
-	| Record<string, t.FileStructure>
-	| Map<string, t.FileStructure>
+	opts?: t.LoadFilesOptions<T, undefined | A>,
+): string[]
 
 /**
- * Load files from dir and optionally a second argument as one of: "doc", "json", or "yml"
+ * Load files into an array of objects
  */
-function loadFiles<LType extends t.LoadType = 'yml'>(
+function loadFiles<T extends 'json', A extends 'list'>(
 	dir: string,
-	type?: LType,
-): LType extends 'doc'
-	? Document[]
-	: LType extends 'json'
-	? Record<string, any>[]
-	: string[]
+	opts?: t.LoadFilesOptions<T, undefined | A>,
+): Record<string, any>[]
+
+/**
+ * Load files into an array of yaml documents
+ */
+function loadFiles<T extends 'doc', A extends 'list'>(
+	dir: string,
+	opts?: t.LoadFilesOptions<T, undefined | A>,
+): YAMLNode[]
+
+/**
+ * Load files into an object literal where key is the name and the value is their yml
+ */
+function loadFiles<T extends 'yml', A extends 'object'>(
+	dir: string,
+	opts?: t.LoadFilesOptions<T, A>,
+): Record<string, string>
+
+/**
+ * Load files into an object literal where key is the name and the value is a JS object
+ */
+function loadFiles<T extends 'json', A extends 'object'>(
+	dir: string,
+	opts?: t.LoadFilesOptions<T, A>,
+): Record<string, any>
+
+/**
+ * Load files into an object literal where key is the name and the value is a yaml node
+ */
+function loadFiles<T extends 'doc', A extends 'object'>(
+	dir: string,
+	opts?: t.LoadFilesOptions<T, A>,
+): Record<string, YAMLNode>
+
+/**
+ * Load files into a Map where key is the name and value is their yml
+ */
+function loadFiles<T extends 'yml', A extends 'map'>(
+	dir: string,
+	opts?: t.LoadFilesOptions<T, A>,
+): Map<string, string>
+
+/**
+ * Load files into a Map where key is the name and value is a JS object
+ */
+function loadFiles<T extends 'json', A extends 'map'>(
+	dir: string,
+	opts?: t.LoadFilesOptions<T, A>,
+): Map<string, any>
+
+/**
+ * Load files into a Map where key is the name and value is a yaml node
+ */
+function loadFiles<T extends 'doc', A extends 'map'>(
+	dir: string,
+	opts?: t.LoadFilesOptions<T, A>,
+): Map<string, YAMLNode>
+
+/**
+ * Load files from dir and optionally a second argument as 'yml' (default) for an array of yml data
+ */
+function loadFiles<T extends 'yml'>(dir: string, type?: undefined | T): string[]
+
+/**
+ * Load files from dir and optionally a second argument as 'json' to receive
+ * an array of objects
+ */
+function loadFiles<T extends 'json'>(
+	dir: string,
+	type: T,
+): Record<string, any>[]
+
+/**
+ * Load files from dir and optionally a second argument as 'doc' to receive
+ * an array of yaml nodes
+ */
+function loadFiles<T extends 'doc'>(dir: string, type: T): YAMLNode[]
 
 /**
  *
