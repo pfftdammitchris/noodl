@@ -1,5 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import { sync as globbySync } from 'globby'
+import { isDocument } from 'yaml'
 import path from 'path'
 import getAbsFilePath from './getAbsFilePath'
 import getBasename from './getBasename'
@@ -73,7 +74,10 @@ function loadFiles<
 
 			function mapReducer(acc: Map<string, any>, filepath: string) {
 				const metadata = getFileStructure(filepath)
-				acc.set(getKey(metadata), loadFile(filepath, ext))
+				const key = getKey(metadata)
+				let data = loadFile(filepath, ext)
+				isDocument(data) && data.has(data) && (data.contents = data.get(key))
+				acc.set(key, data)
 				return acc
 			}
 
