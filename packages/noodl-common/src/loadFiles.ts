@@ -79,7 +79,10 @@ function loadFiles<
 
 			function objectReducer(acc: Record<string, any>, filepath: string) {
 				const metadata = getFileStructure(filepath)
-				acc[getKey(metadata)] = loadFile(filepath, ext)
+				const key = getKey(metadata)
+				let data = loadFile(filepath, ext)
+				u.isObj(data) && key in data && (data = data[key])
+				acc[key] = data
 				return acc
 			}
 
