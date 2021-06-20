@@ -18,6 +18,21 @@ import * as t from './types'
  * - type: Return each data in the from of "doc", "json", or "yml" (Defaults to "yml")
  */
 
+function loadFiles(
+	dir: string,
+	opts?: t.LoadFilesOptions<'yml', undefined | 'list'>,
+): t.FileStructure[]
+
+function loadFiles(
+	dir: string,
+	opts?: t.LoadFilesOptions<'json', undefined | 'list'>,
+): Record<string, t.FileStructure>
+
+function loadFiles(
+	dir: string,
+	opts?: t.LoadFilesOptions<'doc', undefined | 'list'>,
+): Map<string, t.FileStructure>
+
 function loadFiles<LType extends t.LoadType, LFType extends t.LoadFilesAs>(
 	dir: string,
 	opts?: t.LoadFilesOptions<LType, LFType>,
