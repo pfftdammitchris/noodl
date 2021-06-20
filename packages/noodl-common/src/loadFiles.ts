@@ -36,13 +36,10 @@ function loadFiles(
 function loadFiles<LType extends t.LoadType, LFType extends t.LoadFilesAs>(
 	dir: string,
 	opts?: t.LoadFilesOptions<LType, LFType>,
-): LFType extends 'list'
-	? t.FileStructure[]
-	: LFType extends 'map'
-	? Map<string, t.FileStructure>
-	: LFType extends 'object'
-	? Record<string, t.FileStructure>
-	: Record<string, t.FileStructure>
+):
+	| t.FileStructure[]
+	| Record<string, t.FileStructure>
+	| Map<string, t.FileStructure>
 
 /**
  * Load files from dir and optionally a second argument as one of: "doc", "json", or "yml"
