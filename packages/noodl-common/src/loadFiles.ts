@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import { sync as globbySync } from 'globby'
-import { Document as YAMLDocument, isDocument, Node as YAMLNode } from 'yaml'
+import { Document as YAMLDocument, isDocument } from 'yaml'
 import path from 'path'
 import getAbsFilePath from './getAbsFilePath'
 import getBasename from './getBasename'
@@ -40,7 +40,7 @@ function loadFiles<T extends 'json', A extends 'list'>(
 function loadFiles<T extends 'doc', A extends 'list'>(
 	dir: string,
 	opts?: t.LoadFilesOptions<T, undefined | A>,
-): YAMLNode[]
+): YAMLDocument[]
 
 /**
  * Load files into an object literal where key is the name and the value is their yml
@@ -64,7 +64,7 @@ function loadFiles<T extends 'json', A extends 'object'>(
 function loadFiles<T extends 'doc', A extends 'object'>(
 	dir: string,
 	opts?: t.LoadFilesOptions<T, A>,
-): Record<string, YAMLNode>
+): Record<string, YAMLDocument>
 
 /**
  * Load files into a Map where key is the name and value is their yml
@@ -88,7 +88,7 @@ function loadFiles<T extends 'json', A extends 'map'>(
 function loadFiles<T extends 'doc', A extends 'map'>(
 	dir: string,
 	opts?: t.LoadFilesOptions<T, A>,
-): Map<string, YAMLNode>
+): Map<string, YAMLDocument>
 
 /**
  * Load files from dir and optionally a second argument as 'yml' (default) for an array of yml data
@@ -108,7 +108,7 @@ function loadFiles<T extends 'json'>(
  * Load files from dir and optionally a second argument as 'doc' to receive
  * an array of yaml nodes
  */
-function loadFiles<T extends 'doc'>(dir: string, type: T): YAMLNode[]
+function loadFiles<T extends 'doc'>(dir: string, type: T): YAMLDocument[]
 
 /**
  *
