@@ -1,8 +1,8 @@
+import Aggregator from 'noodl-aggregator'
 import { Draft } from 'immer'
 import { Cli } from './cli'
 import { initialState as initialAppState } from './App'
 import useConfiguration from './hooks/useConfiguration'
-import Aggregator from './api/Aggregator'
 // import createAggregator from './api/createAggregator'
 
 export namespace App {

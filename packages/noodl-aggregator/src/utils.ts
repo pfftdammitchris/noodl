@@ -1,4 +1,3 @@
-import * as u from '@jsmanifest/utils'
 import yaml from 'yaml'
 import { AppConfig } from 'noodl-types'
 

@@ -2,7 +2,7 @@ import { LiteralUnion } from 'type-fest'
 import { DeviceType, Env } from 'noodl-types'
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
-import { MetadataLinkObject } from 'noodl-common'
+import { getFileStructure, LinkStructure, writeFileSync } from 'noodl-common'
 import * as com from 'noodl-common'
 import * as u from '@jsmanifest/utils'
 import React from 'react'
@@ -14,15 +14,17 @@ import Panel from '../../components/Panel'
 import useConfigInput from '../../hooks/useConfigInput'
 import useCtx from '../../useCtx'
 import useDownload from '../../hooks/useDownload'
-import {
+import { constants as noodlAggregatorConstants } from 'noodl-aggregator'
+import * as co from '../../utils/color'
+import * as r from '../../utils/remote'
+import * as t from './types'
+
+const {
 	ON_RETRIEVED_ROOT_CONFIG,
 	ON_RETRIEVE_APP_PAGE_FAILED,
 	PARSED_APP_CONFIG,
 	ON_RETRIEVED_APP_PAGE,
-} from '../../api/createAggregator'
-import * as co from '../../utils/color'
-import * as r from '../../utils/remote'
-import * as t from './types'
+} = noodlAggregatorConstants
 
 export interface Props {
 	config?: string
@@ -40,7 +42,7 @@ export const initialState = {
 	assets: [] as Array<
 		{
 			status: 'downloading' | 'downloaded' | 'does-not-exist'
-		} & MetadataLinkObject
+		} & LinkStructure
 	>,
 }
 
@@ -95,7 +97,7 @@ function GenerateApp(props: Props) {
 					const assetsDir = path.join(configDir, 'assets')
 
 					await fs.ensureFile(configFilePath)
-					await fs.writeFile(configFilePath, yml, 'utf8')
+					writeFileSync(configFilePath, yml)
 
 					log(`Saved ${co.yellow(configFileName)} to folder`)
 					aggregator.configKey = configKey
@@ -159,8 +161,11 @@ function GenerateApp(props: Props) {
 						for (const filepath of await globby(path.join(assetsDir, '**/*'), {
 							onlyFiles: true,
 						})) {
-							localAssetsAsPlainFileNames.push(com.getFilename(filepath))
-							localAssetsAsFilePaths.push(filepath)
+							const fileStructure = getFileStructure(filepath, {
+								config: configKey,
+							})
+							localAssetsAsPlainFileNames.push(fileStructure.filename)
+							localAssetsAsFilePaths.push(fileStructure.filepath)
 						}
 
 						const numOfLocalAssets = localAssetsAsFilePaths.length
@@ -184,12 +189,9 @@ function GenerateApp(props: Props) {
 						const missingAssets = [] as t.State['assets']
 
 						for (const asset of assets) {
-							if (!asset.isRemote && asset.filename) {
+							if (asset.filename) {
 								if (!localAssetsAsPlainFileNames.includes(asset.filename)) {
-									missingAssets.push({
-										...asset,
-										status: 'downloading',
-									})
+									missingAssets.push({ ...asset, status: 'downloading' })
 								}
 							}
 						}
@@ -252,11 +254,13 @@ function GenerateApp(props: Props) {
 							doc: yaml.Document
 						}) {
 							const filename = com.withYmlExt(name).replace('_en', '')
-							const filepath = path.join(configDir, filename)
+							const filepath = path
+								.join(configDir, filename)
+								.replace('/~/', '/')
 							if (!doc) return u.log(doc)
 
 							if (type === 'root-config') {
-								await fs.writeFile(filepath, doc.toString(), 'utf8')
+								writeFileSync(filepath, com.stringifyDoc(doc))
 								const baseUrl = doc.get('cadlBaseUrl')
 								const appKey = doc.get('cadlMain')
 								log(`Base url: ${co.yellow(baseUrl)}`)
@@ -264,7 +268,7 @@ function GenerateApp(props: Props) {
 								log(`Saved root config object to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else if (type === 'app-config') {
-								await fs.writeFile(filepath, doc.toString(), 'utf8')
+								writeFileSync(filepath, com.stringifyDoc(doc))
 								numDocsFetching = aggregator.pageNames.length
 								log(
 									`\nTotal expected number of yml files we are retrieving is ${co.yellow(
@@ -274,7 +278,7 @@ function GenerateApp(props: Props) {
 								log(`Saved app config to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else {
-								await fs.writeFile(filepath, doc.toString(), 'utf8')
+								writeFileSync(filepath, com.stringifyDoc(doc))
 								const pageName = name.replace('_en', '')
 								log(
 									`Saved page ${co.magenta(pageName)} to ${co.yellow(
@@ -292,7 +296,7 @@ function GenerateApp(props: Props) {
 						.on(PARSED_APP_CONFIG, createOnDoc('app-config'))
 						.on(ON_RETRIEVED_APP_PAGE, createOnDoc('app-page'))
 						.on(ON_RETRIEVE_APP_PAGE_FAILED, incrementProcessedDocs)
-						.init({ loadPages: { includePreloadPages: true } })
+						.init()
 				} catch (error) {
 					logError(error)
 				} finally {
@@ -320,7 +324,7 @@ function GenerateApp(props: Props) {
 							.withYmlExt(aggregator.configKey)
 							.replace('_en', '')
 						const filepath = path.join(dir, filename)
-						await fs.writeFile(filepath, doc.toString(), 'utf8')
+						writeFileSync(filepath, com.stringifyDoc(doc))
 					}
 				}
 			}

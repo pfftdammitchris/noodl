@@ -1,8 +1,7 @@
 import * as u from '@jsmanifest/utils'
 import * as com from 'noodl-common'
-import curry from 'lodash/curry'
-import { LiteralUnion } from 'type-fest'
-import { DeviceType, Env, RootConfig } from 'noodl-types'
+import path from 'path'
+import { DeviceType, Env } from 'noodl-types'
 import {
 	createNoodlPlaceholderReplacer,
 	hasNoodlPlaceholder,
@@ -10,11 +9,9 @@ import {
 } from 'noodl-utils'
 import invariant from 'invariant'
 import axios from 'axios'
-import globby from 'globby'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash.chunk'
-import * as util from './utils'
 import * as c from './constants'
 import * as t from './types'
 
@@ -44,6 +41,11 @@ class NoodlAggregator {
 		})
 	}
 
+	#toRootPageKey = (filepath: string, ext = '.yml') =>
+		path.posix
+			.basename(filepath, ext.startsWith('.') ? ext : `.${ext}`)
+			.replace(/(_en|\~\/)/gi, '')
+
 	#getRootConfig = () => this.root.get(this.configKey) as yaml.Document
 
 	#getAppConfig = () =>
@@ -61,7 +63,7 @@ class NoodlAggregator {
 
 	get assetsUrl() {
 		return (
-			`${this.#getRootConfig()?.get?.('cadlBaseUrl') || ''}assets`.replace(
+			`${this.#getRootConfig()?.get?.('cadlBaseUrl') || ''}assets/`.replace(
 				`$\{cadlBaseUrl\}`,
 				this.baseUrl,
 			) || ''
@@ -99,45 +101,40 @@ class NoodlAggregator {
 	}
 
 	extractAssets({ remote = true }: { remote?: boolean } = {}) {
-		const assets = [] as com.MetadataLinkObject[]
-		const commonUrlKeys = ['path', 'resource', 'resourceUrl'] as string[]
+		const assets = [] as com.LinkStructure[]
+		const commonUrlKeys = ['path', 'resource'] as string[]
 		const visitedAssets = [] as string[]
 
-		const isHttp = (s: string | undefined) =>
-			s ? /^https?:\/\/[a-zA-Z0-9]+/gi.test(s) : false
-
-		const toAssetLink = (s: string) => `${this.assetsUrl}/${s}`
-
-		const addAsset = (asset: string) => {
-			if (!visitedAssets.includes(asset) && isValidAsset(asset)) {
-				if (!remote && asset.startsWith('http')) return
-				visitedAssets.push(asset)
-				const metadata = com.createLinkMetadataExtractor(asset, {
+		const addAsset = (assetPath: string) => {
+			if (!visitedAssets.includes(assetPath) && isValidAsset(assetPath)) {
+				if (!remote && assetPath.startsWith('http')) return
+				visitedAssets.push(assetPath)
+				const linkStructure = com.getLinkStructure(assetPath, {
+					prefix: this.assetsUrl,
 					config: this.configKey,
-					url: !asset.includes(this.assetsUrl) ? toAssetLink(asset) : asset,
 				})
-				assets.push(metadata)
+				assets.push(linkStructure)
 			}
 		}
 
-		for (const [name, visitee] of this.root) {
+		for (const visitee of this.root.values()) {
 			yaml.visit(visitee, {
 				Map(key, node) {
-					for (const key of commonUrlKeys) {
+					commonUrlKeys.forEach((key) => {
 						if (node.has(key)) {
 							const value = node.get(key)
-							if (u.isStr(value)) {
-								addAsset(value)
+							u.isStr(value) && addAsset(value)
+						}
+					})
+				},
+				Pair(key, node) {
+					commonUrlKeys.forEach((key) => {
+						if (yaml.isScalar(node.key) && u.isStr(node.key.value)) {
+							if (node.key.value === key) {
+								addAsset((node.value as yaml.Scalar<string>).value)
 							}
 						}
-					}
-				},
-				Scalar(key, node) {
-					if (u.isStr(node.value)) {
-						if (isHttp(node.value)) {
-							addAsset(node.value)
-						}
-					}
+					})
 				},
 			})
 		}
@@ -153,9 +150,16 @@ class NoodlAggregator {
 		]) as any
 	}
 
-	getPageUrl(name: string | undefined) {
-		if (name?.endsWith('.yml')) name = name.replace('.yml', '')
-		return name ? `${this.baseUrl}${name}.yml` : ''
+	getPageUrl(pathname: string | undefined) {
+		return pathname ? `${this.baseUrl}${pathname}` : ''
+	}
+
+	getRawRootConfigYml(): string {
+		return this.root.get(`${this.configKey}_raw`) as any
+	}
+
+	getRawAppConfigYml(): string {
+		return this.root.get(`${this.appKey}_raw`) as any
 	}
 
 	async init({
@@ -169,7 +173,6 @@ class NoodlAggregator {
 			!!this.configKey,
 			`Cannot initiate the aggregator without setting a config key first`,
 		)
-
 		const result = {
 			doc: {
 				root: await this.loadRootConfig(),
@@ -180,64 +183,9 @@ class NoodlAggregator {
 				app: this.getRawAppConfigYml(),
 			},
 		}
-
-		shouldLoadPreloadPages &&
-			((await Promise.all(
-				util
-					.extractPreloadPages(result.doc.app)
-					.map(async (preloadPage) => this.loadPage(preloadPage)),
-			)) as yaml.Document[])
-
+		shouldLoadPreloadPages && (await this.loadPreloadPages())
 		shouldLoadPages && (await this.loadPages())
-
 		return result
-	}
-
-	getRawRootConfigYml(): string {
-		return this.root.get(`${this.configKey}_raw`) as any
-	}
-
-	getRawAppConfigYml(): string {
-		return this.root.get(`${this.appKey}_raw`) as any
-	}
-
-	async loadAsset(
-		url: string | undefined = '',
-		{}: {
-			metadata?: com.MetadataLinkObject
-		},
-	) {
-		try {
-			//
-		} catch (error) {
-			throw error
-		}
-	}
-
-	#load = curry(
-		(type: LiteralUnion<'doc' | 'yml', string>, items: t.LoadOptions) => {
-			if (u.isStr(items)) {
-				// Load from local folder
-			} else {
-				items
-				const typeKey = type === 'doc' ? 'doc' : type === 'yml' ? 'yml' : ''
-				for (const item of u.array(items)) {
-					const name = item.name
-					const data = item[typeKey]
-					this.root.set(name, type === 'yml' ? yaml.parseDocument(data) : data)
-				}
-			}
-		},
-	)
-
-	loadDocs(value: t.LoadOptions<'doc'>) {
-		this.#load('doc', value)
-		return this
-	}
-
-	loadYmls(value: t.LoadOptions<'yml'>) {
-		this.#load('yml', value)
-		return this
 	}
 
 	async loadRootConfig(config: yaml.Document): Promise<yaml.Document>
@@ -259,7 +207,7 @@ class NoodlAggregator {
 				`Cannot retrieve the root config because a config key was not passed in or set`,
 			)
 			if (configDoc) {
-				configYml = configDoc.toString()
+				configYml = com.stringifyDoc(configDoc)
 			} else {
 				const configUrl = `https://${
 					c.DEFAULT_CONFIG_HOSTNAME
@@ -347,19 +295,20 @@ class NoodlAggregator {
 		}
 	}
 
-	async loadPage(name: string | undefined, doc?: yaml.Document) {
+	async loadPage(name: string | undefined = '', doc?: yaml.Document) {
 		try {
+			const key = this.#toRootPageKey(name)
 			if (u.isStr(name)) {
-				const { data: yml } = await axios.get(this.getPageUrl(name))
-				this.root.set(name, (doc = yaml.parseDocument(yml)))
+				const { data: yml } = await axios.get(this.getPageUrl(`${key}_en.yml`))
+				this.root.set(key, (doc = yaml.parseDocument(yml)))
 			} else if (name && yaml.isDocument(doc)) {
-				this.root.set(name, doc)
+				this.root.set(key, doc)
 			} else {
 				u.log(u.red(`Page "${name}" was not loaded because of bad parameters`))
 			}
 			if (name) {
 				this.emit(c.ON_RETRIEVED_APP_PAGE, { name, doc: doc as yaml.Document })
-				return this.root.get(name || '')
+				return this.root.get(key || '')
 			}
 		} catch (error) {
 			if (error instanceof Error) {
@@ -385,17 +334,22 @@ class NoodlAggregator {
 		}
 	}
 
-	async loadPreloadPages() {
-		const preloadPages = [] as string[]
-		const seq = (this.root.get(this.appKey) as yaml.Document)?.get('preload')
-		if (yaml.isSeq(seq)) {
-			for (const node of seq.items) {
-				if (yaml.isScalar(node) && u.isStr(node.value)) {
-					preloadPages.push(`${node.value}_en`)
+	async loadPreloadPages(preloadPages: string[] = []) {
+		if (preloadPages.length) {
+			//
+		} else {
+			const seq = (this.root.get(this.appKey) as yaml.Document)?.get('preload')
+			if (yaml.isSeq(seq)) {
+				for (const node of seq.items) {
+					if (yaml.isScalar(node) && u.isStr(node.value)) {
+						preloadPages.push(node.value)
+					}
 				}
 			}
 		}
-		await com.promiseAllSafe(...preloadPages.map(async (_) => this.loadPage(_)))
+		return await com.promiseAllSafe(
+			...preloadPages.map(async (page) => this.loadPage(page)),
+		)
 	}
 
 	async loadPages({
@@ -405,15 +359,17 @@ class NoodlAggregator {
 	} = {}) {
 		const pages = [] as string[]
 		const nodes = (this.root.get(this.appKey) as yaml.Document)?.get('page')
+
 		if (yaml.isSeq(nodes)) {
 			for (const node of nodes.items) {
 				if (yaml.isScalar(node) && u.isStr(node.value)) {
-					pages.push(`${node.value}_en`)
+					pages.push(node.value)
 				}
 			}
 		}
 
 		const chunkedPages = chunk(pages, chunks)
+
 		await Promise.all(
 			chunkedPages.map((chunked) =>
 				Promise.all(chunked.map((c) => this.loadPage(c))),
@@ -429,8 +385,6 @@ class NoodlAggregator {
 		this.cbs[evt]?.push(fn)
 		return this
 	}
-
-	// setState(fn: (args: Partial<>a))
 }
 
 export default NoodlAggregator

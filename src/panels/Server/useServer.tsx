@@ -1,7 +1,7 @@
 import * as u from '@jsmanifest/utils'
 import * as com from 'noodl-common'
 import merge from 'lodash/merge'
-import { MetadataFileObject } from 'noodl-common'
+import { FileStructure } from 'noodl-common'
 import produce, { Draft } from 'immer'
 import React from 'react'
 import yaml from 'yaml'
@@ -179,11 +179,11 @@ function useServer({
 	})
 
 	const getLocalFilesAsMetadata = React.useCallback((): {
-		assets: MetadataFileObject[]
-		yml: MetadataFileObject[]
+		assets: FileStructure[]
+		yml: FileStructure[]
 	} => {
 		function reducer(
-			acc: { assets: MetadataFileObject[]; yml: MetadataFileObject[] },
+			acc: { assets: FileStructure[]; yml: FileStructure[] },
 			filepath: string,
 		) {
 			const stat = fs.statSync(filepath)

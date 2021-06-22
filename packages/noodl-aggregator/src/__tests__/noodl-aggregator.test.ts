@@ -1,9 +1,7 @@
-import * as u from '@jsmanifest/utils'
+import { expect } from 'chai'
 import * as com from 'noodl-common'
 import fs from 'fs-extra'
 import path from 'path'
-import { expect } from 'chai'
-import globby from 'globby'
 import nock from 'nock'
 import yaml from 'yaml'
 import Aggregator from '../noodl-aggregator'
@@ -19,29 +17,23 @@ const meet4dYml = fs.readFileSync(
 	'utf8',
 )
 
-const preloadPagesAsYmls = com.loadFiles({
-	ext: 'yml',
-	dir: path.join(__dirname, './fixtures'),
-	raw: true,
-})
-
-const pagesAsYmls = com.loadFiles({
-	ext: 'yml',
-	dir: path.join(__dirname, './fixtures'),
-	raw: true,
-})
-
+const pathToFixtures = path.join(__dirname, './fixtures')
 const cadlEndpointDoc = yaml.parseDocument(cadlEndpointYml)
-const preloadPages = (cadlEndpointDoc.get('preload') as yaml.YAMLSeq).toJSON()
-const pages = (cadlEndpointDoc.get('page') as yaml.YAMLSeq).toJSON()
-const mockAllPageRequests = () => {
-	for (const page of [...preloadPages, ...pages]) {
-		nock(baseUrl).get(`/${page}.yml`).reply(200)
+const preloadPages = (
+	cadlEndpointDoc.get('preload') as yaml.YAMLSeq
+).toJSON() as string[]
+const pages = (cadlEndpointDoc.get('page') as yaml.YAMLSeq).toJSON() as string[]
+const data = com.loadFiles(pathToFixtures, { as: 'object' })
+
+const mockAllPageRequests = (_aggregator = aggregator) => {
+	for (let page of [...preloadPages, ...pages] as string[]) {
+		page.startsWith('~/') && (page = page.replace('~/', ''))
+		nock(baseUrl).get(`/${page}_en.yml`).reply(200, data[page])
 	}
 }
 
 let aggregator: Aggregator
-let assetsUrl = `https://public.aitmed.com/cadl/meet3_0.45d/assets`
+let assetsUrl = `https://public.aitmed.com/cadl/meet3_0.45d/assets/`
 let baseConfigUrl = `https://${c.DEFAULT_CONFIG_HOSTNAME}/config`
 let baseUrl = `https://public.aitmed.com/cadl/meet3_0.45d/`
 
@@ -112,27 +104,28 @@ describe(com.coolGold(`noodl-aggregator`), () => {
 		})
 
 		it(`should load all the pages by default`, async () => {
-			for (const name of pages) {
-				nock(baseUrl)
-					.get(`/${name}_en.yml`)
-					.reply(200, {
-						data: `
-					${name}:
-						VoidObj: vVoOiIdD
-						Style:
-							top: '0'
-					`,
-					})
-			}
+			mockAllPageRequests()
 			await aggregator.init({ loadPreloadPages: false })
 			pages.forEach(
-				(page) => expect(aggregator.root.get(`${page}_en`)).to.exist,
+				(page: string) =>
+					expect(aggregator.root.get(page.replace('~/', ''))).to.exist,
 			)
 		})
 	})
 
-	it(`should set keys without the ext when inserting to the root $\{pageName\}_en`, async () => {
-		await aggregator.init()
-		console.log(aggregator.root)
+	describe(com.italic(`extractAssets`), () => {
+		it(`should extract the assets`, async () => {
+			mockAllPageRequests()
+			await aggregator.init()
+			const assetsUrl = aggregator.assetsUrl
+			const assets = aggregator.extractAssets()
+			expect(assets).to.have.length.greaterThan(0)
+			for (const asset of assets) {
+				expect(asset).to.have.property(
+					'url',
+					`${assetsUrl}${asset.filename}${asset.ext}`,
+				)
+			}
+		})
 	})
 })

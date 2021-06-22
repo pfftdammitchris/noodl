@@ -5,7 +5,7 @@ import React from 'react'
 import produce, { Draft } from 'immer'
 import BigText from 'ink-big-text'
 import Gradient from 'ink-gradient'
-import Aggregator from './api/Aggregator'
+import Aggregator from 'noodl-aggregator'
 import Select from './components/Select'
 import HighlightedText from './components/HighlightedText'
 import Spinner from './components/Spinner'
@@ -150,7 +150,7 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 					deviceType={cli.flags.device}
 					env={cli.flags.env}
 					host={cli.flags.host}
-					isLocal={cli.flags.local}
+					isLocal={!cli.flags.remote}
 					port={cli.flags.port}
 					onEnd={() => cli.flags.server && ctx.setPanel('server')}
 				/>
@@ -163,7 +163,7 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 						(cli.flags.config as string)
 					}
 					host={cli.flags.host}
-					local={cli.flags.local}
+					local={!cli.flags.remote}
 					port={cli.flags.port}
 					wss={cli.flags.wss}
 					wssPort={cli.flags.wssPort}

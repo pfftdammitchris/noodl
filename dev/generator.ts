@@ -2,17 +2,12 @@
 import generator from 'generator'
 import fs from 'fs-extra'
 import path from 'path'
-import { getAbsFilePath, loadFilesAsDocs } from 'noodl-common'
+import * as nc from 'noodl-common'
 
-//
+const outputPathname = 'generated'
 ;(async () => {
-	const outputPath = getAbsFilePath('data/generated/typings.d.ts')
-	const docs = loadFilesAsDocs({
-		as: 'doc',
-		dir: 'generated/meet4d',
-		recursive: true,
-		includeExt: false,
-	})
+	const outputPath = nc.getAbsFilePath('data/generated/typings.d.ts')
+	const docs = nc.loadFiles(outputPathname, {})
 
 	generator.load(docs)
 

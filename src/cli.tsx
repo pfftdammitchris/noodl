@@ -65,7 +65,7 @@ const cli = meow(
 			generate: { type: 'string', alias: 'g' },
 			generatePath: { type: 'string' },
 			host: { alias: 'h', type: 'string', default: DEFAULT_SERVER_HOSTNAME },
-			local: { type: 'boolean', default: false },
+			remote: { type: 'boolean', default: false },
 			outDir: { type: 'string' },
 			port: { type: 'number', alias: 'p', default: DEFAULT_SERVER_PORT },
 			server: {},

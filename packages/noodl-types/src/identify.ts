@@ -278,7 +278,11 @@ export const Identify = (function () {
 			return (
 				typeof v === 'string' &&
 				!v.startsWith('.') &&
-				(i.isImg(v) || i.isJs(v) || i.isHtml(v) || i.isPdf(v) || i.isVid(v))
+				(i.isImg(v) ||
+					i.isJs(v) ||
+					v.endsWith('.html') ||
+					i.isPdf(v) ||
+					i.isVid(v))
 			)
 		},
 		style: {

@@ -1,7 +1,8 @@
 import { DEFAULT_EXTENSIONS } from '@babel/core'
 import babel from '@rollup/plugin-babel'
 import resolve from '@rollup/plugin-node-resolve'
-import typescript from 'rollup-plugin-typescript2'
+import commonjs from '@rollup/plugin-commonjs'
+import typescript from '@rollup/plugin-typescript'
 import filesize from 'rollup-plugin-filesize'
 import external from 'rollup-plugin-peer-deps-external'
 import progress from 'rollup-plugin-progress'
@@ -25,12 +26,8 @@ export default {
 			extensions,
 			moduleDirectories: ['node_modules'],
 		}),
-		typescript({
-			rollupCommonJSResolveHack: true,
-			check: false,
-			abortOnError: false,
-			clean: true,
-		}),
+		commonjs(),
+		typescript(),
 		babel({
 			babelHelpers: 'runtime',
 			exclude: ['node_modules'],

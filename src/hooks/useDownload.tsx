@@ -4,9 +4,7 @@ import merge from 'lodash/merge'
 import produce, { Draft } from 'immer'
 import downloadFile from 'download'
 import * as u from '@jsmanifest/utils'
-import * as com from '../utils/common'
 import * as co from '../utils/color'
-import * as t from '../types'
 
 export interface Options {
 	options?: downloadFile.DownloadOptions
@@ -23,11 +21,12 @@ export interface DownloadProgress {
 }
 
 export interface DownloadObject extends DownloadProgress {
-	state: 'downloading' | 'downloaded' | 'error'
+	state: 'initiating' | 'downloading' | 'downloaded' | 'error'
 	url: string
 }
 
 const initialState = {
+	initiating: {} as Record<string, DownloadObject>,
 	downloading: {} as Record<string, DownloadObject>,
 	downloaded: {} as Record<string, DownloadObject>,
 	urlsInProgress: [] as string[],
@@ -51,8 +50,7 @@ function useDownload({
 		) => {
 			_setState(
 				produce((draft) => {
-					if (typeof fn === 'object') merge(draft, fn)
-					else fn(draft)
+					typeof fn === 'function' ? fn(draft) : merge(draft, fn)
 				}),
 			)
 		},
@@ -84,8 +82,7 @@ function useDownload({
 					const urls = [...draft.urlsInProgress, ...draft.urlsDownloaded]
 					const downloadObject = { url, state: 'downloading' }
 					if (!urls.includes(url)) {
-						draft.downloading[url] = downloadObject as DownloadObject
-						draft.urlsInProgress.push(url)
+						draft.initiating[url] = downloadObject as DownloadObject
 					}
 				})
 
@@ -101,6 +98,16 @@ function useDownload({
 
 				progress
 					?.on('response', (req) => {
+						setState((draft) => {
+							if (draft.initiating[url]) {
+								draft.downloading[url] = {
+									...draft.initiating[url],
+									state: 'downloading',
+								}
+								delete draft.initiating[url]
+							}
+							draft.urlsInProgress.push(url)
+						})
 						onResponse?.(req)
 						onResponseProp?.(req)
 					})
@@ -113,7 +120,6 @@ function useDownload({
 					})
 					.on('finish', () => {
 						setState((draft) => {
-							draft.downloaded[url] = draft.downloading[url]
 							draft.downloaded[url].state = 'downloaded'
 							delete draft.downloading[url]
 							const index = draft.urlsInProgress.indexOf(url)
@@ -127,6 +133,9 @@ function useDownload({
 					})
 					.on('error', (error) => {
 						setState((draft) => {
+							if (!draft.downloading[url]) {
+								draft.downloading[url] = { url } as DownloadObject
+							}
 							draft.downloading[url].state = 'error'
 							const index = draft.urlsInProgress.indexOf(url)
 							if (index > -1) draft.urlsInProgress.splice(index, 1)
