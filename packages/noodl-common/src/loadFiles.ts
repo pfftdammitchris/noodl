@@ -148,7 +148,7 @@ function loadFiles<
 				const metadata = getFileStructure(filepath)
 				const key = getKey(metadata)
 				let data = loadFile(filepath, type)
-				isDocument(data) && data.has(data) && (data.contents = data.get(key))
+				isDocument(data) && data.has(key) && (data.contents = data.get(key))
 				acc.set(key, data)
 				return acc
 			}
