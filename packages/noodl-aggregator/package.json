@@ -1,6 +1,6 @@
 {
 	"name": "noodl-aggregator",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "Noodl aggregator",
 	"keywords": [
 		"noodl",
@@ -28,7 +28,7 @@
 		"minimatch": "^3.0.4",
 		"noodl-common": "^0.0.24",
 		"noodl-types": "^1.0.100",
-		"noodl-utils": "^0.0.52",
+		"noodl-utils": "^0.0.53",
 		"yaml": "^2.0.0-4"
 	},
 	"devDependencies": {
