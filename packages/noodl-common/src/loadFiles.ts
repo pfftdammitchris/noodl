@@ -150,10 +150,14 @@ function loadFiles<
 				const key = getKey(metadata)
 				let data = loadFile(filepath, type)
 				isDocument(data) && data.has(key) && (data.contents = data.get(key))
-				if (keysToSpread.includes(key) && isMap(data)) {
-					for (const item of data.items) {
-						const itemKey = item.key as Scalar<string>
-						acc.set(itemKey.value, item.value)
+				if (keysToSpread.includes(key)) {
+					if (isMap(data)) {
+						for (const item of data.items) {
+							const itemKey = item.key as Scalar<string>
+							acc.set(itemKey.value, item.value)
+						}
+					} else if (u.isObj(data)) {
+						for (const [key, value] of u.entries(data)) acc.set(key, value)
 					}
 				} else {
 					acc.set(key, data)
