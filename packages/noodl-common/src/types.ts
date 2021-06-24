@@ -33,6 +33,6 @@ export interface LoadFilesOptions<
 > {
 	as?: LFType
 	includeExt?: boolean
-	onFile?(args: { file: Document; filename: string }): void
+	set?: Record<string, <A = any>(acc: A, value: any) => void>
 	type?: LType
 }

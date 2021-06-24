@@ -135,6 +135,7 @@ function loadFiles<
 		} else if (u.isObj(opts)) {
 			type = opts.type || type
 			const includeExt = opts?.includeExt
+			const onSet = opts.set || {}
 
 			function getKey(metadata: t.FileStructure) {
 				return includeExt ? getBasename(metadata.filepath) : metadata.filename
@@ -149,7 +150,7 @@ function loadFiles<
 				const key = getKey(metadata)
 				let data = loadFile(filepath, type)
 				isDocument(data) && data.has(key) && (data.contents = data.get(key))
-				acc.set(key, data)
+				u.isFnc(onSet[key]) ? onSet[key](acc, data) : acc.set(key, data)
 				return acc
 			}
 
@@ -158,7 +159,7 @@ function loadFiles<
 				const key = getKey(metadata)
 				let data = loadFile(filepath, type)
 				u.isObj(data) && key in data && (data = data[key])
-				acc[key] = data
+				u.isFnc(onSet[key]) ? onSet[key](acc, data) : (acc[key] = data)
 				return acc
 			}
 
