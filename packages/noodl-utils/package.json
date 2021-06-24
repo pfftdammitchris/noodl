@@ -1,6 +1,6 @@
 {
 	"name": "noodl-utils",
-	"version": "0.0.54",
+	"version": "0.0.55",
 	"description": "Utility/helpers for working with NOODL values",
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"main": "dist/index.js",
@@ -18,7 +18,7 @@
 		"lodash.flowright": "^3.5.0",
 		"lodash.get": "^4.4.2",
 		"lodash.has": "^4.5.2",
-		"noodl-types": "^1.0.100"
+		"noodl-types": "^1.0.103"
 	},
 	"devDependencies": {
 		"@types/lodash.curry": "^4.1.6",
