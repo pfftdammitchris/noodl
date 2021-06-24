@@ -1,3 +1,5 @@
+import { AcceptArray } from '@jsmanifest/typefest'
+
 export interface BaseStructure {
 	ext: string
 	filename: string
@@ -33,6 +35,6 @@ export interface LoadFilesOptions<
 > {
 	as?: LFType
 	includeExt?: boolean
-	set?: Record<string, <A = any>(acc: A, value: any) => void>
+	spread?: AcceptArray<string>
 	type?: LType
 }

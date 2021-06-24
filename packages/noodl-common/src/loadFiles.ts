@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import { sync as globbySync } from 'globby'
-import { Document as YAMLDocument, isDocument } from 'yaml'
+import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
 import path from 'path'
 import getAbsFilePath from './getAbsFilePath'
 import getBasename from './getBasename'
@@ -135,7 +135,7 @@ function loadFiles<
 		} else if (u.isObj(opts)) {
 			type = opts.type || type
 			const includeExt = opts?.includeExt
-			const onSet = opts.set || {}
+			const keysToSpread = opts.spread ? u.array(opts.spread) : []
 
 			function getKey(metadata: t.FileStructure) {
 				return includeExt ? getBasename(metadata.filepath) : metadata.filename
@@ -150,7 +150,14 @@ function loadFiles<
 				const key = getKey(metadata)
 				let data = loadFile(filepath, type)
 				isDocument(data) && data.has(key) && (data.contents = data.get(key))
-				u.isFnc(onSet[key]) ? onSet[key](acc, data) : acc.set(key, data)
+				if (keysToSpread.includes(key) && isMap(data)) {
+					for (const item of data.items) {
+						const itemKey = item.key as Scalar<string>
+						acc.set(itemKey.value, item.value)
+					}
+				} else {
+					acc.set(key, data)
+				}
 				return acc
 			}
 
@@ -159,7 +166,11 @@ function loadFiles<
 				const key = getKey(metadata)
 				let data = loadFile(filepath, type)
 				u.isObj(data) && key in data && (data = data[key])
-				u.isFnc(onSet[key]) ? onSet[key](acc, data) : (acc[key] = data)
+				if (keysToSpread.includes(key) && u.isObj(data)) {
+					u.assign(acc, data)
+				} else {
+					acc[key] = data
+				}
 				return acc
 			}
 
