@@ -151,8 +151,8 @@ function loadFiles<
 				let data = loadFile(filepath, type)
 				isDocument(data) && data.has(key) && (data.contents = data.get(key))
 				if (keysToSpread.includes(key)) {
-					if (isMap(data)) {
-						for (const item of data.items) {
+					if (isDocument(data) && isMap(data.contents)) {
+						for (const item of data.contents.items) {
 							const itemKey = item.key as Scalar<string>
 							acc.set(itemKey.value, item.value)
 						}
@@ -171,7 +171,13 @@ function loadFiles<
 				let data = loadFile(filepath, type)
 				u.isObj(data) && key in data && (data = data[key])
 				if (keysToSpread.includes(key) && u.isObj(data)) {
-					u.assign(acc, data)
+					if (isDocument(data) && isMap(data.contents)) {
+						data.contents.items.forEach((pair) => {
+							acc[String(pair.key)] = pair.value
+						})
+					} else if (u.isObj(data)) {
+						u.assign(acc, data)
+					}
 				} else {
 					acc[key] = data
 				}
