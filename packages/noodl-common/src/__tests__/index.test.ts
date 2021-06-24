@@ -233,6 +233,32 @@ describe(nc.coolGold(`noodl-common`), () => {
 					expect(filename.endsWith('.yml')).to.be.true
 				})
 			})
+
+			it(`should not be nested for Map outputs (ex: root.VideoChat.VideoChat.micOn)`, () => {
+				const result = nc.loadFiles(pathNameToFixtures, {
+					as: 'map',
+					type: 'doc',
+				})
+				const keys = Array.from(result.keys())
+				expect(keys).to.have.length.greaterThan(0)
+				for (const key of keys) {
+					const pageObject = result.get(key)
+					expect(pageObject.has(key)).to.be.false
+				}
+			})
+
+			it(`should not be nested for object outputs (ex: root.VideoChat.VideoChat.micOn)`, () => {
+				const result = nc.loadFiles(pathNameToFixtures, {
+					as: 'object',
+					type: 'doc',
+				})
+				const keys = u.keys(result)
+				expect(keys).to.have.length.greaterThan(0)
+				for (const key of keys) {
+					const pageObject = result[key]
+					expect(pageObject).not.to.have.property(key)
+				}
+			})
 		})
 	})
 

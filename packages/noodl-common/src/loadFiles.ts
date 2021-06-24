@@ -168,24 +168,7 @@ function loadFiles<
 			return u.reduce(items, objectReducer, {})
 		}
 	} else if (u.isObj(dir)) {
-		// ext = args.ext || ext
-		// const result = {}
-		// const dir = getAbsFilePath(args.dir)
-		// const glob = `**/*.${ext}`
-		// const filepaths = globbySync(
-		// 	path.normalize(path.join(getAbsFilePath(dir), glob)),
-		// 	{ onlyFiles: true },
-		// )
-		// for (const filepath of filepaths) {
-		// 	const metadata = getFileStructure(filepath)
-		// 	const filedata =
-		// 		ext === 'json'
-		// 			? JSON.parse(readFileSync(filepath, 'utf8'))
-		// 			: args.raw
-		// 			? readFileSync(filepath, 'utf8')
-		// 			: parseYmlToDoc(readFileSync(filepath, 'utf8'))
-		// 	result[filepath] = filedata
-		// }
+		//
 	}
 }
 
