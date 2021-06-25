@@ -87,7 +87,20 @@ function createGetByReference(docs) {
 
 			let currentNode = docs.get(rootKey)
 
+			if (!currentNode) {
+				console.log(
+					u.red(`Key "${u.yellow(rootKey)}" did not exist in the root`),
+				)
+			}
+
 			for (const path of paths) {
+				if (!path) {
+					console.log(
+						u.red(
+							`Invalid path part "${u.yellow(path)}" in ${u.yellow(ref.ref)}`,
+						),
+					)
+				}
 				if (!currentNode || !path) break
 				if (yaml.isNode(currentNode)) {
 					if (currentNode.has(path)) {

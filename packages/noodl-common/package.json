@@ -23,7 +23,7 @@
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
-	"gitHead": "3a5b477fa7ff5b34a63aee5b2b84729f0687459a",
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"dependencies": {
 		"@jsmanifest/utils": "^1.0.7",
 		"chalk": "^2.4.2",

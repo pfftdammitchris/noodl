@@ -27,5 +27,6 @@
 	"dependencies": {
 		"@types/google-protobuf": "^3.15.2",
 		"google-protobuf": "^3.17.3"
-	}
+	},
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee"
 }
