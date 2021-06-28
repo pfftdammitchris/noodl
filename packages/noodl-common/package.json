@@ -1,6 +1,6 @@
 {
 	"name": "noodl-common",
-	"version": "0.0.40",
+	"version": "0.0.41",
 	"description": "Common NOODL file system utilities",
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
@@ -28,6 +28,7 @@
 		"@jsmanifest/utils": "^1.0.7",
 		"chalk": "^2.4.2",
 		"fs-extra": "^10.0.0",
+		"mime": "^2.5.2",
 		"minimatch": "^3.0.4",
 		"yaml": "^2.0.0-4"
 	},

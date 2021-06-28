@@ -1,4 +1,5 @@
 import path from 'path'
+import mime from 'mime/lite'
 import { FileStructure } from './types'
 
 function getFileStructure(filepath: string, opts?: { config?: string }) {
@@ -10,6 +11,7 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
 		filepath,
 		rootDir: parsed.root,
 	} as FileStructure
+	const mimeType = mime.lookup(filepath)
 
 	if (structure.ext === '.yml') {
 		if (
@@ -20,13 +22,13 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
 		} else {
 			structure.group = 'page'
 		}
-	} else if (/.(json|docx|doc|pdf)$/i.test(structure.ext)) {
-		structure.group = 'document'
-	} else if (/.(jpg|jpeg|gif|png|tif|svg)$/i.test(structure.ext)) {
+	} else if (/image/i.test(mimeType)) {
 		structure.group = 'image'
 	} else if (structure.ext === '.js') {
 		structure.group = 'script'
-	} else if (/.(avi|flv|mkv|mp4|ogg|wmv)$/i.test(structure.ext)) {
+	} else if (/application/i.test(mimeType)) {
+		structure.group = 'document'
+	} else if (/video/i.test(mimeType)) {
 		structure.group = 'video'
 	} else {
 		structure.group = 'unknown'
