@@ -1,5 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
+import mime from 'mime/lite'
 import { sync as globbySync } from 'globby'
 import { join as joinPaths, resolve as resolvePath } from 'path'
 import {
@@ -11,9 +12,7 @@ import {
 } from 'fs-extra'
 import { Document, parseDocument as parseYmlToDoc } from 'yaml'
 import minimatch from 'minimatch'
-import isImg from './isImg'
 import isYml from './isYml'
-import isVid from './isVid'
 import normalizePath from './normalizePath'
 import * as t from './types'
 
@@ -51,6 +50,7 @@ export const createFileMetadataExtractor = (function () {
 		value: string,
 		{ config }: { config?: string } = {},
 	) {
+		const mimeType = mime.lookup(value)
 		const metadata = {} as t.FileStructure
 
 		metadata.ext = getExt(value)
@@ -65,11 +65,11 @@ export const createFileMetadataExtractor = (function () {
 				)
 			}
 			metadata.group = metadata.filename === config ? 'config' : 'page'
-		} else if (isImg(value)) {
+		} else if (/image/i.test(mimeType)) {
 			metadata.group = 'image'
 		} else if (/(json|pdf)/i.test(value)) {
 			metadata.group = 'document'
-		} else if (isVid(value)) {
+		} else if (/video/i.test(mimeType)) {
 			metadata.group = 'video'
 		} else if (value.endsWith('.html') || value.endsWith('.js')) {
 			metadata.group = 'script'
