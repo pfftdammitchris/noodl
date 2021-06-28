@@ -1,25 +1,16 @@
 {
-	"packages": ["packages/*"],
+	"packages": [
+		"packages/noodl-action-chain",
+		"packages/noodl-common",
+		"packages/noodl-types",
+		"packages/noodl-utils"
+	],
 	"npmClient": "npm",
 	"version": "independent",
 	"command": {
-		"run": {
-			"ignore": ["generator", "noodl", "noodl-cli-docs", "protorepo"]
-		},
-		"bootstrap": {
-			"npmClientArgs": []
-		},
-		"publish": {
-			"ignore": [
-				"generator",
-				"noodl",
-				"noodl-cli-docs",
-				"protorepo",
-				"*.md",
-				"dev",
-				"docs"
-			]
-		},
+		"run": {},
+		"bootstrap": {},
+		"publish": {},
 		"publishChanges": {}
 	}
 }
