@@ -16,8 +16,8 @@ import * as c from './constants'
 import * as t from './types'
 
 class NoodlAggregator {
+	#configKey = ''
 	#configVersion = 'latest'
-	configKey = ''
 	cbs = {} as Record<string, ((...args: any[]) => any)[]>
 	deviceType: DeviceType = 'web'
 	env: Env = 'test'
@@ -48,11 +48,6 @@ class NoodlAggregator {
 
 	#getRootConfig = () => this.root.get(this.configKey) as yaml.Document
 
-	#getAppConfig = () =>
-		this.root.get(
-			(this.#getRootConfig()?.get?.('cadlMain') as string) || '',
-		) as yaml.Document
-
 	get appConfigUrl() {
 		return `${this.baseUrl}${this.appKey}`
 	}
@@ -72,6 +67,15 @@ class NoodlAggregator {
 
 	get baseUrl() {
 		return (this.#getRootConfig()?.get?.('cadlBaseUrl') || '') as string
+	}
+
+	get configKey() {
+		return this.#configKey
+	}
+
+	set configKey(configKey) {
+		this.#configKey = configKey
+		this.emit(c.ON_CONFIG_KEY, configKey)
 	}
 
 	get configVersion() {

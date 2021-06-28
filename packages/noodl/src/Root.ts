@@ -1,14 +1,22 @@
-import { YAMLMap, YAMLSeq } from 'yaml'
+import { Document as YAMLDocument, YAMLMap, YAMLSeq } from 'yaml'
+import {
+	loadFiles,
+	LoadFilesOptions,
+	LoadFilesAs,
+	LoadType,
+} from 'noodl-common'
 import { YAMLNode } from './types/internalTypes'
 import Page from './Page'
 import * as u from './utils/internal'
+
 
 interface RootItems {
 	[key: string]: Page | YAMLNode
 }
 
-class NoodlRoot<K extends keyof RootItems = keyof RootItems> {
-	#items = {} as RootItems;
+class NoodlRoot<Type extends LoadType = 'yml', As extends LoadFilesAs = 'list'> {
+	// #root: 
+	#docs = {};
 
 	[Symbol.iterator]() {
 		let items = Object.entries(this.#items)
@@ -21,6 +29,13 @@ class NoodlRoot<K extends keyof RootItems = keyof RootItems> {
 				}
 			},
 		}
+	}
+
+	constructor({}: {
+		docs: YAMLDocument[]
+		loadOptions: Partial<LoadFilesOptions>
+	}) {
+		this.#
 	}
 
 	get Global() {

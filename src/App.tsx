@@ -116,15 +116,6 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 		}
 	}, [])
 
-	React.useEffect(() => {
-		// if (store.get('configKey')) {
-		// 	aggregator.configKey = store.get('configKey')
-		// }
-		aggregator.on('ON_SET_CONFIG_KEY', (configKey) =>
-			store.set('configKey', configKey),
-		)
-	}, [])
-
 	return (
 		<Provider value={ctx}>
 			{state.activePanel === c.DEFAULT_PANEL && (
@@ -157,16 +148,16 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 			) : state.activePanel === 'server' ? (
 				<Server
 					config={
-						(u.isStr(cli.flags.server) &&
-							cli.flags.server &&
-							cli.flags.server) ||
+						(u.isStr(cli.flags.server) && cli.flags.server) ||
 						(cli.flags.config as string)
 					}
+					isConfigFromServerFlag={
+						u.isStr(cli.flags.server) && !!cli.flags.server
+					}
 					host={cli.flags.host}
-					local={!cli.flags.remote}
 					port={cli.flags.port}
-					wss={cli.flags.wss}
-					wssPort={cli.flags.wssPort}
+					isRemote={!!cli.flags.remote}
+					wss={cli.flags.wss ? { port: cli.flags.wssPort } : undefined}
 					watch={cli.flags.watch}
 				/>
 			) : (

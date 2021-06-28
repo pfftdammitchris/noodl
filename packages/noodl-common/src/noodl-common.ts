@@ -1,6 +1,5 @@
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
-import mime from 'mime'
 import { sync as globbySync } from 'globby'
 import { join as joinPaths, resolve as resolvePath } from 'path'
 import {
@@ -12,9 +11,7 @@ import {
 } from 'fs-extra'
 import { Document, parseDocument as parseYmlToDoc } from 'yaml'
 import minimatch from 'minimatch'
-import isYml from './isYml'
 import normalizePath from './normalizePath'
-import * as t from './types'
 
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
 export const highlight = (...s: any[]) => chalk.yellow(...s)
@@ -41,43 +38,6 @@ export const teal = (...s: any[]) => chalk.keyword('turquoise')(...s)
 export const white = (...s: any[]) => chalk.whiteBright(...s)
 export const yellow = (...s: any[]) => chalk.yellow(...s)
 export const newline = () => console.log('')
-
-export const createFileMetadataExtractor = (function () {
-	function getFilename(str: string = '') {
-		return !str.includes('/') ? str : str.substring(str.lastIndexOf('/') + 1)
-	}
-	function getFileMetadataObject(
-		value: string,
-		{ config }: { config?: string } = {},
-	) {
-		const mimeType = mime.lookup(value)
-		const metadata = {} as t.FileStructure
-
-		metadata.ext = getExt(value)
-		metadata.filename = getFilename(value)
-		metadata.filepath = value
-
-		if (isYml(value)) {
-			if (metadata.filename.endsWith('.yml')) {
-				metadata.filename = metadata.filename.substring(
-					0,
-					metadata.filename.lastIndexOf('.yml'),
-				)
-			}
-			metadata.group = metadata.filename === config ? 'config' : 'page'
-		} else if (/image/i.test(mimeType)) {
-			metadata.group = 'image'
-		} else if (/(json|pdf)/i.test(value)) {
-			metadata.group = 'document'
-		} else if (/video/i.test(mimeType)) {
-			metadata.group = 'video'
-		} else if (value.endsWith('.html') || value.endsWith('.js')) {
-			metadata.group = 'script'
-		}
-		return metadata
-	}
-	return getFileMetadataObject
-})()
 
 export function ensureSlashPrefix(s: string) {
 	if (!s.startsWith('/')) s = `/${s}`

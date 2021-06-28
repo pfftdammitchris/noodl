@@ -6,7 +6,6 @@ import meow from 'meow'
 import { render } from 'ink'
 import App from './App'
 import {
-	DEFAULT_OUTPUT_DIR,
 	DEFAULT_SERVER_PORT,
 	DEFAULT_SERVER_HOSTNAME,
 	DEFAULT_WSS_PORT,

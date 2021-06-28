@@ -1,8 +1,13 @@
 import { expect } from 'chai'
-import { coolGold, italic } from 'noodl-common'
-import { noodl } from '../utils/test-utils'
+import * as nc from 'noodl-common'
+import Root from '../Root'
+// import { noodl } from '../utils/test-utils'
 
-describe(coolGold('NoodlRoot'), () => {
+describe(nc.coolGold('NoodlRoot'), () => {
+	it(``, () => {
+		//
+	})
+
 	// describe(italic('Global'), () => {
 	// 	describe(`When using the user vertex api`, () => {
 	// 		describe(`setglobalPathToUserVertex`, () => {

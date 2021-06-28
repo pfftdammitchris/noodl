@@ -4,11 +4,9 @@
 	},
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
-		"baseUrl": "src",
 		"declaration": true,
 		"declarationDir": "dist",
 		"esModuleInterop": true,
-		"inlineSourceMap": true,
 		"jsx": "react",
 		"keyofStringsOnly": true,
 		"lib": ["esnext"],
@@ -19,9 +17,10 @@
 		"outDir": "dist",
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
+		"sourceMap": true,
 		"strict": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "es2015"
+		"target": "es2017"
 	},
 	"exclude": ["node_modules/**/*"],
 	"include": ["src/**/*"]

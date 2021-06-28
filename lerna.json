@@ -3,11 +3,22 @@
 	"npmClient": "npm",
 	"version": "independent",
 	"command": {
+		"run": {
+			"ignore": ["generator", "noodl", "noodl-cli-docs", "protorepo"]
+		},
 		"bootstrap": {
 			"npmClientArgs": []
 		},
 		"publish": {
-			"ignoreChanges": ["*.md", "dev", "docs"]
+			"ignore": [
+				"generator",
+				"noodl",
+				"noodl-cli-docs",
+				"protorepo",
+				"*.md",
+				"dev",
+				"docs"
+			]
 		},
 		"publishChanges": {}
 	}

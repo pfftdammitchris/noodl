@@ -1,11 +1,9 @@
 import React from 'react'
 import { IncomingMessage } from 'http'
-import WebSocket from 'ws'
+import WebSocket, { ServerOptions } from 'ws'
 import * as c from '../constants'
 
-export interface Options {
-	host?: string
-	port?: number
+export interface Hooks {
 	onListening?(this: WebSocket.Server): void
 	onConnection?(
 		this: WebSocket.Server,
@@ -24,21 +22,17 @@ export interface Options {
 function useWss({
 	host = c.DEFAULT_SERVER_HOSTNAME,
 	port = c.DEFAULT_WSS_PORT,
-	onConnection,
-	onClose,
-	onError,
-	onHeaders,
-	onListening,
-}: Options = {}) {
+	...options
+}: ServerOptions = {}) {
 	const wss = React.useRef<WebSocket.Server | null>(null)
 
-	const connect = React.useCallback(() => {
-		wss.current = new WebSocket.Server({ host, port })
-		onClose && wss.current.on('close', onClose)
-		onConnection && wss.current.on('connection', onConnection)
-		onError && wss.current.on('error', onError)
-		onHeaders && wss.current.on('headers', onHeaders)
-		onListening && wss.current.on('listening', onListening)
+	const connect = React.useCallback((opts?: Hooks) => {
+		wss.current = new WebSocket.Server({ ...options, host, port })
+		opts?.onClose && wss.current.on('close', opts.onClose)
+		opts?.onConnection && wss.current.on('connection', opts.onConnection)
+		opts?.onError && wss.current.on('error', opts.onError)
+		opts?.onHeaders && wss.current.on('headers', opts.onHeaders)
+		opts?.onListening && wss.current.on('listening', opts.onListening)
 	}, [])
 
 	const sendMessage = React.useCallback((msg: Record<string, any>) => {

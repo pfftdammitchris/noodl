@@ -3,26 +3,28 @@ import produce, { Draft } from 'immer'
 import { configExists } from '../utils/remote'
 
 export interface Options {
-	initialConfig?: string
+	initialValue?: string
 	onValidateStart?(configKey): void
 	onValidateEnd?(configKey): void
-	onExists?(configKey: string): void
+	onValidated?(configKey: string): void
 	onNotFound?(configKey: string): void
 	onError?(error: Error, configKey: string): void
 }
 
 const initialState = {
 	config: '',
+	isNotFound: false,
 	valid: false,
 	validating: false,
 	lastTried: '',
+	lastConfigSubmitted: '',
 }
 
 function useConfigInput({
-	initialConfig: configProp,
+	initialValue,
 	onValidateStart,
 	onValidateEnd,
-	onExists,
+	onValidated,
 	onError,
 	onNotFound,
 }: Options) {
@@ -36,13 +38,25 @@ function useConfigInput({
 		[],
 	)
 
+	const onChange = React.useCallback(
+		(value: string) => {
+			if (value && state.isNotFound) {
+				setState((draft) => void (draft.isNotFound = false))
+			}
+			setInputValue(value)
+		},
+		[state.isNotFound],
+	)
+
 	const validate = React.useCallback(async (configKey: string) => {
 		let isValid = false
 		if (configKey) {
 			onValidateStart?.(configKey)
 			setState((draft) => {
-				draft.validating = true
 				draft.lastTried = configKey
+				draft.validating = true
+				draft.valid && (draft.valid = false)
+				draft.isNotFound && (draft.isNotFound = false)
 			})
 			setInputValue('')
 			const exists = await configExists(configKey)
@@ -53,10 +67,14 @@ function useConfigInput({
 					draft.valid = true
 					draft.validating = false
 				})
-				onExists?.(configKey)
+				onValidated?.(configKey)
 			} else if (exists === false) {
+				setState((draft) => {
+					draft.validating = false
+					draft.isNotFound = true
+				})
+				setInputValue('')
 				onNotFound?.(configKey)
-				setState((draft) => void (draft.validating = false))
 			} else if (exists instanceof Error) {
 				onError?.(exists, configKey)
 				setInputValue(configKey)
@@ -68,14 +86,14 @@ function useConfigInput({
 	}, [])
 
 	React.useEffect(() => {
-		configProp && validate(configProp)
+		initialValue && validate(initialValue)
 	}, [])
 
 	return {
 		...state,
 		validate,
 		inputValue,
-		setInputValue,
+		setInputValue: onChange,
 	}
 }
 

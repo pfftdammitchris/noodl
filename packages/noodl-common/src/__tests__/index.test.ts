@@ -137,6 +137,44 @@ describe(nc.coolGold(`noodl-common`), () => {
 		})
 	})
 
+	describe(nc.italic(`isImage`), () => {
+		const tests = {
+			'image/png': true,
+			'image/jpg/': false,
+			'image/jpeg': true,
+			'f.png': true,
+			'.png': true,
+			'.png.': false,
+			'image/png.': false,
+			'image png': true,
+		} as const
+
+		u.eachEntries(tests, (value, expectedValue) => {
+			it(`should return ${expectedValue} for "${value}"`, () => {
+				expect(nc.isImage(value)).to.be[expectedValue]
+			})
+		})
+	})
+
+	describe(nc.italic(`isVideo`), () => {
+		const tests = {
+			'video/mp4': true,
+			'video/mkv/': false,
+			'video/flv': true,
+			'f.flv': true,
+			'.flv': true,
+			'.flv.': false,
+			'video/avi.': false,
+			'video avi': true,
+		} as const
+
+		u.eachEntries(tests, (value, expectedValue) => {
+			it(`should return ${expectedValue} for "${value}"`, () => {
+				expect(nc.isVideo(value)).to.be[expectedValue]
+			})
+		})
+	})
+
 	describe(nc.italic(`loadFile`), () => {
 		it(`should return the raw file data as string by default when given only the filepath`, () => {
 			const data = nc.loadFile(pathnameToAboutAitmedPage)

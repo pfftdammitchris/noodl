@@ -8,6 +8,23 @@
 	"main": "dist/index.js",
 	"module": "dist/index.js",
 	"typings": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"start": "tsc --watch",
+		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
+	},
+	"dependencies": {
+		"@jsmanifest/utils": "^1.0.7",
+		"chalk": "^2.4.2",
+		"fs-extra": "^10.0.0",
+		"mime-types": "^2.1.31",
+		"minimatch": "^3.0.4",
+		"yaml": "^2.0.0-4"
+	},
+	"devDependencies": {
+		"@types/mime-types": "^2.1.0",
+		"typescript": "^4.2.4"
+	},
 	"files": [
 		"dist"
 	],
@@ -15,24 +32,8 @@
 		"type": "git",
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
-	"scripts": {
-		"build": "tsc",
-		"start": "tsc --watch",
-		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
-	},
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
-	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
-	"dependencies": {
-		"@jsmanifest/utils": "^1.0.7",
-		"chalk": "^2.4.2",
-		"fs-extra": "^10.0.0",
-		"mime": "^2.5.2",
-		"minimatch": "^3.0.4",
-		"yaml": "^2.0.0-4"
-	},
-	"devDependencies": {
-		"typescript": "^4.2.4"
-	}
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee"
 }

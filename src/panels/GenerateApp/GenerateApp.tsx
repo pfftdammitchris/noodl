@@ -71,8 +71,8 @@ function GenerateApp(props: Props) {
 		validate,
 		validating,
 	} = useConfigInput({
-		initialConfig: configProp,
-		onExists: (value) => loadConfig(value),
+		initialValue: configProp,
+		onValidated: (value) => loadConfig(value),
 		onNotFound: (value) => {},
 		onValidateStart: () => toggleSpinner(),
 		onValidateEnd: () => toggleSpinner(false),

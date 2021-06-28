@@ -1,5 +1,6 @@
 import path from 'path'
-import mime from 'mime'
+import isImage from './isImage'
+import isVideo from './isVideo'
 import { FileStructure } from './types'
 
 function getFileStructure(filepath: string, opts?: { config?: string }) {
@@ -11,7 +12,6 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
 		filepath,
 		rootDir: parsed.root,
 	} as FileStructure
-	const mimeType = mime.lookup(filepath)
 
 	if (structure.ext === '.yml') {
 		if (
@@ -22,13 +22,13 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
 		} else {
 			structure.group = 'page'
 		}
-	} else if (/image/i.test(mimeType)) {
+	} else if (isImage(parsed.base)) {
 		structure.group = 'image'
 	} else if (structure.ext === '.js') {
 		structure.group = 'script'
-	} else if (/application/i.test(mimeType)) {
+	} else if (/[.\/]*(doc|docx|json|pdf)$/i.test(parsed.base)) {
 		structure.group = 'document'
-	} else if (/video/i.test(mimeType)) {
+	} else if (isVideo(parsed.base)) {
 		structure.group = 'video'
 	} else {
 		structure.group = 'unknown'

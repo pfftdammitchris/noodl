@@ -5,19 +5,7 @@ import path from 'path'
 import chokidar from 'chokidar'
 import * as co from '../utils/color'
 
-export interface onAddOrChangeFn {
-	(opts: {
-		isFile: boolean
-		isFolder: boolean
-		name: string
-		path: string
-		stats?: fs.Stats
-	}): void
-}
-
-export interface Options {
-	watchGlob?: string
-	watchOptions?: chokidar.WatchOptions
+export interface Hooks {
 	onAdd?(args: Parameters<onAddOrChangeFn>[0]): void
 	onAddDir?(args: Parameters<onAddOrChangeFn>[0]): void
 	onChange?(args: Parameters<onAddOrChangeFn>[0]): void
@@ -30,69 +18,68 @@ export interface Options {
 	onUnlinkDir?(filepath: string): void
 }
 
-function useWatcher({
-	watchGlob = '*',
-	watchOptions,
-	onAdd,
-	onAddDir,
-	onChange,
-	onError,
-	onReady,
-	onUnlink,
-	onUnlinkDir,
-}: Options) {
+export interface onAddOrChangeFn {
+	(opts: {
+		isFile: boolean
+		isFolder: boolean
+		name: string
+		path: string
+		stats?: fs.Stats
+	}): void
+}
+
+export type Options = Hooks & {
+	watchOptions?: chokidar.WatchOptions
+}
+
+function useWatcher({ watchOptions }: Options) {
 	const [watching, setWatching] = React.useState(false)
 	const watcher = React.useRef<chokidar.FSWatcher | null>(null)
 
-	const watch = React.useCallback(() => {
-		const tag = `[${co.cyan(`watcher`)}]`
-
-		const getFileName = (path: string) => {
-			path.includes('/') && (path = path.substring(path.lastIndexOf('/') + 1))
-			path.endsWith('.yml') &&
-				(path = path.substring(0, path.lastIndexOf('.yml')))
-			return path
-		}
-
+	const watch = React.useCallback((opts?: Hooks & { watchGlob?: string }) => {
 		function onWatchEvent(fn: onAddOrChangeFn) {
 			async function onEvent(filepath: string) {
 				filepath = path.resolve(filepath)
 				const stats = await fs.stat(filepath)
+				const pathObject = path.parse(filepath)
 				return fn({
 					isFile: stats.isFile(),
 					isFolder: stats.isDirectory(),
-					name: getFileName(filepath),
+					name: pathObject.name,
 					path: filepath,
 				})
 			}
 			return onEvent
 		}
 
-		watcher.current = chokidar.watch(watchGlob, {
+		watcher.current = chokidar.watch(opts?.watchGlob || '*', {
 			ignoreInitial: true,
 			...watchOptions,
 		})
 
 		setWatching(true)
 
-		onAdd && watcher.current.on('add', onWatchEvent(onAdd))
-		onAddDir && watcher.current.on('addDir', onWatchEvent(onAddDir))
-		onChange && watcher.current.on('change', onWatchEvent(onChange))
-		onError && watcher.current.on('error', onError)
-		onReady &&
-			watcher.current.on('ready', () => {
-				const watchedFiles = watcher.current?.getWatched()
-				const watchCount = watchedFiles
-					? u.reduce(
-							u.values(watchedFiles),
-							(count, files) => (count += files.length || 0),
-							0,
-					  )
-					: 0
-				onReady?.(watchedFiles, watchCount)
-			})
-		onUnlink && watcher.current.on('unlink', onUnlink)
-		onUnlinkDir && watcher.current.on('unlinkDir', onUnlinkDir)
+		if (opts) {
+			opts.onAdd && watcher.current.on('add', onWatchEvent(opts.onAdd))
+			opts.onAddDir && watcher.current.on('addDir', onWatchEvent(opts.onAddDir))
+			opts.onChange && watcher.current.on('change', onWatchEvent(opts.onChange))
+			opts.onError && watcher.current.on('error', opts.onError)
+			opts.onUnlink && watcher.current.on('unlink', opts.onUnlink)
+			opts.onUnlinkDir && watcher.current.on('unlinkDir', opts.onUnlinkDir)
+			if (opts.onReady) {
+				watcher.current.on('ready', () => {
+					const watchedFiles = watcher.current?.getWatched()
+					const watchCount = watchedFiles
+						? u.reduce(
+								u.values(watchedFiles),
+								(count, files) => (count += files.length || 0),
+								0,
+						  )
+						: 0
+					opts.onReady?.(watchedFiles, watchCount)
+				})
+			}
+		}
 	}, [])
 
 	return {

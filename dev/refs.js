@@ -1,5 +1,6 @@
 process.stdout.write('\x1Bc')
 const invariant = require('invariant')
+const path = require('path')
 const u = require('@jsmanifest/utils')
 const yaml = require('yaml')
 const ntil = require('noodl-utils')
@@ -8,13 +9,23 @@ const fs = require('fs-extra')
 const TrieSearch = require('trie-search')
 const ncom = require('noodl-common')
 
+function tap(fn, o) {
+	if (u.isMap())
+}
+
+
+function getReferenceValue(docs)
+
 class Reference {
+	/** @type { string } ref */
+	#ref = ''
+	#value = null
+
 	constructor(node) {
+		this.#ref = node.value
 		/** @type { yaml.Node } */
 		this.node = node
-		/** @type { string } */
-		this.ref = node.value
-		this.value = null
+		this.#value = null
 		/** @type { yaml.Node | null } */
 		this._prev = null
 		/** @type { yaml.Node | null } */
@@ -28,10 +39,19 @@ class Reference {
 	}
 	/** @return { string } */
 	get path() {
-		return this.ref?.replace?.(/^[.\=@]+/i, '').replace(/[.\=@]+$/i, '') || ''
+		return this.#ref?.replace?.(/^[.\=@]+/i, '').replace(/[.\=@]+$/i, '') || ''
 	}
 	get paths() {
 		return this.path.split('.')
+	}
+	get value() {
+		return this.#value
+	}
+	set value(value) {
+		this.#value = value || null
+	}
+	hasValue() {
+
 	}
 	isFormatted(value) {
 		return !/^[a-zA-Z]/i.test(value)
@@ -43,6 +63,20 @@ class Reference {
 	/** @return { yaml.Node } */
 	next() {
 		return this._next
+	}
+
+	toJSON() {
+		return {
+			isRoot: this.isRoot(),
+			isLocal: this.isLocal(),
+			path: this.path,
+			paths: this.paths,
+			value: this.#value,
+		}
+	}
+
+	toString() {
+		return this.#ref
 	}
 }
 
@@ -58,20 +92,15 @@ const docs = ncom.loadFiles(
 	},
 )
 
-console.log(docs.get('Global'))
+// console.log(docs.get('Global'))
 
-return
-
-const tableItems = []
 const cache = new yaml.Document({})
 
-let aliasDocName = ''
-let aliasSource = ''
 
 /** @param { Map<string, yaml.Document<any, any>> } docs */
-function createGetByReference(docs) {
+function createGetReferenceInfo(docs) {
 	/** @param { Reference } ref */
-	const getByReference = function _getByReference(ref) {
+	const getReferenceInfo = function _getByReference(ref) {
 		!cache.has(ref.path) && cache.set(ref.path, ref)
 
 		if (ref.isRoot()) {
@@ -101,67 +130,60 @@ function createGetByReference(docs) {
 						),
 					)
 				}
-				if (!currentNode || !path) break
-				if (yaml.isNode(currentNode)) {
+				if (!currentNode || !path) return currentNode
+				if (yaml.isDocument(currentNode) || yaml.isMap(currentNode)) {
 					if (currentNode.has(path)) {
-						if (!yaml.isNode(currentNode.get(path))) {
-							console.log(
-								u.red(
-									`The next node after path "${path}" in "${ref.ref}" is not a node`,
-								),
-							)
-						}
 						currentNode = currentNode.get(path, true)
 						if (path === paths[paths.length - 1]) {
 							// cache.setIn(refNode.paths, currentNode)
-							console.log(currentNode.toJSON())
+							console.log(`Last node in the loop`, {
+								node: currentNode,
+								path,
+								paths,
+							})
 						}
 					}
-				} else {
-					console.log(
-						u.red(
-							`currentNode is no longer a node. Current path: "${path}" from "${ref.ref}"`,
-						),
-					)
 				}
 			}
+			return currentNode
 		} else if (ref.isLocal()) {
 			const [localKey, ...paths] = ref.paths
 		}
 	}
 
-	/** @param { (args: { getByReference: typeof getByReference, docs: Map<string, yaml.Document<any, any>}) => void} fn */
+	/** @param { (args: { getReferenceInfo: typeof getReferenceInfo, docs: Map<string, yaml.Document<any, any>}) => void} fn */
 	return (fn) => {
 		fn({
-			getByReference,
+			getReferenceInfo,
 		})
 	}
 }
 
-createGetByReference(docs)(({ getByReference }) => {
+createGetReferenceInfo(docs)(({ getReferenceInfo }) => {
 	for (const [name, visitee] of docs) {
 		yaml.visit(visitee, {
 			Scalar(key, node, path) {
 				if (Identify.reference(node.value)) {
 					const refNode = new Reference(node)
-					const refValue = getByReference(refNode)
+					const refValue = getReferenceInfo(refNode)
+					console.log(`refNode: ${refNode}`, refNode.value)
 
-					// if (!refs.has(refStr)) {
-					// 	refs.set(refStr, refNode)
-					// 	// let value = refNode.isLocal
-					// 	// 	? visitee.getIn(refNode.paths)
-					// 	// 	: docs.get(refNode.paths[0])?.getIn(refNode.paths[1].slice())
-					// 	Object.defineProperty(refNode, 'value', {
-					// 		configurable: true,
-					// 		enumerable: true,
-					// 		get: () =>
-					// 			refNode.isLocal
-					// 				? visitee.getIn(refNode.paths)
-					// 				: docs.get(refNode.paths[0])?.getIn(refNode.paths[1].slice()),
-					// 	})
+					if (!refs.has(refNode.ref)) {
+						refs.set(refNode.toString(), refNode)
+						// let value = refNode.isLocal
+						// 	? visitee.getIn(refNode.paths)
+						// 	: docs.get(refNode.paths[0])?.getIn(refNode.paths[1].slice())
+						Object.defineProperty(refNode, 'value', {
+							configurable: true,
+							enumerable: true,
+							get: () =>
+								refNode.isLocal
+									? visitee.getIn(refNode.paths)
+									: docs.get(refNode.paths[0])?.getIn(refNode.paths[1].slice()),
+						})
 
-					// 	tableItems.push([refStr, refNode.value])
-					// }
+						// 	tableItems.push([refStr, refNode.value])
+					}
 				}
 			},
 		})
@@ -170,8 +192,8 @@ createGetByReference(docs)(({ getByReference }) => {
 
 // console.table(tableItems)
 // console.log(Array.from(docs.keys()))
-// fs.writeJsonSync(
-// 	path.posix.join(__dirname, '../generated/refs-output.json'),
-// 	refs.toJSON(),
-// 	{ spaces: 2 },
-// )
+fs.writeJsonSync(
+	path.posix.join(__dirname, '../generated/refs-output.json'),
+	refs,
+	{ spaces: 2 },
+)
