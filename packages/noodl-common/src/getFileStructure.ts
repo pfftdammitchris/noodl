@@ -1,5 +1,4 @@
 import path from 'path'
-import isVid from './isVid'
 import { FileStructure } from './types'
 
 function getFileStructure(filepath: string, opts?: { config?: string }) {
@@ -27,7 +26,7 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
 		structure.group = 'image'
 	} else if (structure.ext === '.js') {
 		structure.group = 'script'
-	} else if (isVid(parsed.base)) {
+	} else if (/.(avi|flv|mkv|mp4|ogg|wmv)$/i.test(structure.ext)) {
 		structure.group = 'video'
 	} else {
 		structure.group = 'unknown'
