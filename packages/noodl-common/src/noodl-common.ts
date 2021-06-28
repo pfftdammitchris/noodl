@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
-import mime from 'mime/lite'
+import * as mime from 'mime/lite'
 import { sync as globbySync } from 'globby'
 import { join as joinPaths, resolve as resolvePath } from 'path'
 import {

@@ -1,5 +1,5 @@
 import path from 'path'
-import mime from 'mime/lite'
+import * as mime from 'mime/lite'
 import { FileStructure } from './types'
 
 function getFileStructure(filepath: string, opts?: { config?: string }) {
