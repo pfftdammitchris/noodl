@@ -102,7 +102,9 @@
 		"cross-env": "^7.0.3",
 		"esbuild": "^0.12.10",
 		"eslint": "^7.29.0",
+		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-ava": "^12.0.0",
+		"eslint-plugin-prettier": "^3.4.0",
 		"eslint-plugin-react": "^7.21.5",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"generator": "file:packages/generator",
@@ -152,7 +154,8 @@
 		"extends": [
 			"eslint:recommended",
 			"plugin:@typescript-eslint/eslint-recommended",
-			"plugin:@typescript-eslint/recommended"
+			"plugin:@typescript-eslint/recommended",
+			"prettier"
 		],
 		"plugins": [
 			"@typescript-eslint",
@@ -163,6 +166,21 @@
 			"es6": true,
 			"webextensions": true
 		},
+		"rules": {
+			"@typescript-eslint/explicit-module-boundary-types": "off",
+			"@typescript-eslint/no-empty-function": "off",
+			"@typescript-eslint/lines-between-class-members": [
+				"error",
+				"always",
+				{
+					"exceptAfterSingleLine": true
+				}
+			],
+			"no-template-curly-in-string": "off",
+			"no-useless-escape": 2,
+			"eqeqeq": 0,
+			"prettier/prettier": 2
+		},
 		"settings": {
 			"import/resolver": {
 				"node": {
@@ -171,11 +189,6 @@
 					]
 				}
 			}
-		},
-		"rules": {
-			"@typescript-eslint/lines-between-class-members": 2,
-			"no-template-curly-in-string": "off",
-			"eqeqeq": 0
 		}
 	},
 	"ava": {

@@ -14,32 +14,43 @@ class Reference {
 		this.#prev = null
 		this.#next = null
 	}
+
 	isRoot() {
 		return !!this.path && this.path[0].toUpperCase() === this.path[0]
 	}
+
 	isLocal() {
 		return !!this.path && this.path[0].toLowerCase() === this.path[0]
 	}
-	/** @return { string } */
-	get path() {
-		return this.#ref?.replace?.(/^[.\=@]+/i, '').replace(/[.\=@]+$/i, '') || ''
+
+	get node() {
+		return this.#node
 	}
+
+	set node(node) {
+		this.#node = node
+	}
+
+	get path() {
+		return this.#ref?.replace?.(/^[.=@]+/i, '').replace(/[.=@]+$/i, '') || ''
+	}
+
 	get paths() {
 		return this.path.split('.')
 	}
+
 	get value() {
 		return this.#value
 	}
+
 	set value(value) {
 		this.#value = value || null
 	}
-	hasValue() {}
-	isFormatted(value) {
-		return !/^[a-zA-Z]/i.test(value)
-	}
+
 	prev() {
 		return this.#prev
 	}
+
 	next() {
 		return this.#next
 	}

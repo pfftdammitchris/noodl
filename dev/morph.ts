@@ -1,28 +1,25 @@
 process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
-import * as com from 'noodl-common'
+import * as nc from 'noodl-common'
+import Aggregator from 'noodl-aggregator'
 import { Identify } from 'noodl-types'
 import yaml from 'yaml'
 import fs from 'fs-extra'
-import Aggregator from '../src/api/Aggregator'
 import pkg from '../package.json'
-import aggregateActions from './aggregators/aggregateActions'
-import aggregateReferences from './aggregators/aggregateReferences'
-import * as co from '../src/utils/color'
 
 const paths = {
-	docs: com.getAbsFilePath('generated/test'),
-	metadata: com.getAbsFilePath('data/generated/metadata.json'),
-	typings: com.getAbsFilePath('data/generated/typings.d.ts'),
-	stats: com.getAbsFilePath('data/generated/data.json'),
+	docs: nc.getAbsFilePath('generated/test'),
+	metadata: nc.getAbsFilePath('data/generated/metadata.json'),
+	typings: nc.getAbsFilePath('data/generated/typings.d.ts'),
+	stats: nc.getAbsFilePath('data/generated/data.json'),
 }
 
 for (const [key, filepath] of u.entries(paths)) {
-	paths[key] = com.normalizePath(filepath)
+	paths[key] = nc.normalizePath(filepath)
 }
 
 const aggregator = new Aggregator('meet4d')
-const docFiles = com.loadFilesAsDocs({
+const docFiles = nc.loadFilesAsDocs({
 	as: 'metadataDocs',
 	dir: paths.docs,
 	includeExt: false,
@@ -69,32 +66,21 @@ export const data = {
 	references: {},
 }
 
-function createGetReference(root: Aggregator['root']) {
-	function _get(key: string) {
-		if (Identify.reference(key)) {
-			if (key.startsWith('..')) {
-				const dataKey = key.strike
-			} else if (key.startsWith('.')) {
-				//
-			} else if (key.startsWith('=')) {
-				//
-			} else if (key.startsWith('@')) {
-				//
-			}
-		}
-		return root.get(key)
-	}
-}
+const { name, doc } = docFiles[0]
 
-for (const { name, doc } of docFiles) {
-	aggregator.root.set(name, doc)
-	// aggregateActions({ name, doc, data })
-	aggregateReferences({ name, doc, data })
-}
+const titlePair = doc.contents.items[0].value.items[2] as yaml.Pair
+const viewComponentMap = doc.contents.items[0].value.items[3].value
+	.items[0] as yaml.YAMLMap
+
+// const alias = doc.createAlias(titlePair)
+
+// doc.add(alias)
+
+// console.log(doc.toString())
 
 Promise.resolve()
-	.then(() => fs.writeJson(paths.stats, data, { spaces: 2 }))
-	.then(() => u.log('\n' + co.green(`DONE`) + '\n'))
+	// .then(() => fs.writeJson(paths.stats, data, { spaces: 2 }))
+	.then(() => u.log('\n' + nc.green(`DONE`) + '\n'))
 	.catch((err) => {
 		throw err
 	})
