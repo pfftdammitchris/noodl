@@ -60,11 +60,9 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 	get hooks() {
 		return this.#hooks
 	}
-
 	get store() {
 		return this.#store
 	}
-
 	ensureDataFile() {
 		if (this.#dataFilePath && !fs.existsSync(this.#dataFilePath)) {
 			fs.ensureFileSync(this.#dataFilePath)
@@ -72,7 +70,6 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 			this.#store = this.get()
 		}
 	}
-
 	get() {
 		if (this.#dataFilePath) {
 			try {
@@ -83,7 +80,6 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 		}
 		return null
 	}
-
 	compose(scripts?: ReturnType<t.Script.Register<Store>>[]) {
 		const configs = scripts || this.#scripts
 
