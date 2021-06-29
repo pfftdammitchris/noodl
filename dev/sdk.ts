@@ -1,25 +1,26 @@
 import * as babel from '@babel/core'
+// import AitmedProtorepo from '@aitmed/protorepo/js/ecos/v1beta1/ecos_api_pb'
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
 import * as esbuild from 'esbuild'
 import fs from 'fs-extra'
 import path from 'path'
-// import { EcosAPIClient } from '@aitmed/protorepo/js/ecos/v1beta1/ecos_apiServiceClientPb'
-// import { Edge, Vertex, Doc } from '@aitmed/protorepo/js/ecos/v1beta1/types_pb'
-// import {
-// 	cdReq,
-// 	cdResp,
-// 	ceReq,
-// 	ceResp,
-// 	cvReq,
-// 	cvResp,
-// 	dxReq,
-// 	dxResp,
-// 	rdResp,
-// 	reResp,
-// 	rvResp,
-// 	rxReq,
-// } from '../lib/ecos_api_pb'
+import grpcWeb from 'grpc-web'
+import { Edge, Vertex, Doc } from '@aitmed/protorepo/js/ecos/v1beta1/types_pb'
+import {
+	cdReq,
+	cdResp,
+	ceReq,
+	ceResp,
+	cvReq,
+	cvResp,
+	dxReq,
+	dxResp,
+	rdResp,
+	reResp,
+	rvResp,
+	rxReq,
+} from '@aitmed/protorepo/js/ecos/v1beta1/ecos_api_pb'
 // import { EcosAPIClient } from '../lib/ecos_apiServiceClientPb'
 // import A from '../lib/ecos_api_pb'
 // import B from '../lib/types_pb'
@@ -30,92 +31,182 @@ const apiHost = 'albh2.aitmed.io'
 const url = `https://${apiHost}`
 // const ecos = new EcosAPIClient(apiHost, undefined) as t.Ecos
 
-// let program = new ts.Project({
-// 	compilerOptions: {
-// 		allowJs: true,
-// 		allowSyntheticDefaultImports: true,
-// 		checkJs: true,
-// 		charset: 'utf8',
-// 		declaration: true,
-// 		emitDeclarationOnly: true,
-// 		esModuleInterop: true,
-// 		lib: ['es2017', 'esnext'],
-// 		module: ts.ModuleKind.ESNext,
-// 		noEmitOnError: false,
-// 		skipLibCheck: true,
-// 		sourceMap: true,
-// 		target: ts.ScriptTarget.ESNext,
-// 	},
-// 	manipulationSettings: {
-// 		indentationText: ts.IndentationText.TwoSpaces,
-// 		insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces: true,
-// 		quoteKind: ts.QuoteKind.Single,
-// 		newLineKind: ts.NewLineKind.LineFeed,
-// 		useTrailingCommas: true,
-// 	},
-// 	skipLoadingLibFiles: true,
-// 	skipFileDependencyResolution: true,
-// })
+class EcosAPIClient {
+	client_: grpcWeb.AbstractClientBase
+	hostname_: string
+	credentials_: null | { [index: string]: string }
+	options_: null | { [index: string]: string }
 
-// const sourceFile = program.createSourceFile(
-// 	path.join(__dirname, '../lib/index.d.ts'),
-// 	fs.readFileSync(
-// 		path.join(__dirname, '../lib/ecos_apiServiceClientPb.js'),
-// 		'utf8',
-// 	),
-// 	{ overwrite: true },
-// )
+	constructor(
+		hostname: string,
+		credentials?: null | { [index: string]: string },
+		options?: null | { [index: string]: string },
+	) {
+		if (!options) options = {}
+		if (!credentials) credentials = {}
+		options['format'] = 'text'
 
-// sourceFile
-// 	.emit({
-// 		emitOnlyDtsFiles: true,
-// 	})
-// 	.then((result) => {
-// 		sourceFile.saveSync()
-// 	})
+		this.client_ = new grpcWeb.GrpcWebClientBase(options)
+		this.hostname_ = hostname
+		this.credentials_ = credentials
+		this.options_ = options
+	}
 
-const pathsToCode = [
-	path.join(
-		__dirname,
-		`../node_modules/@aitmed/protorepo/js/ecos/v1beta1/ecos_apiServiceClientPb.ts`,
-	),
-	path.join(
-		__dirname,
-		`../node_modules/@aitmed/protorepo/js/ecos/v1beta1/ecos_api_pb.js`,
-	),
-	path.join(
-		__dirname,
-		`../node_modules/@aitmed/protorepo/js/ecos/v1beta1/types_pb.js`,
-	),
-]
+	methodInfoce = new grpcWeb.AbstractClientBase.MethodInfo(
+		ceResp,
+		(request: ceReq) => {
+			return request.serializeBinary()
+		},
+		ceResp.deserializeBinary,
+	)
 
-for (const pathToCode of pathsToCode) {
-	const code = babel.transformSync(fs.readFileSync(pathToCode, 'utf8'), {
-		filename: path.posix.basename(pathToCode),
-		presets: ['@babel/preset-typescript'],
-	})
-	fs.writeFileSync(`${pathToCode}`, code.code, 'utf8')
+	ce(
+		request: ceReq,
+		metadata: grpcWeb.Metadata | null,
+		callback: (err: grpcWeb.Error, response: ceResp) => void,
+	) {
+		return this.client_.rpcCall(
+			this.hostname_ + '/aitmed.ecos.v1beta1.EcosAPI/ce',
+			request,
+			metadata || {},
+			this.methodInfoce,
+			callback,
+		)
+	}
+
+	methodInfore = new grpcWeb.AbstractClientBase.MethodInfo(
+		reResp,
+		(request: rxReq) => {
+			return request.serializeBinary()
+		},
+		reResp.deserializeBinary,
+	)
+
+	re(
+		request: rxReq,
+		metadata: grpcWeb.Metadata | null,
+		callback: (err: grpcWeb.Error, response: reResp) => void,
+	) {
+		return this.client_.rpcCall(
+			this.hostname_ + '/aitmed.ecos.v1beta1.EcosAPI/re',
+			request,
+			metadata || {},
+			this.methodInfore,
+			callback,
+		)
+	}
+
+	methodInfodx = new grpcWeb.AbstractClientBase.MethodInfo(
+		dxResp,
+		(request: dxReq) => {
+			return request.serializeBinary()
+		},
+		dxResp.deserializeBinary,
+	)
+
+	dx(
+		request: dxReq,
+		metadata: grpcWeb.Metadata | null,
+		callback: (err: grpcWeb.Error, response: dxResp) => void,
+	) {
+		return this.client_.rpcCall(
+			this.hostname_ + '/aitmed.ecos.v1beta1.EcosAPI/dx',
+			request,
+			metadata || {},
+			this.methodInfodx,
+			callback,
+		)
+	}
+
+	methodInfocv = new grpcWeb.AbstractClientBase.MethodInfo(
+		cvResp,
+		(request: cvReq) => {
+			return request.serializeBinary()
+		},
+		cvResp.deserializeBinary,
+	)
+
+	cv(
+		request: cvReq,
+		metadata: grpcWeb.Metadata | null,
+		callback: (err: grpcWeb.Error, response: cvResp) => void,
+	) {
+		return this.client_.rpcCall(
+			this.hostname_ + '/aitmed.ecos.v1beta1.EcosAPI/cv',
+			request,
+			metadata || {},
+			this.methodInfocv,
+			callback,
+		)
+	}
+
+	methodInforv = new grpcWeb.AbstractClientBase.MethodInfo(
+		rvResp,
+		(request: rxReq) => {
+			return request.serializeBinary()
+		},
+		rvResp.deserializeBinary,
+	)
+
+	rv(
+		request: rxReq,
+		metadata: grpcWeb.Metadata | null,
+		callback: (err: grpcWeb.Error, response: rvResp) => void,
+	) {
+		return this.client_.rpcCall(
+			this.hostname_ + '/aitmed.ecos.v1beta1.EcosAPI/rv',
+			request,
+			metadata || {},
+			this.methodInforv,
+			callback,
+		)
+	}
+
+	methodInfocd = new grpcWeb.AbstractClientBase.MethodInfo(
+		cdResp,
+		(request: cdReq) => {
+			return request.serializeBinary()
+		},
+		cdResp.deserializeBinary,
+	)
+
+	cd(
+		request: cdReq,
+		metadata: grpcWeb.Metadata | null,
+		callback: (err: grpcWeb.Error, response: cdResp) => void,
+	) {
+		return this.client_.rpcCall(
+			this.hostname_ + '/aitmed.ecos.v1beta1.EcosAPI/cd',
+			request,
+			metadata || {},
+			this.methodInfocd,
+			callback,
+		)
+	}
+
+	methodInford = new grpcWeb.AbstractClientBase.MethodInfo(
+		rdResp,
+		(request: rxReq) => {
+			return request.serializeBinary()
+		},
+		rdResp.deserializeBinary,
+	)
+
+	rd(
+		request: rxReq,
+		metadata: grpcWeb.Metadata | null,
+		callback: (err: grpcWeb.Error, response: rdResp) => void,
+	) {
+		return this.client_.rpcCall(
+			this.hostname_ + '/aitmed.ecos.v1beta1.EcosAPI/rd',
+			request,
+			metadata || {},
+			this.methodInford,
+			callback,
+		)
+	}
 }
 
-// esbuild
-// 	.build({
-// 		bundle: true,
-// 		charset: 'utf8',
-// 		entryPoints: [
-// 			'./node_modules/@aitmed/protorepo/js/ecos/v1beta1/ecos_apiServiceClientPb.ts',
-// 			'./node_modules/@aitmed/protorepo/js/ecos/v1beta1/types_pb',
-// 			'./node_modules/@aitmed/protorepo/js/ecos/v1beta1/ecos_api_pb',
-// 		],
+const ecos = new EcosAPIClient(apiHost, undefined)
 
-// 		format: 'cjs',
-// 		outdir: 'lib',
-// 		target: 'es2017',
-// 		allowOverwrite: true,
-// 		sourcemap: true,
-// 	})
-// 	.then((buildResult) => {
-// 		console.log(`Build finished`)
-// 	})
-// 	.catch((err) => {
-// 		console.error(err)
-// 	})
+console.log(ecos)

@@ -19,6 +19,10 @@ const lib = {
 		name: 'noodl-action-chain',
 		path: getAbsFilePath(`packages/noodl-action-chain`),
 	},
+	proto: {
+		name: 'protorepo',
+		path: getAbsFilePath(`packages/protorepo`),
+	},
 }
 
 const cli = meow(``, {
@@ -29,6 +33,7 @@ const cli = meow(``, {
 		nt: { type: 'string' },
 		nac: { type: 'string' },
 		nc: { type: 'string' },
+		proto: { alias: 'p', type: 'string' },
 	},
 })
 

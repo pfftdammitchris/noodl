@@ -19,6 +19,7 @@
 		"start": "tsc --watch",
 		"prebuild": "rm -rf dist",
 		"build": "tsc",
+		"postbuild": "cp src/*.d.ts dist/",
 		"test": "echo \"Error: run tests from root\" && exit 1"
 	},
 	"bugs": {
@@ -28,5 +29,6 @@
 		"@types/google-protobuf": "^3.15.2",
 		"google-protobuf": "^3.17.3"
 	},
+	"devDependencies": {},
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee"
 }

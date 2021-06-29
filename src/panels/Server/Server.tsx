@@ -5,7 +5,7 @@ import * as u from '@jsmanifest/utils'
 import * as nc from 'noodl-common'
 import { FileStructure } from 'noodl-common'
 import yaml from 'yaml'
-import express from 'express'
+import express, { Router, RouterOptions } from 'express'
 import path from 'path'
 import fs from 'fs-extra'
 import globby from 'globby'
@@ -15,6 +15,7 @@ import useWatcher from '../../hooks/useWatcher'
 import useWss from '../../hooks/useWss'
 import * as c from '../../constants'
 import * as co from '../../utils/color'
+import { RunningScriptOptions } from 'vm'
 
 export interface Props {
 	config: string
@@ -135,6 +136,11 @@ function Server({
 			return acc
 		}
 		const localFiles = globby.sync(getWatchGlob().replace(/\\/g, '/'))
+		log(
+			`Picked up ${u.yellow(
+				String(localFiles.length),
+			)} local files to register routes with\n`,
+		)
 		const metadata = u.reduce(localFiles, reducer, { assets: [], yml: [] })
 		return metadata
 	}, [])
@@ -209,6 +215,13 @@ function Server({
 							)} files for changes at ${co.magenta(getDir())}\n`,
 						)
 						sendMessage({ type: 'WATCHING' })
+
+						// ref.current?._router.stack.map(
+						// 	(r: ReturnType<express.Router['route']>) => {
+						// 		const { path: paths } = r?.['route'] || {}
+						// 		console.log(u.array(paths).join(' '))
+						// 	},
+						// )
 					},
 					onAdd(args) {
 						u.log(`${watchTag} file added`, args.path)
@@ -307,10 +320,10 @@ function Server({
 			-------------------------------------------------------- */
 
 			if (metadata.assets) {
-				for (let { filepath, filename } of metadata.assets) {
+				for (let { filepath, filename, ext = '' } of metadata.assets) {
 					filename = nc.ensureSlashPrefix(filename)
 					ref.current?.get(
-						[filename, `/assets/${filename.replace('/', '')}`],
+						[`/assets/${filename.replace('/', '')}${ext}`],
 						(req, res) => res.sendFile(filepath),
 					)
 				}
