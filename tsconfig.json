@@ -11,15 +11,15 @@
 		"moduleResolution": "node",
 		"noEmitOnError": false,
 		"noImplicitAny": false,
-		"outDir": "dist",
+		"noLib": false,
+		"outDir": "./dist",
 		"pretty": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"strict": true,
 		"suppressImplicitAnyIndexErrors": true,
 		"target": "es2017"
 	},
 	"exclude": ["node_modules/**/*"],
-	"include": ["src/**/*", "packages/**/*/src/**/*"]
+	"include": ["./src"]
 }

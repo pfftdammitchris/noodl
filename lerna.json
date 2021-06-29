@@ -9,7 +9,9 @@
 	"version": "independent",
 	"command": {
 		"run": {},
-		"bootstrap": {},
+		"bootstrap": {
+			"ignore": ["noodl"]
+		},
 		"publish": {},
 		"publishChanges": {}
 	}

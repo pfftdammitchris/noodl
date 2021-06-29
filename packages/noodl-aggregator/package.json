@@ -34,9 +34,16 @@
 	"devDependencies": {
 		"@types/lodash.chunk": "^4.2.6"
 	},
+	"directories": {
+		"dist": "dist",
+		"test": "__tests__"
+	},
 	"files": [
 		"dist"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/pfftdammitchris/noodl.git"
