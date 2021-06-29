@@ -148,8 +148,7 @@
 		"parser": "@typescript-eslint/parser",
 		"parserOptions": {
 			"project": "./tsconfig.json",
-			"sourceType": "module",
-			"ecmaVersion": 2020
+			"sourceType": "module"
 		},
 		"extends": [
 			"eslint:recommended",
@@ -178,6 +177,7 @@
 			],
 			"@typescript-eslint/no-empty-function": "off",
 			"@typescript-eslint/no-explicit-any": "off",
+			"no-inner-declarations": "off",
 			"no-template-curly-in-string": "off",
 			"no-useless-escape": 2,
 			"eqeqeq": 0,

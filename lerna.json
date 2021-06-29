@@ -6,7 +6,7 @@
 		"packages/noodl-utils"
 	],
 	"npmClient": "npm",
-	"version": "independent",
+	"version": "0.0.75",
 	"command": {
 		"run": {},
 		"bootstrap": {

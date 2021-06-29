@@ -148,7 +148,7 @@ function loadFiles<
 			function mapReducer(acc: Map<string, any>, filepath: string) {
 				const metadata = getFileStructure(filepath)
 				const key = getKey(metadata)
-				let data = loadFile(filepath, type)
+				const data = loadFile(filepath, type)
 				isDocument(data) && data.has(key) && (data.contents = data.get(key))
 				if (keysToSpread.includes(key)) {
 					if (isDocument(data) && isMap(data.contents)) {

@@ -26,7 +26,7 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
 		structure.group = 'image'
 	} else if (structure.ext === '.js') {
 		structure.group = 'script'
-	} else if (/[.\/]*(doc|docx|json|pdf)$/i.test(parsed.base)) {
+	} else if (/[./]*(doc|docx|json|pdf)$/i.test(parsed.base)) {
 		structure.group = 'document'
 	} else if (isVideo(parsed.base)) {
 		structure.group = 'video'
