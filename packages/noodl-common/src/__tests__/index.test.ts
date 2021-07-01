@@ -281,7 +281,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 				expect(keys).to.have.length.greaterThan(0)
 				for (const key of keys) {
 					const pageObject = result.get(key)
-					expect(pageObject.has(key)).to.be.false
+					expect(pageObject?.has(key)).to.be.false
 				}
 			})
 

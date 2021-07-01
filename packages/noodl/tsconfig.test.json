@@ -1,13 +1,9 @@
 {
-	"ts-node": {
-		"transpileOnly": true
-	},
 	"compilerOptions": {
-		"lib": ["esnext"],
 		"module": "commonjs",
-		"target": "es2015"
+		"target": "es2017"
 	},
-	"extends": "./tsconfig.json",
+	"extends": "../../tsconfig.test.json",
 	"exclude": ["node_modules"],
-	"include": ["src/**/*.test.ts"]
+	"include": ["./src/**/*.test.ts"]
 }

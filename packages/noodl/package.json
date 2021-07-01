@@ -1,18 +1,14 @@
 {
-	"name": "noodl",
-	"version": "0.0.7",
-	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
-	"module": "dist/index.js",
-	"main": "dist/index.js",
-	"typings": "dist/index.d.ts",
-	"scripts": {
-		"prebuild": "rm -rf dist",
-		"build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
-		"start": "rollup -c -w --environment INCLUDE_DEPS,BUILD:development",
-		"start:types": "tsc --emitDeclarationOnly --declarationDir dist --watch",
-		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file src/setupTests.ts --watch --watch-files src \"src/**/*.test.ts\"",
-		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file src/setupTests.ts --watch --watch-files src"
+	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
+	"bugs": {
+		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
+	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
+	"files": [
+		"dist"
+	],
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
+	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"keywords": [
 		"noodl",
 		"javascript",
@@ -28,19 +24,10 @@
 		"syntax",
 		"tree"
 	],
-	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
-	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"license": "ISC",
-	"files": [
-		"dist"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
-	},
-	"bugs": {
-		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
-	},
+	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"name": "noodl",
 	"prettier": {
 		"arrowParens": "always",
 		"endOfLine": "lf",
@@ -50,5 +37,18 @@
 		"tabWidth": 2,
 		"trailingComma": "all"
 	},
-	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee"
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
+	},
+	"scripts": {
+		"build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
+		"prebuild": "rm -rf dist",
+		"start": "rollup -c -w --environment INCLUDE_DEPS,BUILD:development",
+		"start:types": "tsc --emitDeclarationOnly --declarationDir dist --watch",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file src/setupTests.ts --watch --watch-files src \"src/**/*.test.ts\"",
+		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src"
+	},
+	"typings": "dist/index.d.ts",
+	"version": "0.0.7"
 }

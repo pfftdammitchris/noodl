@@ -167,8 +167,10 @@
 			"webextensions": true
 		},
 		"rules": {
+			"@typescript-eslint/member-ordering": "off",
 			"@typescript-eslint/explicit-module-boundary-types": "off",
 			"@typescript-eslint/no-empty-function": "off",
+			"@typescript-eslint/no-explicit-any": "off",
 			"@typescript-eslint/lines-between-class-members": [
 				"error",
 				"always",
@@ -178,6 +180,7 @@
 			],
 			"no-template-curly-in-string": "off",
 			"no-useless-escape": 2,
+			"no-inner-declarations": "off",
 			"eqeqeq": 0,
 			"prettier/prettier": 2
 		},

@@ -1,3 +1,4 @@
+import * as u from '@jsmanifest/utils'
 import yaml from 'yaml'
 
 class Reference {
@@ -6,10 +7,11 @@ class Reference {
 	#next: Reference | null
 	#ref = ''
 	#value = null
+	readonly type = 'REFERENCE'
 
-	constructor(node: yaml.Scalar<string>) {
-		this.#ref = node.value
-		this.#node = node
+	constructor(arg: string | yaml.Scalar<string>) {
+		this.#node = yaml.isNode(arg) ? arg : new yaml.Scalar(arg)
+		this.#ref = this.#node.value
 		this.#value = null
 		this.#prev = null
 		this.#next = null

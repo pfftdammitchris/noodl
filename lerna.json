@@ -1,16 +1,18 @@
 {
+	"command": {
+		"bootstrap": {},
+		"exec": {},
+		"publish": {},
+		"publishChanges": {},
+		"run": {}
+	},
+	"npmClient": "npm",
 	"packages": [
+		"packages/noodl",
 		"packages/noodl-action-chain",
 		"packages/noodl-common",
 		"packages/noodl-types",
 		"packages/noodl-utils"
 	],
-	"npmClient": "npm",
-	"version": "independent",
-	"command": {
-		"run": {},
-		"bootstrap": {},
-		"publish": {},
-		"publishChanges": {}
-	}
+	"version": "independent"
 }

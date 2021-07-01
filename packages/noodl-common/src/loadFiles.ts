@@ -23,7 +23,7 @@ import * as t from './types'
  */
 function loadFiles<T extends 'yml', A extends 'list'>(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, undefined | A>,
+	opts?: t.LoadFilesOptions<T, A>,
 ): string[]
 
 /**
@@ -31,7 +31,7 @@ function loadFiles<T extends 'yml', A extends 'list'>(
  */
 function loadFiles<T extends 'json', A extends 'list'>(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, undefined | A>,
+	opts?: t.LoadFilesOptions<T, A>,
 ): Record<string, any>[]
 
 /**
@@ -39,7 +39,7 @@ function loadFiles<T extends 'json', A extends 'list'>(
  */
 function loadFiles<T extends 'doc', A extends 'list'>(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, undefined | A>,
+	opts?: t.LoadFilesOptions<T, A>,
 ): YAMLDocument[]
 
 /**
@@ -148,7 +148,7 @@ function loadFiles<
 			function mapReducer(acc: Map<string, any>, filepath: string) {
 				const metadata = getFileStructure(filepath)
 				const key = getKey(metadata)
-				let data = loadFile(filepath, type)
+				const data = loadFile(filepath, type)
 				isDocument(data) && data.has(key) && (data.contents = data.get(key))
 				if (keysToSpread.includes(key)) {
 					if (isDocument(data) && isMap(data.contents)) {

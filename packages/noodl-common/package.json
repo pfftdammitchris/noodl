@@ -1,17 +1,7 @@
 {
-	"name": "noodl-common",
-	"version": "0.0.45",
-	"description": "Common NOODL file system utilities",
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
-	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
-	"license": "ISC",
-	"main": "dist/index.js",
-	"module": "dist/index.js",
-	"typings": "dist/index.d.ts",
-	"scripts": {
-		"build": "tsc",
-		"start": "tsc --watch",
-		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
+	"bugs": {
+		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
 	"dependencies": {
 		"@jsmanifest/utils": "^1.0.7",
@@ -21,19 +11,33 @@
 		"minimatch": "^3.0.4",
 		"yaml": "^2.0.0-4"
 	},
+	"description": "Common NOODL file system utilities",
 	"devDependencies": {
 		"@types/mime-types": "^2.1.0",
 		"typescript": "^4.2.4"
 	},
+	"directories": {
+		"dist": "./dist",
+		"test": "src/__tests__"
+	},
 	"files": [
 		"dist"
 	],
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
+	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
+	"license": "ISC",
+	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"name": "noodl-common",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
-	"bugs": {
-		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
+	"scripts": {
+		"build": "tsc",
+		"start": "tsc --watch",
+		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
-	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee"
+	"typings": "dist/index.d.ts",
+	"version": "0.0.45"
 }
