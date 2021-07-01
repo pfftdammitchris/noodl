@@ -1,20 +1,8 @@
 {
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"allowSyntheticDefaultImports": true,
-		"declaration": true,
-		"declarationDir": "dist",
-		"esModuleInterop": true,
-		"lib": [ "esnext"],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"noEmitOnError": false,
-		"outDir": "dist",
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"sourceMap": true,
-		"suppressImplicitAnyIndexErrors": true,
-		"target": "es5"
+		"declarationDir": "./dist",
+		"outDir": "./dist"
 	},
-	"exclude": ["node_modules/**/*"],
-	"include": ["src/**/*"]
+	"include": ["./src"]
 }

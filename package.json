@@ -54,7 +54,6 @@
 		"pretty-error": "^3.0.4",
 		"react": "^17.0.2",
 		"transducers-js": "^0.4.174",
-		"trie-search": "^1.3.5",
 		"ws": "^7.4.5",
 		"yaml": "^2.0.0-4"
 	},
@@ -167,10 +166,8 @@
 			"webextensions": true
 		},
 		"rules": {
-			"@typescript-eslint/member-ordering": "off",
+			"@typescript-eslint/ban-ts-comment": "off",
 			"@typescript-eslint/explicit-module-boundary-types": "off",
-			"@typescript-eslint/no-empty-function": "off",
-			"@typescript-eslint/no-explicit-any": "off",
 			"@typescript-eslint/lines-between-class-members": [
 				"error",
 				"always",
@@ -178,11 +175,17 @@
 					"exceptAfterSingleLine": true
 				}
 			],
-			"no-template-curly-in-string": "off",
-			"no-useless-escape": 2,
-			"no-inner-declarations": "off",
+			"@typescript-eslint/member-ordering": "off",
+			"@typescript-eslint/no-empty-function": "off",
+			"@typescript-eslint/no-explicit-any": "off",
 			"eqeqeq": 0,
-			"prettier/prettier": 2
+			"prefer-const": [
+				"error"
+			],
+			"prettier/prettier": 2,
+			"no-inner-declarations": "off",
+			"no-template-curly-in-string": "off",
+			"no-useless-escape": 2
 		},
 		"settings": {
 			"import/resolver": {

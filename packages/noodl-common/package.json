@@ -29,6 +29,9 @@
 	"main": "dist/index.js",
 	"module": "dist/index.js",
 	"name": "noodl-common",
+	"publishConfig": {
+		"access": "public"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"

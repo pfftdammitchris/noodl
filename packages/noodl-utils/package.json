@@ -28,9 +28,16 @@
 	},
 	"homepage": "https://github.com/pfftdammitchris/noodl#readme",
 	"license": "ISC",
+	"directories": {
+		"dist": "dist",
+		"test": "__tests__"
+	},
 	"files": [
 		"dist"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/pfftdammitchris/noodl.git"

@@ -47,7 +47,6 @@ class ActionChain<
 
 		while (inst.queue.length) {
 			action = inst.queue.shift() as Action<A['actionType'], T>
-			// @ts-expect-error
 			result = inst.isAborted() ? undefined : await (yield action)
 			results.push({ action, result })
 		}
@@ -282,7 +281,6 @@ class ActionChain<
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()
 		}
-		// @ts-expect-error
 		this.#gen = ActionChain.createGenerator<A, T>(this)
 		return this.queue
 	}

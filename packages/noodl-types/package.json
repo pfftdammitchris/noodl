@@ -13,9 +13,16 @@
 	"author": "Christopher Tran <christopher@aitmed.com>",
 	"homepage": "",
 	"license": "ISC",
+	"directories": {
+		"dist": "dist",
+		"test": "__tests__"
+	},
 	"files": [
 		"dist"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"repository": {
 		"type": "git",
 		"url": "http://gitlab.aitmed.com/pfftdammitchris/aitmed-noodl-web.git"

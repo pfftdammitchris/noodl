@@ -96,15 +96,15 @@ export function isVid(s: string) {
 	return /([a-z\-_0-9\/\:\.]*\.(mp4|avi|wmv))/i.test(s)
 }
 
-export function isYml(s: string = '') {
+export function isYml(s = '') {
 	return s.endsWith('.yml')
 }
 
-export function isJson(s: string = '') {
+export function isJson(s = '') {
 	return s.endsWith('.json')
 }
 
-export function isJs(s: string = '') {
+export function isJs(s = '') {
 	return s.endsWith('.js')
 }
 

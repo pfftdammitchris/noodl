@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Document as YAMLDocument, YAMLMap, YAMLSeq } from 'yaml'
 import {
 	loadFiles,
@@ -9,17 +10,18 @@ import { YAMLNode } from './types/internalTypes'
 import Page from './Page'
 import * as u from './utils/internal'
 
-
 interface RootItems {
 	[key: string]: Page | YAMLNode
 }
 
-class NoodlRoot<Type extends LoadType = 'yml', As extends LoadFilesAs = 'list'> {
-	// #root: 
+class NoodlRoot<
+	Type extends LoadType = 'yml',
+	As extends LoadFilesAs = 'list',
+> {
 	#docs = {};
 
 	[Symbol.iterator]() {
-		let items = Object.entries(this.#items)
+		let items = Object.entries(this.#docs)
 		let index = 0
 		return {
 			next() {
@@ -31,15 +33,18 @@ class NoodlRoot<Type extends LoadType = 'yml', As extends LoadFilesAs = 'list'> 
 		}
 	}
 
-	constructor({}: {
+	constructor({
+		docs,
+		loadOptions,
+	}: {
 		docs: YAMLDocument[]
 		loadOptions: Partial<LoadFilesOptions>
 	}) {
-		this.#
+		//
 	}
 
 	get Global() {
-		return this.#items.Global as YAMLMap | undefined
+		return this.#docs.Global as YAMLMap | undefined
 	}
 
 	get userVertex() {
@@ -47,10 +52,10 @@ class NoodlRoot<Type extends LoadType = 'yml', As extends LoadFilesAs = 'list'> 
 	}
 
 	get(name?: never): RootItems
-	get<Key extends K>(name: Key): RootItems[K]
-	get<Key extends K>(name?: Key | never) {
-		if (!name || !u.isStr(name)) return this.#items
-		return this.#items[name]
+	get<Key extends string>(name: Key): RootItems[Key]
+	get<Key extends string>(name?: Key | never) {
+		if (!name || !u.isStr(name)) return this.#docs
+		return this.#docs[name]
 	}
 
 	getIn(path: string | string[]) {
@@ -70,7 +75,7 @@ class NoodlRoot<Type extends LoadType = 'yml', As extends LoadFilesAs = 'list'> 
 	}
 
 	has(key: string) {
-		return key in this.#items
+		return key in this.#docs
 	}
 
 	set(opts: { key: string } & PropertyDescriptor, value?: never): this
@@ -78,7 +83,7 @@ class NoodlRoot<Type extends LoadType = 'yml', As extends LoadFilesAs = 'list'> 
 	set(opts: string | ({ key: string } & PropertyDescriptor), value?: any) {
 		if (u.isObj(opts)) {
 			const { key, get, set, ...rest } = opts
-			Object.defineProperty(this.#items, key, {
+			Object.defineProperty(this.#docs, key, {
 				configurable: true,
 				enumerable: true,
 				...rest,
@@ -86,13 +91,13 @@ class NoodlRoot<Type extends LoadType = 'yml', As extends LoadFilesAs = 'list'> 
 				set: set?.bind(this),
 			})
 		} else if (u.isStr(opts)) {
-			this.#items[opts] = value
+			this.#docs[opts] = value
 		}
 		return this
 	}
 
 	clear() {
-		Object.keys(this.#items).forEach((key) => delete this.#items[key])
+		Object.keys(this.#docs).forEach((key) => delete this.#docs[key])
 	}
 }
 
