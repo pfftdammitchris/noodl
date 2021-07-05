@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { expect } from 'chai'
 import { coolGold } from 'noodl-common'
 import { isScalar } from '../utils/internal'

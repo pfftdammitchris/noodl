@@ -72,7 +72,7 @@ class Dereferencer {
 			u.trimInitialDots(getScalarValue(node)).split('.'),
 			keepScalar,
 		)
-		if (u.isStr(value) && isReference(value)) {
+		if (u.isStr(value) && isReference(value as any)) {
 			value = this.getReference(value, page)
 		}
 		return value
@@ -82,8 +82,8 @@ class Dereferencer {
 		node: Scalar | string,
 		{ keepScalar = false }: { keepScalar?: boolean } = {},
 	): any {
-		let path = u.trimInitialDots(getScalarValue(node)) as string
-		let [key, ...paths] = path.split('.').filter(Boolean)
+		const path = u.trimInitialDots(getScalarValue(node)) as string
+		const [key, ...paths] = path.split('.').filter(Boolean)
 		let value
 
 		if (this.#pages.has(key)) {

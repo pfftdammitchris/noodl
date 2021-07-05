@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import * as nc from 'noodl-common'
 import Root from '../Root'
-// import { noodl } from '../utils/test-utils'
+import { noodl } from '../utils/test-utils'
 
 describe(nc.coolGold('NoodlRoot'), () => {
 	it(``, () => {

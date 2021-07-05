@@ -45,7 +45,7 @@ class NoodlUtils implements T.InternalComposerBaseArgs {
 
 	getValueFromRoot(node: string | Scalar) {
 		let value = String(this.common.getScalarValue(node)) as any
-		let [firstKey, ...paths] = value.split('.').filter(Boolean)
+		const [firstKey, ...paths] = value.split('.').filter(Boolean)
 		if (this.pages.has(firstKey)) {
 			if (!paths.length) {
 				value = this.pages.get(firstKey)?.doc.contents
@@ -76,7 +76,7 @@ class NoodlUtils implements T.InternalComposerBaseArgs {
 
 	isRootReference(node: string | Scalar) {
 		let value = String(this.common.getScalarValue(node))
-		if (commonUtils.isRootReference(value)) return true
+		if (commonUtils.isRootReference(value as any)) return true
 		value = u.trimInitialDots(value)
 		if (value[0] === value[0].toUpperCase()) return true
 		return this.root.has(value.split('.').filter(Boolean)[0] || '')

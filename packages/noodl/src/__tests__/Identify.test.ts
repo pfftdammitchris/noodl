@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { expect } from 'chai'
 import { Scalar } from 'yaml'
 import { coolGold, italic } from 'noodl-common'

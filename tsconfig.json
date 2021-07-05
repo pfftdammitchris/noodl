@@ -3,6 +3,7 @@
 		"transpileOnly": true
 	},
 	"compilerOptions": {
+		"allowJs": true,
 		"allowSyntheticDefaultImports": true,
 		"declaration": true,
 		"declarationDir": "dist",
@@ -23,5 +24,10 @@
 		"target": "es2017"
 	},
 	"exclude": ["node_modules"],
-	"include": ["./src/**/*"]
+	"include": [
+		"./src/**/*",
+		"./packages/**/*/src",
+		"./dev/refs/**/*",
+		"./dev/**/*.ts"
+	]
 }

@@ -167,3 +167,10 @@ $ noodl-cli --help
 	}
 }
 ```
+
+## Ways to improve noodl dev experience
+
+- Parse references in order
+- syntax checker
+- live refresher
+- mock data

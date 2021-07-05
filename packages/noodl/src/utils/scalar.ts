@@ -64,18 +64,18 @@ export function isTraverseReference(node: string | Scalar) {
 }
 
 export function startsWith(value: string | undefined, node: Scalar) {
-	return isString(node) && node.value.startsWith(value || '')
+	return isString(node) && (node.value as string).startsWith(value || '')
 }
 
 export function endsWith(value: string | undefined, node: Scalar) {
-	return isString(node) && node.value.endsWith(value || '')
+	return isString(node) && (node.value as string).endsWith(value || '')
 }
 
 export function getPreparedKeyForDereference(node: string | Scalar) {
-	let value = getScalarValue(node)
+	let value = getScalarValue(node) as Scalar<string> | string
 	if (typeof value !== 'string') return false
-	if (isLocalReference(value) || isRootReference(value)) {
-		value = value.trim()
+	if (isLocalReference(value as any) || isRootReference(value as any)) {
+		value = String(value).trim()
 		if (value.startsWith('..')) {
 			return value === '..' ? '' : value.replace('..', '')
 		} else if (value.startsWith('.')) {

@@ -2,9 +2,8 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"declarationDir": "./dist",
-		"module": "esnext",
-		"outDir": "./dist",
-		"target": "esnext"
+		"outDir": "./dist"
 	},
-	"include": ["./src"],
+	"include": [],
+	"files": ["./src/index.ts"]
 }

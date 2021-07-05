@@ -17,6 +17,7 @@
 		"bootstrap": "lerna bootstrap --hoist",
 		"start": "cross-env DEV=true CI=false tsc --watch",
 		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",
+		"refs": "npx nodemon dev/refs/refs --ignore refs-output.json",
 		"test": "ava --watch",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --watch --watch-files \"src/**/*.ts\"",
 		"pub": "node scripts/publish.js -p"
@@ -55,6 +56,7 @@
 		"react": "^17.0.2",
 		"transducers-js": "^0.4.174",
 		"ws": "^7.4.5",
+		"xstate": "^4.20.2",
 		"yaml": "^2.0.0-4"
 	},
 	"devDependencies": {
@@ -80,7 +82,7 @@
 		"@types/invariant": "^2.2.34",
 		"@types/lodash": "^4.14.168",
 		"@types/mocha": "^8.2.0",
-		"@types/node": "^15.12.5",
+		"@types/node": "^15.14.0",
 		"@types/prettier": "^2.2.3",
 		"@types/react": "^17.0.0",
 		"@types/rollup-plugin-peer-deps-external": "^2.2.0",
@@ -163,6 +165,7 @@
 		"env": {
 			"browser": true,
 			"es6": true,
+			"node": true,
 			"webextensions": true
 		},
 		"rules": {
@@ -178,11 +181,13 @@
 			"@typescript-eslint/member-ordering": "off",
 			"@typescript-eslint/no-empty-function": "off",
 			"@typescript-eslint/no-explicit-any": "off",
+			"@typescript-eslint/no-var-requires": "off",
 			"eqeqeq": 0,
 			"prefer-const": [
 				"error"
 			],
 			"prettier/prettier": 2,
+			"no-empty": "off",
 			"no-inner-declarations": "off",
 			"no-template-curly-in-string": "off",
 			"no-useless-escape": 2

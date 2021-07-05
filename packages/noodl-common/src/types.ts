@@ -35,6 +35,7 @@ export interface LoadFilesOptions<
 > {
 	as?: LFType
 	includeExt?: boolean
+	preload?: AcceptArray<string>
 	spread?: AcceptArray<string>
 	type?: LType
 }

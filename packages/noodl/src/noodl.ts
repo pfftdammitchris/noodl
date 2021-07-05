@@ -13,7 +13,7 @@ class Noodl implements T.InternalComposerBaseArgs {
 	#util: Utils
 
 	constructor({
-		root = new Root(),
+		root = new Root({} as any),
 		pages = new Map(),
 		util = new Utils({ pages, root }),
 	}: { root?: Root; pages?: T.Pages; util?: Utils } = {}) {

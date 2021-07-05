@@ -15,7 +15,7 @@ class Action<AType extends string = string, T extends string = string>
 	#executed = false
 	#executor = {} as IAction['executor']
 	#original: ActionObject<AType>
-	#remaining: number = Infinity
+	#remaining = Infinity
 	#status: ActionStatus | null = null
 	#timeout: NodeJS.Timeout | null = null
 	#trigger: T

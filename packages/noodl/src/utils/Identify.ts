@@ -5,13 +5,15 @@ import * as mapUtil from './map'
 import * as scalarUtil from './scalar'
 import * as seqUtil from './seq'
 
-const composeScalarFns = <RT = any>(...fns: ((n: Scalar) => RT)[]) => (
-	n: YAMLNode,
-) => isScalar(n) && flowRight(...fns)(n)
+const composeScalarFns =
+	<RT = any>(...fns: ((n: Scalar) => RT)[]) =>
+	(n: YAMLNode) =>
+		isScalar(n) && flowRight(...fns)(n)
 
-const composeMapFns = <RT = any>(...fns: ((n: YAMLMap) => RT)[]) => (
-	n: YAMLNode,
-) => isMap(n) && flowRight(...fns)(n)
+const composeMapFns =
+	<RT = any>(...fns: ((n: YAMLMap) => RT)[]) =>
+	(n: YAMLNode) =>
+		isMap(n) && flowRight(...fns)(n)
 
 const Identify = (function () {
 	const o = {

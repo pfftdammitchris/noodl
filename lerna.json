@@ -9,6 +9,7 @@
 	"npmClient": "npm",
 	"packages": [
 		"packages/noodl",
+		"packages/noodl-aggregator",
 		"packages/noodl-action-chain",
 		"packages/noodl-common",
 		"packages/noodl-types",

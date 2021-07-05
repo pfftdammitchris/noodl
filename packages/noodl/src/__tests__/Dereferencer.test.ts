@@ -1,3 +1,4 @@
+// @ts-nocheck
 import yaml from 'yaml'
 import { expect } from 'chai'
 import { coolGold, italic } from 'noodl-common'
@@ -82,9 +83,9 @@ describe(coolGold('Dereferencer'), () => {
 	describe(`Deeply nested dereferencing`, () => {
 		it(`should be able to dereference through deeply nested references`, () => {
 			const firstName = 'Michael'
-			let Global = noodl.root.Global
+			const Global = noodl.root.Global
 			Global.setIn('currentUser.vertex.name.firstName'.split('.'), firstName)
-			let EditProfile = noodl.pages.get('EditProfile')
+			const EditProfile = noodl.pages.get('EditProfile')
 			EditProfile.doc.add(
 				EditProfile.doc.createPair('hehe', '.ABC.whatIsTheFirstName'),
 			)

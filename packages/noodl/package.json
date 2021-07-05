@@ -1,6 +1,16 @@
 {
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
+	"bugs": {
+		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
+	},
 	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
+	"directories": {
+		"dist": "dist",
+		"test": "__tests__"
+	},
+	"files": [
+		"dist"
+	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"keywords": [
@@ -22,38 +32,19 @@
 	"main": "dist/index.js",
 	"module": "dist/index.js",
 	"name": "noodl",
-	"directories": {
-		"dist": "dist",
-		"test": "__tests__"
-	},
-	"files": [
-		"dist"
-	],
 	"publishConfig": {
 		"access": "public"
-	},
-	"bugs": {
-		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
-	},
-	"prettier": {
-		"arrowParens": "always",
-		"endOfLine": "lf",
-		"printWidth": 80,
-		"semi": false,
-		"singleQuote": true,
-		"tabWidth": 2,
-		"trailingComma": "all"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
 	"scripts": {
-		"build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
+		"build": "tsc",
 		"prebuild": "rm -rf dist",
-		"start": "rollup -c -w --environment INCLUDE_DEPS,BUILD:development",
-		"start:types": "tsc --emitDeclarationOnly --declarationDir dist --watch",
-		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r ts-node/register --extensions ts --file src/setupTests.ts --watch --watch-files src \"src/**/*.test.ts\"",
+		"prestart": "rm -rf dist",
+		"start": "tsc --watch",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --file src/setupTests.ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src"
 	},
 	"typings": "dist/index.d.ts",

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import yaml from 'yaml'
 import { Node, isPair, isScalar } from 'yaml'
 import flowRight from 'lodash/flowRight'
@@ -129,12 +130,13 @@ class Transformer implements T.InternalComposerBaseArgs {
 	}
 
 	compose(...transforms: T.NoodlTransformer.Execute[]) {
-		const wrapExecute = (fn: T.NoodlTransformer.Execute) => (
-			step: (node: Node) => Node,
-		) => (node: Node) => {
-			fn.call(this, node, this.util)
-			return step(node)
-		}
+		const wrapExecute =
+			(fn: T.NoodlTransformer.Execute) =>
+			(step: (node: Node) => Node) =>
+			(node: Node) => {
+				fn.call(this, node, this.util)
+				return step(node)
+			}
 		return flowRight(...transforms.map(wrapExecute))((node: Node) => node)
 	}
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { YAMLMap } from 'yaml'
 import { expect } from 'chai'
 import path from 'path'
