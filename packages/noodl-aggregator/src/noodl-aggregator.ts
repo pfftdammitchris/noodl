@@ -1,5 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import * as com from 'noodl-common'
+import flatten from 'lodash/flatten'
 import path from 'path'
 import { DeviceType, Env } from 'noodl-types'
 import {
@@ -205,69 +206,65 @@ class NoodlAggregator {
 			this.configKey = configName
 		}
 
-		try {
-			invariant(
-				!!configName,
-				`Cannot retrieve the root config because a config key was not passed in or set`,
-			)
-			if (configDoc) {
-				configYml = com.stringifyDoc(configDoc)
-			} else {
-				const configUrl = `https://${
-					c.DEFAULT_CONFIG_HOSTNAME
-				}/config/${com.withYmlExt(configName)}`
-				this.emit(c.ON_RETRIEVING_ROOT_CONFIG, { url: configUrl })
-				const { data: yml } = await axios.get(configUrl)
-				configDoc = yaml.parseDocument(yml)
-				configYml = yml
-			}
+		invariant(
+			!!configName,
+			`Cannot retrieve the root config because a config key was not passed in or set`,
+		)
+		if (configDoc) {
+			configYml = com.stringifyDoc(configDoc)
+		} else {
+			const configUrl = `https://${
+				c.DEFAULT_CONFIG_HOSTNAME
+			}/config/${com.withYmlExt(configName)}`
+			this.emit(c.ON_RETRIEVING_ROOT_CONFIG, { url: configUrl })
+			const { data: yml } = await axios.get(configUrl)
+			configDoc = yaml.parseDocument(yml)
+			configYml = yml
+		}
 
-			this.root.set(this.configKey, configDoc)
-			this.root.set(`${this.configKey}_raw`, configYml as any)
-			this.emit(c.ON_RETRIEVED_ROOT_CONFIG, {
-				name: this.configKey,
-				doc: configDoc,
-				yml: configYml,
-			})
-			this.configVersion = this.getConfigVersion(configDoc)
-			this.emit(c.ON_CONFIG_VERSION, this.configVersion)
-			const replacePlaceholders = createNoodlPlaceholderReplacer({
-				cadlBaseUrl: configDoc.get('cadlBaseUrl'),
-				cadlVersion: this.configVersion,
-			})
-			yaml.visit(configDoc, {
-				Pair: (key, node) => {
-					if (yaml.isScalar(node.key) && node.key.value === 'cadlBaseUrl') {
-						if (
-							yaml.isScalar(node.value) &&
-							u.isStr(node.value) &&
-							hasNoodlPlaceholder(node.value)
-						) {
-							const before = node.value.value as string
-							node.value.value = replacePlaceholders(node.value.value)
-							this.emit(c.ON_PLACEHOLDER_PURGED, {
-								before,
-								after: node.value.value as string,
-							})
-							return yaml.visit.SKIP
-						}
-					}
-				},
-				Scalar: (key, node) => {
-					if (u.isStr(node.value) && hasNoodlPlaceholder(node.value)) {
-						const before = node.value
-						node.value = replacePlaceholders(node.value)
+		this.root.set(this.configKey, configDoc)
+		this.root.set(`${this.configKey}_raw`, configYml as any)
+		this.emit(c.ON_RETRIEVED_ROOT_CONFIG, {
+			name: this.configKey,
+			doc: configDoc,
+			yml: configYml,
+		})
+		this.configVersion = this.getConfigVersion(configDoc)
+		this.emit(c.ON_CONFIG_VERSION, this.configVersion)
+		const replacePlaceholders = createNoodlPlaceholderReplacer({
+			cadlBaseUrl: configDoc.get('cadlBaseUrl'),
+			cadlVersion: this.configVersion,
+		})
+		yaml.visit(configDoc, {
+			Pair: (key, node) => {
+				if (yaml.isScalar(node.key) && node.key.value === 'cadlBaseUrl') {
+					if (
+						yaml.isScalar(node.value) &&
+						u.isStr(node.value) &&
+						hasNoodlPlaceholder(node.value)
+					) {
+						const before = node.value.value as string
+						node.value.value = replacePlaceholders(node.value.value)
 						this.emit(c.ON_PLACEHOLDER_PURGED, {
 							before,
-							after: node.value as string,
+							after: node.value.value as string,
 						})
+						return yaml.visit.SKIP
 					}
-				},
-			})
-			return configDoc
-		} catch (error) {
-			throw error
-		}
+				}
+			},
+			Scalar: (key, node) => {
+				if (u.isStr(node.value) && hasNoodlPlaceholder(node.value)) {
+					const before = node.value
+					node.value = replacePlaceholders(node.value)
+					this.emit(c.ON_PLACEHOLDER_PURGED, {
+						before,
+						after: node.value as string,
+					})
+				}
+			},
+		})
+		return configDoc
 	}
 
 	async loadAppConfig() {
@@ -276,27 +273,19 @@ class NoodlAggregator {
 			'Cannot initiate app config without retrieving the root config',
 		)
 		this.emit(c.ON_RETRIEVING_APP_CONFIG, { url: this.appConfigUrl })
-		try {
-			// Placeholders should already have been purged by this time
-			let appConfigYml = ''
-			let appConfigDoc: yaml.Document | undefined
-			try {
-				const { data: yml } = await axios.get(this.appConfigUrl)
-				this.emit(c.ON_RETRIEVED_APP_CONFIG, (appConfigYml = yml))
-				this.root.set(`${this.appKey}_raw`, appConfigYml as any)
-			} catch (error) {
-				throw error
-			}
-			appConfigYml && (appConfigDoc = yaml.parseDocument(appConfigYml))
-			appConfigDoc && this.root.set(this.appKey, appConfigDoc)
-			this.emit(c.PARSED_APP_CONFIG, {
-				name: this.appKey.replace('.yml', ''),
-				doc: appConfigDoc as yaml.Document,
-			})
-			return appConfigDoc
-		} catch (error) {
-			throw error
-		}
+		// Placeholders should already have been purged by this time
+		let appConfigYml = ''
+		let appConfigDoc: yaml.Document | undefined
+		const { data: yml } = await axios.get(this.appConfigUrl)
+		this.emit(c.ON_RETRIEVED_APP_CONFIG, (appConfigYml = yml))
+		this.root.set(`${this.appKey}_raw`, appConfigYml as any)
+		appConfigYml && (appConfigDoc = yaml.parseDocument(appConfigYml))
+		appConfigDoc && this.root.set(this.appKey, appConfigDoc)
+		this.emit(c.PARSED_APP_CONFIG, {
+			name: this.appKey.replace('.yml', ''),
+			doc: appConfigDoc as yaml.Document,
+		})
+		return appConfigDoc
 	}
 
 	async loadPage(name: string | undefined = '', doc?: yaml.Document) {
@@ -374,11 +363,13 @@ class NoodlAggregator {
 
 		const chunkedPages = chunk(pages, chunks)
 
-		await Promise.all(
+		const allPages = await Promise.all(
 			chunkedPages.map((chunked) =>
 				Promise.all(chunked.map((c) => this.loadPage(c))),
 			),
 		)
+
+		return flatten(allPages)
 	}
 
 	on<Evt extends keyof t.Hooks>(
