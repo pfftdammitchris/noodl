@@ -59,7 +59,7 @@ function insertToRefs({
 			...reference.toJSON(),
 		})
 
-		console.log(mergeWithOutput)
+		console.log(`mergeWithOutput`, mergeWithOutput)
 
 		entry.add(newEntry)
 	}
@@ -143,23 +143,18 @@ const parse = function ({ context = '', refs, doc, root }) {
 
 ;(async () => {
 	const aggregator = new Aggregator(configKey)
-
+	const args = { refs, root: aggregator.root }
 	const rootConfig = await aggregator.loadRootConfig(configKey)
-	parse({ context: configKey, refs, doc: rootConfig, root: aggregator.root })
-
+	parse({ context: configKey, doc: rootConfig, ...args })
 	const appConfig = await aggregator.loadAppConfig(rootConfig)
-	parse({
-		context: aggregator.appKey,
-		refs,
-		doc: appConfig,
-		root: aggregator.root,
-	})
+	parse({ context: aggregator.appKey, doc: appConfig, ...args })
 
 	await aggregator.loadPreloadPages()
+
 	for (const node of appConfig.get('preload').items) {
 		const context = node.value
 		const preloadedDoc = aggregator.root.get(context)
-		parse({ context, doc: preloadedDoc, refs, root: aggregator.root })
+		parse({ context, doc: preloadedDoc, ...args })
 	}
 
 	await fs.writeJson(pathToOutputFile, refs, { spaces: 2 })
