@@ -123,7 +123,7 @@ export function loadFilesAsDocs({
  */
 export async function promiseAllSafe(...promises: Promise<any>[]) {
 	const results = [] as any[]
-	for (let promise of promises) {
+	for (const promise of promises) {
 		try {
 			const result = await promise
 			results.push(result)
@@ -171,7 +171,7 @@ export function sortObjPropsByKeys<O extends Record<string, any>>(obj: {
 }
 
 export function writeFileSync(
-	filepath: string = '',
+	filepath = '',
 	data: string,
 	options?: WriteFileOptions,
 ) {

@@ -21,6 +21,7 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
+		"importHelpers": true,
 		"target": "es2017"
 	},
 	"exclude": ["node_modules"],

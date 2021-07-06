@@ -74,6 +74,7 @@ class Reference {
 			isLocal: this.isLocal(),
 			path: this.path,
 			paths: this.paths,
+			reference: this.#ref,
 			value: this.value || null,
 		}
 	}
