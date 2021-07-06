@@ -258,14 +258,7 @@ export const Identify = (function () {
 				return v == 9
 			},
 		},
-		reference(value: unknown): value is string {
-			if (typeof value !== 'string') return false
-			if (value.startsWith('.')) return true
-			if (value.startsWith('=')) return true
-			if (value.startsWith('@')) return true
-			if (value.endsWith('@')) return true
-			return false
-		},
+		reference: i.isReference,
 		textBoard(v: unknown) {
 			return i.isArr(v) && v.some((o) => o.textBoardItem)
 		},
