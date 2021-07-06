@@ -45,7 +45,7 @@ class NoodlAggregator {
 	#toRootPageKey = (filepath: string, ext = '.yml') =>
 		path.posix
 			.basename(filepath, ext.startsWith('.') ? ext : `.${ext}`)
-			.replace(/(_en|\~\/)/gi, '')
+			.replace(/(_en|~\/)/gi, '')
 
 	#getRootConfig = () => this.root.get(this.configKey) as yaml.Document
 
@@ -54,13 +54,18 @@ class NoodlAggregator {
 	}
 
 	get appKey() {
-		return (this.#getRootConfig()?.get?.('cadlMain') || '') as string
+		return (
+			((this.#getRootConfig()?.get?.('cadlMain') || '') as string)?.replace(
+				'.yml',
+				'',
+			) || ''
+		)
 	}
 
 	get assetsUrl() {
 		return (
 			`${this.#getRootConfig()?.get?.('cadlBaseUrl') || ''}assets/`.replace(
-				`$\{cadlBaseUrl\}`,
+				`$\{cadlBaseUrl}`,
 				this.baseUrl,
 			) || ''
 		)
