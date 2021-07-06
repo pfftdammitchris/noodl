@@ -50,7 +50,7 @@ class NoodlAggregator {
 	#getRootConfig = () => this.root.get(this.configKey) as yaml.Document
 
 	get appConfigUrl() {
-		return `${this.baseUrl}${this.appKey}`
+		return `${this.baseUrl}${this.appKey}.yml`
 	}
 
 	get appKey() {
@@ -287,7 +287,7 @@ class NoodlAggregator {
 		appConfigYml && (appConfigDoc = yaml.parseDocument(appConfigYml))
 		appConfigDoc && this.root.set(this.appKey, appConfigDoc)
 		this.emit(c.PARSED_APP_CONFIG, {
-			name: this.appKey.replace('.yml', ''),
+			name: this.appKey,
 			doc: appConfigDoc as yaml.Document,
 		})
 		return appConfigDoc
