@@ -24,6 +24,7 @@ const isReference = (function () {
 		return false
 	}
 
+	_isReference.format = format
 	_isReference.isLocal = isLocalReference
 	_isReference.isRoot = isRootReference
 
