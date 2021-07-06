@@ -6,13 +6,13 @@ const isReference = (function () {
 	const isLocalReference = function (value: unknown): value is string {
 		if (typeof value !== 'string') return false
 		value = format(value)
-		return value[0].toLowerCase() === value[0]
+		return !!value[0] && value[0].toLowerCase() === value[0]
 	}
 
 	const isRootReference = function (value: unknown): value is string {
 		if (typeof value !== 'string') return false
 		value = format(value)
-		return value[0].toUpperCase() === value[0]
+		return !!value[0] && value[0].toUpperCase() === value[0]
 	}
 
 	function _isReference(value: unknown): value is string {
