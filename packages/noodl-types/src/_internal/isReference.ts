@@ -17,6 +17,7 @@ const isReference = (function () {
 
 	function _isReference(value: unknown): value is string {
 		if (typeof value !== 'string') return false
+		if (value === '.yml') return false
 		if (value.startsWith('.')) return true
 		if (value.startsWith('=')) return true
 		if (value.startsWith('@')) return true
