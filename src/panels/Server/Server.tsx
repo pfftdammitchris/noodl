@@ -41,6 +41,12 @@ function Server({
 	const ref = React.useRef<express.Express | null>(null)
 	const { aggregator, configuration, log, toggleSpinner } = useCtx()
 
+	console.log('HELLO')
+	console.log('HELLO')
+	console.log('HELLO')
+	console.log('HELLO')
+	console.log('HELLO')
+
 	const getDir = React.useCallback(
 		(...s: string[]) =>
 			path.join(
@@ -205,6 +211,7 @@ function Server({
 				})
 			}
 
+			console.log('ENABLING WATCH')
 			if (enableWatch) {
 				watch({
 					watchGlob: getWatchGlob(),

@@ -28,7 +28,5 @@
 	"include": [
 		"./src/**/*",
 		"./packages/**/*/src",
-		"./dev/refs/**/*",
-		"./dev/**/*.ts"
 	]
 }
