@@ -60,6 +60,7 @@
 		"yaml": "^2.0.0-4"
 	},
 	"devDependencies": {
+		"@aitmed/ecos-lvl2-sdk": "^1.4.154",
 		"@aitmed/protorepo": "^1.0.24",
 		"@ava/typescript": "^1.1.1",
 		"@babel/core": "^7.14.6",

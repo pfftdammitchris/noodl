@@ -7,6 +7,7 @@ const { Identify } = require('noodl-types')
 const fs = require('fs-extra')
 const ncom = require('noodl-common')
 const Aggregator = require('noodl-aggregator').default
+const Protorepo = require('@aitmed/protorepo')
 const Reference = require('./Reference')
 
 const configKey = 'meet4d'
@@ -141,6 +142,197 @@ const parse = function ({ context = '', refs, doc, root }) {
 	})
 }
 
+const options = {
+	deviceType: 'ios',
+	phoneNumber: `+18882461234`,
+	password: '142251',
+}
+
+const builtIn = {
+	array: {
+		add: () => {},
+		addByIndex: () => {},
+		SortBy: () => {},
+		clear: () => {},
+		removeByKey: () => {},
+		removeByName: () => {},
+		removeByValue: () => {},
+		removeById: () => {},
+		removeByIndex: () => {},
+		removeWeekByIndexs: () => {},
+		append: () => {},
+		appendUnique: () => {},
+		addColor: () => {},
+		has: () => {},
+		hasKey: () => {},
+		AddWeek: () => {},
+		push: () => {},
+		covertToJsonArray: () => {},
+		getListLength: () => {},
+		copyByKey: () => {},
+		changeColorByKey: () => {},
+		convertToList: () => {},
+		getByKey: () => {},
+		getConnection: () => {},
+		getFavorites: () => {},
+		getFirstItem: () => {},
+		concatArray: () => {},
+		isExist: () => {},
+		createBySubtype: () => {},
+		WeekSchedule: () => {},
+		concat: () => {},
+		getIdByUserName: () => {},
+		removeByArray: () => {},
+		toggleStatus: () => {},
+		getPage: () => {},
+		getPageIndex: () => {},
+		elementUnique: () => {},
+		addProvider: () => {},
+		handleData: () => {},
+		transformNull: () => {},
+		isEmpty: () => {},
+		selectOneToArr: () => {},
+		matchInArray: () => {},
+		vuetify: () => {},
+		toString: () => {},
+	},
+	cleanLocalStorage: () => {},
+	createNewAccount: async ({ name }) => {},
+	currentDateTime: () => {},
+	date: {
+		getDate: () => {},
+		getMonth: () => {},
+		getYear: () => {},
+		getTimezoneOffset: () => {},
+		getTime: () => {},
+		stampToDate: () => {},
+		stampToTime: () => {},
+		getTimeStampOfDate: () => {},
+		LoopToGenerate: () => {},
+		calendarArray: () => {},
+		splitByTimeSlot: () => {},
+		splitTime: () => {},
+		ShowTimeSpan: () => {},
+		ShowTimeDate: () => {},
+		ShowTimeSpanFormat: () => {},
+		minicalendarArray: () => {},
+		loopMonth: () => {},
+		miniWeeklyCalendarArray: () => {},
+		NextWeek: () => {},
+		LastWeek: () => {},
+		AddHeightByTimeSpan: () => {},
+		ShowRightTime: () => {},
+		ShowLeftTime: () => {},
+		ShowDateByNumber: () => {},
+		TransformWeekDate: () => {},
+		transformMonth: () => {},
+		getDurationByMinute: () => {},
+		startMeeting: () => {},
+		transformSelectWeek: () => {},
+		isType: () => {},
+	},
+	downloadFromS3: async () => {},
+	eccNaCl: {
+		signature: () => {},
+		verifySignature: () => {},
+		decryptAES: () => {},
+		encryptAES: () => {},
+		skCheck: () => {},
+		generateESAK: () => {},
+		decryptData: () => {},
+		decryptESAK: () => {},
+		isEdgeEncrypted: () => {},
+		getSAKFromEdge: () => {},
+	},
+	FCM: {
+		getFCMToken: () => {},
+		getAPPID: () => {},
+		getFCMTokenSHA256Half: () => {},
+	},
+	isIOS: () => options.deviceType === 'ios',
+	isAndroid: () => options.deviceType === 'android',
+	loginByPassword: (password) => {},
+	number: {
+		inRange: () => {},
+		multiply: () => {},
+		OctToBin: () => {},
+		getAuthority: () => {},
+		addition: () => {},
+		Subtraction: () => {},
+		less: () => {},
+		inhx: () => {},
+		hexAnd: () => {},
+		hexOr: () => {},
+		hx: () => {},
+	},
+	object: {
+		remove: () => {},
+		clear: () => {},
+		set: () => {},
+		get: () => {},
+		has: () => {},
+		clearAndSetKey: () => {},
+		extract: () => {},
+		extractArray: () => {},
+		authToSubType: () => {},
+		findTrue: () => {},
+		setAuthAllTrue: () => {},
+		isEmpty: () => {},
+		setByKey: () => {},
+		getObjValueAndKey: () => {},
+		getObjKey: () => {},
+	},
+	payment: {
+		createSqPaymentForm: () => {},
+		getPaymentNonce: () => {},
+	},
+	search: {
+		transformGeo: () => {},
+		suggest: () => {},
+		queryByDate: () => {},
+		GetAllLonAndLat: () => {},
+		SortBySpeciality: () => {},
+		processingSearchData: () => {},
+	},
+	stringCompare: (str1, str2) => str1 === str2,
+	storeCredentials: ({ pk, sk, esk, userId }) => {},
+	signIn: async () => {},
+	SignInOk: async () => true,
+	string: {
+		formatTimer: () => {},
+		formatUnixtime_en: () => {},
+		formatUnixtimeL_en: () => {},
+		formatUnixtimeLT_en: () => {},
+		formatDurationInSecond: () => {},
+		concat: () => {},
+		equal: () => {},
+		getFirstChar: () => {},
+		getLength: () => {},
+		retainNumber: () => {},
+		phoneVerification: () => {},
+		phoneNumberSplit: () => {},
+		judgeMultipleEqual: () => {},
+		judgeFillinAll: () => {},
+		judgeAllTrue: () => {},
+		judgesFillinAll: () => {},
+		strLenx: () => {},
+	},
+	typeCheck: {
+		phoneNumber: () => {},
+		userName: () => {},
+	},
+	utils: {
+		base64ToBlob: () => {},
+		exists: () => {},
+		prepareDoc: () => {},
+		prepareDocToPath: () => {},
+		alert: () => {},
+		getCountryCode: () => {},
+		getPhoneNumber: () => {},
+	},
+	uploadDocument: async () => {},
+}
+
 ;(async () => {
 	const aggregator = new Aggregator(configKey)
 	const args = { refs, root: aggregator.root }
@@ -151,11 +343,23 @@ const parse = function ({ context = '', refs, doc, root }) {
 
 	await aggregator.loadPreloadPages()
 
-	for (const node of appConfig.get('preload').items) {
-		const context = node.value
-		const preloadedDoc = aggregator.root.get(context)
-		parse({ context, doc: preloadedDoc, ...args })
+	const baseDataModel = aggregator.root.get('BaseDataModel')
+
+	for (const pair of baseDataModel.contents.items) {
+		const key = pair.key
+		const node = baseDataModel.get(key)
+		parse({ context: key, doc: node, ...args })
 	}
+
+	const signInPage = await aggregator.loadPage('SignIn')
+
+	parse({ context: 'SignIn', doc: signInPage, ...args })
+
+	// for (const node of appConfig.get('preload').items) {
+	// const context = node.value
+	// const preloadedDoc = aggregator.root.get(context)
+	// parse({ context, doc: preloadedDoc, ...args })
+	// }
 
 	await fs.writeJson(pathToOutputFile, refs, { spaces: 2 })
 })()
