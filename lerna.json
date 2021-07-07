@@ -12,6 +12,7 @@
 		"packages/noodl-aggregator",
 		"packages/noodl-action-chain",
 		"packages/noodl-common",
+		"packages/noodl-lvl2",
 		"packages/noodl-types",
 		"packages/noodl-utils"
 	],
