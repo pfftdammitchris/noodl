@@ -239,6 +239,7 @@ class NoodlAggregator {
 		const replacePlaceholders = createNoodlPlaceholderReplacer({
 			cadlBaseUrl: configDoc.get('cadlBaseUrl'),
 			cadlVersion: this.configVersion,
+			designSuffix: '',
 		})
 		yaml.visit(configDoc, {
 			Pair: (key, node) => {
@@ -297,7 +298,8 @@ class NoodlAggregator {
 		try {
 			const key = this.#toRootPageKey(name)
 			if (u.isStr(name)) {
-				const { data: yml } = await axios.get(this.getPageUrl(`${key}_en.yml`))
+				const pageUrl = this.getPageUrl(`${key}_en.yml`)
+				const { data: yml } = await axios.get(pageUrl)
 				this.root.set(key, (doc = yaml.parseDocument(yml)))
 			} else if (name && yaml.isDocument(doc)) {
 				this.root.set(key, doc)

@@ -5,7 +5,7 @@ import * as u from '@jsmanifest/utils'
 import * as nc from 'noodl-common'
 import { FileStructure } from 'noodl-common'
 import yaml from 'yaml'
-import express, { Router, RouterOptions } from 'express'
+import express from 'express'
 import path from 'path'
 import fs from 'fs-extra'
 import globby from 'globby'
@@ -15,7 +15,6 @@ import useWatcher from '../../hooks/useWatcher'
 import useWss from '../../hooks/useWss'
 import * as c from '../../constants'
 import * as co from '../../utils/color'
-import { RunningScriptOptions } from 'vm'
 
 export interface Props {
 	config: string
@@ -40,12 +39,6 @@ function Server({
 }: Props) {
 	const ref = React.useRef<express.Express | null>(null)
 	const { aggregator, configuration, log, toggleSpinner } = useCtx()
-
-	console.log('HELLO')
-	console.log('HELLO')
-	console.log('HELLO')
-	console.log('HELLO')
-	console.log('HELLO')
 
 	const getDir = React.useCallback(
 		(...s: string[]) =>
@@ -211,7 +204,6 @@ function Server({
 				})
 			}
 
-			console.log('ENABLING WATCH')
 			if (enableWatch) {
 				watch({
 					watchGlob: getWatchGlob(),
@@ -222,13 +214,6 @@ function Server({
 							)} files for changes at ${co.magenta(getDir())}\n`,
 						)
 						sendMessage({ type: 'WATCHING' })
-
-						// ref.current?._router.stack.map(
-						// 	(r: ReturnType<express.Router['route']>) => {
-						// 		const { path: paths } = r?.['route'] || {}
-						// 		console.log(u.array(paths).join(' '))
-						// 	},
-						// )
 					},
 					onAdd(args) {
 						u.log(`${watchTag} file added`, args.path)
