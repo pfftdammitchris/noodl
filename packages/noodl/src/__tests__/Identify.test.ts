@@ -1,11 +1,36 @@
-// @ts-nocheck
+import * as mock from 'noodl-ui-test-utils'
+import * as u from '@jsmanifest/utils'
+import yaml from 'yaml'
 import { expect } from 'chai'
 import { Scalar } from 'yaml'
 import { coolGold, italic } from 'noodl-common'
 import Identify from '../utils/Identify'
 
+const createMap = (obj: Record<string, any>) =>
+	new yaml.Document(obj).contents as yaml.YAMLMap
+
 describe(coolGold('Identify'), () => {
-	describe(italic('references'), () => {
+	describe.only(italic(`actions`), () => {
+		const tests = {
+			builtIn: mock.getBuiltInAction(),
+			evalObject: mock.getEvalObjectAction(),
+			pageJump: mock.getPageJumpAction(),
+			popUp: mock.getPopUpAction(),
+			popUpDismiss: mock.getPopUpDismissAction(),
+			refresh: mock.getRefreshAction(),
+			saveObject: mock.getSaveObjectAction(),
+			updateObject: mock.getUpdateObjectAction(),
+		}
+
+		u.entries(tests).forEach(([actionType, actionObject]) => {
+			it(`should return true for ${actionType} maps`, () => {
+				const node = createMap(actionObject)
+				expect(Identify.action[actionType](node)).to.be.true
+			})
+		})
+	})
+
+	xdescribe(italic('references'), () => {
 		describe('dot (.)', () => {
 			describe('..formData.password', () => {
 				const node = new Scalar('..formData.password')

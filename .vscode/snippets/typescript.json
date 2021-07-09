@@ -1,27 +1,5 @@
 {
-	"test": {
-		"prefix": "test",
-		"body": [
-			"import { expect } from 'chai'",
-			"",
-			"describe(`$1`, () => {",
-			"  xit(`$2`, () => {",
-			"    $3",
-			"  })",
-			"})",
-			""
-		]
-	},
-	"prettyDOM": {
-		"prefix": "importpdom",
-		"body": "import { prettyDOM } from '@testing-library/dom'"
-	},
-	"prettyDOM() log": {
-		"prefix": "pdom",
-		"body": "console.info(prettyDOM())"
-	},
 	"component": {
-		"prefix": "component",
 		"body": [
 			"import * as u from '@jsmanifest/utils'",
 			"import React from 'react'",
@@ -53,6 +31,32 @@
 			"}",
 			"",
 			"export default $1"
-		]
+		],
+		"prefix": "component"
+	},
+	"import * as mock from 'noodl-ui-test-utils'": {
+		"body": "import * as mock from 'noodl-ui-test-utils'",
+		"prefix": "mock"
+	},
+	"prettyDOM": {
+		"body": "import { prettyDOM } from '@testing-library/dom'",
+		"prefix": "importpdom"
+	},
+	"prettyDOM() log": {
+		"body": "console.info(prettyDOM())",
+		"prefix": "pdom"
+	},
+	"test": {
+		"body": [
+			"import { expect } from 'chai'",
+			"",
+			"describe(`$1`, () => {",
+			"  xit(`$2`, () => {",
+			"    $3",
+			"  })",
+			"})",
+			""
+		],
+		"prefix": "test"
 	}
 }
