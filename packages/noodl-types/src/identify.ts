@@ -5,7 +5,7 @@ import {
 } from './_internal/constants'
 import { ComponentType } from './constantTypes'
 import { StyleObject } from './styleTypes'
-import * as T from '.'
+import * as t from '.'
 import * as i from './_internal'
 
 export const Identify = (function () {
@@ -15,47 +15,58 @@ export const Identify = (function () {
 			fns.some((fn) => fn(arg))
 
 	const o = {
+		rootConfig(v: unknown): v is t.RootConfig {
+			return (
+				i.isObj(v) &&
+				['apiHost', 'apiPort', 'appApiHost'].every((key) => key in v)
+			)
+		},
+		appConfig(v: unknown): v is t.AppConfig {
+			return (
+				i.isObj(v) && ['preload', 'page', 'startPage'].every((key) => key in v)
+			)
+		},
 		action: {
-			any(v: unknown): v is T.ActionObject {
+			any(v: unknown): v is t.ActionObject {
 				return i.isObj(v) && 'actionType' in v
 			},
-			builtIn(v: unknown): v is T.BuiltInActionObject {
+			builtIn(v: unknown): v is t.BuiltInActionObject {
 				return i.isObj(v) && ('funcName' in v || v.actionType === 'builtIn')
 			},
-			evalObject(v: unknown): v is T.EvalActionObject {
+			evalObject(v: unknown): v is t.EvalActionObject {
 				return i.isObj(v) && v.actionType === 'evalObject'
 			},
-			openCamera(v: unknown): v is T.OpenCameraActionObject {
+			openCamera(v: unknown): v is t.OpenCameraActionObject {
 				return i.isObj(v) && v.actionType === 'openCamera'
 			},
-			openPhotoLibrary(v: unknown): v is T.OpenPhotoLibraryActionObject {
+			openPhotoLibrary(v: unknown): v is t.OpenPhotoLibraryActionObject {
 				return i.isObj(v) && v.actionType === 'openPhotoLibrary'
 			},
-			openDocumentManager(v: unknown): v is T.OpenDocumentManagerActionObject {
+			openDocumentManager(v: unknown): v is t.OpenDocumentManagerActionObject {
 				return i.isObj(v) && v.actionType === 'openDocumentManager'
 			},
-			pageJump(v: unknown): v is T.PageJumpActionObject {
+			pageJump(v: unknown): v is t.PageJumpActionObject {
 				return i.isObj(v) && v.actionType === 'pageJump'
 			},
-			popUp(v: unknown): v is T.PopupActionObject {
+			popUp(v: unknown): v is t.PopupActionObject {
 				return i.isObj(v) && v.actionType === 'popUp'
 			},
-			popUpDismiss(v: unknown): v is T.PopupDismissActionObject {
+			popUpDismiss(v: unknown): v is t.PopupDismissActionObject {
 				return i.isObj(v) && v.actionType === 'popUpDismiss'
 			},
-			refresh(v: unknown): v is T.RefreshActionObject {
+			refresh(v: unknown): v is t.RefreshActionObject {
 				return i.isObj(v) && v.actionType === 'refresh'
 			},
-			removeSignature(v: unknown): v is T.RemoveSignatureActionObject {
+			removeSignature(v: unknown): v is t.RemoveSignatureActionObject {
 				return i.isObj(v) && v.actionType === 'removeSignature'
 			},
-			saveObject(v: unknown): v is T.SaveActionObject {
+			saveObject(v: unknown): v is t.SaveActionObject {
 				return i.isObj(v) && v.actionType === 'saveObject'
 			},
-			saveSignature(v: unknown): v is T.SaveSignatureActionObject {
+			saveSignature(v: unknown): v is t.SaveSignatureActionObject {
 				return i.isObj(v) && v.actionType === 'saveSignature'
 			},
-			updateObject(v: unknown): v is T.UpdateActionObject {
+			updateObject(v: unknown): v is t.UpdateActionObject {
 				return i.isObj(v) && v.actionType === 'updateObject'
 			},
 		},
@@ -80,81 +91,81 @@ export const Identify = (function () {
 			return value === false || value === 'false'
 		},
 		component: {
-			button(value: unknown): value is T.ButtonComponentObject {
+			button(value: unknown): value is t.ButtonComponentObject {
 				return i.isObj(value) && value.type === 'button'
 			},
-			canvas(value: unknown): value is T.CanvasComponentObject {
+			canvas(value: unknown): value is t.CanvasComponentObject {
 				return i.isObj(value) && value.type === 'canvas'
 			},
-			divider(value: unknown): value is T.DividerComponentObject {
+			divider(value: unknown): value is t.DividerComponentObject {
 				return i.isObj(value) && value.type === 'divider'
 			},
-			ecosDoc(value: unknown): value is T.EcosDocComponentObject {
+			ecosDoc(value: unknown): value is t.EcosDocComponentObject {
 				return i.isObj(value) && value.type === 'ecosDoc'
 			},
-			footer(value: unknown): value is T.FooterComponentObject {
+			footer(value: unknown): value is t.FooterComponentObject {
 				return i.isObj(value) && value.type === 'footer'
 			},
-			header(value: unknown): value is T.HeaderComponentObject {
+			header(value: unknown): value is t.HeaderComponentObject {
 				return i.isObj(value) && value.type === 'header'
 			},
-			image(value: unknown): value is T.ImageComponentObject {
+			image(value: unknown): value is t.ImageComponentObject {
 				return i.isObj(value) && value.type === 'image'
 			},
-			label(value: unknown): value is T.LabelComponentObject {
+			label(value: unknown): value is t.LabelComponentObject {
 				return i.isObj(value) && value.type === 'label'
 			},
-			list(value: unknown): value is T.ListComponentObject {
+			list(value: unknown): value is t.ListComponentObject {
 				return i.isObj(value) && value.type === 'list'
 			},
 			listLike(
 				value: unknown,
-			): value is T.ListComponentObject | T.ChatListComponentObject {
+			): value is t.ListComponentObject | t.ChatListComponentObject {
 				return i.isObj(value) && ['chatList', 'list'].includes(value.type)
 			},
-			listItem(value: unknown): value is T.ListItemComponentObject {
+			listItem(value: unknown): value is t.ListItemComponentObject {
 				return i.isObj(value) && value.type === 'listItem'
 			},
-			map(value: unknown): value is T.MapComponentObject {
+			map(value: unknown): value is t.MapComponentObject {
 				return i.isObj(value) && value.type === 'map'
 			},
-			page(value: unknown): value is T.PageComponentObject {
+			page(value: unknown): value is t.PageComponentObject {
 				return i.isObj(value) && value.type === 'page'
 			},
-			plugin(value: unknown): value is T.PluginComponentObject {
+			plugin(value: unknown): value is t.PluginComponentObject {
 				return i.isObj(value) && value.type === 'plugin'
 			},
-			pluginHead(value: unknown): value is T.PluginHeadComponentObject {
+			pluginHead(value: unknown): value is t.PluginHeadComponentObject {
 				return i.isObj(value) && value.type === 'pluginHead'
 			},
-			pluginBodyTop(value: unknown): value is T.PluginBodyTopComponentObject {
+			pluginBodyTop(value: unknown): value is t.PluginBodyTopComponentObject {
 				return i.isObj(value) && value.type === 'pluginBodyTop'
 			},
-			pluginBodyTail(value: unknown): value is T.PluginBodyTailComponentObject {
+			pluginBodyTail(value: unknown): value is t.PluginBodyTailComponentObject {
 				return i.isObj(value) && value.type === 'pluginBodyTail'
 			},
-			popUp(value: unknown): value is T.PopUpComponentObject {
+			popUp(value: unknown): value is t.PopUpComponentObject {
 				return i.isObj(value) && value.type === 'popUp'
 			},
-			register(value: unknown): value is T.RegisterComponentObject {
+			register(value: unknown): value is t.RegisterComponentObject {
 				return i.isObj(value) && value.type === 'register'
 			},
-			select(value: unknown): value is T.SelectComponentObject {
+			select(value: unknown): value is t.SelectComponentObject {
 				return i.isObj(value) && value.type === 'select'
 			},
-			scrollView(value: unknown): value is T.ScrollViewComponentObject {
+			scrollView(value: unknown): value is t.ScrollViewComponentObject {
 				return i.isObj(value) && value.type === 'scrollView'
 			},
-			textField(value: unknown): value is T.TextFieldComponentObject {
+			textField(value: unknown): value is t.TextFieldComponentObject {
 				return i.isObj(value) && value.type === 'textField'
 			},
-			textView(value: unknown): value is T.TextViewComponentObject {
+			textView(value: unknown): value is t.TextViewComponentObject {
 				return i.isObj(value) && value.type === 'textView'
 			},
-			video(value: unknown): value is T.VideoComponentObject {
+			video(value: unknown): value is t.VideoComponentObject {
 				return i.isObj(value) && value.type === 'video'
 			},
-			view(value: unknown): value is T.ViewComponentObject {
+			view(value: unknown): value is t.ViewComponentObject {
 				return i.isObj(value) && value.type === 'view'
 			},
 		},
@@ -162,12 +173,12 @@ export const Identify = (function () {
 			audio(v: unknown) {},
 			doc(
 				v: unknown,
-			): v is T.EcosDocument<
-				T.NameField<T.MimeType.Pdf | T.MimeType.Json>,
-				T.DocMediaType
+			): v is t.EcosDocument<
+				t.NameField<t.MimeType.Pdf | t.MimeType.Json>,
+				t.DocMediaType
 			> {
 				return (
-					i.hasNameField<T.EcosDocument>(v) &&
+					i.hasNameField<t.EcosDocument>(v) &&
 					(/application\//i.test(v.name?.type || '') ||
 						v.subtype.mediaType === 1)
 				)
@@ -175,9 +186,9 @@ export const Identify = (function () {
 			font(v: unknown) {},
 			image(
 				v: unknown,
-			): v is T.EcosDocument<T.NameField<T.MimeType.Image>, T.ImageMediaType> {
+			): v is t.EcosDocument<t.NameField<t.MimeType.Image>, t.ImageMediaType> {
 				return (
-					i.hasNameField<T.EcosDocument>(v) &&
+					i.hasNameField<t.EcosDocument>(v) &&
 					(/image/i.test(v.name?.type || '') || v.subtype.mediaType === 4)
 				)
 			},
@@ -186,9 +197,9 @@ export const Identify = (function () {
 			multipart(v: unknown) {},
 			other(
 				v: unknown,
-			): v is T.EcosDocument<T.NameField<any>, T.OtherMediaType> {
+			): v is t.EcosDocument<t.NameField<any>, t.OtherMediaType> {
 				return (
-					i.hasNameField<T.EcosDocument>(v) &&
+					i.hasNameField<t.EcosDocument>(v) &&
 					(!/(application|audio|font|image|multipart|text|video)\//i.test(
 						v.name?.type || '',
 					) ||
@@ -197,12 +208,12 @@ export const Identify = (function () {
 			},
 			text(
 				v: unknown,
-			): v is T.EcosDocument<
-				T.NameField<T.MimeType.Text>,
-				T.TextMediaType | T.OtherMediaType
+			): v is t.EcosDocument<
+				t.NameField<t.MimeType.Text>,
+				t.TextMediaType | t.OtherMediaType
 			> {
 				return (
-					i.hasNameField<T.EcosDocument>(v) &&
+					i.hasNameField<t.EcosDocument>(v) &&
 					(/text\//i.test(v.name?.type || '') ||
 						v.subtype.mediaType === 8 ||
 						v.subtype.mediaType === 0)
@@ -210,51 +221,51 @@ export const Identify = (function () {
 			},
 			video(
 				v: unknown,
-			): v is T.EcosDocument<T.NameField<T.MimeType.Video>, T.VideoMediaType> {
+			): v is t.EcosDocument<t.NameField<t.MimeType.Video>, t.VideoMediaType> {
 				return (
-					i.hasNameField<T.EcosDocument>(v) &&
+					i.hasNameField<t.EcosDocument>(v) &&
 					(/video\//i.test(v.name?.type || '') || v.subtype.mediaType === 9)
 				)
 			},
 		},
-		emit(v: unknown): v is T.EmitObject {
+		emit(v: unknown): v is t.EmitObject {
 			return i.isObj(v) && 'actions' in v
 		},
-		goto(v: unknown): v is T.GotoObject {
+		goto(v: unknown): v is t.GotoObject {
 			return i.isObj(v) && 'goto' in v
 		},
-		if(v: unknown): v is T.IfObject {
+		if(v: unknown): v is t.IfObject {
 			return i.isObj(v) && 'if' in v
 		},
 		mediaType: {
-			audio(v: unknown): v is T.AudioMediaType {
+			audio(v: unknown): v is t.AudioMediaType {
 				return v == 2
 			},
-			doc(v: unknown): v is T.DocMediaType {
+			doc(v: unknown): v is t.DocMediaType {
 				return v == 1
 			},
-			font(v: unknown): v is T.FontMediaType {
+			font(v: unknown): v is t.FontMediaType {
 				return v == 3
 			},
-			image(v: unknown): v is T.ImageMediaType {
+			image(v: unknown): v is t.ImageMediaType {
 				return v == 4
 			},
-			message(v: unknown): v is T.MessageMediaType {
+			message(v: unknown): v is t.MessageMediaType {
 				return v == 5
 			},
-			model(v: unknown): v is T.ModelMediaType {
+			model(v: unknown): v is t.ModelMediaType {
 				return v == 6
 			},
-			multipart(v: unknown): v is T.MultipartMediaType {
+			multipart(v: unknown): v is t.MultipartMediaType {
 				return v == 7
 			},
-			other(v: unknown): v is T.OtherMediaType {
+			other(v: unknown): v is t.OtherMediaType {
 				return v == 0
 			},
-			text(v: unknown): v is T.TextMediaType {
+			text(v: unknown): v is t.TextMediaType {
 				return v == 8
 			},
-			video(v: unknown): v is T.VideoMediaType {
+			video(v: unknown): v is t.VideoMediaType {
 				return v == 9
 			},
 		},
@@ -293,7 +304,7 @@ export const Identify = (function () {
 				)
 			},
 		},
-		toast(value: unknown): value is { toast: T.ToastObject } {
+		toast(value: unknown): value is { toast: t.ToastObject } {
 			return i.isObj(value) && 'message' in value
 		},
 	}
@@ -301,12 +312,12 @@ export const Identify = (function () {
 	const folds = {
 		actionChain(
 			v: unknown,
-		): v is (T.ActionObject | T.EmitObjectFold | T.GotoObject)[] {
+		): v is (t.ActionObject | t.EmitObjectFold | t.GotoObject)[] {
 			return i.isArr(v) && v.some(composeSomes(o.action.any, o.emit, o.goto))
 		},
 		component: Object.assign(
 			{
-				any(v: unknown): v is T.AnyComponentObject {
+				any(v: unknown): v is t.AnyComponentObject {
 					return (
 						i.isObj(v) &&
 						'type' in v &&
@@ -316,9 +327,9 @@ export const Identify = (function () {
 			},
 			Object.assign(
 				{} as {
-					[K in ComponentType]: <K extends T.ComponentType>(
+					[K in ComponentType]: <K extends t.ComponentType>(
 						v: unknown,
-					) => v is Omit<T.AnyComponentObject, 'type'> & { type: K }
+					) => v is Omit<t.AnyComponentObject, 'type'> & { type: K }
 				},
 				componentTypes.reduce(
 					(acc, type) =>
@@ -331,23 +342,23 @@ export const Identify = (function () {
 		),
 		emit<O extends Record<string, any>>(
 			value: unknown,
-		): value is T.EmitObjectFold & O {
+		): value is t.EmitObjectFold & O {
 			return i.isObj(value) && 'emit' in value
 		},
-		goto(value: unknown): value is { goto: T.GotoUrl | T.GotoObject } {
+		goto(value: unknown): value is { goto: t.GotoUrl | t.GotoObject } {
 			return i.isObj(value) && 'goto' in value
 		},
-		path(value: unknown): value is { path: T.Path } {
+		path(value: unknown): value is { path: t.Path } {
 			return i.isObj(value) && 'path' in value
 		},
 		style: {
 			any() {},
 			border() {},
 		},
-		textFunc(value: unknown): value is { path: T.Path } {
+		textFunc(value: unknown): value is { path: t.Path } {
 			return i.isObj(value) && 'text=func' in value
 		},
-		toast(value: unknown): value is { toast: T.ToastObject } {
+		toast(value: unknown): value is { toast: t.ToastObject } {
 			return i.isObj(value) && 'toast' in value
 		},
 	}
