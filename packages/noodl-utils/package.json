@@ -1,57 +1,43 @@
 {
-	"name": "noodl-utils",
-	"version": "0.0.58",
-	"description": "Utility/helpers for working with NOODL values",
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
-	"main": "dist/index.js",
-	"module": "dist/index.js",
-	"jsnext:main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"build": "tsc",
-		"start": "tsc -w",
-		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src src/**/*.test.ts --verbose",
-		"test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src"
+	"bugs": {
+		"url": "https://github.com/pfftdammitchris/noodl/issues"
 	},
 	"dependencies": {
 		"lodash.curry": "^4.1.1",
 		"lodash.flowright": "^3.5.0",
 		"lodash.get": "^4.4.2",
 		"lodash.has": "^4.5.2",
-		"noodl-types": "^1.0.104"
+		"noodl-types": "^1.0.111"
 	},
+	"description": "Utility/helpers for working with NOODL values",
 	"devDependencies": {
 		"@types/lodash.curry": "^4.1.6",
 		"@types/lodash.flowright": "^3.5.6",
 		"@types/lodash.get": "^4.4.6",
 		"@types/lodash.has": "^4.5.6"
 	},
-	"homepage": "https://github.com/pfftdammitchris/noodl#readme",
-	"license": "ISC",
 	"directories": {
 		"dist": "dist",
 		"test": "__tests__"
-	},
-	"files": [
-		"dist"
-	],
-	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/pfftdammitchris/noodl.git"
-	},
-	"keywords": [
-		"noodl"
-	],
-	"bugs": {
-		"url": "https://github.com/pfftdammitchris/noodl/issues"
 	},
 	"engines": {
 		"node": ">=14",
 		"npm": ">=7"
 	},
+	"files": [
+		"dist"
+	],
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
+	"homepage": "https://github.com/pfftdammitchris/noodl#readme",
+	"jsnext:main": "dist/index.js",
+	"keywords": [
+		"noodl"
+	],
+	"license": "ISC",
+	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"name": "noodl-utils",
 	"prettier": {
 		"arrowParens": "always",
 		"endOfLine": "lf",
@@ -61,5 +47,19 @@
 		"tabWidth": 2,
 		"trailingComma": "all"
 	},
-	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee"
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pfftdammitchris/noodl.git"
+	},
+	"scripts": {
+		"build": "tsc",
+		"start": "tsc -w",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src src/**/*.test.ts --verbose",
+		"test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src"
+	},
+	"types": "dist/index.d.ts",
+	"version": "0.0.60"
 }

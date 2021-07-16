@@ -1,15 +1,30 @@
-// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import { expect } from 'chai'
 import { coolGold, italic } from 'noodl-common'
+import { RootConfig } from 'noodl-types'
 import * as mock from 'noodl-ui-test-utils'
 import Parser from './Parser'
 
-describe(coolGold(`Parser`), () => {
-	let parse: Parser
+const parse = new Parser()
 
-	beforeEach(() => {
-		parse = new Parser()
+const rootConfig = {
+	cadlBaseUrl: 'https://public.aitmed.com/cadl/meet3_${cadlVersion}/',
+	cadlMain: 'cadlEndpoint.yml',
+	web: { cadlVersion: { stable: '0.5d', test: '0.5d' } },
+	ios: { cadlVersion: { stable: '0.5d', test: '0.5d' } },
+	android: { cadlVersion: { stable: '0.5d', test: '0.5d' } },
+} as RootConfig
+const parsedBaseUrl = `https://public.aitmed.com/cadl/meet3_0.5d/`
+
+describe(coolGold(`Parser`), () => {
+	describe(italic(`appConfigUrl`), () => {
+		it(`should support using a rootConfig object`, () => {
+			expect(parse.appConfigUrl(rootConfig, 'web')).to.eq(parsedBaseUrl)
+		})
+
+		xit(`should support using the baseUrl`, () => {
+			//
+		})
 	})
 
 	describe(italic('destination'), () => {

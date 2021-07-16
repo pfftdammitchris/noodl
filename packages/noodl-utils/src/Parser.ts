@@ -1,4 +1,4 @@
-import { DeviceType, Env, RootConfig } from 'noodl-types'
+import { deviceTypes, DeviceType, Env, RootConfig } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
 import get from 'lodash.get'
 import * as t from './types'
@@ -13,27 +13,31 @@ class NoodlUtilsParser {
 		return get(configObject, [deviceType, 'cadlVersion', env])
 	}
 
-	appConfigUrl(
-		rootConfig: RootConfig,
-		deviceType?: DeviceType,
-		env?: Env,
-	): string
+	appConfigUrl(rootConfig: RootConfig, deviceType: DeviceType, env: Env): string
 	appConfigUrl(baseUrl: string, cadlMain: string): string
 	appConfigUrl(
 		baseUrl: string | RootConfig,
-		cadlMain?: LiteralUnion<'cadlEndpoint.yml', string>,
+		cadlMain?: LiteralUnion<'cadlEndpoint.yml' | DeviceType, string>,
 		env?: Env,
 	) {
-		if (u.isStr(baseUrl) && u.isStr(cadlMain)) return `${baseUrl}${cadlMain}`
+		if (u.isStr(baseUrl)) {
+			if (arguments.length < 2) {
+				throw new Error(`cadlMain is required when passing in baseUrl`)
+			}
+			return `${baseUrl}${cadlMain || ''}`
+		}
 		if (u.isObj(baseUrl)) {
-			const deviceType = cadlMain || 'web'
-			!env && (env = 'stable')
-			return get(
-				baseUrl,
-				baseUrl.cadlBaseUrl.replace(
+			const baseUrlStr = baseUrl.cadlBaseUrl || ''
+
+			const deviceType = (
+				deviceTypes.includes(cadlMain as DeviceType) ? cadlMain : 'web'
+			) as DeviceType
+
+			return (
+				baseUrlStr.replace(
 					'$\\{cadlVersion}',
-					this.configVersion(baseUrl, deviceType, env),
-				),
+					this.configVersion(baseUrl, deviceType, env as Env),
+				) + (env ? cadlMain : 'cadlEndpoint.yml')
 			)
 		}
 		return u.isStr(baseUrl) ? baseUrl : ''
@@ -63,7 +67,7 @@ class NoodlUtilsParser {
 				}
 				// "SignIn^redTag"
 				else {
-					let parts = destination.split(denoter)[1]?.split(';')
+					const parts = destination.split(denoter)[1]?.split(';')
 					let propKey = ''
 					let serialized = parts[1] || ''
 					if (serialized.startsWith(';')) {
