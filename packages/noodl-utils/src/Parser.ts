@@ -8,6 +8,21 @@ class NoodlUtilsParser {
 		return get(configObject, [deviceType, 'cadlVersion', env])
 	}
 
+	appConfigUrl(
+		rootConfig: RootConfig,
+		deviceType?: DeviceType,
+		env?: Env,
+	): string
+	appConfigUrl(baseUrl: string, cadlMain: string): string
+	appConfigUrl(baseUrl: string | RootConfig, cadlMain?: string, env?: string) {
+		if (u.isStr(baseUrl) && u.isStr(cadlMain)) return `${baseUrl}${cadlMain}`
+		if (u.isObj(baseUrl)) {
+			const deviceType = cadlMain || 'web'
+			return get(baseUrl, [deviceType, 'cadlVersion', env || 'stable'])
+		}
+		return u.isStr(baseUrl) ? baseUrl : ''
+	}
+
 	destination(
 		destination: string | undefined,
 		{
