@@ -107,6 +107,8 @@ export const contentTypes = [
 	'videoSubStream',
 ] as const
 
+export const deviceTypes = ['web', 'ios', 'android'] as const
+
 export const styleKeys = [
 	'FontSize',
 	'axis',
