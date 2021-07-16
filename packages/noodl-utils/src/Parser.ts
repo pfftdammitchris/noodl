@@ -1,10 +1,15 @@
 import { DeviceType, Env, RootConfig } from 'noodl-types'
+import { LiteralUnion } from 'type-fest'
 import get from 'lodash.get'
 import * as t from './types'
 import * as u from './_internal'
 
 class NoodlUtilsParser {
-	configVersion(configObject: RootConfig, deviceType: DeviceType, env: Env) {
+	configVersion(
+		configObject: RootConfig,
+		deviceType: LiteralUnion<DeviceType, string>,
+		env: Env,
+	) {
 		return get(configObject, [deviceType, 'cadlVersion', env])
 	}
 
@@ -14,11 +19,22 @@ class NoodlUtilsParser {
 		env?: Env,
 	): string
 	appConfigUrl(baseUrl: string, cadlMain: string): string
-	appConfigUrl(baseUrl: string | RootConfig, cadlMain?: string, env?: string) {
+	appConfigUrl(
+		baseUrl: string | RootConfig,
+		cadlMain?: LiteralUnion<'cadlEndpoint.yml', string>,
+		env?: Env,
+	) {
 		if (u.isStr(baseUrl) && u.isStr(cadlMain)) return `${baseUrl}${cadlMain}`
 		if (u.isObj(baseUrl)) {
 			const deviceType = cadlMain || 'web'
-			return get(baseUrl, [deviceType, 'cadlVersion', env || 'stable'])
+			!env && (env = 'stable')
+			return get(
+				baseUrl,
+				baseUrl.cadlBaseUrl.replace(
+					'$\\{cadlVersion}',
+					this.configVersion(baseUrl, deviceType, env),
+				),
+			)
 		}
 		return u.isStr(baseUrl) ? baseUrl : ''
 	}
