@@ -1,10 +1,8 @@
 const execa = require('execa')
+const fs = require('fs-extra')
+const path = require('path')
+const { syncBuiltinESMExports } = require('module')
 
-const shell = execa(
-	'noodl',
-	['--config', 'meet4d', '--generate', 'app', '--local'],
-	{
-		shell: true,
-		stdio: 'inherit',
-	},
-)
+const output = require.prototype
+syncBuiltinESMExports()
+console.log(module.children)

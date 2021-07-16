@@ -1,4 +1,7 @@
+// require('jsdom-global/register')
+
 process.stdout.write('\x1Bc')
+const Aggregator = require('noodl-aggregator').default
 const nc = require('noodl-common')
 const path = require('path')
 const u = require('@jsmanifest/utils')
@@ -6,12 +9,20 @@ const yaml = require('yaml')
 const { Identify } = require('noodl-types')
 const fs = require('fs-extra')
 const ncom = require('noodl-common')
-const Aggregator = require('noodl-aggregator').default
-const Protorepo = require('@aitmed/protorepo')
 const Reference = require('./Reference')
+// const Level2 = require('@aitmed/ecos-lvl2-sdk').default
+// const CADL = require('@aitmed/cadl').default
+
+try {
+	// const cadl = new CADL({
+	// 	cadlVersion: 'test',
+	// 	configUrl: `https://public.aitmed.com/config/meet4d.yml`,
+	// 	aspectRatio: 1,
+	// })
+} catch (error) {}
 
 const configKey = 'meet4d'
-const basePath = '../../generated'
+const basePath = '.'
 const pathToOutputFile = ncom.normalizePath(
 	__dirname,
 	`${basePath}/refs-output.json`,

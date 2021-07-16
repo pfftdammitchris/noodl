@@ -313,11 +313,25 @@ function Server({
 
 			if (metadata.assets) {
 				for (let { filepath, filename, ext = '' } of metadata.assets) {
+					let middlePaths = ''
 					filename = nc.ensureSlashPrefix(filename)
-					ref.current?.get(
-						[`/assets/${filename.replace('/', '')}${ext}`],
-						(req, res) => res.sendFile(filepath),
-					)
+					if (filepath.includes('assets/')) {
+						middlePaths = filepath.substring(
+							filepath.indexOf('assets/') + 'assets/'.length,
+						)
+						middlePaths = middlePaths.substring(
+							0,
+							middlePaths.indexOf(filename),
+						)
+						if (middlePaths && !middlePaths.endsWith('.')) {
+							middlePaths += '/'
+						}
+					}
+					const assetPath = `/assets/${middlePaths}${filename.replace(
+						'/',
+						'',
+					)}${ext}`
+					ref.current?.get([assetPath], (req, res) => res.sendFile(filepath))
 				}
 			}
 		},

@@ -44,15 +44,13 @@ const createReferencesMachine = function (
 				version: '',
 			},
 			states: {
-        init: {
-          on: {
-            ROOT_CONFIG: {
-              actions: {
-                
-              }
-            }
-          }
-        }
+				init: {
+					on: {
+						ROOT_CONFIG: {
+							actions: {},
+						},
+					},
+				},
 				parse: {
 					on: {
 						PARSE_VERSION: {

@@ -162,8 +162,8 @@ export const createNoodlPlaceholderReplacer = (function () {
 		cadlVersion?: any
 		designSuffix?: any
 	}) => {
-		let replacers = [] as ((s: string) => string)[]
-		let entries = u.entries(keyMap)
+		const replacers = [] as ((s: string) => string)[]
+		const entries = u.entries(keyMap)
 
 		if (keyMap.cadlBaseUrl && 'cadlVersion' in keyMap) {
 			keyMap.cadlBaseUrl = replaceCadlBaseUrl(

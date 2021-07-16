@@ -1,0 +1,1937 @@
+{
+  "Message": [
+    {
+      "context": "Message",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.name.firstName",
+      "paths": [
+        "Global",
+        "currentUser",
+        "name",
+        "firstName"
+      ],
+      "reference": "=.Global.currentUser.name.firstName",
+      "value": {}
+    }
+  ],
+  "Global": [
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.FCM.getFCMToken",
+      "paths": [
+        "builtIn",
+        "FCM",
+        "getFCMToken"
+      ],
+      "reference": "=.builtIn.FCM.getFCMToken",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.FCM.getAPPID",
+      "paths": [
+        "builtIn",
+        "FCM",
+        "getAPPID"
+      ],
+      "reference": "=.builtIn.FCM.getAPPID",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.FCM.getFCMTokenSHA256Half",
+      "paths": [
+        "builtIn",
+        "FCM",
+        "getFCMTokenSHA256Half"
+      ],
+      "reference": "=.builtIn.FCM.getFCMTokenSHA256Half",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.ecos.getDoc",
+      "paths": [
+        "builtIn",
+        "ecos",
+        "getDoc"
+      ],
+      "reference": "=.builtIn.ecos.getDoc",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.utils.isOnPage",
+      "paths": [
+        "builtIn",
+        "utils",
+        "isOnPage"
+      ],
+      "reference": "=.builtIn.utils.isOnPage",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.equal",
+      "paths": [
+        "builtIn",
+        "string",
+        "equal"
+      ],
+      "reference": "=.builtIn.string.equal",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.ecosDocObj.doc.0.type",
+      "paths": [
+        "Global",
+        "ecosDocObj",
+        "doc",
+        "0",
+        "type"
+      ],
+      "reference": "=.Global.ecosDocObj.doc.0.type",
+      "value": {}
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.phoneService.bringAppToForeground",
+      "paths": [
+        "builtIn",
+        "phoneService",
+        "bringAppToForeground"
+      ],
+      "reference": "=.builtIn.phoneService.bringAppToForeground",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.phoneService.startVibrate",
+      "paths": [
+        "builtIn",
+        "phoneService",
+        "startVibrate"
+      ],
+      "reference": "=.builtIn.phoneService.startVibrate",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.phoneService.startRingtone",
+      "paths": [
+        "builtIn",
+        "phoneService",
+        "startRingtone"
+      ],
+      "reference": "=.builtIn.phoneService.startRingtone",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.currentDateTime",
+      "paths": [
+        "builtIn",
+        "currentDateTime"
+      ],
+      "reference": "=.builtIn.currentDateTime",
+      "value": null
+    },
+    {
+      "context": "Global",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.id",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "id"
+      ],
+      "reference": ".Global.currentUser.vertex.id",
+      "value": {}
+    },
+    {
+      "context": "Global",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.name.userName",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "name",
+        "userName"
+      ],
+      "reference": ".Global.currentUser.vertex.name.userName",
+      "value": {}
+    }
+  ],
+  "SignIn": [
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.isIOS",
+      "paths": [
+        "builtIn",
+        "isIOS"
+      ],
+      "reference": ".builtIn.isIOS",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "setIOS",
+      "paths": [
+        "setIOS"
+      ],
+      "reference": "..setIOS",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.isAndroid",
+      "paths": [
+        "builtIn",
+        "isAndroid"
+      ],
+      "reference": ".builtIn.isAndroid",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "setAndroid",
+      "paths": [
+        "setAndroid"
+      ],
+      "reference": "..setAndroid",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "appLink.url",
+      "paths": [
+        "appLink",
+        "url"
+      ],
+      "reference": "=..appLink.url",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "appLink.url",
+      "paths": [
+        "appLink",
+        "url"
+      ],
+      "reference": "..appLink.url",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": "=.Global.currentUser.vertex.sk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "appLink.url",
+      "paths": [
+        "appLink",
+        "url"
+      ],
+      "reference": "..appLink.url@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "appLink.img",
+      "paths": [
+        "appLink",
+        "img"
+      ],
+      "reference": "..appLink.img@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "appLink.url",
+      "paths": [
+        "appLink",
+        "url"
+      ],
+      "reference": "..appLink.url@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "appLink.img",
+      "paths": [
+        "appLink",
+        "img"
+      ],
+      "reference": "..appLink.img@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.eccNaCl.decryptAES",
+      "paths": [
+        "builtIn",
+        "eccNaCl",
+        "decryptAES"
+      ],
+      "reference": "=.builtIn.eccNaCl.decryptAES",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.password",
+      "paths": [
+        "formData",
+        "password"
+      ],
+      "reference": "=..formData.password",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.esk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "esk"
+      ],
+      "reference": "=.Global.currentUser.vertex.esk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.eccNaCl.skCheck",
+      "paths": [
+        "builtIn",
+        "eccNaCl",
+        "skCheck"
+      ],
+      "reference": "=.builtIn.eccNaCl.skCheck",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.pk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "pk"
+      ],
+      "reference": "=.Global.currentUser.vertex.pk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.sk",
+      "paths": [
+        "formData",
+        "sk"
+      ],
+      "reference": "=..formData.sk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.pass",
+      "paths": [
+        "formData",
+        "pass"
+      ],
+      "reference": "=..formData.pass",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": ".Global.currentUser.vertex.sk@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.sk",
+      "paths": [
+        "formData",
+        "sk"
+      ],
+      "reference": "=..formData.sk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.equal",
+      "paths": [
+        "builtIn",
+        "string",
+        "equal"
+      ],
+      "reference": "=.builtIn.string.equal",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.formData.phoneNumber",
+      "paths": [
+        "SignIn",
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "=.SignIn.formData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.phoneNumber",
+      "paths": [
+        "Global",
+        "phoneNumber"
+      ],
+      "reference": "=.Global.phoneNumber",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": ".Global.currentUser.vertex.sk@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.loginNewDevice.edgeAPI.store",
+      "paths": [
+        "SignIn",
+        "loginNewDevice",
+        "edgeAPI",
+        "store"
+      ],
+      "reference": "=.SignIn.loginNewDevice.edgeAPI.store",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": ".Global._nonce@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.math.random",
+      "paths": [
+        "builtIn",
+        "math",
+        "random"
+      ],
+      "reference": "=.builtIn.math.random",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.equal",
+      "paths": [
+        "builtIn",
+        "string",
+        "equal"
+      ],
+      "reference": "=.builtIn.string.equal",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginNewDevice.response.code",
+      "paths": [
+        "loginNewDevice",
+        "response",
+        "code"
+      ],
+      "reference": "=..loginNewDevice.response.code",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.retrieveVertex.vertexAPI.get",
+      "paths": [
+        "SignIn",
+        "retrieveVertex",
+        "vertexAPI",
+        "get"
+      ],
+      "reference": "=.SignIn.retrieveVertex.vertexAPI.get",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.concat",
+      "paths": [
+        "builtIn",
+        "string",
+        "concat"
+      ],
+      "reference": "=.builtIn.string.concat",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.loginUser2.edge.bvid",
+      "paths": [
+        "SignIn",
+        "loginUser2",
+        "edge",
+        "bvid"
+      ],
+      "reference": "=.SignIn.loginUser2.edge.bvid",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.loginUser2.edge.name.ctime",
+      "paths": [
+        "SignIn",
+        "loginUser2",
+        "edge",
+        "name",
+        "ctime"
+      ],
+      "reference": "=.SignIn.loginUser2.edge.name.ctime",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.storeCredentials",
+      "paths": [
+        "builtIn",
+        "storeCredentials"
+      ],
+      "reference": "=.builtIn.storeCredentials",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": "=.Global.currentUser.vertex.sk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.eccNaCl.signature",
+      "paths": [
+        "builtIn",
+        "eccNaCl",
+        "signature"
+      ],
+      "reference": "=.builtIn.eccNaCl.signature",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginMessage",
+      "paths": [
+        "loginMessage"
+      ],
+      "reference": "=..loginMessage",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": "=.Global.currentUser.vertex.sk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "retrieveVertex.response.vertex.0.name.eskSign",
+      "paths": [
+        "retrieveVertex",
+        "response",
+        "vertex",
+        "0",
+        "name",
+        "eskSign"
+      ],
+      "reference": "=..retrieveVertex.response.vertex.0.name.eskSign",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.loginUser2.edgeAPI.store",
+      "paths": [
+        "SignIn",
+        "loginUser2",
+        "edgeAPI",
+        "store"
+      ],
+      "reference": "=.SignIn.loginUser2.edgeAPI.store",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": ".Global._nonce@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.math.random",
+      "paths": [
+        "builtIn",
+        "math",
+        "random"
+      ],
+      "reference": "=.builtIn.math.random",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.retrieveVertex.vertexAPI.get",
+      "paths": [
+        "SignIn",
+        "retrieveVertex",
+        "vertexAPI",
+        "get"
+      ],
+      "reference": "=.SignIn.retrieveVertex.vertexAPI.get",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex"
+      ],
+      "reference": ".Global.currentUser.vertex@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "retrieveVertex.response.vertex.0",
+      "paths": [
+        "retrieveVertex",
+        "response",
+        "vertex",
+        "0"
+      ],
+      "reference": "=..retrieveVertex.response.vertex.0",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.JWT",
+      "paths": [
+        "Global",
+        "currentUser",
+        "JWT"
+      ],
+      "reference": ".Global.currentUser.JWT@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginUser2.response.jwt",
+      "paths": [
+        "loginUser2",
+        "response",
+        "jwt"
+      ],
+      "reference": "=..loginUser2.response.jwt",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.phoneNumber",
+      "paths": [
+        "Global",
+        "phoneNumber"
+      ],
+      "reference": ".Global.phoneNumber@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.phoneNumber",
+      "paths": [
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "=..formData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.storeCredentials",
+      "paths": [
+        "builtIn",
+        "storeCredentials"
+      ],
+      "reference": "=.builtIn.storeCredentials",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": "=.Global.currentUser.vertex.sk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.pk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "pk"
+      ],
+      "reference": "=.Global.currentUser.vertex.pk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.id",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "id"
+      ],
+      "reference": "=.Global.currentUser.vertex.id",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.esk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "esk"
+      ],
+      "reference": "=.Global.currentUser.vertex.esk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.dataCache.loadingDateTime",
+      "paths": [
+        "Global",
+        "currentUser",
+        "dataCache",
+        "loadingDateTime"
+      ],
+      "reference": ".Global.currentUser.dataCache.loadingDateTime@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentDateTime",
+      "paths": [
+        "Global",
+        "currentDateTime"
+      ],
+      "reference": "=.Global.currentDateTime",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.rootNotebookID",
+      "paths": [
+        "Global",
+        "rootNotebookID"
+      ],
+      "reference": ".Global.rootNotebookID@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.deat.rnb64ID",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "deat",
+        "rnb64ID"
+      ],
+      "reference": "=.Global.currentUser.vertex.deat.rnb64ID",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.dataCache.loadingDateTime",
+      "paths": [
+        "Global",
+        "currentUser",
+        "dataCache",
+        "loadingDateTime"
+      ],
+      "reference": ".Global.currentUser.dataCache.loadingDateTime@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentDateTime",
+      "paths": [
+        "Global",
+        "currentDateTime"
+      ],
+      "reference": "=.Global.currentDateTime",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginNewDevice.response.edge.deat.user_id",
+      "paths": [
+        "loginNewDevice",
+        "response",
+        "edge",
+        "deat",
+        "user_id"
+      ],
+      "reference": "=..loginNewDevice.response.edge.deat.user_id",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": "=.Global._nonce",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "rvCondition",
+      "paths": [
+        "rvCondition"
+      ],
+      "reference": "=..rvCondition",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": "=.Global._nonce",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": "=.Global._nonce",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "apiData.phoneNumber",
+      "paths": [
+        "apiData",
+        "phoneNumber"
+      ],
+      "reference": "=..apiData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": "=.Global._nonce",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "apiData.phoneNumber",
+      "paths": [
+        "apiData",
+        "phoneNumber"
+      ],
+      "reference": "=..apiData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.code",
+      "paths": [
+        "formData",
+        "code"
+      ],
+      "reference": "=..formData.code",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": "=.Global._nonce",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginNewDevice.response.edge.deat.user_id",
+      "paths": [
+        "loginNewDevice",
+        "response",
+        "edge",
+        "deat",
+        "user_id"
+      ],
+      "reference": "=..loginNewDevice.response.edge.deat.user_id",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentDateTime",
+      "paths": [
+        "Global",
+        "currentDateTime"
+      ],
+      "reference": ".Global.currentDateTime",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": "=.Global._nonce",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginNewDevice.response.edge.deat.user_id",
+      "paths": [
+        "loginNewDevice",
+        "response",
+        "edge",
+        "deat",
+        "user_id"
+      ],
+      "reference": "=..loginNewDevice.response.edge.deat.user_id",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "apiData.phoneNumber",
+      "paths": [
+        "apiData",
+        "phoneNumber"
+      ],
+      "reference": "..apiData.phoneNumber@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.phoneNumber",
+      "paths": [
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "..formData.phoneNumber@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.countryCode",
+      "paths": [
+        "formData",
+        "countryCode"
+      ],
+      "reference": "..formData.countryCode",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.typeCheck.phoneNumber",
+      "paths": [
+        "builtIn",
+        "typeCheck",
+        "phoneNumber"
+      ],
+      "reference": "=.builtIn.typeCheck.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.phoneNumber",
+      "paths": [
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "=..formData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.countryCode",
+      "paths": [
+        "formData",
+        "countryCode"
+      ],
+      "reference": "=..formData.countryCode",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.checkOk",
+      "paths": [
+        "formData",
+        "checkOk"
+      ],
+      "reference": "=..formData.checkOk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.checkMessage",
+      "paths": [
+        "formData",
+        "checkMessage"
+      ],
+      "reference": "..formData.checkMessage@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.concat",
+      "paths": [
+        "builtIn",
+        "string",
+        "concat"
+      ],
+      "reference": "=.builtIn.string.concat",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.formData.countryCode",
+      "paths": [
+        "SignIn",
+        "formData",
+        "countryCode"
+      ],
+      "reference": "=.SignIn.formData.countryCode",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.formData.phoneNumber",
+      "paths": [
+        "SignIn",
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "=.SignIn.formData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.concat",
+      "paths": [
+        "builtIn",
+        "string",
+        "concat"
+      ],
+      "reference": "=.builtIn.string.concat",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.formData.countryCode",
+      "paths": [
+        "SignIn",
+        "formData",
+        "countryCode"
+      ],
+      "reference": "=.SignIn.formData.countryCode",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.formData.phoneNumber",
+      "paths": [
+        "SignIn",
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "=.SignIn.formData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "apiData.phoneNumber",
+      "paths": [
+        "apiData",
+        "phoneNumber"
+      ],
+      "reference": "..apiData.phoneNumber@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.phoneNumber",
+      "paths": [
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "..formData.phoneNumber@",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.phoneNumber",
+      "paths": [
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "=..formData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.typeCheck.phoneNumber",
+      "paths": [
+        "builtIn",
+        "typeCheck",
+        "phoneNumber"
+      ],
+      "reference": "=.builtIn.typeCheck.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.phoneNumber",
+      "paths": [
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "=..formData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.countryCode",
+      "paths": [
+        "formData",
+        "countryCode"
+      ],
+      "reference": "=..formData.countryCode",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.checkOk",
+      "paths": [
+        "formData",
+        "checkOk"
+      ],
+      "reference": "..formData.checkOk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.password",
+      "paths": [
+        "formData",
+        "password"
+      ],
+      "reference": "=..formData.password",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.esk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "esk"
+      ],
+      "reference": "=.Global.currentUser.vertex.esk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "save",
+      "paths": [
+        "save"
+      ],
+      "reference": "..save",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": "=.Global.currentUser.vertex.sk",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "SignIn.verificationCode.edgeAPI.store",
+      "paths": [
+        "SignIn",
+        "verificationCode",
+        "edgeAPI",
+        "store"
+      ],
+      "reference": "=.SignIn.verificationCode.edgeAPI.store",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.equal",
+      "paths": [
+        "builtIn",
+        "string",
+        "equal"
+      ],
+      "reference": "=.builtIn.string.equal",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "verificationCode.response.code",
+      "paths": [
+        "verificationCode",
+        "response",
+        "code"
+      ],
+      "reference": "=..verificationCode.response.code",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.equal",
+      "paths": [
+        "builtIn",
+        "string",
+        "equal"
+      ],
+      "reference": "=.builtIn.string.equal",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "verificationCode.response.code",
+      "paths": [
+        "verificationCode",
+        "response",
+        "code"
+      ],
+      "reference": "=..verificationCode.response.code",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": ".Global._nonce@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.math.random",
+      "paths": [
+        "builtIn",
+        "math",
+        "random"
+      ],
+      "reference": "=.builtIn.math.random",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.string.concat",
+      "paths": [
+        "builtIn",
+        "string",
+        "concat"
+      ],
+      "reference": "=.builtIn.string.concat",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "verificationCode.response.edge.deat.phone_number",
+      "paths": [
+        "verificationCode",
+        "response",
+        "edge",
+        "deat",
+        "phone_number"
+      ],
+      "reference": "=..verificationCode.response.edge.deat.phone_number",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "getVertex.vertexAPI.get",
+      "paths": [
+        "getVertex",
+        "vertexAPI",
+        "get"
+      ],
+      "reference": "=..getVertex.vertexAPI.get",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "getVertex.response.vertex.0.id",
+      "paths": [
+        "getVertex",
+        "response",
+        "vertex",
+        "0",
+        "id"
+      ],
+      "reference": "=..getVertex.response.vertex.0.id",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global._nonce",
+      "paths": [
+        "Global",
+        "_nonce"
+      ],
+      "reference": ".Global._nonce@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.math.random",
+      "paths": [
+        "builtIn",
+        "math",
+        "random"
+      ],
+      "reference": "=.builtIn.math.random",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.number.addition",
+      "paths": [
+        "builtIn",
+        "number",
+        "addition"
+      ],
+      "reference": "=.builtIn.number.addition",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.zindex",
+      "paths": [
+        "Global",
+        "zindex"
+      ],
+      "reference": "=.Global.zindex",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.number.addition",
+      "paths": [
+        "builtIn",
+        "number",
+        "addition"
+      ],
+      "reference": "=.builtIn.number.addition",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.zindex",
+      "paths": [
+        "Global",
+        "zindex"
+      ],
+      "reference": "=.Global.zindex",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.number.addition",
+      "paths": [
+        "builtIn",
+        "number",
+        "addition"
+      ],
+      "reference": "=.builtIn.number.addition",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.zindex",
+      "paths": [
+        "Global",
+        "zindex"
+      ],
+      "reference": "=.Global.zindex",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.number.addition",
+      "paths": [
+        "builtIn",
+        "number",
+        "addition"
+      ],
+      "reference": "=.builtIn.number.addition",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.zindex",
+      "paths": [
+        "Global",
+        "zindex"
+      ],
+      "reference": "=.Global.zindex",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "check",
+      "paths": [
+        "check"
+      ],
+      "reference": "..check",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.countryCode",
+      "paths": [
+        "formData",
+        "countryCode"
+      ],
+      "reference": "=..formData.countryCode",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.phoneNumber",
+      "paths": [
+        "formData",
+        "phoneNumber"
+      ],
+      "reference": "=..formData.phoneNumber",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.code",
+      "paths": [
+        "formData",
+        "code"
+      ],
+      "reference": "=..formData.code",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginNewDevice.response.edge.deat.pk",
+      "paths": [
+        "loginNewDevice",
+        "response",
+        "edge",
+        "deat",
+        "pk"
+      ],
+      "reference": "=..loginNewDevice.response.edge.deat.pk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.eccNaCl.decryptAES",
+      "paths": [
+        "builtIn",
+        "eccNaCl",
+        "decryptAES"
+      ],
+      "reference": "=.builtIn.eccNaCl.decryptAES",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.password",
+      "paths": [
+        "formData",
+        "password"
+      ],
+      "reference": "=..formData.password",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginNewDevice.response.edge.deat.esk",
+      "paths": [
+        "loginNewDevice",
+        "response",
+        "edge",
+        "deat",
+        "esk"
+      ],
+      "reference": "=..loginNewDevice.response.edge.deat.esk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "builtIn.eccNaCl.skCheck",
+      "paths": [
+        "builtIn",
+        "eccNaCl",
+        "skCheck"
+      ],
+      "reference": "=.builtIn.eccNaCl.skCheck",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "loginNewDevice.response.edge.deat.pk",
+      "paths": [
+        "loginNewDevice",
+        "response",
+        "edge",
+        "deat",
+        "pk"
+      ],
+      "reference": "=..loginNewDevice.response.edge.deat.pk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.sk",
+      "paths": [
+        "formData",
+        "sk"
+      ],
+      "reference": "=..formData.sk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.pass",
+      "paths": [
+        "formData",
+        "pass"
+      ],
+      "reference": "=..formData.pass",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": ".Global.currentUser.vertex.sk@",
+      "value": {}
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "formData.sk",
+      "paths": [
+        "formData",
+        "sk"
+      ],
+      "reference": "=..formData.sk",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": false,
+      "isLocal": true,
+      "path": "update",
+      "paths": [
+        "update"
+      ],
+      "reference": "..update",
+      "value": null
+    },
+    {
+      "context": "SignIn",
+      "isRoot": true,
+      "isLocal": false,
+      "path": "Global.currentUser.vertex.sk",
+      "paths": [
+        "Global",
+        "currentUser",
+        "vertex",
+        "sk"
+      ],
+      "reference": "=.Global.currentUser.vertex.sk",
+      "value": {}
+    }
+  ]
+}
