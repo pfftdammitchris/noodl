@@ -2,36 +2,34 @@ const isReference = (function () {
 	const format = (v = '') =>
 		v.replace(/^[.=@]+/i, '').replace(/[.=@]+$/i, '') || ''
 
-	const isLocalReference = function (value: unknown): boolean {
-		if (typeof value !== 'string') return false
-		if (value.startsWith('..')) return true
-		if (value.startsWith('=..')) return true
-		value = format(value)
-		return !!value[0] && value[0].toLowerCase() === value[0]
+	const isLocalReference = function (v = ''): boolean {
+		if (v.startsWith('..')) return true
+		if (v.startsWith('=..')) return true
+		v = format(v)
+		return !!v[0] && v[0].toLowerCase() === v[0]
 	}
 
-	const isRootReference = function (value: unknown): boolean {
-		if (typeof value !== 'string') return false
-		if (value.startsWith('..')) return false
-		if (value.startsWith('=..')) return false
-		if (value.startsWith('.')) return true
-		if (value.startsWith('=.')) return true
-		value = format(value)
-		return !!value[0] && value[0].toUpperCase() === value[0]
+	const isRootReference = function (v: string): boolean {
+		if (v.startsWith('..')) return false
+		if (v.startsWith('=..')) return false
+		if (v.startsWith('.')) return true
+		if (v.startsWith('=.')) return true
+		v = format(v)
+		return !!v[0] && v[0].toUpperCase() === v[0]
 	}
 
-	const isEval = (value = '') => value.startsWith('=')
-	const isEvalLocal = (value = '') => value.startsWith('=..')
-	const isEvalRoot = (v = '') => !isEvalLocal(v) && v.startsWith('=.')
 	const isAwaitingVal = (v = '') => v !== '@' && v.endsWith('@')
+	const isEval = (v = '') => v.startsWith('=')
+	const isEvalLocal = (v = '') => v.startsWith('=..')
+	const isEvalRoot = (v = '') => !isEvalLocal(v) && v.startsWith('=.')
+	const isTilde = (v = '') => v.startsWith('~')
 
-	function _isReference(value: unknown): boolean {
-		if (typeof value !== 'string') return false
-		if (value === '.yml') return false
-		if (value.startsWith('.')) return true
-		if (value.startsWith('=')) return true
-		if (value.startsWith('@')) return true
-		// if (value.endsWith('@')) return true
+	function _isReference(v: unknown): boolean {
+		if (typeof v !== 'string') return false
+		if (v === '.yml') return false
+		if (v.startsWith('.')) return true
+		if (v.startsWith('=')) return true
+		if (v.startsWith('@')) return true
 		return false
 	}
 
@@ -42,6 +40,7 @@ const isReference = (function () {
 	_isReference.isEvalRoot = isEvalRoot
 	_isReference.isLocal = isLocalReference
 	_isReference.isRoot = isRootReference
+	_isReference.isTilde = isTilde
 
 	return _isReference
 })()
