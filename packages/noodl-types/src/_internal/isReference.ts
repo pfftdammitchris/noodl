@@ -5,6 +5,8 @@ const isReference = (function () {
 
 	const isLocalReference = function (value: unknown): boolean {
 		if (typeof value !== 'string') return false
+		if (value.startsWith('..')) return true
+		if (value.startsWith('=..')) return true
 		value = format(value)
 		return !!value[0] && value[0].toLowerCase() === value[0]
 	}
