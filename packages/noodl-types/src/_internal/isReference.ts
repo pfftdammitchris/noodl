@@ -21,7 +21,7 @@ const isReference = (function () {
 		if (value.startsWith('.')) return true
 		if (value.startsWith('=')) return true
 		if (value.startsWith('@')) return true
-		if (value.endsWith('@')) return true
+		// if (value.endsWith('@')) return true
 		return false
 	}
 
