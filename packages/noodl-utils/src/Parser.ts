@@ -1,6 +1,7 @@
 import { deviceTypes, DeviceType, Env, RootConfig } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
 import get from 'lodash.get'
+import { createPlaceholderReplacer } from './noodl-utils'
 import * as t from './types'
 import * as u from './_internal'
 
@@ -13,33 +14,53 @@ class NoodlUtilsParser {
 		return get(configObject, [deviceType, 'cadlVersion', env])
 	}
 
-	appConfigUrl(rootConfig: RootConfig, deviceType: DeviceType, env: Env): string
-	appConfigUrl(baseUrl: string, cadlMain: string): string
+	appConfigUrl(
+		rootConfig: RootConfig,
+		deviceType: LiteralUnion<DeviceType, string>,
+		env: Env,
+	): string
+	appConfigUrl(baseUrl: string, cadlMain: string, configVersion: string): string
 	appConfigUrl(
 		baseUrl: string | RootConfig,
 		cadlMain?: LiteralUnion<'cadlEndpoint.yml' | DeviceType, string>,
-		env?: Env,
+		env?: LiteralUnion<Env, string>,
 	) {
 		if (u.isStr(baseUrl)) {
 			if (arguments.length < 2) {
-				throw new Error(`cadlMain is required when passing in baseUrl`)
+				throw new Error(`cadlMain is required when passing in the baseUrl`)
 			}
-			return `${baseUrl}${cadlMain || ''}`
+			return (
+				createPlaceholderReplacer('\\${cadlVersion}', 'gi')(
+					baseUrl || '',
+					env || '',
+				) + cadlMain
+			)
 		}
+
 		if (u.isObj(baseUrl)) {
-			const baseUrlStr = baseUrl.cadlBaseUrl || ''
+			if (arguments.length < 3) {
+				throw new Error(
+					`Both the deviceType and env is required when passing in the root ` +
+						`config object`,
+				)
+			}
 
 			const deviceType = (
 				deviceTypes.includes(cadlMain as DeviceType) ? cadlMain : 'web'
 			) as DeviceType
 
+			const configVersion = this.configVersion(baseUrl, deviceType, env as Env)
+
+			const endpointFile = baseUrl.cadlMain || ''
+
 			return (
-				baseUrlStr.replace(
-					'$\\{cadlVersion}',
-					this.configVersion(baseUrl, deviceType, env as Env),
-				) + (env ? cadlMain : 'cadlEndpoint.yml')
+				createPlaceholderReplacer('\\${cadlVersion}', 'gi')(
+					baseUrl.cadlBaseUrl || '',
+					configVersion,
+				) + endpointFile
 			)
 		}
+
 		return u.isStr(baseUrl) ? baseUrl : ''
 	}
 
