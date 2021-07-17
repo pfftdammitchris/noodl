@@ -21,6 +21,11 @@ const isReference = (function () {
 		return !!value[0] && value[0].toUpperCase() === value[0]
 	}
 
+	const isEval = function (value: unknown): boolean {
+		if (typeof value !== 'string') return false
+		return value.startsWith('=')
+	}
+
 	function _isReference(value: unknown): boolean {
 		if (typeof value !== 'string') return false
 		if (value === '.yml') return false
@@ -32,6 +37,7 @@ const isReference = (function () {
 	}
 
 	_isReference.format = format
+	_isReference.isEval = isEval
 	_isReference.isLocal = isLocalReference
 	_isReference.isRoot = isRootReference
 
