@@ -3,19 +3,19 @@ const isReference = (function () {
 		return str.replace(/^[.=@]+/i, '').replace(/[.=@]+$/i, '') || ''
 	}
 
-	const isLocalReference = function (value: unknown): value is string {
+	const isLocalReference = function (value: unknown): boolean {
 		if (typeof value !== 'string') return false
 		value = format(value)
 		return !!value[0] && value[0].toLowerCase() === value[0]
 	}
 
-	const isRootReference = function (value: unknown): value is string {
+	const isRootReference = function (value: unknown): boolean {
 		if (typeof value !== 'string') return false
 		value = format(value)
 		return !!value[0] && value[0].toUpperCase() === value[0]
 	}
 
-	function _isReference(value: unknown): value is string {
+	function _isReference(value: unknown): boolean {
 		if (typeof value !== 'string') return false
 		if (value === '.yml') return false
 		if (value.startsWith('.')) return true
