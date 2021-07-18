@@ -25,5 +25,5 @@
 		"target": "es2017"
 	},
 	"exclude": ["node_modules"],
-	"include": ["./src/**/*", "packages/**/*/src/**/*"]
+	"include": ["src"]
 }

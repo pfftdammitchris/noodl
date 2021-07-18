@@ -29,8 +29,8 @@ export interface MockGetActionChainExtendedActionsArg {
 }
 
 export function getActionChain(args: MockGetActionChainOptions) {
-	let { actions, trigger, loader, load = true, use } = args
-	let isExtendedActions = 'fn' in actions[0] || 'action' in actions[0]
+	const { actions, trigger, loader, load = true, use } = args
+	const isExtendedActions = 'fn' in actions[0] || 'action' in actions[0]
 
 	const getInstance = (obj: ActionObject) => {
 		const action = new Action(trigger, obj)
@@ -52,6 +52,7 @@ export function getActionChain(args: MockGetActionChainOptions) {
 			? actions.map((o) => o.action)
 			: actions) as ActionObject[],
 		(actions) =>
+			// @ts-expect-error
 			loader ? loader(actions) : actions.map((a) => getInstance(a)),
 	)
 
