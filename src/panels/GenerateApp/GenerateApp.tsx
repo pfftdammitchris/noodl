@@ -2,9 +2,15 @@ import { LiteralUnion } from 'type-fest'
 import { DeviceType, Env } from 'noodl-types'
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
-import { getFileStructure, LinkStructure, writeFileSync } from 'noodl-common'
+import {
+	getFileStructure,
+	LinkStructure,
+	normalizePath,
+	writeFileSync,
+} from 'noodl-common'
 import * as com from 'noodl-common'
 import * as u from '@jsmanifest/utils'
+import chalk from 'chalk'
 import React from 'react'
 import yaml from 'yaml'
 import fs from 'fs-extra'
@@ -14,15 +20,17 @@ import Panel from '../../components/Panel'
 import useConfigInput from '../../hooks/useConfigInput'
 import useCtx from '../../useCtx'
 import useDownload from '../../hooks/useDownload'
-import {
+import { constants as noodlAggregatorConsts } from 'noodl-aggregator'
+import * as co from '../../utils/color'
+import * as r from '../../utils/remote'
+import * as t from './types'
+
+const {
 	ON_RETRIEVED_ROOT_CONFIG,
 	ON_RETRIEVE_APP_PAGE_FAILED,
 	ON_RETRIEVED_APP_PAGE,
 	PARSED_APP_CONFIG,
-} from 'noodl-aggregator'
-import * as co from '../../utils/color'
-import * as r from '../../utils/remote'
-import * as t from './types'
+} = noodlAggregatorConsts
 
 export interface Props {
 	config?: string
@@ -294,7 +302,20 @@ function GenerateApp(props: Props) {
 						.on(PARSED_APP_CONFIG, createOnDoc('app-config'))
 						.on(ON_RETRIEVED_APP_PAGE, createOnDoc('app-page'))
 						.on(ON_RETRIEVE_APP_PAGE_FAILED, incrementProcessedDocs)
-						.init()
+						.init({
+							fallback: {
+								appConfig: async () => {
+									const pathsToFallbackFile = normalizePath(
+										...[configDir, 'cadlEndpoint.yml'],
+									)
+									console.log(
+										`Callback fired for appConfig loader using config file ` +
+											`path: ${chalk.yellow(pathsToFallbackFile)}`,
+									)
+									return fs.readFile(pathsToFallbackFile, 'utf8')
+								},
+							},
+						})
 				} catch (error) {
 					logError(error)
 				} finally {
