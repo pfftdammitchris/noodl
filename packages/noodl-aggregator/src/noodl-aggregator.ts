@@ -295,9 +295,10 @@ class NoodlAggregator {
 			yml = (await axios.get(this.appConfigUrl)).data
 		} catch (error) {
 			console.error(
-				`[${chalk.red('Error')}] loadAppConfig: ${
+				`[${chalk.red('Error')}] ${chalk.yellow('loadAppConfig')}: ${
 					error.message
-				}. If a fallback loader was provided, it will be used. ` +
+				}. ` +
+					`If a fallback loader was provided, it will be used. ` +
 					`Otherwise the app config will be undefined`,
 				{ fallbackProvided: u.isFnc(fallback) },
 			)
