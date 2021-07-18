@@ -2,7 +2,7 @@ import * as u from '@jsmanifest/utils'
 import * as com from 'noodl-common'
 import flatten from 'lodash/flatten'
 import path from 'path'
-import { DeviceType, Env } from 'noodl-types'
+import { AppConfig, DeviceType, Env } from 'noodl-types'
 import {
 	createNoodlPlaceholderReplacer,
 	hasNoodlPlaceholder,
@@ -173,9 +173,13 @@ class NoodlAggregator {
 	}
 
 	async init({
+		fallback,
 		loadPages: shouldLoadPages = true,
 		loadPreloadPages: shouldLoadPreloadPages = true,
 	}: {
+		fallback?: {
+			appConfig?: Parameters<NoodlAggregator['loadAppConfig']>[0]['fallback']
+		}
 		loadPages?: boolean
 		loadPreloadPages?: boolean
 	} = {}) {
@@ -186,7 +190,7 @@ class NoodlAggregator {
 		const result = {
 			doc: {
 				root: await this.loadRootConfig(),
-				app: await this.loadAppConfig(),
+				app: await this.loadAppConfig({ fallback: fallback?.appConfig }),
 			},
 			raw: {
 				root: this.getRawRootConfigYml(),
@@ -273,7 +277,11 @@ class NoodlAggregator {
 		return configDoc
 	}
 
-	async loadAppConfig() {
+	async loadAppConfig({
+		fallback,
+	}: {
+		fallback?: () => Promise<string> | string
+	} = {}) {
 		invariant(
 			!!this.root.get(this.configKey),
 			'Cannot initiate app config without retrieving the root config',
@@ -282,7 +290,19 @@ class NoodlAggregator {
 		// Placeholders should already have been purged by this time
 		let appConfigYml = ''
 		let appConfigDoc: yaml.Document | undefined
-		const { data: yml } = await axios.get(this.appConfigUrl)
+		let yml = ''
+		try {
+			yml = (await axios.get(this.appConfigUrl)).data
+		} catch (error) {
+			console.error(
+				`[${chalk.red('Error')}] loadAppConfig: ${
+					error.message
+				}. If a fallback loader was provided, it will be used. ` +
+					`Otherwise the app config will be undefined`,
+				{ fallbackProvided: u.isFnc(fallback) },
+			)
+			u.isFnc(fallback) && (yml = await fallback())
+		}
 		this.emit(c.ON_RETRIEVED_APP_CONFIG, (appConfigYml = yml))
 		this.root.set(`${this.appKey}_raw`, appConfigYml as any)
 		appConfigYml && (appConfigDoc = yaml.parseDocument(appConfigYml))
