@@ -14,17 +14,15 @@ import Panel from '../../components/Panel'
 import useConfigInput from '../../hooks/useConfigInput'
 import useCtx from '../../useCtx'
 import useDownload from '../../hooks/useDownload'
-import { constants as noodlAggregatorConstants } from 'noodl-aggregator'
+import {
+	ON_RETRIEVED_ROOT_CONFIG,
+	ON_RETRIEVE_APP_PAGE_FAILED,
+	ON_RETRIEVED_APP_PAGE,
+	PARSED_APP_CONFIG,
+} from 'noodl-aggregator'
 import * as co from '../../utils/color'
 import * as r from '../../utils/remote'
 import * as t from './types'
-
-const {
-	ON_RETRIEVED_ROOT_CONFIG,
-	ON_RETRIEVE_APP_PAGE_FAILED,
-	PARSED_APP_CONFIG,
-	ON_RETRIEVED_APP_PAGE,
-} = noodlAggregatorConstants
 
 export interface Props {
 	config?: string
@@ -84,8 +82,8 @@ function GenerateApp(props: Props) {
 				try {
 					log(`\nLoading config ${co.yellow(`${configKey}`)}`)
 
-					let yml = await r.getConfig(configKey)
-					let configFileName = !configKey.endsWith('.yml')
+					const yml = await r.getConfig(configKey)
+					const configFileName = !configKey.endsWith('.yml')
 						? `${configKey}.yml`
 						: configKey
 
