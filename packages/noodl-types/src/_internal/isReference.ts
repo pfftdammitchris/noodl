@@ -34,11 +34,43 @@ const isReference = (function () {
 	}
 
 	_isReference.format = format
+	/**
+	 * true: ".Global.currentUser.vertex.name.firstName@"
+	 *
+	 * true: "..message.doc.1.name@"
+	 *
+	 * false: "..message.doc.1.name"
+	 */
 	_isReference.isAwaitingVal = isAwaitingVal
+	/**
+	 * True if the value starts with an equal sign "="
+	 */
 	_isReference.isEval = isEval
+	/**
+	 * Example: "=.."
+	 */
 	_isReference.isEvalLocal = isEvalLocal
+	/**
+	 * Example: "=."
+	 */
 	_isReference.isEvalRoot = isEvalRoot
+	/**
+	 * true: ".."
+	 *
+	 * true: "=.."
+	 *
+	 * false: "=."
+	 */
 	_isReference.isLocal = isLocalReference
+	/**
+	 * true: "."
+	 *
+	 * true: "=."
+	 *
+	 * false: "=.."
+	 *
+	 * false: ".."
+	 */
 	_isReference.isRoot = isRootReference
 	_isReference.isTilde = isTilde
 
