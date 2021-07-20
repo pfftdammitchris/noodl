@@ -5,6 +5,7 @@ const isReference = (function () {
 		if (v.startsWith('.')) return true
 		if (v.startsWith('=')) return true
 		if (v.startsWith('@')) return true
+		if (v.startsWith('~')) return true
 		return false
 	}
 
