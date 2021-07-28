@@ -4,17 +4,16 @@
 	"main": "dist/cli.js",
 	"module": "dist/cli.js",
 	"typings": "dist/cli.d.ts",
-	"type": "module",
 	"bin": {
 		"noodl": "cli.js"
 	},
 	"files": [
-		"cli.js"
+		"dist/cli.js"
 	],
 	"scripts": {
 		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
 		"prebuild": "rm -rf dist",
-		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib esnext --module commonjs --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false src/**/*.ts",
+		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib esnext --module commonjs --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false",
 		"bootstrap": "lerna bootstrap --hoist",
 		"start": "cross-env DEV=true CI=false npm run build -- --watch",
 		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",

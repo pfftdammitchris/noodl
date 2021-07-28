@@ -3,7 +3,7 @@ import * as nc from 'noodl-common'
 import React from 'react'
 import { FileStructure } from 'noodl-common'
 import { Box, Newline, Text } from 'ink'
-import { globbySync } from 'globby'
+import globby from 'globby'
 import TextInput from 'ink-text-input'
 import yaml from 'yaml'
 import express from 'express'
@@ -133,7 +133,7 @@ function Server({
 			}
 			return acc
 		}
-		const localFiles = globbySync(getWatchGlob().replace(/\\/g, '/'))
+		const localFiles = globby.sync(getWatchGlob().replace(/\\/g, '/'))
 		log(
 			`Picked up ${u.yellow(
 				String(localFiles.length),

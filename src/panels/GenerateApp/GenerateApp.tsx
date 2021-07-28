@@ -8,7 +8,7 @@ import {
 	normalizePath,
 	writeFileSync,
 } from 'noodl-common'
-import { globbySync } from 'globby'
+import globby from 'globby'
 import * as com from 'noodl-common'
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
@@ -164,7 +164,7 @@ function GenerateApp(props: Props) {
 						const localAssetsAsPlainFileNames = [] as string[]
 						const localAssetsAsFilePaths = [] as string[]
 
-						for (const filepath of globbySync(path.join(assetsDir, '**/*'), {
+						for (const filepath of globby.sync(path.join(assetsDir, '**/*'), {
 							onlyFiles: true,
 						})) {
 							const fileStructure = getFileStructure(filepath, {

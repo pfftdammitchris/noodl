@@ -22,8 +22,8 @@
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
 		"importHelpers": true,
-		"target": "es2020"
+		"target": "es2015"
 	},
 	"exclude": ["node_modules", "packages/generator/**/*"],
-	"include": ["src", "dev", "packages/noodl-common/**/*"]
+	"include": ["src"]
 }
