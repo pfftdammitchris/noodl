@@ -115,8 +115,11 @@ export function createPlaceholderReplacer(
 		flags,
 	)
 	function replace(str: string, value: string | number): string
-	function replace<Obj extends {} = any>(obj: Obj, value: string | number): Obj
-	function replace<Obj extends {} = any>(
+	function replace<Obj extends Record<string, any> = any>(
+		obj: Obj,
+		value: string | number,
+	): Obj
+	function replace<Obj extends Record<string, any> = any>(
 		str: string | Obj,
 		value: string | number,
 	) {

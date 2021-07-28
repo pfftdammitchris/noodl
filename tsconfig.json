@@ -15,14 +15,15 @@
 		"moduleResolution": "node",
 		"noEmitOnError": false,
 		"noImplicitAny": false,
-		"outDir": "./dist",
+		"outDir": "dist",
+		"pretty": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
 		"importHelpers": true,
-		"target": "es2017"
+		"target": "es2020"
 	},
-	"exclude": ["node_modules"],
-	"include": ["src"]
+	"exclude": ["node_modules", "packages/generator/**/*"],
+	"include": ["src", "dev", "packages/noodl-common/**/*"]
 }

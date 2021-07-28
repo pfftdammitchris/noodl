@@ -1,4 +1,4 @@
-function isPdf(s: string) {
+function isPdf(s = '') {
 	return s.endsWith('.pdf')
 }
 

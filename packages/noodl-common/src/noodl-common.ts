@@ -111,7 +111,7 @@ export function loadFilesAsDocs({
 			  })
 			: (fpath: string) => loadFileAsDoc(fpath)
 	return globbySync(normalizePath(dir, recursive ? '**/*.yml' : '*.yml'), {
-		objectMode: as === 'metadataDocs',
+		stats: as === 'metadataDocs',
 		onlyFiles: true,
 	}).map((fpath) => xform(fpath))
 }

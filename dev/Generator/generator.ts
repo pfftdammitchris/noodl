@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
 import * as com from 'noodl-common'

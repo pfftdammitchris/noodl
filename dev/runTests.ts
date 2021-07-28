@@ -1,3 +1,4 @@
+// @ts-nocheck
 process.env.TS_NODE_PROJECT = 'tsconfig.test.json'
 import('ts-mocha')
 import fs from 'fs-extra'

@@ -3,6 +3,12 @@ import isImage from './isImage'
 import isVideo from './isVideo'
 import { FileStructure } from './types'
 
+/**
+ * @param { string } filepath
+ * @param { object } opts
+ * @param { string } [opts.config]
+ * @returns { FileStructure }
+ */
 function getFileStructure(filepath: string, opts?: { config?: string }) {
 	const parsed = path.parse(filepath)
 	const structure = {

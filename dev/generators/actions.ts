@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import { Identify } from 'noodl-types'
 import flowRight from 'lodash/flowRight'

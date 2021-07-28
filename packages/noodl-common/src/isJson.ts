@@ -1,4 +1,4 @@
-function isJson(s: string = '') {
+function isJson(s = '') {
 	return s.endsWith('.json')
 }
 

@@ -1,4 +1,4 @@
-function isYml(s: string = '') {
+function isYml(s = '') {
 	return s.endsWith('.yml')
 }
 

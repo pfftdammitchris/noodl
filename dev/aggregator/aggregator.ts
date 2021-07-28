@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
 import * as com from 'noodl-common'

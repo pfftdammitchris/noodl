@@ -8,6 +8,7 @@ import {
 	normalizePath,
 	writeFileSync,
 } from 'noodl-common'
+import { globbySync } from 'globby'
 import * as com from 'noodl-common'
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
@@ -15,7 +16,6 @@ import React from 'react'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
-import globby from 'globby'
 import Panel from '../../components/Panel'
 import useConfigInput from '../../hooks/useConfigInput'
 import useCtx from '../../useCtx'
@@ -164,7 +164,7 @@ function GenerateApp(props: Props) {
 						const localAssetsAsPlainFileNames = [] as string[]
 						const localAssetsAsFilePaths = [] as string[]
 
-						for (const filepath of await globby(path.join(assetsDir, '**/*'), {
+						for (const filepath of globbySync(path.join(assetsDir, '**/*'), {
 							onlyFiles: true,
 						})) {
 							const fileStructure = getFileStructure(filepath, {
@@ -395,7 +395,7 @@ function GenerateApp(props: Props) {
 	} else {
 		if (memoizedUrlsInProgress.length) {
 			children = (
-				<Static paddingTop={3} items={memoizedUrlsInProgress}>
+				<Static style={{ paddingTop: 3 }} items={memoizedUrlsInProgress}>
 					{(url) => (
 						<Box key={url}>
 							<Text color="yellow">DOWNLOADING</Text>

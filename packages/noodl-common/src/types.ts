@@ -1,4 +1,14 @@
+import * as u from '@jsmanifest/utils'
+import { YAMLMap } from 'yaml'
 import { AcceptArray } from '@jsmanifest/typefest'
+
+export type KeyOf<N extends YAMLMap | Record<string, any>> = N extends YAMLMap
+	? YAMLMap['items'][number]['key']
+	: keyof N
+
+export type ValueOf<N extends YAMLMap | Record<string, any>> = N extends YAMLMap
+	? YAMLMap['items'][number]['value']
+	: N[keyof N]
 
 export interface BaseStructure {
 	ext: string

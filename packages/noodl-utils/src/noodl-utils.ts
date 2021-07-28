@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import { Identify, IfObject } from 'noodl-types'
 import has from 'lodash.has'
 import curry from 'lodash.curry'
 import flowRight from 'lodash.flowright'
@@ -126,7 +127,7 @@ export function excludeIteratorVar(
  * @param { function } fn - Callback that receives the value being evaluated
  * @param { IfObject } ifObj - The object that contains the "if"
  */
-export function evalIf<IfObj extends { if: [any, any, any] }>(
+export function evalIf<IfObj extends IfObject>(
 	fn: (
 		val: IfObj['if'][0],
 		onTrue: IfObj['if'][1],

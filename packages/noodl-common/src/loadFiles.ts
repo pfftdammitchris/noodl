@@ -10,12 +10,17 @@ import normalizePath from './normalizePath'
 import * as t from './types'
 
 /**
- * Load files from dir and optionally provide a second argument as an options object
+ * Load files from dir and optionally provide a second argument as an options
+ * object
  *
  * Supported options:
- * - as: "list" to receive the result as an array, "map" as a Map, and "object" as an object. Defaults to "list"
- * - onFile: A callback function to call when a filepath is being inserted to the result
- * - type: Return each data in the from of "doc", "json", or "yml" (Defaults to "yml")
+ *
+ * - as: "list" to receive the result as an array, "map" as a Map, and "object"
+ * 		as an object. Defaults to "list"
+ * - onFile: A callback function to call when a filepath is being inserted to
+ * 		the result
+ * - type: Return each data in the from of "doc", "json", or "yml" (Defaults to
+ * 		"yml")
  */
 
 /**
@@ -43,7 +48,8 @@ function loadFiles<T extends 'doc', A extends 'list'>(
 ): YAMLDocument[]
 
 /**
- * Load files into an object literal where key is the name and the value is their yml
+ * Load files into an object literal where key is the name and the value is
+ * their yml
  */
 function loadFiles<T extends 'yml', A extends 'object'>(
 	dir: string,
@@ -51,7 +57,8 @@ function loadFiles<T extends 'yml', A extends 'object'>(
 ): Record<string, string>
 
 /**
- * Load files into an object literal where key is the name and the value is a JS object
+ * Load files into an object literal where key is the name and the value is a
+ * JS object
  */
 function loadFiles<T extends 'json', A extends 'object'>(
 	dir: string,
@@ -59,7 +66,8 @@ function loadFiles<T extends 'json', A extends 'object'>(
 ): Record<string, any>
 
 /**
- * Load files into an object literal where key is the name and the value is a yaml node
+ * Load files into an object literal where key is the name and the value is a
+ * yaml node
  */
 function loadFiles<T extends 'doc', A extends 'object'>(
 	dir: string,

@@ -1,6 +1,11 @@
 import path from 'path'
 import { LinkStructure } from './types'
 
+/**
+ * @param { string } link
+ * @param { object } opts
+ * @returns { LinkStructure }
+ */
 function getLinkStructure(
 	link: string,
 	opts?: { config?: string; prefix?: string },

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { config } from 'dotenv'
 config()
 import chalk from 'chalk'
@@ -46,8 +47,8 @@ function createXmlUtil({
 		isKey: (o: any) => o?.name === 'Key',
 		isImg: (s: string) => /([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))/i.test(s),
 		isVid: (s: string) => /([a-z\-_0-9\/\:\.]*\.(mp4|avi|wmv))/i.test(s),
-		isYml: (s: string = '') => s.endsWith('.yml'),
-		isJson: (s: string = '') => s.endsWith('.json'),
+		isYml: (s = '') => s.endsWith('.yml'),
+		isJson: (s = '') => s.endsWith('.json'),
 		createUrl(pathname: string) {
 			return `https://public.aitmed.com/${pathname}`
 		},

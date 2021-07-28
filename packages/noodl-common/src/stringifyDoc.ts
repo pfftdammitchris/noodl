@@ -1,4 +1,4 @@
-import { Document, parse, ToStringOptions, stringify } from 'yaml'
+import { Document, ToStringOptions, stringify } from 'yaml'
 
 /**
  * Returns the stringified output of the yaml document. If there are errors, it
@@ -15,10 +15,7 @@ function stringifyDoc(
 		if (doc.errors.length) {
 			result = stringify(doc.errors)
 		} else {
-			result = doc.toString({
-				singleQuote: true,
-				...opts,
-			})
+			result = doc.toString({ singleQuote: true, ...opts })
 		}
 	}
 

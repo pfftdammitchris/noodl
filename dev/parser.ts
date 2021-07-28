@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Noodl, Root, Page, Visitor, Identify } from 'noodl'
 import fs from 'fs-extra'
 import path from 'path'

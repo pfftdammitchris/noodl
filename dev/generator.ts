@@ -1,4 +1,4 @@
-/// <reference path="../packages/generator/dist/index.d.ts" />
+// @ts-nocheck
 import generator from 'generator'
 import fs from 'fs-extra'
 import path from 'path'
