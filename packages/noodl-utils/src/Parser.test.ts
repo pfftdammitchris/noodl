@@ -52,6 +52,14 @@ describe.only(coolGold(`Parser`), () => {
 					msg: `should result to { isSamePage: false, id: 'RedTag' }`,
 					props: { isSamePage: false, id: 'RedTag', destination: 'Soda' },
 				},
+				'TestSearch@TestTypePage#iframeTag': {
+					msg: `should result to: { targetPage: 'TestSearch', currentPage: 'TestTypePage', viewTagA: 'iframeTag' }`,
+					props: {
+						targetPage: 'TestSearch',
+						currentPage: 'TestTypePage',
+						viewTag: 'iframeTag',
+					},
+				},
 			} as const,
 			(destination, { msg, props }) => {
 				it(msg, () => {

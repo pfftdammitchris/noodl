@@ -1,6 +1,6 @@
 {
 	"name": "noodl-aggregator",
-	"version": "0.0.12",
+	"version": "0.0.13",
 	"description": "Noodl aggregator",
 	"keywords": [
 		"noodl",
@@ -26,8 +26,8 @@
 		"invariant": "^2.2.4",
 		"lodash.chunk": "^4.2.0",
 		"minimatch": "^3.0.4",
-		"noodl-common": "^0.0.45",
-		"noodl-types": "^1.0.103",
+		"noodl-common": "^0.0.46",
+		"noodl-types": "^1.0.123",
 		"noodl-utils": "^0.0.53",
 		"yaml": "^2.0.0-4"
 	},

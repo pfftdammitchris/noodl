@@ -37,3 +37,11 @@ export interface ToastObject {
 	message?: string
 	style?: StyleObject
 }
+
+export namespace Url {
+	export type PageComponent<
+		TargetPage extends string = string,
+		CurrentPage extends string = string,
+		ViewTag extends string = string,
+	> = TargetPage | `${TargetPage}@${CurrentPage}#${ViewTag}`
+}

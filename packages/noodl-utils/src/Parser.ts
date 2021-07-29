@@ -1,7 +1,8 @@
-import { deviceTypes, DeviceType, Env, RootConfig } from 'noodl-types'
+import { DeviceType, Env, RootConfig, Url } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
 import get from 'lodash.get'
 import { createPlaceholderReplacer } from './noodl-utils'
+import * as c from './constants'
 import * as t from './types'
 import * as u from './_internal'
 
@@ -46,7 +47,7 @@ class NoodlUtilsParser {
 			}
 
 			const deviceType = (
-				deviceTypes.includes(cadlMain as DeviceType) ? cadlMain : 'web'
+				c.deviceTypes.includes(cadlMain as DeviceType) ? cadlMain : 'web'
 			) as DeviceType
 
 			const configVersion = this.configVersion(baseUrl, deviceType, env as Env)
@@ -64,21 +65,42 @@ class NoodlUtilsParser {
 		return u.isStr(baseUrl) ? baseUrl : ''
 	}
 
+	destination(destination: Url.PageComponent): t.ParsedPageComponentUrlObject
+
 	destination(
 		destination: string | undefined,
+		args: { denoter?: string; duration?: number },
+	): t.ParsedGotoUrlObject
+
+	destination<D extends string | Url.PageComponent>(
+		destination: D,
 		{
 			denoter = '^',
 			duration = 350,
 		}: { denoter?: string; duration?: number } = {},
 	) {
-		const result: t.ParsedDestinationObject = {
+		const result: t.ParsedGotoUrlObject = {
 			destination: '',
 			duration,
 			id: '',
 		}
 
+		function isPageComponentUrl<S extends string>(str: S) {
+			const parts = str.split(/(@|#)/)
+			if (parts.length !== 5) return false
+			const [_, separator1, __, separator2, ___] = parts
+			return separator1 === '@' && separator2 === '#'
+		}
+
 		if (u.isStr(destination)) {
-			if (destination.includes(denoter)) {
+			// e.g: "TestSearch@TestTypePage#iframeTag"
+			if (isPageComponentUrl(destination)) {
+				const [targetPage = '', _, currentPage = '', __, viewTag = ''] =
+					destination.split(/(@|#)/)
+				return { targetPage, currentPage, viewTag }
+			}
+			//
+			else if (destination.includes(denoter)) {
 				const denoterIndex = destination.indexOf(denoter)
 				result.isSamePage = denoterIndex === 0
 				// "^SignIn"

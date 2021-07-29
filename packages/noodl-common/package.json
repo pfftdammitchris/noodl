@@ -42,5 +42,5 @@
 		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
 	"typings": "dist/index.d.ts",
-	"version": "0.0.45"
+	"version": "0.0.46"
 }

@@ -149,6 +149,7 @@
 		"root": true,
 		"parser": "@typescript-eslint/parser",
 		"parserOptions": {
+			"ecmaVersion": "latest",
 			"project": "./tsconfig.json",
 			"sourceType": "module"
 		},
@@ -168,6 +169,14 @@
 			"node": true,
 			"webextensions": true
 		},
+		"overrides": [
+			{
+				"files": [
+					"packages/noodl-utils/src/**/*"
+				],
+				"excludedFiles": "*.test.ts"
+			}
+		],
 		"rules": {
 			"@typescript-eslint/ban-ts-comment": "off",
 			"@typescript-eslint/explicit-module-boundary-types": "off",
@@ -181,6 +190,7 @@
 			"@typescript-eslint/member-ordering": "off",
 			"@typescript-eslint/no-empty-function": "off",
 			"@typescript-eslint/no-explicit-any": "off",
+			"@typescript-eslint/no-namespace": "off",
 			"@typescript-eslint/no-var-requires": "off",
 			"eqeqeq": 0,
 			"prefer-const": 0,
