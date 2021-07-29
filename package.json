@@ -26,7 +26,7 @@
 		"@jsmanifest/utils": "^1.0.11",
 		"axios": "^0.21.1",
 		"chokidar": "^3.5.1",
-		"configstore": "^6.0.0",
+		"configstore": "^5.0.1",
 		"dotenv": "^10.0.0",
 		"download": "^8.0.0",
 		"execa": "^5.1.1",
