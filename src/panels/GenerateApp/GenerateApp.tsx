@@ -281,6 +281,7 @@ function GenerateApp(props: Props) {
 										numDocsFetching,
 									)}`,
 								)
+
 								log(`Saved app config to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else {

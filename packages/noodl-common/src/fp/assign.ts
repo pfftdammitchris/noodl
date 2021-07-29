@@ -1,17 +1,28 @@
 import * as u from '@jsmanifest/utils'
-import yaml from 'yaml'
-import toString from './toString'
+import yaml, { YAMLMap } from 'yaml'
+import _get from 'lodash.get'
+import _set from 'lodash.set'
+import forEach from './forEach'
+import set from './set'
+
+function toMap<V = any>(value: V): yaml.YAMLMap {
+	if (yaml.isMap(value)) return value
+	if (u.isObj(value)) {
+		const map = new YAMLMap()
+		u.entries(value).forEach(([k, v]) => map.set(k, v))
+		return map
+	}
+	return new yaml.Document(value).contents as YAMLMap
+}
 
 function assign<N extends yaml.YAMLMap | Record<string, any>>(
 	value: N,
-	...rest: yaml.YAMLMap[]
+	...rest: (yaml.YAMLMap | Record<string, any>)[]
 ): N {
 	if (yaml.isMap(value)) {
-		for (const map of rest) {
-			for (const item of map.items) {
-				value.set(toString(item), item.value)
-			}
-		}
+		forEach(value, (item: yaml.Pair) =>
+			set(value, yaml.isScalar(item) ? item : String(item), toMap(item.value)),
+		)
 	} else if (u.isObj(value)) {
 		u.assign(value, ...rest)
 	}

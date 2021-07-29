@@ -78,6 +78,7 @@
 		"@types/ink-gradient": "^2.0.1",
 		"@types/invariant": "^2.2.34",
 		"@types/lodash": "^4.14.171",
+		"@types/lodash.set": "^4.3.6",
 		"@types/mocha": "^9.0.0",
 		"@types/node": "^16.4.4",
 		"@types/prettier": "^2.3.2",
@@ -157,7 +158,14 @@
 			"eslint:recommended",
 			"plugin:@typescript-eslint/eslint-recommended",
 			"plugin:@typescript-eslint/recommended",
+			"plugin:prettier/recommended",
+			"prettier/@typescript-eslint",
 			"prettier"
+		],
+		"ignorePatterns": [
+			"**/*.js",
+			"dist",
+			"node_modules"
 		],
 		"plugins": [
 			"@typescript-eslint",
@@ -169,14 +177,6 @@
 			"node": true,
 			"webextensions": true
 		},
-		"overrides": [
-			{
-				"files": [
-					"packages/noodl-utils/src/**/*"
-				],
-				"excludedFiles": "*.test.ts"
-			}
-		],
 		"rules": {
 			"@typescript-eslint/ban-ts-comment": "off",
 			"@typescript-eslint/explicit-module-boundary-types": "off",
@@ -209,22 +209,6 @@
 				}
 			}
 		}
-	},
-	"ava": {
-		"files": [
-			"src/**/*.test.tsx"
-		],
-		"typescript": {
-			"extensions": [
-				"tsx"
-			],
-			"rewritePaths": {
-				"src/": "dist/"
-			}
-		},
-		"require": [
-			"ts-node/register/transpile-only"
-		]
 	},
 	"nodemonConfig": {
 		"ignore": [

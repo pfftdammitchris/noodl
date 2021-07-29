@@ -9,6 +9,7 @@ import { Identify } from 'noodl-types'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import pkg from '../package.json'
+import * as t from './types'
 
 const paths = {
 	docs: nc.getAbsFilePath('generated/test'),
@@ -21,34 +22,16 @@ for (const [key, filepath] of u.entries(paths)) {
 	paths[key] = nc.normalizePath(filepath)
 }
 
-// const aggregator = new Aggregator('meet4d')
-// const docFiles = nc.loadFilesAsDocs({
-// 	as: 'metadataDocs',
-// 	dir: paths.docs,
-// 	includeExt: false,
-// 	recursive: true,
-// })
-
-// const { name, doc } = docFiles[0]
-
-// const titlePair = doc.contents.items[0].value.items[2] as yaml.Pair
-// const viewComponentMap = doc.contents.items[0].value.items[3].value
-// 	.items[0] as yaml.YAMLMap
-
-// const alias = doc.createAlias(titlePair)
-
-// doc.add(alias)
-
-// console.log(doc.toString())
-
-export interface VisitFn<N extends yaml.Node = yaml.Node> {
-	(
-		args: {
-			key: Parameters<yaml.visitorFn<N>>[0]
-			node: Parameters<yaml.visitorFn<N>>[1]
-			path: Parameters<yaml.visitorFn<N>>[2]
-		} & Record<string, any>,
-	): ReturnType<yaml.visitorFn<N>>
+export interface VisitFn<N = unknown> {
+	(args: {
+		context: {
+			name: string
+			visitee: yaml.Node | yaml.Document
+		}
+		key: Parameters<yaml.visitorFn<N>>[0]
+		node: Parameters<yaml.visitorFn<N>>[1]
+		path: Parameters<yaml.visitorFn<N>>[2]
+	}): ReturnType<yaml.visitorFn<N>>
 }
 
 export type VisitTransducerFn<N extends yaml.Node = yaml.Node> = (
@@ -82,20 +65,28 @@ class Visitor {
 }
 
 function createVisitorFactory() {
-	function _createVisitor(fn) {
-		return function (args: { key; node; path }) {
-			return fn(args)
+	const visitors = [] as VisitFn[]
+
+	function _createVisitor(fn: VisitFn) {
+		return function (args: Parameters<VisitFn>[0]) {
+			return (step) => step(fn, fn(args))
 		}
 	}
 
 	function _compose(...fns: VisitFn[]): VisitFn {
-		const step = function (acc: VisitFn, args: Parameters<VisitFn>[0]) {
-			return acc(args)
-		}
-		return flowRight(...fns)(step)
+		return flowRight(...fns)
 	}
 
-	const _visit: VisitFn = function (args) {}
+	const _visit = function (doc: yaml.Node | yaml.Document, fn: VisitFn) {
+		yaml.visit(doc, (key, node, path) =>
+			fn({
+				context: doc,
+				key,
+				node,
+				path,
+			}),
+		)
+	}
 
 	const o = {
 		compose: _compose,
@@ -108,19 +99,69 @@ function createVisitorFactory() {
 
 const visitorFactory = createVisitorFactory()
 
+const actionsVisitor = function ({
+	context: { name, visitee },
+	key,
+	node,
+	path,
+}: Parameters<VisitFn>[0]) {
+	if (yaml.isScalar(node)) {
+		if (Identify.reference(node.value) && u.isStr(node.value)) {
+			const reference = node.value
+			let dataObject
+			let locations: t.LocationObject
+			let pages: string[]
+
+			if (!(reference in actionsVisitor.data)) {
+				dataObject = actionsVisitor.data[reference] = {
+					pages: [],
+					occurred: 0,
+					locations: {},
+				}
+				locations = dataObject.locations
+				pages = dataObject.pages
+			}
+
+			if (pages && name) {
+				!pages.includes(name) && pages.push(name)
+			}
+
+			if (dataObject) {
+				dataObject.occurred++
+			}
+
+			if (locations) {
+				!locations.pages && (locations.pages = [])
+
+				if (!locations.pages.includes(name)) {
+					locations.pages.push(name)
+				}
+			}
+		}
+	}
+}
+
+actionsVisitor.data = {} as Record<string, t.DataObject>
+
 const doc = nc.loadFileAsDoc(
 	path.join(__dirname, '../generated/meet4d/SignIn.yml'),
 )
 
-// ;(async () => {
-// 	try {
-// 		const visitor = new Visitor()
-// 		await visitor.init()
-// 		yaml.visit(doc, (key, node, path) => composedVisitors({ key, node, path }))
-// 	} catch (error) {
-// 		throw error
-// 	}
-// })()
+const visitor = new Visitor()
+const composedVisitors =
+	(context: { name: string; visitee: yaml.Node | yaml.Document }): VisitFn =>
+	(args2) =>
+		visitorFactory.compose(actionsVisitor)({ ...args2, context })
+
+visitor
+	.init()
+	.then(() => {
+		for (const [name, visitee] of visitor.agg.root) {
+			visitorFactory.visit(doc, composedVisitors({ name, visitee }))
+		}
+		return fs.writeJson(paths.metadata, actionsVisitor.data, { spaces: 2 })
+	})
+	.catch(console.error)
 
 const evalObject = {
 	actionType: 'evalObject',

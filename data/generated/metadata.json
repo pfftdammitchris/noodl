@@ -1,14 +1,904 @@
 {
-	"actionTypes": [
-		"builtIn",
-		"evalObject",
-		"openCamera",
-		"openDocumentManager",
-		"openPhotoLibrary",
-		"popUp",
-		"popUpDismiss",
-		"updateObject"
-	],
-	"REFERENCES": [],
-	"references": []
+  ".builtIn.isIOS": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..setIOS": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".builtIn.isAndroid": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..setAndroid": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..appLink.url": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..appLink.url": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global.currentUser.vertex.sk": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..appLink.url@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..appLink.img@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.eccNaCl.decryptAES": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..formData.password": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global.currentUser.vertex.esk": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.eccNaCl.skCheck": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global.currentUser.vertex.pk": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..formData.sk": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..formData.pass": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".Global.currentUser.vertex.sk@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.string.equal": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.SignIn.formData.phoneNumber": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global.phoneNumber": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.SignIn.loginNewDevice.edgeAPI.store": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".Global._nonce@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.math.random": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..loginNewDevice.response.code": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.SignIn.retrieveVertex.vertexAPI.get": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..myLoginTime@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global.currentDateTime": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.string.concat": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.SignIn.loginUser2.edge.bvid": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..myLoginTime": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.storeCredentials": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.eccNaCl.signature": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..loginMessage": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..retrieveVertex.response.vertex.0.name.eskSign": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".SignIn.loginUser2.edge.name.ctime@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.SignIn.loginUser2.edgeAPI.store": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".Global.currentUser.vertex@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..retrieveVertex.response.vertex.0": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".Global.currentUser.JWT@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..loginUser2.response.jwt": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".Global.phoneNumber@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..formData.phoneNumber": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global.currentUser.vertex.id": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".Global.currentUser.dataCache.loadingDateTime@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".Global.rootNotebookID@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global.currentUser.vertex.deat.rnb64ID": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..loginNewDevice.response.edge.deat.user_id": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global._nonce": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..rvCondition": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".Edge": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..apiData.phoneNumber": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".EdgeAPI": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..formData.code": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".BaseCheckView": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..apiData.phoneNumber@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..formData.phoneNumber@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..formData.countryCode": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".CountryCode": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.typeCheck.phoneNumber": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..formData.countryCode": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..formData.checkOk": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..formData.checkMessage@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.SignIn.formData.countryCode": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..formData.checkOk": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..save": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.SignIn.verificationCode.edgeAPI.store": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..verificationCode.response.code": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..verificationCode.response.edge.deat.phone_number": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..getVertex.vertexAPI.get": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..getVertex.response.vertex.0.id": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".BaseTips": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.builtIn.number.addition": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=.Global.zindex": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".LabelStyle": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".DividerStyle": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..check": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".SignUp.formData.countryCode@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".SignUp.formData.phoneNumber@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  ".SignUp.formData.code@": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..loginNewDevice.response.edge.deat.pk": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "=..loginNewDevice.response.edge.deat.esk": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  },
+  "..update": {
+    "pages": [
+      "Global"
+    ],
+    "occurred": 1,
+    "locations": {
+      "pages": [
+        "Global"
+      ]
+    }
+  }
 }

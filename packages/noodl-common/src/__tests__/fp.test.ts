@@ -1,11 +1,14 @@
 import * as u from '@jsmanifest/utils'
+import * as mock from 'noodl-ui-test-utils'
 import { expect } from 'chai'
 import path from 'path'
-import yaml from 'yaml'
+import yaml, { YAMLMap } from 'yaml'
+import { findPair } from 'yaml/dist/util'
+import { createNode } from 'yaml/dist/doc/createNode'
 import fs from 'fs-extra'
 import assign from '../fp/assign'
 import entries from '../fp/entries'
-import toString from '../fp/toString'
+import toString from '../fp/base/toString'
 import * as nc from '..'
 
 describe.only(nc.coolGold('fp'), () => {
@@ -47,7 +50,17 @@ describe.only(nc.coolGold('fp'), () => {
 	})
 
 	describe(nc.italic(`Object -> YAMLMap`), () => {
-		xit(`should behave like Object.assign`, () => {})
+		it.only(`should behave like Object.assign`, () => {
+			let gotoObject = mock.getGotoObject()
+			let emitObject = mock.getFoldedEmitObject()
+			let emitMap = new yaml.YAMLMap()
+			let objResult = assign(
+				emitObject,
+				assign(gotoObject, mock.getButtonComponent()),
+				{ goto: assign({ variant: 1 }, mock.getBuiltInAction('redraw')) },
+			)
+			console.log(objResult)
+		})
 		xit(`should behave like Object.entries`, () => {})
 		xit(`should behave like Object.keys`, () => {})
 		xit(`should behave like Object.values`, () => {})
