@@ -1,18 +1,14 @@
 {
-	"name": "noodl-types",
-	"version": "1.0.123",
-	"description": "NOODL TypeScript Definitions",
-	"main": "dist/index.js",
-	"module": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"build": "rm -rf dist && tsc",
-		"start": "rm -rf dist && tsc --watch",
-		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
-	},
 	"author": "Christopher Tran <christopher@aitmed.com>",
-	"homepage": "",
-	"license": "ISC",
+	"dependencies": {
+		"lodash.get": "^4.4.2",
+		"lodash.has": "^4.5.2"
+	},
+	"description": "NOODL TypeScript Definitions",
+	"devDependencies": {
+		"@types/lodash.get": "^4.4.6",
+		"@types/lodash.has": "^4.5.6"
+	},
 	"directories": {
 		"dist": "dist",
 		"test": "__tests__"
@@ -20,6 +16,12 @@
 	"files": [
 		"dist"
 	],
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
+	"homepage": "",
+	"license": "ISC",
+	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"name": "noodl-types",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -27,13 +29,11 @@
 		"type": "git",
 		"url": "http://gitlab.aitmed.com/pfftdammitchris/aitmed-noodl-web.git"
 	},
-	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
-	"dependencies": {
-		"lodash.get": "^4.4.2",
-		"lodash.has": "^4.5.2"
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"start": "rm -rf dist && tsc --watch",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
-	"devDependencies": {
-		"@types/lodash.get": "^4.4.6",
-		"@types/lodash.has": "^4.5.6"
-	}
+	"types": "dist/index.d.ts",
+	"version": "1.0.124"
 }

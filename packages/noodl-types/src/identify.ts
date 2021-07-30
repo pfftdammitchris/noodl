@@ -1,10 +1,5 @@
-import {
-	componentTypes,
-	minimalStyleKeys,
-	minimalBorderStyleKeys,
-} from './_internal/constants'
+import { componentTypes } from './_internal/constants'
 import { ComponentType } from './constantTypes'
-import { StyleObject } from './styleTypes'
 import * as t from '.'
 import * as i from './_internal'
 
@@ -72,8 +67,7 @@ export const Identify = (function () {
 		},
 		actionChain(v: unknown) {
 			return (
-				i.isArr(v) &&
-				[o.action.any, o.emit, o.goto, o.toast].some((fn) => v.some(fn))
+				i.isArr(v) && [o.action.any, o.emit, o.goto].some((fn) => v.some(fn))
 			)
 		},
 		/**
@@ -273,39 +267,10 @@ export const Identify = (function () {
 		textBoard(v: unknown) {
 			return i.isArr(v) && v.some((o) => o.textBoardItem)
 		},
-		textBoardItem(v: unknown) {
+		textBoardItem<O extends { br: any } | 'br'>(v: O) {
 			if (i.isObj(v)) return 'br' in v
 			if (i.isStr(v)) return v === 'br'
 			return false
-		},
-		url(v: unknown): v is string {
-			return (
-				typeof v === 'string' &&
-				!v.startsWith('.') &&
-				(i.isImg(v) ||
-					i.isJs(v) ||
-					v.endsWith('.html') ||
-					i.isPdf(v) ||
-					i.isVid(v))
-			)
-		},
-		style: {
-			any(v: unknown): v is StyleObject {
-				return i.isObj(v) && i.hasAnyKeys(minimalStyleKeys, v)
-			},
-			border(v: unknown) {
-				return (
-					i.isObj(v) &&
-					i.hasAnyKeys(['color', 'style', 'width'], v) &&
-					!i.hasAnyKeys(
-						i.excludeKeys(minimalStyleKeys, minimalBorderStyleKeys),
-						v,
-					)
-				)
-			},
-		},
-		toast(value: unknown): value is { toast: t.ToastObject } {
-			return i.isObj(value) && 'message' in value
 		},
 	}
 
@@ -317,7 +282,9 @@ export const Identify = (function () {
 		},
 		component: Object.assign(
 			{
-				any(v: unknown): v is t.AnyComponentObject {
+				any<O extends Record<string, any>>(
+					v: unknown,
+				): v is t.AnyComponentObject & O {
 					return (
 						i.isObj(v) &&
 						'type' in v &&
@@ -345,20 +312,28 @@ export const Identify = (function () {
 		): value is t.EmitObjectFold & O {
 			return i.isObj(value) && 'emit' in value
 		},
-		goto(value: unknown): value is { goto: t.GotoUrl | t.GotoObject } {
+		goto<O extends Record<string, any>>(
+			value: unknown,
+		): value is { goto: t.GotoUrl | t.GotoObject } & O {
 			return i.isObj(value) && 'goto' in value
 		},
-		path(value: unknown): value is { path: t.Path } {
+		path<O extends Record<string, any>>(
+			value: unknown,
+		): value is { path: t.Path } & O {
 			return i.isObj(value) && 'path' in value
 		},
 		style: {
 			any() {},
 			border() {},
 		},
-		textFunc(value: unknown): value is { path: t.Path } {
+		textFunc<O extends Record<string, any>>(
+			value: unknown,
+		): value is { path: t.Path } & O {
 			return i.isObj(value) && 'text=func' in value
 		},
-		toast(value: unknown): value is { toast: t.ToastObject } {
+		toast<O extends Record<string, any>>(
+			value: unknown,
+		): value is { toast: t.ToastObject } & O {
 			return i.isObj(value) && 'toast' in value
 		},
 	}

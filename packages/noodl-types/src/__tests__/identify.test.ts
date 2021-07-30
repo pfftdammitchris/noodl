@@ -60,9 +60,10 @@ describe(com.coolGold('Identify'), () => {
 					subtype: { mediaType: 1 },
 					type: 1025,
 				}
-				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
-				ecosObj.name.type = 'application/pdf'
-				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.true
+				ecosObj.subtype.mediaType = 2
+				ecosObj.name.type = 'application/json'
+				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.true
 				ecosObj.name.type = 'text/html'
 				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'text/markdown'
@@ -75,6 +76,131 @@ describe(com.coolGold('Identify'), () => {
 				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
 				ecosObj.name.type = 'video/mp4'
 				expect(t.Identify.ecosObj.doc(ecosObj)).to.be.false
+			})
+		})
+	})
+
+	describe(label(`reference`), () => {
+		const tests = {
+			evolve: {
+				'.builtIn.isAndroid': false,
+				'..setAndroid': false,
+				'=.Global.currentUser.vertex.sk': true,
+				'..appLink.url@': false,
+				'=.builtIn.string.equal': true,
+			},
+			local: {
+				'=.SignIn.loginNewDevice.edgeAPI.store': false,
+				// '=.builtIn.math.random': false,
+				'.Global.currentUser.dataCache.loadingDateTime@': false,
+				'=.Global.currentUser.vertex.sk': false,
+				'=..loginNewDevice.response.edge.deat.user_id': true,
+				'=..rvCondition': true,
+				'=.Global._nonce': false,
+				'..formData.countryCode': true,
+				'.formData.countryCode': true,
+				'=.SignIn.formData.countryCode': false,
+				'=..verificationCode.response.edge.deat.phone_number': true,
+			},
+			root: {
+				'=.SignIn.loginNewDevice.edgeAPI.store': true,
+				// '=.builtIn.math.random': true,
+				'.Global.currentUser.dataCache.loadingDateTime@': true,
+				'=.Global.currentUser.vertex.sk': true,
+				'=..loginNewDevice.response.edge.deat.user_id': false,
+				'=..rvCondition': false,
+				'=.Global._nonce': true,
+				'..formData.countryCode': false,
+				'.formData.countryCode': false,
+				'=.SignIn.formData.countryCode': true,
+				'=..verificationCode.response.edge.deat.phone_number': false,
+			},
+			await: {
+				'.builtIn.isAndroid': false,
+				'..setAndroid': false,
+				'=.Global.currentUser.vertex.sk': false,
+				'.SignUp.formData.countryCode@': true,
+				'.SignUp.formData.countryCode': false,
+				'=.Global.currentUser.vertex.sk@': true,
+			},
+			traverse: {
+				__message: false,
+				'__.message': true,
+				'_.message': true,
+				'.message': false,
+				message: false,
+				// '=__.message': true,
+				// '..__.message': true,
+			},
+			tilde: {
+				__message: false,
+				'_.message': false,
+				'.message': false,
+				message: false,
+				'~/message': true,
+				'~message': false,
+				'~~/message': false,
+				'/message': false,
+			},
+		}
+
+		describe(`await references`, () => {
+			Object.entries(tests.await).forEach(([reference, expectedValue]) => {
+				it(`should be ${expectedValue} for ${reference}`, () => {
+					expect(t.Identify.reference.isAwaitingVal(reference)).to.be[
+						String(expectedValue)
+					]
+				})
+			})
+		})
+
+		describe(`evolve references`, () => {
+			Object.entries(tests.evolve).forEach(([reference, expectedValue]) => {
+				it(`should be ${expectedValue} for ${reference}`, () => {
+					expect(t.Identify.reference.isEval(reference)).to.be[
+						String(expectedValue)
+					]
+				})
+			})
+		})
+
+		describe(`local merge references`, () => {
+			Object.entries(tests.local).forEach(([reference, expectedValue]) => {
+				it(`should be ${expectedValue} for ${reference}`, () => {
+					expect(t.Identify.reference.isLocal(reference)).to.be[
+						String(expectedValue)
+					]
+				})
+			})
+		})
+
+		describe(`root merge references`, () => {
+			Object.entries(tests.root).forEach(([reference, expectedValue]) => {
+				it(`should be ${expectedValue} for ${reference}`, () => {
+					expect(t.Identify.reference.isRoot(reference)).to.be[
+						String(expectedValue)
+					]
+				})
+			})
+		})
+
+		describe(`traverse references`, () => {
+			Object.entries(tests.traverse).forEach(([reference, expectedValue]) => {
+				it(`should be ${expectedValue} for ${reference}`, () => {
+					expect(t.Identify.reference.isTraverse(reference)).to.be[
+						String(expectedValue)
+					]
+				})
+			})
+		})
+
+		describe(`tilde references`, () => {
+			Object.entries(tests.tilde).forEach(([reference, expectedValue]) => {
+				it(`should be ${expectedValue} for ${reference}`, () => {
+					expect(t.Identify.reference.isTilde(reference)).to.be[
+						String(expectedValue)
+					]
+				})
 			})
 		})
 	})
