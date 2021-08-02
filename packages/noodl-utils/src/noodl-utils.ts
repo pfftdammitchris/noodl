@@ -134,7 +134,7 @@ export function evalIf<IfObj extends IfObject>(
 		onFalse: IfObj['if'][2],
 	) => boolean,
 	ifObj: IfObj,
-): IfObj['if'][1] | IfObj['if'][2] {
+): IfObj['if'][1] | IfObj['if'][2] | Promise<IfObj['if'][1] | IfObj['if'][2]> {
 	if (Array.isArray(ifObj.if)) {
 		const [val, onTrue, onFalse] = ifObj.if
 		return fn(val, onTrue, onFalse) ? onTrue : onFalse
