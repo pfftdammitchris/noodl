@@ -17,6 +17,7 @@
 		"bootstrap": "lerna bootstrap --hoist",
 		"start": "cross-env DEV=true CI=false npm run build -- --watch",
 		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",
+		"morph": "npx ts-node-dev --respawn --transpile-only dev/morph.ts",
 		"refs": "npx nodemon dev/refs/refs --ignore refs-output.json",
 		"test": "ava --watch",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\"",

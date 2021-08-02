@@ -29,7 +29,7 @@ class NoodlAggregator {
 		if (u.isStr(opts)) this.configKey = opts
 		else u.assign(this.options, opts)
 
-		this.root = new Map([['Global', new yaml.YAMLMap()]]) as t.Root
+		this.root = new Map([['Global', new yaml.Document()]]) as t.Root
 
 		Object.defineProperty(this.root, 'toJSON', {
 			value: () => {

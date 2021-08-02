@@ -7,7 +7,7 @@ const regex = {
 	'noodl-action-chain': /(nac|noodl-action-chain)/i,
 	'noodl-aggregator': /(aggr|na|aggregator|noodl-aggregator)/i,
 	'noodl-common': /(nc|ncom|ncommon|noodl-common)/i,
-	'noodl-utils': /(ntil|noodl-utils)/i,
+	'noodl-utils': /(nu|ntil|noodl-utils)/i,
 	'noodl-types': /(nt|types|noodl-types)/i,
 	generator: /(gen|generator)/i,
 }

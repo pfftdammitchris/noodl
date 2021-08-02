@@ -9,12 +9,12 @@ import yaml from 'yaml'
 import express from 'express'
 import path from 'path'
 import fs from 'fs-extra'
-import useCtx from '../../useCtx'
-import useConfigInput from '../../hooks/useConfigInput'
-import useWatcher from '../../hooks/useWatcher'
-import useWss from '../../hooks/useWss'
-import * as c from '../../constants'
-import * as co from '../../utils/color'
+import useCtx from '../useCtx'
+import useConfigInput from '../hooks/useConfigInput'
+import useWatcher from '../hooks/useWatcher'
+import useWss from '../hooks/useWss'
+import * as c from '../constants'
+import * as co from '../utils/color'
 
 export interface Props {
 	config: string

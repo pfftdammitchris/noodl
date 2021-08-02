@@ -5,11 +5,7 @@ import PrettyError from 'pretty-error'
 import meow from 'meow'
 import { render } from 'ink'
 import App from './App'
-import {
-	DEFAULT_SERVER_PORT,
-	DEFAULT_SERVER_HOSTNAME,
-	DEFAULT_WSS_PORT,
-} from './constants'
+import { DEFAULT_SERVER_PORT, DEFAULT_WSS_PORT } from './constants'
 import * as co from './utils/color'
 import store from './store'
 
@@ -58,21 +54,11 @@ const cli = meow(
 				alias: 'c',
 				default: store.get('configKey') || '',
 			},
-			device: { type: 'string', default: 'web' },
-			env: { type: 'string', alias: 'e', default: 'test' },
-			fetch: { type: 'boolean', alias: 'f' },
 			generate: { type: 'string', alias: 'g' },
-			generatePath: { type: 'string' },
-			host: { alias: 'h', type: 'string', default: DEFAULT_SERVER_HOSTNAME },
-			remote: { type: 'boolean', default: false },
 			outDir: { type: 'string' },
 			port: { type: 'number', alias: 'p', default: DEFAULT_SERVER_PORT },
-			server: {},
-			start: { type: 'string' },
-			script: { type: 'string', alias: 's' },
+			server: { alias: 's' },
 			version: { type: 'string', alias: 'v', default: 'latest' },
-			pkgVersion: { type: 'string' },
-			watch: { type: 'boolean', default: true },
 			wss: { type: 'boolean', default: true },
 			wssPort: { type: 'number', default: DEFAULT_WSS_PORT },
 		},

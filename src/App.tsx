@@ -13,7 +13,6 @@ import Settings from './panels/Settings'
 import GenerateApp from './panels/GenerateApp'
 import useConfiguration from './hooks/useConfiguration'
 import Server from './panels/Server'
-import store from './store'
 import { Provider } from './useCtx'
 import * as co from './utils/color'
 import * as c from './constants'
@@ -87,7 +86,7 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 		if (u.keys(cli.flags).length) {
 			const handleGenerate = () => {
 				const generate = cli.flags.generate as string
-				if (generate === 'app') {
+				if (generate || u.isStr(generate)) {
 					ctx.setPanel('generateApp')
 				} else {
 					u.log(
@@ -138,9 +137,6 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 				<GenerateApp
 					config={cli.flags.config as string}
 					configVersion={cli.flags.version}
-					deviceType={cli.flags.device}
-					env={cli.flags.env}
-					host={cli.flags.host}
 					isLocal={!cli.flags.remote}
 					port={cli.flags.port}
 					onEnd={() => cli.flags.server && ctx.setPanel('server')}
@@ -154,11 +150,9 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 					isConfigFromServerFlag={
 						u.isStr(cli.flags.server) && !!cli.flags.server
 					}
-					host={cli.flags.host}
 					port={cli.flags.port}
 					isRemote={!!cli.flags.remote}
 					wss={cli.flags.wss ? { port: cli.flags.wssPort } : undefined}
-					watch={cli.flags.watch}
 				/>
 			) : (
 				<Box paddingLeft={1} flexDirection="column">

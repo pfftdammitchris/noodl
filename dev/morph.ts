@@ -6,11 +6,38 @@ import path from 'path'
 import tds from 'transducers-js'
 import Aggregator from 'noodl-aggregator'
 import { Identify } from 'noodl-types'
-import yaml from 'yaml'
+import {
+	isDocument,
+	isMap,
+	isNode,
+	isPair,
+	isScalar,
+	isSeq,
+	YAMLMap,
+	YAMLSeq,
+	Pair,
+	Scalar,
+	Node as YAMLNode,
+	Document as YAMLDocument,
+	visit as YAMLVisit,
+	visitorFn as YAMLVisitorFn,
+} from 'yaml'
 import fs from 'fs-extra'
 import pkg from '../package.json'
 import * as t from './types'
 
+const flat = <V = any>(...v: V[]) =>
+	u.reduce(
+		v,
+		(acc, _) => {
+			if (u.isArr(_)) acc.push(..._)
+			else acc.push(_)
+			return acc
+		},
+		[] as V[],
+	)
+
+const CONFIG = 'meetd2'
 const paths = {
 	docs: nc.getAbsFilePath('generated/test'),
 	metadata: nc.getAbsFilePath('data/generated/metadata.json'),
@@ -22,65 +49,70 @@ for (const [key, filepath] of u.entries(paths)) {
 	paths[key] = nc.normalizePath(filepath)
 }
 
-export interface VisitFn<N = unknown> {
-	(args: {
-		context: {
-			name: string
-			visitee: yaml.Node | yaml.Document
-		}
-		key: Parameters<yaml.visitorFn<N>>[0]
-		node: Parameters<yaml.visitorFn<N>>[1]
-		path: Parameters<yaml.visitorFn<N>>[2]
-	}): ReturnType<yaml.visitorFn<N>>
-}
-
-export type VisitTransducerFn<N extends yaml.Node = yaml.Node> = (
-	fn: VisitFn<N>,
-) => (
-	step: (
-		acc: VisitFn<N>,
-		args: Parameters<VisitFn<N>>[0],
-	) => (args: Parameters<VisitFn<N>>[0]) => VisitFn<N>,
-) => any
-
 class Visitor {
-	agg: Aggregator
+	#visit: t.VisitFn
 
-	constructor() {
-		this.agg = new Aggregator('meet4d')
+	constructor(visit: t.VisitFn) {
+		this.#visit = visit
 	}
 
-	async init() {
-		try {
-			const { doc, raw: yml } = await this.agg.init({
-				loadPages: false,
-				loadPreloadPages: false,
-			})
-			const preloadPages = await this.agg.loadPreloadPages()
-			// const pages = await this.agg.loadPages()
-		} catch (error) {
-			console.error(error)
-		}
+	get visit() {
+		return this.#visit
 	}
 }
 
-function createVisitorFactory() {
-	const visitors = [] as VisitFn[]
+function getVisitorHelpers(aggregator: Aggregator) {
+	function _get(this: YAMLNode | YAMLDocument, key = '') {
+		Identify.reference(key) && (key = Identify.reference.format(key))
+		const [firstKey = '', ...rest] = key.split('.')
+		if (firstKey) {
+			const isLocal = firstKey[0].toLowerCase() === firstKey[0]
+			if (isLocal) {
+				if (isMap(this) || isDocument(this)) {
+					return this.getIn(key.split('.'))
+				}
+			} else {
+				const rootDoc = aggregator.root[firstKey]
+				if (isMap(rootDoc) || isDocument(rootDoc)) {
+					return rootDoc.getIn(rest)
+				}
+			}
+		} else {
+			//
+		}
+	}
 
-	function _createVisitor(fn: VisitFn) {
-		return function (args: Parameters<VisitFn>[0]) {
+	const o = {
+		compose: (...fns: t.VisitFn[]): t.VisitFn => flowRight(...fns),
+		get: _get,
+	}
+	return o
+}
+
+function createVisitorFactory(
+	config = 'aitmed',
+	aggregator = new Aggregator(config),
+) {
+	const visitors = [] as Visitor[]
+	const utils = getVisitorHelpers(aggregator)
+
+	function _createVisitor(fn: t.VisitFn) {
+		return function (args: Parameters<t.VisitFn>[0]) {
 			return (step) => step(fn, fn(args))
 		}
 	}
 
-	function _compose(...fns: VisitFn[]): VisitFn {
-		return flowRight(...fns)
-	}
-
-	const _visit = function (doc: yaml.Node | yaml.Document, fn: VisitFn) {
-		yaml.visit(doc, (key, node, path) =>
-			fn({
-				context: doc,
+	const _visit = function (
+		context: {
+			visitee: YAMLNode | YAMLDocument
+			name: string
+			root: Aggregator['root']
+		},
+		visitVisitee: t.VisitFn,
+	) {
+		YAMLVisit(doc, (key, node, path) =>
+			visitVisitee.call(doc, {
+				context,
 				key,
 				node,
 				path,
@@ -89,75 +121,166 @@ function createVisitorFactory() {
 	}
 
 	const o = {
-		compose: _compose,
+		compose: (...fns: t.VisitFn[]): t.VisitFn => flowRight(...fns),
 		createVisitor: _createVisitor,
 		visit: _visit,
+		use: (fn: t.VisitFn) => visitors.push(new Visitor(fn)),
 	}
 
 	return o
 }
 
-const visitorFactory = createVisitorFactory()
+function getParentInfo<N extends YAMLNode>(node: N | null | undefined) {
+	if (node) {
+		if (isSeq(node)) {
+			//
+		} else if (isMap(node)) {
+			//
+		} else if (isPair(node)) {
+			//
+		}
+	}
+	return null
+}
 
-const actionsVisitor = function ({
-	context: { name, visitee },
-	key,
-	node,
-	path,
-}: Parameters<VisitFn>[0]) {
-	if (yaml.isScalar(node)) {
-		if (Identify.reference(node.value) && u.isStr(node.value)) {
-			const reference = node.value
-			let dataObject
-			let locations: t.LocationObject
-			let pages: string[]
+function createReferenceDataObject<T extends 'pair'>({
+	page = '',
+	parent,
+	type,
+	isKey,
+	value,
+}: {
+	page: string
+	parent: YAMLNode
+	type: T
+	isKey?: boolean
+	value: string
+}): t.DataObject {
+	const reference = value
 
-			if (!(reference in actionsVisitor.data)) {
-				dataObject = actionsVisitor.data[reference] = {
-					pages: [],
-					occurred: 0,
-					locations: {},
+	switch (type) {
+		case 'pair':
+			if (isKey) {
+				return {
+					isActionChain: Identify.actionChain(parent),
+					isDataKey: null,
+					isKey,
+					isFunction: null,
+					location: 'unknown',
+					operator: getOperators(reference),
+					page,
+					parent,
+					reference,
+					value,
+				} as t.DataObject
+			} else {
+				// isValue
+				return {
+					isActionChain: Identify.actionChain(parent),
+					isDataKey: null,
+					isKey,
+					isFunction: null,
+					location: 'unknown',
+					operator: getOperators(reference),
+					page,
+					parent,
+					reference,
+					value,
 				}
-				locations = dataObject.locations
-				pages = dataObject.pages
 			}
+	}
+}
 
-			if (pages && name) {
-				!pages.includes(name) && pages.push(name)
+function getOperators(v = ''): t.Operator[] {
+	return u.reduce(
+		u.entries(getOperators.map),
+		(acc, [op, fn]) => {
+			u.array(fn).forEach((f) => f(v) && acc.push(op as any))
+			return acc
+		},
+		[],
+	)
+}
+
+function getReference({
+	root,
+	visitee,
+	type,
+	value,
+}: {
+	visitee: YAMLDocument
+	root: Aggregator['root']
+	type: t.ReferenceType
+	value: string
+}) {
+	const path = Identify.reference.format(value)
+	if (type === 'merge') {
+		if (Identify.reference.isLocal(value)) {
+			if (isMap(visitee) || isDocument(visitee)) {
+				return visitee.getIn(path.split('.'))
 			}
-
-			if (dataObject) {
-				dataObject.occurred++
-			}
-
-			if (locations) {
-				!locations.pages && (locations.pages = [])
-
-				if (!locations.pages.includes(name)) {
-					locations.pages.push(name)
+			return value
+		} else {
+			const [rootKey, ...paths] = path.split('.')
+			const rootObject = root.get(rootKey)
+			if (rootObject) {
+				if (isMap(rootObject) || isDocument(rootObject)) {
+					return rootObject.getIn(paths)
 				}
+				if (isPair(rootObject))
+					return getReference({
+						...arguments[0],
+						value: String(rootObject.value),
+					})
 			}
 		}
 	}
 }
 
-actionsVisitor.data = {} as Record<string, t.DataObject>
+function getReferenceType(value: string): t.ReferenceType {
+	if (Identify.reference.isRoot(value) || Identify.reference.isLocal(value)) {
+		return 'merge'
+	}
+	if (Identify.reference.isAwaitingVal(value)) return 'await'
+	if (Identify.reference.isEval(value)) return 'evolve'
+	if (Identify.reference.isTilde(value)) return 'tilde'
+	if (Identify.reference.isTraverse(value)) return 'traverse'
+	return 'unknown'
+}
 
 const doc = nc.loadFileAsDoc(
 	path.join(__dirname, '../generated/meet4d/SignIn.yml'),
 )
 
-const visitor = new Visitor()
-const composedVisitors =
-	(context: { name: string; visitee: yaml.Node | yaml.Document }): VisitFn =>
-	(args2) =>
-		visitorFactory.compose(actionsVisitor)({ ...args2, context })
+;(async () => {
+	try {
+		const { doc, raw: yml } = await this.agg.init({
+			loadPages: false,
+			loadPreloadPages: false,
+		})
+		const preloadPages = await this.agg.loadPreloadPages()
+	} catch (error) {
+		console.error(error)
+	}
+})()
+
+const visitorFactory = createVisitorFactory(CONFIG)
+
+const composedVisitors = (context: {
+	name: string
+	visitee: YAMLNode | YAMLDocument
+	root: Aggregator['root']
+}): t.VisitFn => visitorFactory.compose(actionsVisitor)
 
 visitor
 	.init()
 	.then(() => {
 		for (const [name, visitee] of visitor.agg.root) {
-			visitorFactory.visit(doc, composedVisitors({ name, visitee }))
+			visitorFactory.visit.call(
+				visitee,
+				{ name, visitee, root: visitor.agg.root },
+				composedVisitors({ name, visitee, root: visitor.agg.root }),
+			)
 		}
 		return fs.writeJson(paths.metadata, actionsVisitor.data, { spaces: 2 })
 	})

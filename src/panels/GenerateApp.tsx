@@ -1,5 +1,3 @@
-import { LiteralUnion } from 'type-fest'
-import { DeviceType, Env } from 'noodl-types'
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
 import {
@@ -16,14 +14,13 @@ import React from 'react'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
-import Panel from '../../components/Panel'
-import useConfigInput from '../../hooks/useConfigInput'
-import useCtx from '../../useCtx'
-import useDownload from '../../hooks/useDownload'
+import Panel from '../components/Panel'
+import useConfigInput from '../hooks/useConfigInput'
+import useCtx from '../useCtx'
+import useDownload from '../hooks/useDownload'
 import { constants as noodlAggregatorConsts } from 'noodl-aggregator'
-import * as co from '../../utils/color'
-import * as r from '../../utils/remote'
-import * as t from './types'
+import * as co from '../utils/color'
+import * as r from '../utils/remote'
 
 const {
 	ON_RETRIEVED_ROOT_CONFIG,
@@ -35,10 +32,7 @@ const {
 export interface Props {
 	config?: string
 	configVersion?: string
-	deviceType?: LiteralUnion<DeviceType | '', string>
-	env?: LiteralUnion<Env, string>
 	isLocal?: boolean
-	host?: string
 	port?: number
 	onEnd?(): void
 }
@@ -59,13 +53,11 @@ function GenerateApp(props: Props) {
 	const { download, downloading, downloaded, urlsDownloaded, urlsInProgress } =
 		useDownload()
 
+	const host = `127.0.0.1`
 	const {
 		config: configProp,
 		configVersion: configVersionProp,
-		env,
-		deviceType,
 		isLocal,
-		host,
 		port,
 		onEnd,
 	} = props
@@ -107,10 +99,10 @@ function GenerateApp(props: Props) {
 
 					log(`Saved ${co.yellow(configFileName)} to folder`)
 					aggregator.configKey = configKey
-					log(`Setting env to ${co.yellow(env)}`)
-					aggregator.env = env as Env
-					log(`Retrieving the config version for ${co.yellow(deviceType)}`)
-					aggregator.deviceType = deviceType as DeviceType
+					log(`Setting env to ${co.yellow('test')}`)
+					aggregator.env = 'test'
+					log(`Retrieving the config version for ${co.yellow('web')}`)
+					aggregator.deviceType = 'web'
 					aggregator.configVersion = configVersionProp as string
 
 					if (
@@ -192,7 +184,7 @@ function GenerateApp(props: Props) {
 							)
 						}
 
-						const missingAssets = [] as t.State['assets']
+						const missingAssets = [] as typeof initialState['assets']
 
 						for (const asset of assets) {
 							if (asset.filename) {
