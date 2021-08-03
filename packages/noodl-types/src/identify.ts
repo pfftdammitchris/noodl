@@ -317,6 +317,9 @@ export const Identify = (function () {
 		): value is { goto: t.GotoUrl | t.GotoObject } & O {
 			return i.isObj(value) && 'goto' in value
 		},
+		if(value: unknown): value is t.IfObject {
+			return i.isObj(value) && 'if' in value
+		},
 		path<O extends Record<string, any>>(
 			value: unknown,
 		): value is { path: t.Path } & O {
