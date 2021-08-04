@@ -108,6 +108,10 @@ export function isJs(s = '') {
 	return s.endsWith('.js')
 }
 
+export function isNum(v: unknown): v is number {
+	return typeof v === 'number'
+}
+
 export function isStr(v: unknown): v is string {
 	return typeof v === 'string'
 }

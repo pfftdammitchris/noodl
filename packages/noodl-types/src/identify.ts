@@ -9,15 +9,21 @@ type PlainObject<O extends Record<string, any> = Record<string, any>> = Record<
 > &
 	O
 
-function identifyObj<
-	O extends PlainObject = PlainObject,
-	F extends (value: PlainObject) => any = (value: PlainObject) => any,
->(fn: F) {
-	return function (v: O): v is O {
-		if (i.isObj(v)) return fn(v)
-		return false
+function createIdentifier<
+	O = any,
+	IdentifyFn extends (v: unknown) => v is O = (v: unknown) => v is O,
+>(pred: IdentifyFn) {
+	return function <V = any>(fn: (v: V) => boolean) {
+		return function (v: V): v is V {
+			return pred(v) ? fn(v) : undefined
+		}
 	}
 }
+
+const identifyArr = createIdentifier<any[]>(i.isArr)
+const identifyNum = createIdentifier<number>(i.isNum)
+const identifyObj = createIdentifier<PlainObject>(i.isObj)
+const identifyStr = createIdentifier<string>(i.isStr)
 
 export const Identify = (function () {
 	const composeSomes =
@@ -72,9 +78,8 @@ export const Identify = (function () {
 				(v) => v.actionType === 'updateObject',
 			),
 		},
-		actionChain: identifyObj<any[]>(
-			(v) =>
-				i.isArr(v) && [o.action.any, o.emit, o.goto].some((fn) => v.some(fn)),
+		actionChain: identifyArr<any[]>((v) =>
+			[o.action.any, o.emit, o.goto].some((fn) => v.some(fn)),
 		),
 		/**
 		 * Returns true if the value is a NOODL boolean. A value is a NOODL boolean
@@ -196,19 +201,21 @@ export const Identify = (function () {
 		goto: identifyObj<t.GotoObject>((v) => 'goto' in v),
 		if: identifyObj<t.IfObject>((v) => 'if' in v),
 		mediaType: {
-			audio: (v: unknown): v is t.AudioMediaType => v == 2,
-			doc: (v: unknown): v is t.DocMediaType => v == 1,
-			font: (v: unknown): v is t.FontMediaType => v == 3,
-			image: (v: unknown): v is t.ImageMediaType => v == 4,
-			message: (v: unknown): v is t.MessageMediaType => v == 5,
-			model: (v: unknown): v is t.ModelMediaType => v == 6,
-			multipart: (v: unknown): v is t.MultipartMediaType => v == 7,
-			other: (v: unknown): v is t.OtherMediaType => v == 0,
-			text: (v: unknown): v is t.TextMediaType => v == 8,
-			video: (v: unknown): v is t.VideoMediaType => v == 9,
+			audio: identifyNum<t.AudioMediaType>((v) => v == 2),
+			doc: identifyNum<t.DocMediaType>((v) => v == 1),
+			font: identifyNum<t.FontMediaType>((v) => v == 3),
+			image: identifyNum<t.ImageMediaType>((v) => v == 4),
+			message: identifyNum<t.MessageMediaType>((v) => v == 5),
+			model: identifyNum<t.ModelMediaType>((v) => v == 6),
+			multipart: identifyNum<t.MultipartMediaType>((v) => v == 7),
+			other: identifyNum<t.OtherMediaType>((v) => v == 0),
+			text: identifyNum<t.TextMediaType>((v) => v == 8),
+			video: identifyNum<t.VideoMediaType>((v) => v == 9),
 		},
 		reference: i.isReference,
-		textBoard: (v: unknown) => i.isArr(v) && v.some((o) => o.textBoardItem),
+		rootKey: identifyStr((v) => !!(v && v[0].toUpperCase() === v[0])),
+		localKey: identifyStr((v) => !!(v && v[0].toLowerCase() === v[0])),
+		textBoard: identifyArr<t.TextBoardObject>((v) => v.some(o.textBoardItem)),
 		textBoardItem<O extends { br: any } | 'br'>(v: O) {
 			if (i.isObj(v)) return 'br' in v
 			if (i.isStr(v)) return v === 'br'
@@ -217,11 +224,9 @@ export const Identify = (function () {
 	}
 
 	const folds = {
-		actionChain(
-			v: unknown,
-		): v is (t.ActionObject | t.EmitObjectFold | t.GotoObject)[] {
-			return i.isArr(v) && v.some(composeSomes(o.action.any, o.emit, o.goto))
-		},
+		actionChain: identifyArr<
+			(t.ActionObject | t.EmitObjectFold | t.GotoObject)[]
+		>((v) => i.isArr(v) && v.some(composeSomes(o.action.any, o.emit, o.goto))),
 		component: Object.assign(
 			{
 				any<O extends PlainObject>(v: unknown): v is t.ActionObject & O {
@@ -247,34 +252,12 @@ export const Identify = (function () {
 				),
 			),
 		),
-		emit<O extends PlainObject>(value: unknown): value is t.EmitObjectFold & O {
-			return i.isObj(value) && 'emit' in value
-		},
-		goto<O extends PlainObject>(
-			value: unknown,
-		): value is { goto: t.GotoUrl | t.GotoObject } & O {
-			return i.isObj(value) && 'goto' in value
-		},
-		if(value: unknown): value is t.IfObject {
-			return i.isObj(value) && 'if' in value
-		},
-		path(value: unknown): value is { path: t.Path } & Record<string, any> {
-			return i.isObj(value) && 'path' in value
-		},
-		style: {
-			any() {},
-			border() {},
-		},
-		textFunc<O extends PlainObject>(
-			value: unknown,
-		): value is { path: t.Path } & O {
-			return i.isObj(value) && 'text=func' in value
-		},
-		toast<O extends PlainObject>(
-			value: unknown,
-		): value is { toast: t.ToastObject } & O {
-			return i.isObj(value) && 'toast' in value
-		},
+		emit: identifyObj<t.EmitObjectFold>((v) => 'emit' in v),
+		goto: identifyObj<{ goto: t.GotoUrl | t.GotoObject }>((v) => 'goto' in v),
+		if: identifyObj<{ if: t.IfObject }>((v) => 'if' in v),
+		path: identifyObj<{ path: t.Path }>((v) => 'path' in v),
+		textFunc: identifyObj<{ path: t.Path }>((v) => 'text=func' in v),
+		toast: identifyObj<{ toast: t.ToastObject }>((v) => 'toast' in v),
 	}
 
 	return {
