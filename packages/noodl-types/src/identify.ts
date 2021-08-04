@@ -13,8 +13,8 @@ function createIdentifier<
 	O = any,
 	IdentifyFn extends (v: unknown) => v is O = (v: unknown) => v is O,
 >(pred: IdentifyFn) {
-	return function <V = any>(fn: (v: V) => boolean) {
-		return function (v: V): v is V {
+	return function <V = any>(fn: (v: any) => boolean) {
+		return function (v: any): v is V {
 			return pred(v) ? fn(v) : undefined
 		}
 	}
