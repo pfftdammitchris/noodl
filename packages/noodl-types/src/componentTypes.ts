@@ -9,31 +9,6 @@ import {
 	TextBoardObject,
 } from './uncategorizedTypes'
 
-export type AnyComponentObject =
-	| ButtonComponentObject
-	| DividerComponentObject
-	| EcosDocComponentObject
-	| FooterComponentObject
-	| HeaderComponentObject
-	| ImageComponentObject
-	| LabelComponentObject
-	| ListComponentObject
-	| ListItemComponentObject
-	| MapComponentObject
-	| PageComponentObject
-	| PluginComponentObject
-	| PluginHeadComponentObject
-	| PluginBodyTopComponentObject
-	| PluginBodyTailComponentObject
-	| PopUpComponentObject
-	| RegisterComponentObject
-	| SelectComponentObject
-	| ScrollViewComponentObject
-	| TextFieldComponentObject
-	| TextViewComponentObject
-	| VideoComponentObject
-	| ViewComponentObject
-
 export type UncommonComponentObjectProps = {
 	[key in EventType]: ActionChain
 } & {

@@ -12,9 +12,26 @@ const isReference = (function () {
 		return false
 	}
 
-	_isReference.format = function (v = '') {
-		return v.replace(/^[.=@]+/i, '').replace(/[.=@]+$/i, '') || ''
-	}
+	/**
+	 * Trims the prefixed reference symbol
+	 *
+	 * ex: "=.builtIn.string.concat" --> "builtIn.string.concat"
+	 *
+	 * ex: "=..builtIn.string.concat" --> "builtIn.string.concat"
+	 *
+	 * ex: ".builtIn.string.concat" --> "builtIn.string.concat"
+	 *
+	 * ex: "..builtIn.string.concat" --> "builtIn.string.concat"
+	 *
+	 * ex: "____.builtIn.string.concat" --> "builtIn.string.concat"
+	 *
+	 * ex: "_.builtIn.string.concat" --> "builtIn.string.concat"
+	 *
+	 * @param v Reference string
+	 * @returns string
+	 */
+	_isReference.trim = (v = '') =>
+		v.replace(/^[.=@]+/i, '').replace(/[.=@]+$/i, '') || ''
 
 	/**
 	 * true: ".Global.currentUser.vertex.name.firstName@"
@@ -23,30 +40,33 @@ const isReference = (function () {
 	 *
 	 * false: "..message.doc.1.name"
 	 */
-	_isReference.isAwaitingVal = function (v = '') {
-		return v !== '@' && v.endsWith('@')
-	}
+	_isReference.await = (v = '') => v !== '@' && v.endsWith('@')
 
 	/**
 	 * True if the value starts with an equal sign "="
+	 *
+	 * true: "=.builtIn.string.concat"
+	 *
+	 * false: ".builtIn.string.concat"
+	 *
+	 * false: "builtIn.string.concat"
 	 */
-	_isReference.isEval = function (v = '') {
-		return v.startsWith('=')
-	}
+	_isReference.eval = (v = '') => v.startsWith('=')
 
 	/**
-	 * Example: "=.."
+	 * true: "=.."
+	 *
+	 * false: "=."
 	 */
-	_isReference.isEvalLocal = function (v = '') {
-		return v.startsWith('=..')
-	}
+	_isReference.evalLocal = (v = '') => v.startsWith('=..')
 
 	/**
-	 * Example: "=."
+	 * true: "=."
+	 *
+	 * false: "=.."
 	 */
-	_isReference.isEvalRoot = function (v = '') {
-		return !_isReference.isEvalLocal(v) && v.startsWith('=.')
-	}
+	_isReference.evalRoot = (v = '') =>
+		!_isReference.evalLocal(v) && v.startsWith('=.')
 
 	/**
 	 * true: ".."
@@ -55,10 +75,10 @@ const isReference = (function () {
 	 *
 	 * false: "=."
 	 */
-	_isReference.isLocal = function (v = ''): boolean {
+	_isReference.local = function (v = ''): boolean {
 		if (v.startsWith('..')) return true
 		if (v.startsWith('=..')) return true
-		v = _isReference.format(v)
+		v = _isReference.trim(v)
 		return !!v[0] && v[0].toLowerCase() === v[0]
 	}
 
@@ -71,7 +91,7 @@ const isReference = (function () {
 	 *
 	 * false: ".."
 	 */
-	_isReference.isRoot = function (v: string): boolean {
+	_isReference.root = function (v: string): boolean {
 		if (v.startsWith('..')) return false
 		if (v.startsWith('=..')) return false
 		if (v.startsWith('.') && v[1].toUpperCase() === v[1]) return true
@@ -79,13 +99,33 @@ const isReference = (function () {
 		return false
 	}
 
-	_isReference.isTilde = function (v = '') {
-		return v.startsWith('~/')
-	}
+	/**
+	 * Returns true if the value is prefixed with ~/ (placeholder for base url)
+	 *
+	 * true: "~/myBaseUrl"
+	 *
+	 * false: "/myBaseUrl"
+	 *
+	 * false: "myBaseUrl"
+	 *
+	 * false: "~myBaseUrl"
+	 *
+	 * @param v Reference string
+	 * @returns { boolean }
+	 */
+	_isReference.tilde = (v = '') => v.startsWith('~/')
 
-	_isReference.isTraverse = function (v = '') {
-		return traverseRegex.test(v)
-	}
+	/**
+	 * True if the value is prefixed with N underscores followed by a single dot
+	 *
+	 * ex: _____.abc
+	 *
+	 * ex: _.SignIn.formData.password
+	 *
+	 * @param v Reference string
+	 * @returns { boolean }
+	 */
+	_isReference.traverse = (v = '') => traverseRegex.test(v)
 
 	return _isReference
 })()

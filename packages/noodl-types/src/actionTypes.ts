@@ -21,18 +21,6 @@ export interface UncommonActionObjectProps {
 	wait?: boolean | number
 }
 
-export type AnyActionObject =
-	| BuiltInActionObject
-	| EvalActionObject
-	| PageJumpActionObject
-	| PopupActionObject
-	| PopupDismissActionObject
-	| RefreshActionObject
-	| RemoveSignatureActionObject
-	| SaveActionObject
-	| SaveSignatureActionObject
-	| UpdateActionObject
-
 export interface ActionObject<T extends string = string> {
 	actionType: T
 	[key: string]: any
