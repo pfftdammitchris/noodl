@@ -78,9 +78,11 @@ export const Identify = (function () {
 				(v) => v.actionType === 'updateObject',
 			),
 		},
-		actionChain: identifyArr<any[]>((v) =>
-			[o.action.any, o.emit, o.goto].some((fn) => v.some(fn)),
-		),
+		actionChain(v: unknown) {
+			return (
+				i.isObj(v) && [o.action.any, o.emit, o.goto].some((fn) => v.some(fn))
+			)
+		},
 		/**
 		 * Returns true if the value is a NOODL boolean. A value is a NOODL boolean
 		 * if the value is truthy, true, "true", false, or "false"
@@ -213,9 +215,11 @@ export const Identify = (function () {
 			video: identifyNum<t.VideoMediaType>((v) => v == 9),
 		},
 		reference: i.isReference,
-		rootKey: identifyStr((v) => !!(v && v[0].toUpperCase() === v[0])),
-		localKey: identifyStr((v) => !!(v && v[0].toLowerCase() === v[0])),
-		textBoard: identifyArr<t.TextBoardObject>((v) => v.some(o.textBoardItem)),
+		rootKey: identifyStr<string>((v) => !!(v && v[0].toUpperCase() === v[0])),
+		localKey: identifyStr<string>((v) => !!(v && v[0].toLowerCase() === v[0])),
+		textBoard(v: unknown): v is t.TextBoardObject {
+			return i.isObj(v) && v.some(o.textBoardItem)
+		},
 		textBoardItem<O extends { br: any } | 'br'>(v: O) {
 			if (i.isObj(v)) return 'br' in v
 			if (i.isStr(v)) return v === 'br'
