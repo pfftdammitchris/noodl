@@ -218,7 +218,7 @@ export const Identify = (function () {
 		rootKey: identifyStr<string>((v) => !!(v && v[0].toUpperCase() === v[0])),
 		localKey: identifyStr<string>((v) => !!(v && v[0].toLowerCase() === v[0])),
 		textBoard(v: unknown): v is t.TextBoardObject {
-			return i.isObj(v) && v.some(o.textBoardItem)
+			return i.isArr(v) && v.some(o.textBoardItem)
 		},
 		textBoardItem<O extends { br: any } | 'br'>(v: O) {
 			if (i.isObj(v)) return 'br' in v
