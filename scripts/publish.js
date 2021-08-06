@@ -28,10 +28,10 @@ const { message = 'Update(s) to lib', publish } = cli.flags
 
 	execa.commandSync(
 		[
-			`lerna exec --scope ${lib} "npm version patch"`,
+			`lerna exec --scope ${lib} "npm version patch -f"`,
 			`git add packages/${lib}`,
 			`git commit -m "${message}"`,
-			`lerna exec --scope ${lib} "npm run build && npm publish"`,
+			`lerna exec --scope ${lib} "npm run build && npm publish -f"`,
 		].join(' && '),
 		{ shell: true, stdio: 'inherit' },
 	)
