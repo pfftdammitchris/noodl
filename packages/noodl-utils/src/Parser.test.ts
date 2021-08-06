@@ -13,6 +13,7 @@ const rootConfig = {
 	ios: { cadlVersion: { stable: '0.5d', test: '0.5d' } },
 	android: { cadlVersion: { stable: '0.5d', test: '0.5d' } },
 } as RootConfig
+
 const parsedBaseUrl = `https://public.aitmed.com/cadl/meet3_0.5d/`
 const parsedCadlEndpoint = parsedBaseUrl + rootConfig.cadlMain
 
