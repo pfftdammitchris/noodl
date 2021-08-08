@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import { Identify, IfObject } from 'noodl-types'
+import { ReferenceString, ReferenceSymbol, IfObject } from 'noodl-types'
 import has from 'lodash.has'
 import curry from 'lodash.curry'
 import flowRight from 'lodash.flowright'
@@ -268,4 +268,74 @@ export function isTest() {
 export function isValidAsset(value: string | undefined) {
 	if (value?.endsWith('..tar')) return false
 	return u.isStr(value) && /(.[a-zA-Z]+)$/i.test(value)
+}
+
+const regex = {
+	prefix: /^[.=@]+/i,
+	suffix: /[.=@]+$/i,
+}
+
+/**
+ * Trims the reference prefix in the string
+ * @param v Reference string
+ * @param fixType 'prefix'
+ */
+export function trimReference(
+	v: ReferenceString,
+	fixType: 'prefix',
+): ReferenceString<Exclude<ReferenceSymbol, '@'>>
+
+/**
+ * Trims the reference suffix in the string
+ * @param v Reference string
+ * @param fixType 'suffix'
+ */
+export function trimReference(
+	v: ReferenceString,
+	fixType: 'suffix',
+): ReferenceString<Extract<ReferenceSymbol, '@'>>
+
+/**
+ * Trims the both prefix and the suffix symbol(s) in the reference string
+ * @param v Reference string
+ * @return { string }
+ */
+export function trimReference(v: ReferenceString): string
+
+/**
+ * Trims the both prefix and the suffix symbol(s) in the reference string
+ * Optionally provide a second parameter with "prefix" to trim only the prefix,
+ * and vice versa for the suffix
+ *
+ * ex: "=.builtIn.string.concat" --> "builtIn.string.concat"
+ *
+ * ex: "=..builtIn.string.concat" --> "builtIn.string.concat"
+ *
+ * ex: ".builtIn.string.concat" --> "builtIn.string.concat"
+ *
+ * ex: "..builtIn.string.concat" --> "builtIn.string.concat"
+ *
+ * ex: "____.builtIn.string.concat" --> "builtIn.string.concat"
+ *
+ * ex: "_.builtIn.string.concat" --> "builtIn.string.concat"
+ *
+ * @param v Reference string
+ * @param fixType (Optional) Either "prefix" or "suffix"
+ * @returns string
+ */
+export function trimReference<
+	V extends ReferenceString,
+	F extends 'prefix' | 'suffix',
+>(v: V, fixType?: F) {
+	if (fixType === 'prefix') {
+		if (regex.prefix.test(v)) return v.replace(regex.prefix, '')
+		return v
+	}
+
+	if (fixType === 'suffix') {
+		if (regex.suffix.test(v)) return v.replace(regex.suffix, '')
+		return v
+	}
+
+	return v.replace(regex.prefix, '').replace(regex.suffix, '') || ''
 }
