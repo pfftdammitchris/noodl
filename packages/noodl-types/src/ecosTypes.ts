@@ -172,6 +172,22 @@ export type MultipartMediaType = 7
 export type TextMediaType = 8
 export type VideoMediaType = 9
 
+export type ReferenceSymbol = '.' | '..' | '=' | '~/' | '@'
+export type ReferenceString<
+	K extends string,
+	S extends ReferenceSymbol,
+> = S extends '.'
+	? `.${K}`
+	: S extends '..'
+	? `..${K}`
+	: S extends '='
+	? `=${K}`
+	: S extends '~/'
+	? `~/${K}`
+	: S extends '@'
+	? `${K}@`
+	: `${Exclude<ReferenceSymbol, '@'>}${K}${Extract<ReferenceSymbol, '@'>}`
+
 // export namespace NameField {
 // 	export namespace Doc {
 // 		export type Epub = DocumentObject<'application/epub+zip'>
