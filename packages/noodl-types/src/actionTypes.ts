@@ -38,8 +38,9 @@ export interface BuiltInActionObject
 
 export interface EvalActionObject
 	extends ActionObject,
-		Pick<UncommonActionObjectProps, 'dataKey' | 'dataObject' | 'object'> {
+		Pick<UncommonActionObjectProps, 'dataKey' | 'dataObject'> {
 	actionType: 'evalObject'
+	object?: Record<string, any> | string | (Record<string, any> | string)[]
 	[key: string]: any
 }
 
