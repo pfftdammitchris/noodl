@@ -174,19 +174,27 @@ export type VideoMediaType = 9
 
 export type ReferenceSymbol = '.' | '..' | '=' | '~/' | '@'
 export type ReferenceString<
-	K extends string,
-	S extends ReferenceSymbol,
+	K extends string = string,
+	S extends ReferenceSymbol | '=.' | '=..' = ReferenceSymbol | '=.' | '=..',
 > = S extends '.'
 	? `.${K}`
 	: S extends '..'
 	? `..${K}`
+	: S extends '=.'
+	? `=${Extract<ReferenceSymbol, '.'> | never}${K}`
+	: S extends '=..'
+	? `=${Extract<ReferenceSymbol, '..'> | never}${K}`
 	: S extends '='
-	? `=${K}`
+	? `=${Extract<ReferenceSymbol, '.' | '..'> | never}${K}`
 	: S extends '~/'
 	? `~/${K}`
 	: S extends '@'
 	? `${K}@`
-	: `${Exclude<ReferenceSymbol, '@'>}${K}${Extract<ReferenceSymbol, '@'>}`
+	:
+			| `=.${K}`
+			| `=..${K}`
+			| `${Exclude<ReferenceSymbol, '@'>}${K}`
+			| `${K}${Extract<ReferenceSymbol, '@'>}`
 
 // export namespace NameField {
 // 	export namespace Doc {

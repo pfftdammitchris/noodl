@@ -1,5 +1,13 @@
 import { componentTypes } from './_internal/constants'
 import { ComponentType } from './constantTypes'
+import isAwaitReference from './utils/isAwaitReference'
+import isEvalReference from './utils/isEvalReference'
+import isEvalLocalReference from './utils/isEvalLocalReference'
+import isEvalRootReference from './utils/isEvalRootReference'
+import isLocalReference from './utils/isLocalReference'
+import isRootReference from './utils/isRootReference'
+import isTildeReference from './utils/isTildeReference'
+import isTraverseReference from './utils/isTraverseReference'
 import * as t from '.'
 import * as i from './_internal'
 
@@ -214,9 +222,26 @@ export const Identify = (function () {
 			text: identifyNum<t.TextMediaType>((v) => v == 8),
 			video: identifyNum<t.VideoMediaType>((v) => v == 9),
 		},
-		reference: i.isReference,
 		rootKey: identifyStr<string>((v) => !!(v && v[0].toUpperCase() === v[0])),
 		localKey: identifyStr<string>((v) => !!(v && v[0].toLowerCase() === v[0])),
+		reference: identifyStr<t.ReferenceString>((v) => {
+			if (!i.isStr(v)) return false
+			if (v === '.yml') return false
+			if (v.startsWith('.')) return true
+			if (v.startsWith('=')) return true
+			if (v.startsWith('@')) return true
+			if (v.startsWith('~')) return true
+			if (/^[_]+\./.test(v)) return true
+			return false
+		}),
+		localReference: isLocalReference,
+		awaitReference: isAwaitReference,
+		evalReference: isEvalReference,
+		evalLocalReference: isEvalLocalReference,
+		evalRootReference: isEvalRootReference,
+		rootReference: isRootReference,
+		tildeReference: isTildeReference,
+		traverseReference: isTraverseReference,
 		textBoard(v: unknown): v is t.TextBoardObject {
 			return i.isArr(v) && v.some(o.textBoardItem)
 		},

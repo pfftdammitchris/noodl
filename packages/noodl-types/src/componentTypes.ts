@@ -62,6 +62,11 @@ export interface ChatListComponentObject
 	[key: string]: any
 }
 
+export interface ChartComponentObject extends ComponentObject {
+	type: 'chart'
+	[key: string]: any
+}
+
 export interface ButtonComponentObject
 	extends ComponentObject,
 		Pick<UncommonComponentObjectProps, 'contentType' | 'text'> {

@@ -1,5 +1,6 @@
 export const componentTypes = [
 	'button',
+	'chart',
 	'divider',
 	'footer',
 	'header',
