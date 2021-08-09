@@ -1,3 +1,6 @@
+import { EmitObject, EmitObjectFold, IfObject } from './uncategorizedTypes'
+import { OrArray } from './_internal/types'
+
 export type RootConfig = {
 	/** Example: albh2.aitmed.io */
 	apiHost: string
@@ -77,6 +80,24 @@ export interface RootConfigDeviceVersionObject {
 		test: string
 	}
 }
+
+export type BuiltInEvalObject<S extends string = string> = Record<
+	ReferenceString<`builtIn${S}`, '=.'>,
+	Partial<Record<'dataIn' | 'dataOut', OrArray<DataIn | DataOut>>> | string
+>
+
+export type BuiltInEvalReference<S extends string> = ReferenceString<
+	`builtIn${S}`,
+	'=.'
+>
+
+export type DataIn = OrArray<
+	string | IfObject | EmitObjectFold | Record<string, any>
+>
+
+export type DataOut = OrArray<
+	string | IfObject | EmitObjectFold | Record<string, any>
+>
 
 export type DeviceType = 'web' | 'ios' | 'android'
 
