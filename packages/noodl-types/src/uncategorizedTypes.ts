@@ -16,8 +16,8 @@ export interface EmitObjectFold {
 
 export type GotoUrl = string
 
-export interface GotoObject {
-	goto: string
+export interface GotoObject<V = string> {
+	goto: V
 	[key: string]: any
 }
 

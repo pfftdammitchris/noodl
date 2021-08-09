@@ -1,6 +1,6 @@
 import { OrArray } from './_internal/types'
-import { EmitObjectFold, IfObject } from './uncategorizedTypes'
-import { BuiltInEvalObject, ReferenceString } from './ecosTypes'
+import { EmitObjectFold, GotoObject, IfObject } from './uncategorizedTypes'
+import { BuiltInEvalObject, DataIn, ReferenceString } from './ecosTypes'
 import { LiteralUnion } from 'prettier'
 
 export interface UncommonActionObjectProps {
@@ -44,13 +44,19 @@ export interface EvalActionObject
 		Pick<UncommonActionObjectProps, 'dataKey' | 'dataObject'> {
 	actionType: 'evalObject'
 	object?: OrArray<
-		| string
 		| IfObject
 		| BuiltInEvalObject
+		| BuiltInActionObject
+		| GotoObject<string | { dataIn?: DataIn }>
+		| ''
 		| Record<
 				ReferenceString,
-				| LiteralUnion<ReferenceString, string>
+				| null
+				| boolean
 				| BuiltInEvalObject
+				| LiteralUnion<ReferenceString, string>
+				| number
+				| string
 				| Record<ReferenceString, ReferenceString>
 		  >
 	>
