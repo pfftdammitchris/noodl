@@ -21,8 +21,8 @@ export interface GotoObject<V = string> {
 	[key: string]: any
 }
 
-export interface IfObject {
-	if: [any, any, any]
+export interface IfObject<Cond = any, VT = any, VF = any> {
+	if: [Cond, VT, VF]
 	[key: string]: any
 }
 
