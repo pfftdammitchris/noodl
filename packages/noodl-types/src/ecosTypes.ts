@@ -93,11 +93,11 @@ export type BuiltInEvalReference<S extends string> = ReferenceString<
 >
 
 export type DataIn = OrArray<
-	string | IfObject | EmitObjectFold | Record<string, any>
+	string | IfObject | EmitObjectFold | PolymorphicObject
 >
 
 export type DataOut = OrArray<
-	string | IfObject | EmitObjectFold | Record<string, any>
+	string | IfObject | EmitObjectFold | PolymorphicObject
 >
 
 export type DeviceType = 'web' | 'ios' | 'android'
@@ -220,8 +220,8 @@ export type ReferenceString<
 			| `${K}${Extract<ReferenceSymbol, '@'>}`
 
 export type ReferenceObject<K extends string = string, V = any> = Record<
-	K extends ReferenceString ? ReferenceString : string,
-	V
+	K extends ReferenceString ? ReferenceString : K,
+	OrArray<V>
 >
 /**
  * Polymorphic objects are object literals where keys are either plain strings
@@ -229,15 +229,9 @@ export type ReferenceObject<K extends string = string, V = any> = Record<
  * reference string, or another arbitrary object, or an array of arbitrary
  * objects/strings/reference strings/arrays etc.
  */
-export type PolymorphicObject = Record<
+export type PolymorphicObject = ReferenceObject<
 	string,
-	OrArray<
-		| LiteralUnion<ReferenceString, string>
-		| ReferenceObject<
-				ReferenceString | string,
-				ReferenceObject<ReferenceString>
-		  >
-	>
+	OrArray<ReferenceObject<ReferenceString, ReferenceObject>>
 >
 
 // export namespace NameField {
