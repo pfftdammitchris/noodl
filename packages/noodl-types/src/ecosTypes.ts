@@ -1,3 +1,4 @@
+import { LiteralUnion } from 'prettier'
 import { EmitObject, EmitObjectFold, IfObject } from './uncategorizedTypes'
 import { OrArray } from './_internal/types'
 
@@ -194,6 +195,7 @@ export type TextMediaType = 8
 export type VideoMediaType = 9
 
 export type ReferenceSymbol = '.' | '..' | '=' | '~/' | '@'
+
 export type ReferenceString<
 	K extends string = string,
 	S extends ReferenceSymbol | '=.' | '=..' = ReferenceSymbol | '=.' | '=..',
@@ -216,6 +218,27 @@ export type ReferenceString<
 			| `=..${K}`
 			| `${Exclude<ReferenceSymbol, '@'>}${K}`
 			| `${K}${Extract<ReferenceSymbol, '@'>}`
+
+export type ReferenceObject<K extends string = string, V = any> = Record<
+	K extends ReferenceString ? ReferenceString : string,
+	V
+>
+/**
+ * Polymorphic objects are object literals where keys are either plain strings
+ * or string references, and their value is also either a plain string or
+ * reference string, or another arbitrary object, or an array of arbitrary
+ * objects/strings/reference strings/arrays etc.
+ */
+export type PolymorphicObject = Record<
+	string,
+	OrArray<
+		| LiteralUnion<ReferenceString, string>
+		| ReferenceObject<
+				ReferenceString | string,
+				ReferenceObject<ReferenceString>
+		  >
+	>
+>
 
 // export namespace NameField {
 // 	export namespace Doc {
