@@ -2,10 +2,10 @@ import { ActionObject } from './actionTypes'
 import { StyleObject } from './styleTypes'
 
 export type ActionChain = (
-	| Partial<ActionObject>
-	| Partial<EmitObjectFold>
-	| Partial<GotoObject>
-	| Partial<IfObject>
+	| ActionObject
+	| EmitObjectFold
+	| GotoObject
+	| IfObject
 )[]
 
 export interface EmitObject {
