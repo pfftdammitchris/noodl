@@ -31,7 +31,13 @@ export interface IfObject<Cond = any, VT = any, VF = any> {
 	[key: string]: any
 }
 
-export type Path = string | EmitObject | IfObject
+export type Path<V = any> = V extends string
+	? string
+	: V extends EmitObjectFold
+	? EmitObjectFold
+	: V extends IfObject
+	? IfObject
+	: string | EmitObjectFold | IfObject
 
 export type TextBoardObject = (
 	| { color?: string; text?: string }
