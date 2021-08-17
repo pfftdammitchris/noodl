@@ -1,6 +1,7 @@
 // process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
 import * as nc from 'noodl-common'
+import * as nu from 'noodl-utils'
 import flowRight from 'lodash.flowright'
 import path from 'path'
 import tds from 'transducers-js'
@@ -63,11 +64,11 @@ class Visitor {
 
 function getVisitorHelpers(aggregator: Aggregator) {
 	function _get(this: YAMLNode | YAMLDocument, key = '') {
-		Identify.reference(key) && (key = Identify.reference.format(key))
+		Identify.reference(key) && (key = nu.trimReference(key))
 		const [firstKey = '', ...rest] = key.split('.')
 		if (firstKey) {
-			const isLocal = firstKey[0].toLowerCase() === firstKey[0]
-			if (isLocal) {
+			const local = firstKey[0].toLowerCase() === firstKey[0]
+			if (local) {
 				if (isMap(this) || isDocument(this)) {
 					return this.getIn(key.split('.'))
 				}
@@ -213,9 +214,9 @@ function getReference({
 	type: t.ReferenceType
 	value: string
 }) {
-	const path = Identify.reference.format(value)
+	const path = nu.trimReference(value)
 	if (type === 'merge') {
-		if (Identify.reference.isLocal(value)) {
+		if (Identify.localReference(value)) {
 			if (isMap(visitee) || isDocument(visitee)) {
 				return visitee.getIn(path.split('.'))
 			}
@@ -238,13 +239,13 @@ function getReference({
 }
 
 function getReferenceType(value: string): t.ReferenceType {
-	if (Identify.reference.isRoot(value) || Identify.reference.isLocal(value)) {
+	if (Identify.rootReference(value) || Identify.localReference(value)) {
 		return 'merge'
 	}
-	if (Identify.reference.isAwaitingVal(value)) return 'await'
-	if (Identify.reference.isEval(value)) return 'evolve'
-	if (Identify.reference.isTilde(value)) return 'tilde'
-	if (Identify.reference.isTraverse(value)) return 'traverse'
+	if (Identify.awaitReference(value)) return 'await'
+	if (Identify.evalReference(value)) return 'evolve'
+	if (Identify.tildeReference(value)) return 'tilde'
+	if (Identify.traverseReference(value)) return 'traverse'
 	return 'unknown'
 }
 
@@ -252,17 +253,19 @@ const doc = nc.loadFileAsDoc(
 	path.join(__dirname, '../generated/meet4d/SignIn.yml'),
 )
 
-;(async () => {
-	try {
-		const { doc, raw: yml } = await this.agg.init({
-			loadPages: false,
-			loadPreloadPages: false,
-		})
-		const preloadPages = await this.agg.loadPreloadPages()
-	} catch (error) {
-		console.error(error)
-	}
-})()
+// ;(async () => {
+// 	try {
+// 		const { doc, raw: yml } = await this.agg.init({
+// 			loadPages: false,
+// 			loadPreloadPages: false,
+// 		})
+// 		const preloadPages = await this.agg.loadPreloadPages()
+// 	} catch (error) {
+// 		console.error(error)
+// 	}
+// })()
+
+const aggregator = new Aggregator('meetd2')
 
 const visitorFactory = createVisitorFactory(CONFIG)
 
@@ -272,17 +275,51 @@ const composedVisitors = (context: {
 	root: Aggregator['root']
 }): t.VisitFn => visitorFactory.compose(actionsVisitor)
 
-visitor
-	.init()
+aggregator
+	.init({
+		loadPages: true,
+		loadPreloadPages: true,
+	})
 	.then(() => {
-		for (const [name, visitee] of visitor.agg.root) {
-			visitorFactory.visit.call(
-				visitee,
-				{ name, visitee, root: visitor.agg.root },
-				composedVisitors({ name, visitee, root: visitor.agg.root }),
-			)
+		const evalObjects = {
+			arrays: [],
+			booleans: [],
+			objects: [],
+			numbers: [],
+			strings: [],
 		}
-		return fs.writeJson(paths.metadata, actionsVisitor.data, { spaces: 2 })
+
+		const userEvents = {
+			onClick: [],
+		}
+
+		for (const [name, visitee] of aggregator.root) {
+			YAMLVisit(visitee, {
+				Pair: (key, node, path) => {
+					if (node.key.value === 'onClick') {
+						if (isSeq(node.value)) {
+							userEvents.onClick.push(node.toJSON())
+						}
+					}
+				},
+				Map: (key, node, path) => {
+					// evalObject action objects
+					// if (node.get('actionType') === 'evalObject') {
+					// 	const object = node.get('object')
+					// 	if (isScalar(object)) {
+					// 		if (evalObjects[typeof object]) {
+					// 			evalObjects[typeof object].push(node.toJSON())
+					// 		}
+					// 	} else if (isMap(object)) {
+					// 		evalObjects.objects.push(node.toJSON())
+					// 	} else if (isSeq(object)) {
+					// 		evalObjects.arrays.push(node.toJSON())
+					// 	}
+					// }
+				},
+			})
+		}
+		return fs.writeJson(paths.metadata, userEvents, { spaces: 2 })
 	})
 	.catch(console.error)
 

@@ -3,7 +3,7 @@ const execa = require('execa')
 const meow = require('meow')
 
 const regex = {
-	noodl: /(noodl)/i,
+	noodl: /noodl/i,
 	'noodl-action-chain': /(nac|noodl-action-chain)/i,
 	'noodl-aggregator': /(aggr|na|aggregator|noodl-aggregator)/i,
 	'noodl-common': /(nc|ncom|ncommon|noodl-common)/i,
