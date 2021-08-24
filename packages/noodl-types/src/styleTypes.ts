@@ -33,6 +33,12 @@ export interface StyleObject {
 	lineHeight?: string
 	marginLeft?: string
 	marginTop?: string
+	marginRight?: string
+	marginBottom?: string
+	minWidth?: string
+	maxWidth?: string
+	minHeight?: string
+	maxHeight?: string
 	outline?: string
 	padding?: string // TODO - check if handling
 	paddingTop?: string // TODO - check if handling
