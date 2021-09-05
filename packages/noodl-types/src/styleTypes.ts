@@ -1,32 +1,31 @@
 export interface StyleObject {
 	align?: StyleAlign
-	axis?: StyleAxis // TODO - check if handling
+	axis?: StyleAxis
 	activeColor?: string
-	background?: string // TODO - check if handling
-	backgroundColor?: string // TODO - check if handling
+	background?: string
+	backgroundColor?: string
 	border?: StyleBorderObject
-	borderColor?: string // TODO - check if handling
-	borderRadius?: string // TODO - check if handling
-	borderWidth?: string // TODO - check if handling
-	boxShadow?: string // TODO - check if handling
-	boxSizing?: string // TODO - check if handling
+	borderColor?: string
+	borderRadius?: string
+	borderWidth?: string
+	boxShadow?: string
+	boxSizing?: string
 	color?: string
 	contentSize?: {
-		// TODO - check if handling
 		width?: string
 		height?: string
 	}
-	display?: string // TODO - check if handling
+	display?: string
 	float?: boolean
 	flex?: string
 	flexFlow?: any
-	fontColor?: string // TODO - check if handling
+	fontColor?: string
 	fontSize?: string
 	fontFamily?: string
 	fontStyle?: 'bold' | string
-	fontWeight?: string // TODO - check if handling
+	fontWeight?: string
 	height?: string
-	isHidden?: boolean
+	isHidden?: string | boolean
 	justifyContent?: string
 	left?: string
 	letterSpacing?: string
@@ -40,21 +39,21 @@ export interface StyleObject {
 	minHeight?: string
 	maxHeight?: string
 	outline?: string
-	padding?: string // TODO - check if handling
-	paddingTop?: string // TODO - check if handling
-	paddingLeft?: string // TODO - check if handling
-	paddingRight?: string // TODO - check if handling
-	paddingBottom?: string // TODO - check if handling
+	padding?: string
+	paddingTop?: string
+	paddingLeft?: string
+	paddingRight?: string
+	paddingBottom?: string
 	position?: string
-	required?: string
-	shadow?: string // ex: "false"
+	required?: string | boolean
+	shadow?: false | string // ex: "false"
 	textAlign?: StyleTextAlign
 	textColor?: string
 	textDecoration?: string
-	textIndent?: string // TODO - check if handling
+	textIndent?: string
 	top?: string
 	width?: string
-	zIndex?: number // TODO - check if handling
+	zIndex?: string | number
 	[key: string]: any
 }
 
@@ -80,5 +79,4 @@ export type StyleTextAlign =
 export interface StyleTextAlignObject {
 	x?: 'left' | 'center' | 'right' | 'centerX'
 	y?: 'left' | 'center' | 'right' | 'centerY'
-	[key: string]: any
 }
