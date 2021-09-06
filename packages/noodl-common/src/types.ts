@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import { YAMLMap } from 'yaml'
-import { AcceptArray } from '@jsmanifest/typefest'
+import { OrArray } from '@jsmanifest/typefest'
 
 export type KeyOf<N extends YAMLMap | Record<string, any>> = N extends YAMLMap
 	? YAMLMap['items'][number]['key']
@@ -45,7 +45,7 @@ export interface LoadFilesOptions<
 > {
 	as?: LFType
 	includeExt?: boolean
-	preload?: AcceptArray<string>
-	spread?: AcceptArray<string>
+	preload?: OrArray<string>
+	spread?: OrArray<string>
 	type?: LType
 }

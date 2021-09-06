@@ -1,4 +1,4 @@
-import { AcceptArray } from '@jsmanifest/typefest'
+import { OrArray } from '@jsmanifest/typefest'
 import curry from 'lodash/curry'
 import * as u from '@jsmanifest/utils'
 import * as tds from 'transducers-js'
@@ -46,7 +46,7 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 	constructor(opts: {
 		dataFilePath: string
 		store?: Store
-		docs?: AcceptArray<Scripts<Store>['docs'][number]>
+		docs?: OrArray<Scripts<Store>['docs'][number]>
 	}) {
 		this.#dataFilePath = opts.dataFilePath || ''
 		opts.docs && u.array(opts.docs).forEach((doc) => this.docs.push(doc))
@@ -174,7 +174,7 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 	}
 
 	use(opts: {
-		script?: AcceptArray<t.Script.Register<Store>>
+		script?: OrArray<t.Script.Register<Store>>
 		onStart?: t.Script.HooksRegister<Store, 'onStart'>
 		onEnd?: t.Script.HooksRegister<Store, 'onEnd'>
 	}) {

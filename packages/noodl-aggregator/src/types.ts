@@ -1,5 +1,5 @@
 import { LiteralUnion } from 'type-fest'
-import { AcceptArray } from '@jsmanifest/typefest'
+import { OrArray } from '@jsmanifest/typefest'
 import { DeviceType, Env } from 'noodl-types'
 import yaml from 'yaml'
 
@@ -29,8 +29,8 @@ export type Hooks = {
 export type LoadOptions<Type extends 'doc' | 'yml' = 'doc' | 'yml'> =
 	| string
 	| (Type extends 'doc'
-			? AcceptArray<{ name: string; doc: yaml.Document }>
-			: AcceptArray<{ name: string; yml: string }>)
+			? OrArray<{ name: string; doc: yaml.Document }>
+			: OrArray<{ name: string; yml: string }>)
 
 export interface Options {
 	config?: string
