@@ -21,14 +21,18 @@
 		"dist": "./dist",
 		"test": "src/__tests__"
 	},
+	"exports": {
+		"import": "./dist/index.js",
+		"require": "./dist/index.js"
+	},
 	"files": [
 		"dist"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"license": "ISC",
-	"main": "dist/index.js",
-	"module": "dist/index.js",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
 	"name": "noodl-common",
 	"publishConfig": {
 		"access": "public"
@@ -38,10 +42,17 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
 	"scripts": {
-		"build": "tsc",
-		"start": "tsc --watch",
+		"build": "tsc --project tsconfig.json",
+		"start": "npm run build -- --watch",
 		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
-	"typings": "dist/index.d.ts",
+	"type": "module",
+	"typesVersions": {
+		"*": {
+			"index.d.ts": [
+				"./dist/index.d.ts"
+			]
+		}
+	},
 	"version": "0.0.47"
 }

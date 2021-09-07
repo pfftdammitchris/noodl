@@ -1,6 +1,6 @@
 import React from 'react'
-import produce, { Draft } from 'immer'
-import { configExists } from '../utils/remote'
+import { Draft, produce } from 'immer'
+import { configExists } from '../utils/remote.js'
 
 export interface Options {
 	initialValue?: string

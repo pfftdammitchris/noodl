@@ -1,17 +1,18 @@
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
-import { sync as globbySync } from 'globby'
+import { globbySync } from 'globby'
 import { join as joinPaths, resolve as resolvePath } from 'path'
-import {
-	readdirSync as _readdirSync,
-	readFileSync,
-	statSync,
-	writeFileSync as _writeFileSync,
-	WriteFileOptions,
-} from 'fs-extra'
+import fs, { WriteFileOptions } from 'fs-extra'
 import { Document, parseDocument as parseYmlToDoc } from 'yaml'
 import minimatch from 'minimatch'
-import normalizePath from './normalizePath'
+import normalizePath from './normalizePath.js'
+
+const {
+	readdirSync: _readdirSync,
+	readFileSync,
+	statSync,
+	writeFileSync: _writeFileSync,
+} = fs
 
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
 export const highlight = (...s: any[]) => chalk.yellow(...s)

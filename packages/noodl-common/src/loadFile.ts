@@ -1,14 +1,16 @@
 import * as u from '@jsmanifest/utils'
 import { LiteralUnion } from 'type-fest'
-import { existsSync, readFileSync } from 'fs-extra'
+import fs from 'fs-extra'
 import path from 'path'
 import {
 	Document,
 	parse as parseYmlToJson,
 	parseDocument as parseYmlToDoc,
 } from 'yaml'
-import getAbsFilePath from './getAbsFilePath'
-import * as t from './types'
+import getAbsFilePath from './getAbsFilePath.js'
+import * as t from './types.js'
+
+const { existsSync, readFileSync } = fs
 
 /**
  * Loads a file at filepath relative to the current file

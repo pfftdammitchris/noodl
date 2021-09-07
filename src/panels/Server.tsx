@@ -3,18 +3,18 @@ import * as nc from 'noodl-common'
 import React from 'react'
 import { FileStructure } from 'noodl-common'
 import { Box, Newline, Text } from 'ink'
-import globby from 'globby'
-import TextInput from 'ink-text-input'
+import { globbySync } from 'globby'
 import yaml from 'yaml'
 import express from 'express'
 import path from 'path'
 import fs from 'fs-extra'
-import useCtx from '../useCtx'
-import useConfigInput from '../hooks/useConfigInput'
-import useWatcher from '../hooks/useWatcher'
-import useWss from '../hooks/useWss'
-import * as c from '../constants'
-import * as co from '../utils/color'
+import TextInput from '../components/TextInput.js'
+import useCtx from '../useCtx.js'
+import useConfigInput from '../hooks/useConfigInput.js'
+import useWatcher from '../hooks/useWatcher.js'
+import useWss from '../hooks/useWss.js'
+import * as c from '../constants.js'
+import * as co from '../utils/color.js'
 
 export interface Props {
 	config: string
@@ -133,7 +133,7 @@ function Server({
 			}
 			return acc
 		}
-		const localFiles = globby.sync(getWatchGlob().replace(/\\/g, '/'))
+		const localFiles = globbySync(getWatchGlob().replace(/\\/g, '/'))
 		log(
 			`Picked up ${u.yellow(
 				String(localFiles.length),

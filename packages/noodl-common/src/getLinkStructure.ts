@@ -1,5 +1,5 @@
 import path from 'path'
-import { LinkStructure } from './types'
+import { LinkStructure } from './types.js'
 
 /**
  * @param { string } link

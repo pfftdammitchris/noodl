@@ -1,8 +1,8 @@
 import * as u from '@jsmanifest/utils'
-import flowRight from 'lodash/flowRight'
-import curry from 'lodash/curry'
+import flowRight from 'lodash/flowRight.js'
+import curry from 'lodash/curry.js'
 import yaml, { isDocument, isMap, Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml'
-import { placeholder } from '../constants'
+import { placeholder } from '../constants.js'
 
 export function has(path: string[], node: unknown): boolean
 export function has(path: string, node: unknown): boolean

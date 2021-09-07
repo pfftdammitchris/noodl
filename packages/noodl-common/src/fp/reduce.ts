@@ -8,7 +8,7 @@ function reduce<V extends yaml.YAMLSeq | any[], Acc = any>(
 	fn: (acc: Acc, v: V) => Acc,
 	initialValue: Acc,
 ) {
-	if (yaml.isSeq(value)) return u.reduce(value.items, fn, initialValue)
+	if (yaml.isSeq(value)) return u.reduce(value.items as any, fn, initialValue)
 	return u.reduce(value, fn, initialValue)
 }
 

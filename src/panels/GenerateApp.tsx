@@ -1,26 +1,21 @@
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
-import {
-	getFileStructure,
-	LinkStructure,
-	normalizePath,
-	writeFileSync,
-} from 'noodl-common'
-import globby from 'globby'
-import * as com from 'noodl-common'
+import { constants as noodlAggregatorConsts } from 'noodl-aggregator'
+import { LinkStructure } from 'noodl-common'
+import * as nc from 'noodl-common'
+import { globbySync } from 'globby'
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
 import React from 'react'
 import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
-import Panel from '../components/Panel'
-import useConfigInput from '../hooks/useConfigInput'
-import useCtx from '../useCtx'
-import useDownload from '../hooks/useDownload'
-import { constants as noodlAggregatorConsts } from 'noodl-aggregator'
-import * as co from '../utils/color'
-import * as r from '../utils/remote'
+import Panel from '../components/Panel.js'
+import useConfigInput from '../hooks/useConfigInput.js'
+import useCtx from '../useCtx.js'
+import useDownload from '../hooks/useDownload.js'
+import * as co from '../utils/color.js'
+import * as r from '../utils/remote.js'
 
 const {
 	ON_RETRIEVED_ROOT_CONFIG,
@@ -39,11 +34,9 @@ export interface Props {
 
 export const initialState = {
 	configKey: '',
-	assets: [] as Array<
-		{
-			status: 'downloading' | 'downloaded' | 'does-not-exist'
-		} & LinkStructure
-	>,
+	assets: [] as Array<{
+		status: 'downloading' | 'downloaded' | 'does-not-exist'
+	}>,
 }
 
 function GenerateApp(props: Props) {
@@ -95,7 +88,7 @@ function GenerateApp(props: Props) {
 					const assetsDir = path.join(configDir, 'assets')
 
 					await fs.ensureFile(configFilePath)
-					writeFileSync(configFilePath, yml)
+					nc.writeFileSync(configFilePath, yml)
 
 					log(`Saved ${co.yellow(configFileName)} to folder`)
 					aggregator.configKey = configKey
@@ -156,10 +149,10 @@ function GenerateApp(props: Props) {
 						const localAssetsAsPlainFileNames = [] as string[]
 						const localAssetsAsFilePaths = [] as string[]
 
-						for (const filepath of globby.sync(path.join(assetsDir, '**/*'), {
+						for (const filepath of globbySync(path.join(assetsDir, '**/*'), {
 							onlyFiles: true,
 						})) {
-							const fileStructure = getFileStructure(filepath, {
+							const fileStructure = nc.getFileStructure(filepath, {
 								config: configKey,
 							})
 							localAssetsAsPlainFileNames.push(fileStructure.filename)
@@ -184,11 +177,12 @@ function GenerateApp(props: Props) {
 							)
 						}
 
-						const missingAssets = [] as typeof initialState['assets']
+						const missingAssets = [] as LinkStructure[]
 
 						for (const asset of assets) {
 							if (asset.filename) {
 								if (!localAssetsAsPlainFileNames.includes(asset.filename)) {
+									// @ts-expect-error
 									missingAssets.push({ ...asset, status: 'downloading' })
 								}
 							}
@@ -251,14 +245,14 @@ function GenerateApp(props: Props) {
 							name: string
 							doc: yaml.Document
 						}) {
-							const filename = com.withYmlExt(name).replace('_en', '')
+							const filename = nc.withYmlExt(name).replace('_en', '')
 							const filepath = path
 								.join(configDir, filename)
 								.replace('/~/', '/')
 							if (!doc) return u.log(doc)
 
 							if (type === 'root-config') {
-								writeFileSync(filepath, com.stringifyDoc(doc))
+								nc.writeFileSync(filepath, nc.stringifyDoc(doc))
 								const baseUrl = doc.get('cadlBaseUrl')
 								const appKey = doc.get('cadlMain')
 								log(`Base url: ${co.yellow(baseUrl)}`)
@@ -266,7 +260,7 @@ function GenerateApp(props: Props) {
 								log(`Saved root config object to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else if (type === 'app-config') {
-								writeFileSync(filepath, com.stringifyDoc(doc))
+								nc.writeFileSync(filepath, nc.stringifyDoc(doc))
 								numDocsFetching = aggregator.pageNames.length
 								log(
 									`\nTotal expected number of yml files we are retrieving is ${co.yellow(
@@ -277,7 +271,7 @@ function GenerateApp(props: Props) {
 								log(`Saved app config to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else {
-								writeFileSync(filepath, com.stringifyDoc(doc))
+								nc.writeFileSync(filepath, nc.stringifyDoc(doc))
 								const pageName = name.replace('_en', '')
 								log(
 									`Saved page ${co.magenta(pageName)} to ${co.yellow(
@@ -298,7 +292,7 @@ function GenerateApp(props: Props) {
 						.init({
 							fallback: {
 								appConfig: async () => {
-									const pathsToFallbackFile = normalizePath(
+									const pathsToFallbackFile = nc.normalizePath(
 										...[configDir, 'cadlEndpoint.yml'],
 									)
 									console.log(
@@ -310,7 +304,7 @@ function GenerateApp(props: Props) {
 							},
 						})
 				} catch (error) {
-					logError(error)
+					logError(error as Error)
 				} finally {
 					const doc = aggregator.root.get(aggregator.configKey) as yaml.Document
 					if (isLocal) {
@@ -332,11 +326,11 @@ function GenerateApp(props: Props) {
 							configuration.getPathToGenerateDir(),
 							aggregator.configKey,
 						)
-						const filename = com
+						const filename = nc
 							.withYmlExt(aggregator.configKey)
 							.replace('_en', '')
 						const filepath = path.join(dir, filename)
-						writeFileSync(filepath, com.stringifyDoc(doc))
+						nc.writeFileSync(filepath, nc.stringifyDoc(doc))
 					}
 				}
 			}

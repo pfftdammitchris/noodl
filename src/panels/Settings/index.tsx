@@ -1,4 +1,4 @@
-export { default } from './Settings'
-export * from './Settings'
-export * from './constants'
-export * from './types'
+export { default } from './Settings.js'
+export * from './Settings.js'
+export * from './constants.js'
+export * from './types.js'

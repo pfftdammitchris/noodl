@@ -1,13 +1,13 @@
 import * as u from '@jsmanifest/utils'
-import { sync as globbySync } from 'globby'
+import { globbySync } from 'globby'
 import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
 import path from 'path'
-import getAbsFilePath from './getAbsFilePath'
-import getBasename from './getBasename'
-import getFileStructure from './getFileStructure'
-import loadFile from './loadFile'
-import normalizePath from './normalizePath'
-import * as t from './types'
+import getAbsFilePath from './getAbsFilePath.js'
+import getBasename from './getBasename.js'
+import getFileStructure from './getFileStructure.js'
+import loadFile from './loadFile.js'
+import normalizePath from './normalizePath.js'
+import * as t from './types.js'
 
 /**
  * Load files from dir and optionally provide a second argument as an options

@@ -1,4 +1,3 @@
-import * as u from '@jsmanifest/utils'
 import { YAMLMap } from 'yaml'
 import { OrArray } from '@jsmanifest/typefest'
 

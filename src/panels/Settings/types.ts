@@ -1,4 +1,4 @@
-import * as c from './constants'
+import * as c from './constants.js'
 
 export type PromptId = typeof c.prompts[keyof typeof c.prompts]
 

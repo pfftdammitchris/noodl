@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, Newline, Text } from 'ink'
-import Select from '../../components/Select'
-import useCtx from '../../useCtx'
+import Select from '../../components/Select.js'
+import useCtx from '../../useCtx.js'
 
 export interface OutputDirProps {
 	value: string

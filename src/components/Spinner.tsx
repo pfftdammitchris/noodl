@@ -1,5 +1,8 @@
 import React from 'react'
-import InkSpinner from 'ink-spinner'
+import InkSpinnerComponent from 'ink-spinner'
+
+// @ts-expect-error
+const InkSpinner = InkSpinnerComponent.default
 
 export interface SpinnerProps {
 	type?: string

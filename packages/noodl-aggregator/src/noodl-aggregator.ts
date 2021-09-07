@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import * as com from 'noodl-common'
-import flatten from 'lodash/flatten'
+import flatten from 'lodash/flatten.js'
 import path from 'path'
 import { AppConfig, DeviceType, Env } from 'noodl-types'
 import {
@@ -13,8 +13,8 @@ import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash.chunk'
-import * as c from './constants'
-import * as t from './types'
+import * as c from './constants.js'
+import * as t from './types.js'
 
 class NoodlAggregator {
 	#configKey = ''
@@ -178,6 +178,7 @@ class NoodlAggregator {
 		loadPreloadPages: shouldLoadPreloadPages = true,
 	}: {
 		fallback?: {
+			// @ts-expect-error
 			appConfig?: Parameters<NoodlAggregator['loadAppConfig']>[0]['fallback']
 		}
 		loadPages?: boolean
@@ -296,7 +297,7 @@ class NoodlAggregator {
 		} catch (error) {
 			console.error(
 				`[${chalk.red('Error')}] ${chalk.yellow('loadAppConfig')}: ${
-					error.message
+					(error as Error).message
 				}. ` +
 					`If a fallback loader was provided, it will be used. ` +
 					`Otherwise the app config will be undefined`,

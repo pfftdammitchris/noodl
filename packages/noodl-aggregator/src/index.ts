@@ -1,6 +1,6 @@
-import * as consts from './constants'
-export { default } from './noodl-aggregator'
-export * from './noodl-aggregator'
-export * from './types'
+import * as consts from './constants.js'
+export { default } from './noodl-aggregator.js'
+export * from './noodl-aggregator.js'
+export * from './types.js'
 
 export const constants = consts

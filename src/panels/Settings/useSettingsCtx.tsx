@@ -1,5 +1,5 @@
-import { createCtx } from '../../utils/reactHelpers'
-import { SettingsContext } from './types'
+import { createCtx } from '../../utils/reactHelpers.js'
+import { SettingsContext } from './types.js'
 
 const [useSettingsCtx, Provider] = createCtx<SettingsContext>()
 

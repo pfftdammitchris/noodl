@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import axios, { AxiosError, AxiosResponse } from 'axios'
-import * as c from '../constants'
+import * as c from '../constants.js'
 
 // Note: this function does not throw. It returns the Error object instead
 export async function configExists(configKey: string) {
@@ -16,16 +16,20 @@ export async function getConfig(configKey: string) {
 		)
 		return data
 	} catch (err) {
-		if (err.response) {
-			console.log(err.response.data)
-			console.log(err.response.status)
-			console.log(err.response.headers)
-		} else if (err.request) {
-			console.log(err.request)
-		} else {
-			console.log('Error', err.message)
+		if (err instanceof Error) {
+			const error = err as AxiosError
+			if (error.response) {
+				console.log(error.response.data)
+				console.log(error.response.status)
+				console.log(error.response.headers)
+			} else if (error.request) {
+				console.log(error.request)
+			} else {
+				console.log('Error', err.message)
+			}
+			console.log(error.config)
 		}
-		console.log(err.config)
+
 		throw err
 	}
 }
@@ -38,7 +42,7 @@ export async function s3FileExists(
 		await axios.get(url)
 		return true
 	} catch (error) {
-		const res: AxiosError['response'] = error.response
+		const res: AxiosError['response'] = (error as AxiosError).response
 		if (res) {
 			// if (u.isNum(res.status)) return res.status !== 404
 			if (u.isStr(res.data)) {

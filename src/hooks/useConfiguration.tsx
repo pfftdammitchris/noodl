@@ -2,9 +2,9 @@ import { LiteralUnion } from 'type-fest'
 import React from 'react'
 import fs from 'fs-extra'
 import * as com from 'noodl-common'
-import store from '../store'
-import { Cli } from '../cli'
-import * as c from '../constants'
+import store from '../store.js'
+import { Cli } from '../cli.js'
+import * as c from '../constants.js'
 
 export interface Options {
 	cli: Cli

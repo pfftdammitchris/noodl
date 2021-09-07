@@ -1,11 +1,11 @@
 import * as u from '@jsmanifest/utils'
 import React from 'react'
 import { Box, Newline, Text } from 'ink'
-import Select from '../../components/Select'
-import useCtx from '../../useCtx'
-import useSettingsCtx from './useSettingsCtx'
-import * as co from '../../utils/color'
-import * as c from './constants'
+import Select from '../../components/Select.js'
+import useCtx from '../../useCtx.js'
+import useSettingsCtx from './useSettingsCtx.js'
+import * as co from '../../utils/color.js'
+import * as c from './constants.js'
 
 export interface PromptInstantiateDirProps {
 	onReady?(): void

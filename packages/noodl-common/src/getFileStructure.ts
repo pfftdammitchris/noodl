@@ -1,7 +1,7 @@
 import path from 'path'
-import isImage from './isImage'
-import isVideo from './isVideo'
-import { FileStructure } from './types'
+import isImage from './isImage.js'
+import isVideo from './isVideo.js'
+import { FileStructure } from './types.js'
 
 /**
  * @param { string } filepath

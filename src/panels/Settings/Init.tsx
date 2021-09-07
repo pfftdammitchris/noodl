@@ -2,12 +2,12 @@ import * as u from '@jsmanifest/utils'
 import { Newline, Text } from 'ink'
 import fs from 'fs-extra'
 import React from 'react'
-import HighlightedText from '../../components/HighlightedText'
-import Select from '../../components/Select'
-import useCtx from '../../useCtx'
-import useSettingsCtx from './useSettingsCtx'
-import * as co from '../../utils/color'
-import * as c from './constants'
+import HighlightedText from '../../components/HighlightedText.js'
+import Select from '../../components/Select.js'
+import useCtx from '../../useCtx.js'
+import useSettingsCtx from './useSettingsCtx.js'
+import * as co from '../../utils/color.js'
+import * as c from './constants.js'
 
 export interface SettingsInitProps {
 	onReady?(): void

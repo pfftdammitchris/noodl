@@ -7,24 +7,24 @@
 		"allowSyntheticDefaultImports": true,
 		"declaration": true,
 		"declarationDir": "dist",
-		"esModuleInterop": true,
 		"importHelpers": true,
 		"jsx": "react",
 		"keyofStringsOnly": true,
-		"lib": ["es2020", "esnext"],
-		"module": "es2020",
+		"lib": ["esnext"],
+		"module": "esnext",
 		"moduleResolution": "node",
 		"noEmitOnError": false,
 		"noImplicitAny": false,
 		"outDir": "dist",
 		"pretty": true,
 		"resolveJsonModule": true,
+		"rootDir": "./src",
 		"skipLibCheck": true,
 		"strict": true,
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "es2020"
+		"target": "esnext"
 	},
-	"exclude": ["node_modules/**/*"],
-	"include": ["src/**/*"]
+	"exclude": ["./node_modules/**/*"],
+	"include": ["./src/**/*"]
 }

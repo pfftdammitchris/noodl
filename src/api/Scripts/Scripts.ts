@@ -1,13 +1,13 @@
 import { OrArray } from '@jsmanifest/typefest'
-import curry from 'lodash/curry'
+import curry from 'lodash/curry.js'
 import * as u from '@jsmanifest/utils'
 import * as tds from 'transducers-js'
 import invariant from 'invariant'
 import yaml from 'yaml'
-import chunk from 'lodash/chunk'
+import chunk from 'lodash/chunk.js'
 import fs from 'fs-extra'
-import * as co from '../../utils/color'
-import * as t from './types'
+import * as co from '../../utils/color.js'
+import * as t from './types.js'
 
 const log = console.log
 const tag = (s: string) => `[${co.cyan(s)}]`

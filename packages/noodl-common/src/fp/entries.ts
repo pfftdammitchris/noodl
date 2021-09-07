@@ -1,7 +1,7 @@
 import * as u from '@jsmanifest/utils'
 import { isMap, YAMLMap } from 'yaml'
-import { KeyOf, ValueOf } from '../types'
-import toString from './base/toString'
+import { KeyOf, ValueOf } from '../types.js'
+import toString from './base/toString.js'
 
 function entries<N extends YAMLMap>(v: N): [key: KeyOf<N>, value: ValueOf<N>][]
 

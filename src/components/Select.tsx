@@ -1,27 +1,32 @@
 import React from 'react'
 import { Text } from 'ink'
-import SelectInput from 'ink-select-input'
+import InkSelectInput, { ItemProps } from 'ink-select-input'
 
-export type SelectInputProps = Parameters<typeof SelectInput>[0] & {
+// @ts-expect-error
+const SelectInput = InkSelectInput.default as typeof InkSelectInput
+
+export interface SelectInputProps {
+	indicatorComponent?: (args: {
+		children?: React.ReactNode
+		isSelected?: boolean | undefined
+	}) => React.ReactElement<any, any> | null
 	indicatorColor?: string
+	items: { key?: string; value: any; label: string }[]
+	isSelected?: boolean
+	isFocused?: boolean
+	initialIndex?: number
+	itemComponent?: React.FC<ItemProps>
+	limit?: number
+	onHighlight?(item: ItemProps): void
+	onSelect?(item: ItemProps): void
 }
 
-function Select({
+const Select = ({
 	indicatorColor = 'magentaBright',
 	isSelected,
 	items = [],
 	...rest
-}: {
-	isSelected?: boolean
-} & SelectInputProps) {
-	// const [highlightedItem, setHighlightedItem] = React.useState(
-	// 	items[0]?.value || '',
-	// )
-
-	// const onHighlight = React.useCallback((item) => {
-	// 	setHighlightedItem(item.value)
-	// }, [])
-
+}: SelectInputProps) => {
 	return (
 		<SelectInput
 			indicatorComponent={({ children, isSelected }) => (
@@ -29,7 +34,6 @@ function Select({
 					{isSelected ? '>' : ' '} {children}
 				</Text>
 			)}
-			// onHighlight={onHighlight}
 			initialIndex={0}
 			items={items}
 			{...rest}

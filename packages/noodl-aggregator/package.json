@@ -1,22 +1,8 @@
 {
-	"name": "noodl-aggregator",
-	"version": "0.0.13",
-	"description": "Noodl aggregator",
-	"keywords": [
-		"noodl",
-		"aggregator",
-		"aggregate",
-		"ecos",
-		"aitmed",
-		"telemedicine"
-	],
 	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
-	"homepage": "https://github.com/pfftdammitchris/noodl#readme",
-	"license": "ISC",
-	"main": "dist/index.js",
-	"jsnext:main": "dist/index.js",
-	"module": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"bugs": {
+		"url": "https://github.com/pfftdammitchris/noodl/issues"
+	},
 	"dependencies": {
 		"@jsmanifest/utils": "^1.0.7",
 		"axios": "^0.21.1",
@@ -26,11 +12,12 @@
 		"invariant": "^2.2.4",
 		"lodash.chunk": "^4.2.0",
 		"minimatch": "^3.0.4",
-		"noodl-common": "^0.0.46",
+		"noodl-common": "file:../noodl-common",
 		"noodl-types": "^1.0.123",
 		"noodl-utils": "^0.0.53",
 		"yaml": "^2.0.0-4"
 	},
+	"description": "Noodl aggregator",
 	"devDependencies": {
 		"@types/lodash.chunk": "^4.2.6"
 	},
@@ -38,9 +25,27 @@
 		"dist": "dist",
 		"test": "__tests__"
 	},
+	"exports": {
+		"import": "./dist/index.js",
+		"require": "./dist/index.js"
+	},
 	"files": [
 		"dist"
 	],
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
+	"homepage": "https://github.com/pfftdammitchris/noodl#readme",
+	"keywords": [
+		"noodl",
+		"aggregator",
+		"aggregate",
+		"ecos",
+		"aitmed",
+		"telemedicine"
+	],
+	"license": "ISC",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"name": "noodl-aggregator",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -49,12 +54,19 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl.git"
 	},
 	"scripts": {
-		"build": "rm -rf dist && tsc",
+		"build": "tsc",
+		"prebuild": "rm -rf dist",
 		"start": "tsc -w",
-		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
+		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
+		"tsc": ""
 	},
-	"bugs": {
-		"url": "https://github.com/pfftdammitchris/noodl/issues"
+	"type": "module",
+	"typesVersions": {
+		"*": {
+			"index.d.ts": [
+				"./dist/index.d.ts"
+			]
+		}
 	},
-	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee"
+	"version": "0.0.13"
 }

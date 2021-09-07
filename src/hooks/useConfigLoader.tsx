@@ -1,16 +1,9 @@
 import * as u from '@jsmanifest/utils'
 import React from 'react'
-import merge from 'lodash/merge'
-import globby from 'globby'
-import fs from 'fs-extra'
-import path from 'path'
+import merge from 'lodash/merge.js'
 import { AppConfig, RootConfig } from 'noodl-types'
-import produce, { Draft } from 'immer'
-import useCtx from '../useCtx'
-import * as com from '../utils/common'
-import * as co from '../utils/color'
-import * as r from '../utils/remote'
-import * as t from '../types'
+import { Draft, produce } from 'immer'
+import useCtx from '../useCtx.js'
 
 export interface Options {
 	dir?: string

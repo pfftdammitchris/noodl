@@ -1,5 +1,5 @@
 import { App } from './types'
-import { createCtx } from './utils/reactHelpers'
+import { createCtx } from './utils/reactHelpers.js'
 
 const [useCtx, Provider] = createCtx<App.Context>()
 

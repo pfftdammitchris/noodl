@@ -3,7 +3,7 @@ import React from 'react'
 import fs from 'fs-extra'
 import path from 'path'
 import chokidar from 'chokidar'
-import * as co from '../utils/color'
+import * as co from '../utils/color.js'
 
 export interface Hooks {
 	onAdd?(args: Parameters<onAddOrChangeFn>[0]): void

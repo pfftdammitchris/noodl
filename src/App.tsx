@@ -1,22 +1,22 @@
 import * as u from '@jsmanifest/utils'
 import { Box, Newline, Static, Text, useApp } from 'ink'
-import merge from 'lodash/merge'
+import merge from 'lodash/merge.js'
 import React from 'react'
-import produce, { Draft } from 'immer'
+import { produce, Draft } from 'immer'
 import BigText from 'ink-big-text'
 import Gradient from 'ink-gradient'
 import Aggregator from 'noodl-aggregator'
-import Select from './components/Select'
-import HighlightedText from './components/HighlightedText'
-import Spinner from './components/Spinner'
-import Settings from './panels/Settings'
-import GenerateApp from './panels/GenerateApp'
-import useConfiguration from './hooks/useConfiguration'
-import Server from './panels/Server'
-import { Provider } from './useCtx'
-import * as co from './utils/color'
-import * as c from './constants'
-import * as t from './types'
+import Select from './components/Select.js'
+import HighlightedText from './components/HighlightedText.js'
+import Spinner from './components/Spinner.js'
+import Settings from './panels/Settings/Settings.js'
+import GenerateApp from './panels/GenerateApp.js'
+import useConfiguration from './hooks/useConfiguration.js'
+import Server from './panels/Server.js'
+import { Provider } from './useCtx.js'
+import * as co from './utils/color.js'
+import * as c from './constants.js'
+import * as t from './types.js'
 
 const aggregator = new Aggregator()
 
@@ -177,11 +177,14 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 							},
 						]}
 						onSelect={(item) => {
+							// @ts-expect-error
 							switch (item.value) {
 								case 'generateApp':
 									return ctx.setPanel('generateApp')
 								case 'server':
 									return ctx.setPanel('server')
+								default:
+									return ''
 							}
 						}}
 					/>

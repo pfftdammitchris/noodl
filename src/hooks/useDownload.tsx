@@ -1,10 +1,10 @@
 import { IncomingMessage } from 'http'
 import React from 'react'
-import merge from 'lodash/merge'
-import produce, { Draft } from 'immer'
+import merge from 'lodash/merge.js'
+import { Draft, produce } from 'immer'
 import downloadFile from 'download'
 import * as u from '@jsmanifest/utils'
-import * as co from '../utils/color'
+import * as co from '../utils/color.js'
 
 export interface Options {
 	options?: downloadFile.DownloadOptions
@@ -145,10 +145,12 @@ function useDownload({
 					})
 				await progress
 			} catch (error) {
-				if (/(404|not found)/i.test(error.message)) {
+				if (/(404|not found)/i.test((error as Error).message)) {
 					console.error(`[${co.red(`Not Found`)}] ${co.yellow(url)}`)
 				} else {
-					console.error(`[${co.red(label || url)}] ${co.yellow(error.message)}`)
+					console.error(
+						`[${co.red(label || url)}] ${co.yellow((error as Error).message)}`,
+					)
 				}
 			}
 		},

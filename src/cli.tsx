@@ -1,15 +1,14 @@
 #!/usr/bin/env node
-process.stdout.write('\x1Bc')
+// process.stdout.write('\x1Bc')
 import React from 'react'
 import PrettyError from 'pretty-error'
 import meow from 'meow'
 import { render } from 'ink'
-import App from './App'
-import { DEFAULT_SERVER_PORT, DEFAULT_WSS_PORT } from './constants'
-import * as co from './utils/color'
-import store from './store'
+import App from './App.js'
+import { DEFAULT_SERVER_PORT, DEFAULT_WSS_PORT } from './constants.js'
+import * as co from './utils/color.js'
+import store from './store.js'
 
-const pkg = require('../package.json')
 const pe = new PrettyError()
 
 export type Cli = typeof cli
@@ -48,6 +47,7 @@ const cli = meow(
 	  ${tag.$} ${tag.noodl} ${flag('--outDir')} ${co.white('../cadl/output')} (sets the output directory)
 `,
 	{
+		importMeta: import.meta,
 		flags: {
 			config: {
 				type: 'string',
@@ -63,7 +63,6 @@ const cli = meow(
 			wssPort: { type: 'number', default: DEFAULT_WSS_PORT },
 		},
 		autoVersion: true,
-		pkg,
 	},
 )
 
@@ -72,3 +71,5 @@ console.log(cli.input)
 pe.start()
 
 render(<App cli={cli} />)
+
+//

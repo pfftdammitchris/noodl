@@ -2,9 +2,9 @@ import * as com from 'noodl-common'
 import fs from 'fs-extra'
 import React from 'react'
 import TextInput from 'ink-text-input'
-import useSettingsCtx from './useSettingsCtx'
-import * as co from '../../utils/color'
-import * as c from './constants'
+import useSettingsCtx from './useSettingsCtx.js'
+import * as co from '../../utils/color.js'
+import * as c from './constants.js'
 
 export interface SettingsInitProps {
 	onReady?(): void
