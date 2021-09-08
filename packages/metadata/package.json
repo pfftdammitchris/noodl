@@ -1,55 +1,59 @@
 {
-	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
-	"bugs": {
-		"url": "https://github.com/pfftdammitchris/noodl/issues"
-	},
-	"description": "Metadata for noodl applications",
-	"directories": {
-		"dist": "dist",
-		"test": "__tests__"
-	},
-	"exports": {
-		"import": "./dist/metadata.js",
-		"require": "./dist/metadata.js"
-	},
-	"files": [
-		"dist"
-	],
-	"homepage": "https://github.com/pfftdammitchris/noodl#readme",
-	"keywords": [
-		"noodl",
-		"ecos",
-		"metadata",
-		"telemedicine"
-	],
-	"license": "ISC",
-	"main": "dist/metadata.js",
-	"module": "dist/metadata.js",
-	"name": "metadata",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/pfftdammitchris/noodl-metadata.git"
-	},
-	"scripts": {
-		"build": "npm run tsc",
-		"prebuild": "rm -rf dist",
-		"start": "npm run tsc -- -w",
-		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
-		"tsc": "tsc"
-	},
-	"type": "module",
-	"typesVersions": {
-		"*": {
-			"metadata.d.ts": [
-				"./dist/metadata.d.ts"
-			]
-		}
-	},
-	"version": "0.0.1",
-	"dependencies": {
-		"pg": "^8.7.1"
-	},
-	"devDependencies": {
-		"@types/pg": "^8.6.1"
-	}
+  "author": "Christopher Tran <pfftdammitchris@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/pfftdammitchris/noodl/issues"
+  },
+  "dependencies": {
+    "aws-lambda": "^1.0.6",
+    "pg": "^8.7.1"
+  },
+  "description": "Metadata for noodl applications",
+  "devDependencies": {
+    "@netlify/functions": "^0.7.2",
+    "@types/aws-lambda": "^8.10.83",
+    "@types/pg": "^8.6.1"
+  },
+  "directories": {
+    "dist": "dist",
+    "test": "__tests__"
+  },
+  "exports": {
+    "import": "./dist/metadata.js",
+    "require": "./dist/metadata.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/pfftdammitchris/noodl#readme",
+  "keywords": [
+    "noodl",
+    "ecos",
+    "metadata",
+    "telemedicine"
+  ],
+  "license": "ISC",
+  "main": "./dist/metadata.js",
+  "module": "./dist/metadata.js",
+  "name": "metadata",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfftdammitchris/noodl-metadata.git"
+  },
+  "scripts": {
+    "build": "npm run tsc --project tsconfig.json",
+    "prebuild": "rm -rf dist",
+    "start": "npm run tsc -- -w",
+    "start:funcs": "netlify dev",
+    "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
+    "tsc": "tsc"
+  },
+  "type": "module",
+  "typesVersions": {
+    "*": {
+      "metadata.d.ts": [
+        "./dist/metadata.d.ts"
+      ]
+    }
+  },
+  "version": "0.0.1"
 }

@@ -1,10 +1,9 @@
 {
-	"compilerOptions": {
-		"baseUrl": "./src",
-		"declarationDir": "./dist",
-		"outDir": "./dist",
-		"rootDir": "./src"
-	},
-	"include": ["./src/**/*"],
-	"extends": "../../tsconfig.json"
+  "compilerOptions": {
+    "declarationDir": "./functions",
+    "outDir": "./functions",
+    "rootDir": "./src"
+  },
+  "include": ["./src/**/*"],
+  "extends": "../../tsconfig.json"
 }

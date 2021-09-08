@@ -1,6 +1,13 @@
 [build]
   command = "npm run build"
-  functions = "../../functions"
+  functions = "functions"
+
+[dev]
+  port = 3001
+
+[functions]
+  directory = 'functions'
+  node_bundler = 'esbuild'
 
 [[headers]]
   for = "/*"
