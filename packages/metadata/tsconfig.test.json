@@ -1,11 +1,15 @@
 {
 	"ts-node": {
+		"compilerOptions": {
+			"module": "commonjs",
+			"target": "es2020"
+		},
 		"transpileOnly": true
 	},
 	"compilerOptions": {
 		"lib": ["esnext"],
 		"module": "commonjs",
-		"target": "es2015"
+		"target": "es2020"
 	},
 	"extends": "./tsconfig.json",
 	"exclude": ["node_modules"],

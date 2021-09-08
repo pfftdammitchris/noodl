@@ -31,11 +31,11 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl-metadata.git"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "npm run tsc",
 		"prebuild": "rm -rf dist",
-		"start": "tsc -w",
+		"start": "npm run tsc -- -w",
 		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
-		"tsc": ""
+		"tsc": "tsc"
 	},
 	"type": "module",
 	"typesVersions": {
@@ -45,5 +45,11 @@
 			]
 		}
 	},
-	"version": "0.0.1"
+	"version": "0.0.1",
+	"dependencies": {
+		"pg": "^8.7.1"
+	},
+	"devDependencies": {
+		"@types/pg": "^8.6.1"
+	}
 }
