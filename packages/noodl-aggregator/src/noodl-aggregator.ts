@@ -2,7 +2,7 @@ import * as u from '@jsmanifest/utils'
 import * as com from 'noodl-common'
 import flatten from 'lodash/flatten.js'
 import path from 'path'
-import { AppConfig, DeviceType, Env } from 'noodl-types'
+import { DeviceType, Env } from 'noodl-types'
 import {
 	createNoodlPlaceholderReplacer,
 	hasNoodlPlaceholder,

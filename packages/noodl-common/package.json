@@ -6,7 +6,6 @@
 	"dependencies": {
 		"@jsmanifest/utils": "^1.0.11",
 		"chalk": "^2.4.2",
-		"fs-extra": "^10.0.0",
 		"lodash.set": "^4.3.2",
 		"mime-types": "^2.1.31",
 		"minimatch": "^3.0.4",
@@ -15,7 +14,8 @@
 	"description": "Common NOODL file system utilities",
 	"devDependencies": {
 		"@types/mime-types": "^2.1.0",
-		"typescript": "^4.2.4"
+		"fs-extra": "^10.0.0",
+		"typescript": "^4.4.2"
 	},
 	"directories": {
 		"dist": "./dist",
@@ -23,7 +23,7 @@
 	},
 	"exports": {
 		"import": "./dist/index.js",
-		"require": "./dist/index.js"
+		"require": "./dist/cjs/index.js"
 	},
 	"files": [
 		"dist"
@@ -34,6 +34,9 @@
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"name": "noodl-common",
+	"peerDependencies": {
+		"fs-extra": "^10.0.0"
+	},
 	"publishConfig": {
 		"access": "public"
 	},
@@ -42,9 +45,12 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json",
-		"start": "npm run build -- --watch",
-		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
+		"build": "node build && npm run types && npm run build:cjs",
+		"build:cjs": "node build --format cjs",
+		"start": "node build -w",
+		"start:cjs": "node build -w --format cjs",
+		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
+		"types": "tsc --emitDeclarationOnly"
 	},
 	"type": "module",
 	"typesVersions": {

@@ -1,9 +1,17 @@
 {
-  "compilerOptions": {
-    "declarationDir": "./functions",
-    "outDir": "./functions",
-    "rootDir": "./src"
+  "ts-node": {
+    "transpileOnly": true
   },
-  "include": ["./src/**/*"],
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "declarationDir": "./functions",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "module": "es2020",
+    "outDir": "./functions",
+    "rootDir": "./src",
+    "target": "es2020"
+  },
+  "include": ["./src/**/*", "node_modules/noodl-aggregator/dist/index.js"],
   "extends": "../../tsconfig.json"
 }

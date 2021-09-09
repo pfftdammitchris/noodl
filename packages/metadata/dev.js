@@ -1,6 +1,10 @@
+// const u = require('@jsmanifest/utils')
+// const yaml = require('yaml')
+// const axios = require('axios')
+// const fs = require('fs-extra')
+// const path = require('path')
 import * as u from '@jsmanifest/utils'
 import yaml from 'yaml'
-import Aggregator from 'noodl-aggregator'
 import axios from 'axios'
 import fs from 'fs-extra'
 import path from 'path'
@@ -12,6 +16,6 @@ import path from 'path'
     )
     console.log(resp.data)
   } catch (error) {
-    console.error(error)
+    console.error(`[${u.yellow(error.name)}] ${u.red(error.message)}`, error)
   }
 })()

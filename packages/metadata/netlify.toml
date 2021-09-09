@@ -1,13 +1,17 @@
 [build]
-  command = "npm run build"
+  command = "npm install && npm run build"
+  publish = "functions"
   functions = "functions"
 
 [dev]
-  port = 3001
+  functions = "src"
+  functionsPort = 3001
+  autoLaunch = false
+  port = 3000
 
 [functions]
-  directory = 'functions'
-  node_bundler = 'esbuild'
+  directory = "functions"
+  node_bundler = "esbuild"
 
 [[headers]]
   for = "/*"

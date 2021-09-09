@@ -4,25 +4,31 @@
     "url": "https://github.com/pfftdammitchris/noodl/issues"
   },
   "dependencies": {
+    "@netlify/functions": "^0.7.2",
     "aws-lambda": "^1.0.6",
-    "pg": "^8.7.1"
+    "fs-extra": "^10.0.0",
+    "netlify-lambda": "^2.0.14",
+    "util": "^0.11.1"
   },
   "description": "Metadata for noodl applications",
   "devDependencies": {
-    "@netlify/functions": "^0.7.2",
+    "@babel/preset-typescript": "^7.15.0",
     "@types/aws-lambda": "^8.10.83",
-    "@types/pg": "^8.6.1"
+    "@types/node": "^16.9.0",
+    "esbuild-loader": "^2.15.1",
+    "webpack-cli": "^4.8.0",
+    "webpack-node-externals": "^3.0.0"
   },
   "directories": {
-    "dist": "dist",
+    "functions": "./functions",
     "test": "__tests__"
   },
-  "exports": {
-    "import": "./dist/metadata.js",
-    "require": "./dist/metadata.js"
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
+  "exports": "./functions/metadata.js",
   "files": [
-    "dist"
+    "./functions"
   ],
   "homepage": "https://github.com/pfftdammitchris/noodl#readme",
   "keywords": [
@@ -32,28 +38,24 @@
     "telemedicine"
   ],
   "license": "ISC",
-  "main": "./dist/metadata.js",
-  "module": "./dist/metadata.js",
+  "module": "./functions/metadata.js",
   "name": "metadata",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pfftdammitchris/noodl-metadata.git"
   },
   "scripts": {
-    "build": "npm run tsc --project tsconfig.json",
-    "prebuild": "rm -rf dist",
-    "start": "npm run tsc -- -w",
-    "start:funcs": "netlify dev",
+    "build": "cross-env NODE_ENV=production netlify-lambda build src -c webpack.functions.js",
+    "esbuild": "esbuild ./src/* --bundle --outdir=functions --external:node:fs --platform=node --watch",
+    "postbuild": "npm run types",
+    "postinstall": "netlify-lambda install",
+    "prebuild": "rm -rf functions",
+    "start": "cross-env NODE_ENV=development netlify dev",
     "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "types": "tsc --emitDeclarationOnly"
   },
   "type": "module",
-  "typesVersions": {
-    "*": {
-      "metadata.d.ts": [
-        "./dist/metadata.d.ts"
-      ]
-    }
-  },
+  "typings": "./functions/metadata.d.ts",
   "version": "0.0.1"
 }

@@ -11,7 +11,7 @@
 		"jsx": "react",
 		"keyofStringsOnly": true,
 		"lib": ["esnext"],
-		"module": "esnext",
+		"module": "es2020",
 		"moduleResolution": "node",
 		"noEmitOnError": false,
 		"noImplicitAny": false,
@@ -23,7 +23,7 @@
 		"strict": true,
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "esnext"
+		"target": "es2020"
 	},
 	"exclude": ["./node_modules/**/*"],
 	"include": ["./src/**/*"]
