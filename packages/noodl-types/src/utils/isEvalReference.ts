@@ -1,4 +1,4 @@
-import { ReferenceString } from '../ecosTypes'
+import { ReferenceString } from '../ecosTypes.js'
 
 /**
  * True if the value starts with an equal sign "="

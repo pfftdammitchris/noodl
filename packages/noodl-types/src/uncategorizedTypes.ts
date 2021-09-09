@@ -1,5 +1,5 @@
-import { ActionObject } from './actionTypes'
-import { StyleObject } from './styleTypes'
+import { ActionObject } from './actionTypes.js'
+import { StyleObject } from './styleTypes.js'
 
 export type ActionChain = (
 	| ActionObject

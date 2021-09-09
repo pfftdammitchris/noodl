@@ -1,4 +1,4 @@
-import * as c from './constants'
+import * as c from './constants.js'
 
 export type ActionType = typeof c.actionTypes[number]
 export type ComponentType = typeof c.componentTypes[number]

@@ -1,6 +1,5 @@
-import { LiteralUnion } from 'prettier'
-import { EmitObject, EmitObjectFold, IfObject } from './uncategorizedTypes'
-import { OrArray } from './_internal/types'
+import { EmitObject, EmitObjectFold, IfObject } from './uncategorizedTypes.js'
+import { OrArray } from './_internal/types.js'
 
 export type RootConfig = {
 	/** Example: albh2.aitmed.io */

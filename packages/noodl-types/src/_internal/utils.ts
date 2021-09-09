@@ -1,6 +1,6 @@
 import get from 'lodash.get'
 import has from 'lodash.has'
-import { NameField, ReferenceString } from '../ecosTypes'
+import { NameField, ReferenceString } from '../ecosTypes.js'
 
 export function excludeKeys(keys1: string[], keys2: string | string[]) {
 	const targetKeys = Array.isArray(keys2) ? keys2 : [keys2]

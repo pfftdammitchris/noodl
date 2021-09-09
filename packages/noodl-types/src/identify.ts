@@ -1,15 +1,15 @@
-import { componentTypes } from './_internal/constants'
-import { ComponentType } from './constantTypes'
-import isAwaitReference from './utils/isAwaitReference'
-import isEvalReference from './utils/isEvalReference'
-import isEvalLocalReference from './utils/isEvalLocalReference'
-import isEvalRootReference from './utils/isEvalRootReference'
-import isLocalReference from './utils/isLocalReference'
-import isRootReference from './utils/isRootReference'
-import isTildeReference from './utils/isTildeReference'
-import isTraverseReference from './utils/isTraverseReference'
-import * as t from '.'
-import * as i from './_internal'
+import { componentTypes } from './_internal/constants.js'
+import { ComponentType } from './constantTypes.js'
+import isAwaitReference from './utils/isAwaitReference.js'
+import isEvalReference from './utils/isEvalReference.js'
+import isEvalLocalReference from './utils/isEvalLocalReference.js'
+import isEvalRootReference from './utils/isEvalRootReference.js'
+import isLocalReference from './utils/isLocalReference.js'
+import isRootReference from './utils/isRootReference.js'
+import isTildeReference from './utils/isTildeReference.js'
+import isTraverseReference from './utils/isTraverseReference.js'
+import * as t from './index.js'
+import * as i from './_internal/index.js'
 
 type PlainObject<O extends Record<string, any> = Record<string, any>> = Record<
 	string,
@@ -23,6 +23,7 @@ function createIdentifier<
 >(pred: IdentifyFn) {
 	return function <V = any>(fn: (v: any) => boolean) {
 		return function (v: any): v is V {
+			// @ts-expect-error
 			return pred(v) ? fn(v) : undefined
 		}
 	}
@@ -165,7 +166,7 @@ export const Identify = (function () {
 				(v) =>
 					i.hasNameField<t.EcosDocument>(v) &&
 					(/application\//i.test(v.name?.type || '') ||
-						v.subtype.mediaType === 1),
+						v.subtype?.mediaType === 1),
 			),
 			font(v: unknown) {},
 			image: identifyObj<
@@ -173,7 +174,7 @@ export const Identify = (function () {
 			>(
 				(v) =>
 					i.hasNameField<t.EcosDocument>(v) &&
-					(/image/i.test(v.name?.type || '') || v.subtype.mediaType === 4),
+					(/image/i.test(v.name?.type || '') || v.subtype?.mediaType === 4),
 			),
 			message(v: unknown) {},
 			model(v: unknown) {},
@@ -184,7 +185,7 @@ export const Identify = (function () {
 					(!/(application|audio|font|image|multipart|text|video)\//i.test(
 						v.name?.type || '',
 					) ||
-						v.subtype.mediaType === 0),
+						v.subtype?.mediaType === 0),
 			),
 			text: identifyObj<
 				t.EcosDocument<
@@ -195,8 +196,8 @@ export const Identify = (function () {
 				(v) =>
 					i.hasNameField<t.EcosDocument>(v) &&
 					(/text\//i.test(v.name?.type || '') ||
-						v.subtype.mediaType === 8 ||
-						v.subtype.mediaType === 0),
+						v.subtype?.mediaType === 8 ||
+						v.subtype?.mediaType === 0),
 			),
 
 			video: identifyObj<
@@ -204,7 +205,7 @@ export const Identify = (function () {
 			>(
 				(v) =>
 					i.hasNameField<t.EcosDocument>(v) &&
-					(/video\//i.test(v.name?.type || '') || v.subtype.mediaType === 9),
+					(/video\//i.test(v.name?.type || '') || v.subtype?.mediaType === 9),
 			),
 		},
 		emit: identifyObj<t.EmitObject>((v) => 'actions' in v),

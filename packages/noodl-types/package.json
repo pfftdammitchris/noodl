@@ -13,14 +13,15 @@
 		"dist": "dist",
 		"test": "__tests__"
 	},
+	"exports": {
+		"import": "./dist/index.js"
+	},
 	"files": [
 		"dist"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "",
 	"license": "ISC",
-	"main": "dist/index.js",
-	"module": "dist/index.js",
 	"name": "noodl-types",
 	"publishConfig": {
 		"access": "public"
@@ -34,6 +35,14 @@
 		"start": "rm -rf dist && tsc --watch",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
+	"type": "module",
 	"types": "dist/index.d.ts",
-	"version": "1.0.148"
+	"typesVersions": {
+		"*": {
+			"index.d.ts": [
+				"./dist/index.d.ts"
+			]
+		}
+	},
+	"version": "1.0.149"
 }
