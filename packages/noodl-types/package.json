@@ -10,7 +10,10 @@
 		"@types/lodash.has": "^4.5.6"
 	},
 	"directories": {
-		"dist": "dist"
+		"dist": "./dist"
+	},
+	"engines": {
+		"node": "14.x"
 	},
 	"exports": {
 		"import": "./dist/index.js",
@@ -43,5 +46,5 @@
 		}
 	},
 	"typings": "./dist/index.d.ts",
-	"version": "1.0.168"
+	"version": "1.0.171"
 }
