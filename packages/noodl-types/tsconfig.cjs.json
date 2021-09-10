@@ -1,12 +1,10 @@
 {
-	"extends": "../../tsconfig.json",
+	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"declarationDir": "./dist/cjs",
 		"module": "commonjs",
 		"outDir": "./dist/cjs",
-		"rootDir": "./src",
-		"target": "es2015",
-		"jsx": "preserve"
+		"target": "es2017"
 	},
 	"exclude": ["./src/**/*.test.ts"],
 	"include": ["./src/**/*"]

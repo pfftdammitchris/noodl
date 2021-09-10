@@ -15,6 +15,8 @@ export const action = {
 	UPDATEOBJECT: 'updateObject',
 } as const
 
+//
+
 export const actionTypes = Object.values(action)
 
 export const component = {

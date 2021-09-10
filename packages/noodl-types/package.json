@@ -10,7 +10,8 @@
 		"@types/lodash.has": "^4.5.6"
 	},
 	"directories": {
-		"dist": "dist",
+		"dist": "./dist",
+		"dist/cjs": "./dist/cjs",
 		"test": "__tests__"
 	},
 	"exports": {
@@ -35,13 +36,12 @@
 	},
 	"scripts": {
 		"build": "npm run build:esm && npm run build:cjs",
-		"build:cjs": "tsc --project tsconfig.cjs.json",
-		"build:esm": "tsc",
+		"build:cjs": "tsc --outDir dist/cjs --project tsconfig.cjs.json",
+		"build:esm": "tsc --outDir dist --project tsconfig.json",
 		"start": "rm -rf dist && tsc --watch",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
 	"type": "module",
-	"types": "dist/index.d.ts",
 	"typesVersions": {
 		"*": {
 			"index.d.ts": [
@@ -49,5 +49,6 @@
 			]
 		}
 	},
-	"version": "1.0.157"
+	"typings": "./dist/index.d.ts",
+	"version": "1.0.166"
 }
