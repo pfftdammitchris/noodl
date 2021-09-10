@@ -1,33 +1,32 @@
-import * as u from '@jsmanifest/utils'
-import esbuild from 'esbuild'
-import meow from 'meow'
+const u = require('@jsmanifest/utils')
+const esbuild = require('esbuild')
+const meow = require('meow')
 
 const cli = meow('', {
 	flags: {
-		format: { alias: 'f', type: 'string', default: 'esm' },
 		watch: { alias: 'w', type: 'boolean' },
 	},
-	importMeta: import.meta,
 })
 
-const { format, watch } = cli.flags
+const { watch } = cli.flags
 
-const tag = `[${u.magenta(format)} ${u.cyan('noodl-aggregator')}]`
+const tag = `[${u.cyan('noodl-aggregator')}]`
 
 /** @type { esbuild.BuildOptions } */
 
 const options = {
 	bundle: true,
-	minify: true,
 	entryPoints: ['./src/index.ts'],
-	format,
+	format: 'cjs',
 	logLevel: 'debug',
-	outdir: `dist${format === 'cjs' ? '/cjs' : ''}`,
+	outdir: `dist`,
 	platform: 'node',
 	sourcemap: true,
-	target: format === 'cjs' ? 'es2017' : 'es2020',
-	external: ['fs', 'path'],
+	target: 'es2015',
+	external: ['node:*'],
 }
+
+//
 
 if (watch) {
 	options.watch = {
@@ -41,8 +40,11 @@ if (watch) {
 	}
 }
 
-const buildResult = await esbuild.build(options)
-
-u.newline()
-u.log(tag, buildResult)
-u.newline()
+esbuild
+	.build(options)
+	.then(async (buildResult) => {
+		u.newline()
+		console.log(tag, buildResult)
+		u.newline()
+	})
+	.catch(console.error)

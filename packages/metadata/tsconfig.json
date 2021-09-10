@@ -1,9 +1,12 @@
 {
   "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS",
+      "target": "es2015"
+    },
     "transpileOnly": true
   },
   "compilerOptions": {
-    "baseUrl": "./src",
     "declarationDir": "./functions",
     "esModuleInterop": true,
     "isolatedModules": true,
@@ -12,6 +15,6 @@
     "rootDir": "./src",
     "target": "es2020"
   },
-  "include": ["./src/**/*", "node_modules/noodl-aggregator/dist/index.js"],
+  "include": ["./src/**/*"],
   "extends": "../../tsconfig.json"
 }

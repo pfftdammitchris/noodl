@@ -1,8 +1,14 @@
 import * as u from '@jsmanifest/utils'
-import * as com from 'noodl-common'
-import flatten from 'lodash/flatten.js'
+import {
+	LinkStructure,
+	getLinkStructure,
+	promiseAllSafe,
+	stringifyDoc,
+	withYmlExt,
+} from 'noodl-common'
+import flatten from 'lodash/flatten'
 import path from 'path'
-import { DeviceType, Env } from 'noodl-types'
+import type { DeviceType, Env } from 'noodl-types'
 import {
 	createNoodlPlaceholderReplacer,
 	hasNoodlPlaceholder,
@@ -13,8 +19,8 @@ import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash.chunk'
-import * as c from './constants.js'
-import * as t from './types.js'
+import * as c from './constants'
+import * as t from './types'
 
 class NoodlAggregator {
 	#configKey = ''
@@ -111,7 +117,7 @@ class NoodlAggregator {
 	}
 
 	extractAssets({ remote = true }: { remote?: boolean } = {}) {
-		const assets = [] as com.LinkStructure[]
+		const assets = [] as LinkStructure[]
 		const commonUrlKeys = ['path', 'resource'] as string[]
 		const visitedAssets = [] as string[]
 
@@ -119,7 +125,7 @@ class NoodlAggregator {
 			if (!visitedAssets.includes(assetPath) && isValidAsset(assetPath)) {
 				if (!remote && assetPath.startsWith('http')) return
 				visitedAssets.push(assetPath)
-				const linkStructure = com.getLinkStructure(assetPath, {
+				const linkStructure = getLinkStructure(assetPath, {
 					prefix: this.assetsUrl,
 					config: this.configKey,
 				})
@@ -221,11 +227,11 @@ class NoodlAggregator {
 			`Cannot retrieve the root config because a config key was not passed in or set`,
 		)
 		if (configDoc) {
-			configYml = com.stringifyDoc(configDoc)
+			configYml = stringifyDoc(configDoc)
 		} else {
 			const configUrl = `https://${
 				c.DEFAULT_CONFIG_HOSTNAME
-			}/config/${com.withYmlExt(configName)}`
+			}/config/${withYmlExt(configName)}`
 			this.emit(c.ON_RETRIEVING_ROOT_CONFIG, { url: configUrl })
 			const { data: yml } = await axios.get(configUrl)
 			configDoc = yaml.parseDocument(yml)
@@ -369,7 +375,7 @@ class NoodlAggregator {
 				}
 			}
 		}
-		return await com.promiseAllSafe(
+		return await promiseAllSafe(
 			...preloadPages.map(async (page) => this.loadPage(page)),
 		)
 	}

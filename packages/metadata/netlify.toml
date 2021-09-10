@@ -4,14 +4,13 @@
   functions = "functions"
 
 [dev]
-  functions = "src"
+  src = "src/functions"
   functionsPort = 3001
   autoLaunch = false
   port = 3000
 
 [functions]
-  directory = "functions"
-  node_bundler = "esbuild"
+  directory = "src/functions"
 
 [[headers]]
   for = "/*"

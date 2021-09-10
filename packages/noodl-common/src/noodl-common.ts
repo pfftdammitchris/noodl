@@ -1,18 +1,19 @@
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
-import { globbySync } from 'globby'
+import { sync as globbySync } from 'globby'
 import { join as joinPaths, resolve as resolvePath } from 'path'
-import fs, { WriteFileOptions } from 'fs-extra'
+import * as fs from 'fs-extra'
+import type { WriteFileOptions } from 'fs-extra'
 import { Document, parseDocument as parseYmlToDoc } from 'yaml'
 import minimatch from 'minimatch'
 import normalizePath from './normalizePath.js'
 
-const {
-	readdirSync: _readdirSync,
-	readFileSync,
-	statSync,
-	writeFileSync: _writeFileSync,
-} = fs
+// const {
+// 	readdirSync: _readdirSync,
+// 	readFileSync,
+// 	statSync,
+// 	writeFileSync: _writeFileSync,
+// } = fs
 
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
 export const highlight = (...s: any[]) => chalk.yellow(...s)
@@ -72,7 +73,7 @@ export function hasSlash(s: string) {
 }
 
 export function loadFileAsDoc(filepath: string) {
-	return parseYmlToDoc(readFileSync(filepath, 'utf8'))
+	return parseYmlToDoc(fs.readFileSync(filepath, 'utf8'))
 }
 
 export function loadFilesAsDocs(opts: {
@@ -141,11 +142,11 @@ export function readdirSync(
 ) {
 	const args = { encoding: 'utf8' as BufferEncoding }
 	const files = [] as string[]
-	const filepaths = _readdirSync(dir, args)
+	const filepaths = fs.readdirSync(dir, args)
 	const glob = opts?.glob || '**/*'
 	for (let filepath of filepaths) {
 		filepath = normalizePath(resolvePath(joinPaths(dir, filepath)))
-		const stat = statSync(filepath)
+		const stat = fs.statSync(filepath)
 		if (stat.isFile()) {
 			if (minimatch(filepath, glob)) files.push(filepath)
 		} else if (stat.isDirectory()) {
@@ -176,7 +177,7 @@ export function writeFileSync(
 	data: string,
 	options?: WriteFileOptions,
 ) {
-	_writeFileSync(
+	fs.writeFileSync(
 		normalizePath(filepath),
 		data,
 		u.isStr(options)

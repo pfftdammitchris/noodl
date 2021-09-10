@@ -1,31 +1,28 @@
-import * as u from '@jsmanifest/utils'
-import esbuild from 'esbuild'
-import meow from 'meow'
+const u = require('@jsmanifest/utils')
+const esbuild = require('esbuild')
+const meow = require('meow')
 
 const cli = meow('', {
 	flags: {
-		format: { alias: 'f', type: 'string', default: 'esm' },
 		watch: { alias: 'w', type: 'boolean' },
 	},
-	importMeta: import.meta,
 })
 
-const { format, watch } = cli.flags
+const { watch } = cli.flags
 
-const tag = `[${u.magenta(format)} ${u.cyan('noodl-common')}]`
+const tag = `[${u.cyan('noodl-common')}]`
 
 /** @type { esbuild.BuildOptions } */
 
 const options = {
 	bundle: true,
-	minify: true,
 	entryPoints: ['./src/index.ts'],
-	format,
+	format: 'cjs',
 	logLevel: 'debug',
-	outdir: `dist${format === 'cjs' ? '/cjs' : ''}`,
+	outdir: `dist`,
 	platform: 'node',
 	sourcemap: true,
-	target: format === 'cjs' ? 'es2017' : 'es2020',
+	target: 'es2015',
 }
 
 if (watch) {
@@ -40,8 +37,24 @@ if (watch) {
 	}
 }
 
-const buildResult = await esbuild.build(options)
+esbuild
+	.build(options)
+	.then(async (buildResult) => {
+		u.newline()
+		console.log(tag, buildResult)
+		u.newline()
 
-u.newline()
-u.log(tag, buildResult)
-u.newline()
+		// const project = new ts.Project()
+		// const sourceFiles = project.addSourceFilesFromTsConfig('tsconfig.json')
+		// await project.save()
+		// const emitResult = await project.emit({
+		// 	emitOnlyDtsFiles: true,
+		// })
+
+		// console.log(emitResult.getDiagnostics())
+
+		// return execa.command(`tsc${watch ? ' -w' : ''}`, {
+		// 	shell: true,
+		// })
+	})
+	.catch(console.error)

@@ -4,21 +4,9 @@
     "url": "https://github.com/pfftdammitchris/noodl/issues"
   },
   "dependencies": {
-    "@netlify/functions": "^0.7.2",
-    "aws-lambda": "^1.0.6",
-    "fs-extra": "^10.0.0",
-    "netlify-lambda": "^2.0.14",
-    "util": "^0.11.1"
+    "@netlify/functions": "^0.7.2"
   },
   "description": "Metadata for noodl applications",
-  "devDependencies": {
-    "@babel/preset-typescript": "^7.15.0",
-    "@types/aws-lambda": "^8.10.83",
-    "@types/node": "^16.9.0",
-    "esbuild-loader": "^2.15.1",
-    "webpack-cli": "^4.8.0",
-    "webpack-node-externals": "^3.0.0"
-  },
   "directories": {
     "functions": "./functions",
     "test": "__tests__"
@@ -26,7 +14,6 @@
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
-  "exports": "./functions/metadata.js",
   "files": [
     "./functions"
   ],
@@ -38,6 +25,7 @@
     "telemedicine"
   ],
   "license": "ISC",
+  "main": "./functions/metadata.js",
   "module": "./functions/metadata.js",
   "name": "metadata",
   "repository": {
@@ -45,17 +33,11 @@
     "url": "git+https://github.com/pfftdammitchris/noodl-metadata.git"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production netlify-lambda build src -c webpack.functions.js",
-    "esbuild": "esbuild ./src/* --bundle --outdir=functions --external:node:fs --platform=node --watch",
-    "postbuild": "npm run types",
-    "postinstall": "netlify-lambda install",
-    "prebuild": "rm -rf functions",
-    "start": "cross-env NODE_ENV=development netlify dev",
-    "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
-    "tsc": "tsc",
-    "types": "tsc --emitDeclarationOnly"
+    "build:funcs": "esbuild ./src/functions/* --bundle --outdir=functions --platform=node",
+    "prebuild:funcs": "rm -rf functions",
+    "start:funcs": "cross-env NODE_ENV=development netlify dev --port 3000",
+    "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
   },
-  "type": "module",
   "typings": "./functions/metadata.d.ts",
   "version": "0.0.1"
 }

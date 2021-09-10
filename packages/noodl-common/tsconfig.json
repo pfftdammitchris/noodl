@@ -1,8 +1,10 @@
 {
 	"compilerOptions": {
+		"module": "commonjs",
 		"declarationDir": "./dist",
 		"outDir": "./dist",
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"target": "es2018"
 	},
 	"include": ["./src/**/*"],
 	"extends": "../../tsconfig.json"

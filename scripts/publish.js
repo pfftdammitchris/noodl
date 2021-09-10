@@ -1,6 +1,6 @@
-const u = require('@jsmanifest/utils')
-const execa = require('execa')
-const meow = require('meow')
+import * as u from '@jsmanifest/utils'
+import execa from 'execa'
+import meow from 'meow'
 
 const regex = {
 	noodl: /noodl/i,
@@ -17,6 +17,7 @@ const cli = meow(``, {
 		publish: { alias: 'p', type: 'string' },
 		message: { alias: 'm', type: 'string' },
 	},
+	importMeta: import.meta,
 })
 
 const { message = 'Update(s) to lib', publish } = cli.flags

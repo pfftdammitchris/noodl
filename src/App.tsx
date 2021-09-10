@@ -5,7 +5,7 @@ import React from 'react'
 import { produce, Draft } from 'immer'
 import BigText from 'ink-big-text'
 import Gradient from 'ink-gradient'
-import Aggregator from 'noodl-aggregator'
+import NoodlAggregator from 'noodl-aggregator'
 import Select from './components/Select.js'
 import HighlightedText from './components/HighlightedText.js'
 import Spinner from './components/Spinner.js'
@@ -18,7 +18,10 @@ import * as co from './utils/color.js'
 import * as c from './constants.js'
 import * as t from './types.js'
 
-const aggregator = new Aggregator()
+// @ts-expect-error
+const { default: Aggregator } = NoodlAggregator
+
+const aggregator = new Aggregator() as NoodlAggregator
 
 export const initialState = {
 	ready: false,

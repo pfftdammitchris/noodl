@@ -1,6 +1,6 @@
-import { LiteralUnion } from 'type-fest'
-import { OrArray } from '@jsmanifest/typefest'
-import { DeviceType, Env } from 'noodl-types'
+import type { LiteralUnion } from 'type-fest'
+import type { OrArray } from '@jsmanifest/typefest'
+import type { DeviceType, Env } from 'noodl-types'
 import yaml from 'yaml'
 
 export type CommonEmitEvents =

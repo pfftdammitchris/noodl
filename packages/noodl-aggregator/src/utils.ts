@@ -1,5 +1,5 @@
 import yaml from 'yaml'
-import { AppConfig } from 'noodl-types'
+import type { AppConfig } from 'noodl-types'
 
 export function extractPreloadPages(
 	doc: yaml.Document | AppConfig | undefined,

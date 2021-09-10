@@ -1,12 +1,8 @@
 import u from '@jsmanifest/utils'
+import { Handler } from '@netlify/functions'
 import yaml from 'yaml'
 import Aggregator from 'noodl-aggregator'
 
-console.log('HLOFOOFOFA')
-console.log('HLOFOOFOFA')
-console.log('HLOFOOFOFA')
-console.log('HLOFOOFOFA')
-console.log('HLOFOOFOFA')
 const hasuraApiEndpoint = 'https://data.pro.hasura.io/v1/graphql'
 const graphqlEndpoint = 'https://ecos-noodl.hasura.app/v1/graphql'
 const adminSecret =
@@ -18,20 +14,21 @@ const project = {
 }
 const owner = 'pfftdammitchris@gmail.com'
 
-// interface Params {
-//   config?: string
-//   actionTypes?: boolean
-//   componentTypes?: boolean
-// }
+interface Params {
+  config?: string
+  actionTypes?: boolean
+  componentTypes?: boolean
+}
 
-const handler = async (event, context) => {
+export const handler: Handler = async (event, context) => {
   try {
-    console.info(`[metadata function] args`, { event })
     const { queryStringParameters, rawUrl } = event
-    const params = queryStringParameters
+    const params = queryStringParameters as Params
+
+    console.log({ params })
 
     const aggregator = new Aggregator()
-    const configName = params.config
+    const configName = params?.config
 
     if (configName) {
       aggregator.configKey = configName
@@ -64,6 +61,8 @@ const handler = async (event, context) => {
           Value() {},
         })
       }
+
+      console.log(actionObjects)
     } else {
       //
     }
@@ -87,5 +86,3 @@ const handler = async (event, context) => {
     }
   }
 }
-
-module.exports.handler = handler
