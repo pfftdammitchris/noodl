@@ -46,5 +46,5 @@
 		}
 	},
 	"typings": "./dist/index.d.ts",
-	"version": "1.0.171"
+	"version": "1.0.172"
 }
