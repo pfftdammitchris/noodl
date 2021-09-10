@@ -15,13 +15,11 @@
 	"engines": {
 		"node": "14.x"
 	},
-	"exports": {
-		"import": "./dist/index.js",
-		"require": "./dist/cjs/index.js"
-	},
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "",
 	"license": "ISC",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
 	"name": "noodl-types",
 	"publishConfig": {
 		"access": "public"
@@ -31,13 +29,12 @@
 		"url": "http://gitlab.aitmed.com/pfftdammitchris/aitmed-noodl-web.git"
 	},
 	"scripts": {
-		"build": "npm run build:esm && npm run build:cjs",
+		"build": "tsc",
 		"build:cjs": "tsc --outDir dist/cjs --project tsconfig.cjs.json",
 		"build:esm": "tsc --outDir dist --project tsconfig.json",
 		"start": "rm -rf dist && tsc --watch",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
-	"type": "module",
 	"typesVersions": {
 		"*": {
 			"index.d.ts": [
@@ -46,5 +43,5 @@
 		}
 	},
 	"typings": "./dist/index.d.ts",
-	"version": "1.0.172"
+	"version": "1.0.173"
 }
