@@ -5,7 +5,7 @@
 		"module": "commonjs",
 		"outDir": "./dist/cjs",
 		"rootDir": "./src",
-		"target": "es2015",
+		"target": "es2017",
 		"jsx": "preserve"
 	},
 	"exclude": ["./src/**/*.test.ts"],
