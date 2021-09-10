@@ -18,12 +18,13 @@
 		"require": "./dist/cjs/index.js"
 	},
 	"files": [
-		"dist"
+		"./dist"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "",
 	"license": "ISC",
 	"main": "./dist/cjs/index.js",
+	"module": "./dist/index.js",
 	"name": "noodl-types",
 	"publishConfig": {
 		"access": "public"
@@ -48,5 +49,5 @@
 			]
 		}
 	},
-	"version": "1.0.154"
+	"version": "1.0.155"
 }
