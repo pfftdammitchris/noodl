@@ -14,7 +14,8 @@
 		"test": "__tests__"
 	},
 	"exports": {
-		"import": "./dist/index.js"
+		"import": "./dist/index.js",
+		"main": "./dist/index.cjs"
 	},
 	"files": [
 		"dist"
@@ -31,7 +32,9 @@
 		"url": "http://gitlab.aitmed.com/pfftdammitchris/aitmed-noodl-web.git"
 	},
 	"scripts": {
-		"build": "rm -rf dist && tsc",
+		"build": "npm run build:esm && npm run build:cjs",
+		"build:cjs": "tsc --project tsconfig.cjs.json",
+		"build:esm": "tsc",
 		"start": "rm -rf dist && tsc --watch",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
@@ -44,5 +47,5 @@
 			]
 		}
 	},
-	"version": "1.0.149"
+	"version": "1.0.150"
 }
