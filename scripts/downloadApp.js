@@ -8,16 +8,22 @@ const CONFIG_PATH = path.resolve(path.join(process.cwd(), 'config.yml'))
 const everyMinute = '0 0/1 * 1/1 * ? *'
 const everyHour = '0 0 0/1 1/1 * ? *'
 
+const schedule = everyHour
+
+u.log(
+	`Scheduling task to run every ${u.cyan(
+		schedule === everyMinute
+			? 'minute'
+			: schedule === everyHour
+			? 'hour'
+			: '<unknown>',
+	)}`,
+)
+
 cron.schedule(
-	everyMinute,
+	schedule,
 	async () => {
 		try {
-			u.log(
-				`Scheduling task to run every ${u.cyan(
-					everyMinute ? 'minute' : everyHour ? 'hour' : '<unknown>',
-				)}`,
-			)
-
 			if (!fs.existsSync(CONFIG_PATH)) {
 				fs.ensureFileSync(CONFIG_PATH)
 				u.log(`Created missing config file at ${u.yellow(CONFIG_PATH)}`)
