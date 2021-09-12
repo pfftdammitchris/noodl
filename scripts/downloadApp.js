@@ -1,9 +1,9 @@
-const u = require('@jsmanifest/utils')
-const execa = require('execa')
-const yaml = require('yaml')
-const fs = require('fs-extra')
-const path = require('path')
-const cron = require('node-cron')
+import * as u from '@jsmanifest/utils'
+import path from 'path'
+import execa from 'execa'
+import cron from 'node-cron'
+import yaml from 'yaml'
+import fs from 'fs-extra'
 
 const CONFIG_PATH = path.resolve(path.join(process.cwd(), 'config.yml'))
 const everyMinute = '* * * * *'
