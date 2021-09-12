@@ -118,6 +118,8 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 		}
 	}, [])
 
+	//
+
 	return (
 		<Provider value={ctx}>
 			{state.activePanel === c.DEFAULT_PANEL && (

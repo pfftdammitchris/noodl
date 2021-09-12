@@ -1,8 +1,0 @@
-106 error Error: Command failed: git push --follow-tags --no-verify --atomic origin master
-106 error error: RPC failed; curl 92 HTTP/2 stream 0 was not closed cleanly: CANCEL (err 8)
-106 error fatal: the remote end hung up unexpectedly
-106 error fatal: the remote end hung up unexpectedly
-106 error Everything up-to-date
-106 error
-106 error     at makeError (/usr/local/lib/node_modules/lerna/node_modules/execa/index.js:174:9)
-106 error     at /usr/local/lib/node_modules/lerna/node_modules/execa/index.js:278:16

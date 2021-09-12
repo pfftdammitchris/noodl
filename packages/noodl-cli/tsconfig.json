@@ -1,0 +1,30 @@
+{
+	"ts-node": {
+		"transpileOnly": true
+	},
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"declaration": true,
+		"declarationDir": "dist",
+		"importHelpers": true,
+		"jsx": "react",
+		"keyofStringsOnly": true,
+		"lib": ["esnext"],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noEmitOnError": false,
+		"noImplicitAny": false,
+		"outDir": "dist",
+		"pretty": true,
+		"resolveJsonModule": true,
+		"rootDir": "./src",
+		"skipLibCheck": true,
+		"strict": true,
+		"sourceMap": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"target": "es2020"
+	},
+	"exclude": ["./node_modules/**/*"],
+	"include": ["./src/**/*"]
+}

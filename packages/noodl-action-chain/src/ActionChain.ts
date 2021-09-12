@@ -273,6 +273,7 @@ class ActionChain<
 			this.#loader?.(this.actions) || ([] as Action<A['actionType'], T>[])
 
 		if (!Array.isArray(actions)) actions = [actions]
+		//
 
 		actions.forEach(
 			(action: any, index: number) => (this.#queue[index] = action),
@@ -281,6 +282,7 @@ class ActionChain<
 		if (this.#queue.length > actions.length) {
 			while (this.#queue.length > actions.length) this.#queue.pop()
 		}
+		// @ts-expect-error
 		this.#gen = ActionChain.createGenerator<A, T>(this)
 		return this.queue
 	}
