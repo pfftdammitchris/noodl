@@ -1,4 +1,5 @@
 import * as u from '@jsmanifest/utils'
+import path from 'path'
 import execa from 'execa'
 import cron from 'node-cron'
 import yaml from 'yaml'
