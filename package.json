@@ -1,9 +1,9 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.95",
+	"version": "0.0.96",
 	"typings": "./dist/cli.d.ts",
 	"bin": {
-		"noodl": "bin/noodl-cli.js"
+		"noodl": "bin/cli.js"
 	},
 	"scripts": {
 		"postinstall": "npm run bootstrap",
@@ -139,7 +139,7 @@
 	],
 	"exports": {
 		"import": "./dist/cli.js",
-		"require": "./bin/noodl-cli.js"
+		"require": "./bin/cli.js"
 	},
 	"type": "module",
 	"typesVersions": {
