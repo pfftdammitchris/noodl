@@ -5,9 +5,6 @@
 	"bin": {
 		"noodl": "cli.js"
 	},
-	"files": [
-		"./cli.js"
-	],
 	"scripts": {
 		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
 		"prebuild": "rm -rf dist",
