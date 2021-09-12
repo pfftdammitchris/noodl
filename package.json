@@ -1,11 +1,12 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.94",
+	"version": "0.0.95",
 	"typings": "./dist/cli.d.ts",
 	"bin": {
 		"noodl": "bin/noodl-cli.js"
 	},
 	"scripts": {
+		"postinstall": "npm run bootstrap",
 		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
 		"prebuild": "rm -rf dist",
 		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib es2020 --lib esnext --module es2020 --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false",
