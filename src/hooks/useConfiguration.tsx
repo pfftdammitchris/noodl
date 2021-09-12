@@ -71,6 +71,8 @@ function useConfiguration({ cli, onInit }: Options) {
 		return store.get('lastUpdated')
 	}, [])
 
+	const getTempDir = React.useCallback(() => cli.flags.out, [])
+
 	React.useEffect(() => {
 		//
 	}, [])
@@ -81,6 +83,7 @@ function useConfiguration({ cli, onInit }: Options) {
 		getDefaultGenerateDir,
 		getLastUsedConfigKey,
 		getPathToGenerateDir,
+		getTempDir,
 		initTimestamp,
 		isFresh,
 		refreshLastUpdatedTimestamp,

@@ -370,7 +370,7 @@ class NoodlAggregator {
 			if (yaml.isSeq(seq)) {
 				for (const node of seq.items) {
 					if (yaml.isScalar(node) && u.isStr(node.value)) {
-						preloadPages.push(node.value)
+						!this.root.has(node.value) && preloadPages.push(node.value)
 					}
 				}
 			}
@@ -391,7 +391,7 @@ class NoodlAggregator {
 		if (yaml.isSeq(nodes)) {
 			for (const node of nodes.items) {
 				if (yaml.isScalar(node) && u.isStr(node.value)) {
-					pages.push(node.value)
+					!pages.includes(node.value) && pages.push(node.value)
 				}
 			}
 		}

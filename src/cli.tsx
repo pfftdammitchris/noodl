@@ -33,7 +33,7 @@ const cli = meow(
 	  ${flag(`--generate`)}, ${flag(`-g`)} Use this operation to generate all the files from ${co.yellow('--config')}
 	  ${flag(`--generatePath (${co.deepOrange('deprecated')} ${co.white('for')} ${co.white(`--outDir`)})`)}, Sets the path where files are generated
 	  ${flag(`--host`)}, ${flag(`-h`)} Sets the server hostname (defaults to ${co.yellow('localhost')})
-	  ${flag(`--local`)}, Sets base url to localhost. (defaults to false which points remotely to ${co.yellow('public.aitmed.com')})
+	  ${flag(`--remote`)}, Sets base url to localhost when disabled. (defaults to true which points remotely to ${co.yellow('public.aitmed.com')})
 	  ${flag(`--port`)}, ${flag(`-p`)} Sets the server port (defaults to ${co.yellow('3001')})
 	  ${flag(`--server`)} Use this operation to run the server
 	  ${flag(`--version`)}, ${flag(`-v`)} Retrieves config cersion using ${co.yellow('--device')} (defaults to ${co.yellow('latest')})
@@ -47,6 +47,7 @@ const cli = meow(
 	  ${tag.$} ${tag.noodl} ${flag('--outDir')} ${co.white('../cadl/output')} (sets the output directory)
 `,
 	{
+		// @ts-ignore
 		importMeta: import.meta,
 		flags: {
 			config: {
@@ -55,6 +56,8 @@ const cli = meow(
 				default: store.get('configKey') || '',
 			},
 			generate: { type: 'string', alias: 'g' },
+			remote: { type: 'boolean', alias: 'r', default: false },
+			out: { type: 'string' }, // Same as outDir but does not persist
 			outDir: { type: 'string' },
 			port: { type: 'number', alias: 'p', default: DEFAULT_SERVER_PORT },
 			server: { alias: 's' },

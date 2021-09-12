@@ -133,8 +133,11 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 				<Settings
 					onReady={() => set({ ready: true, activePanel: state.activePanel })}
 					pathToOutputDir={
-						(cli.flags.outDir || cli.flags.generatePath) as string
+						(cli.flags.outDir ||
+							cli.flags.out ||
+							cli.flags.generatePath) as string
 					}
+					tempDir={cli.flags.out}
 				/>
 			) : state.activePanel === 'generateApp' ? (
 				<GenerateApp
@@ -143,6 +146,7 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 					isLocal={!cli.flags.remote}
 					port={cli.flags.port}
 					onEnd={() => cli.flags.server && ctx.setPanel('server')}
+					isTemp={!!cli.flags.out}
 				/>
 			) : state.activePanel === 'server' ? (
 				<Server

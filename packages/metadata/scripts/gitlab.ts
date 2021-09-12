@@ -1,17 +1,10 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import * as u from '@jsmanifest/utils'
-import fs from 'fs-extra'
-import path from 'path'
 import axios from 'axios'
 import chalk from 'chalk'
 
 const tag = `[${chalk.keyword('navajowhite')('gitlab')}]`
-
-function throwError(err) {
-  if (err instanceof Error) throw err
-  throw new Error(err)
-}
 
 class Gitlab {
   #req = axios.create({
@@ -31,7 +24,7 @@ class Gitlab {
       const resp = await this.#req.get(`/projects`)
       return resp.data
     } catch (error) {
-      throwError(error)
+      u.throwError(error)
     }
   }
 }

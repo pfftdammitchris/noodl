@@ -13,9 +13,11 @@ import * as t from './types.js'
 function Settings({
 	onReady,
 	pathToOutputDir,
+	tempDir,
 }: {
 	onReady?(): void
 	pathToOutputDir?: string
+	tempDir?: string
 }) {
 	const [key, setKey] = React.useState('' as '' | t.PromptId)
 	const [dir, setDir] = React.useState('')
@@ -25,7 +27,12 @@ function Settings({
 		if (configuration.isFresh()) {
 			ctx.setPrompt({ key: c.prompts.INIT })
 		} else if (pathToOutputDir) {
-			ctx.setPrompt({ key: c.prompts.SET_OUTPUT_DIR })
+			if (tempDir) {
+				setDir(tempDir)
+				onReady?.()
+			} else {
+				ctx.setPrompt({ key: c.prompts.SET_OUTPUT_DIR })
+			}
 		} else if (!configuration.getPathToGenerateDir()) {
 			ctx.setPrompt({ key: c.prompts.ASK_GENERATE_PATH })
 		} else {

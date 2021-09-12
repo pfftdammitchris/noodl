@@ -12,11 +12,8 @@
     "test": "__tests__"
   },
   "engines": {
-    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+    "node": "^14.13.1 || >=16.0.0"
   },
-  "files": [
-    "./functions"
-  ],
   "homepage": "https://github.com/pfftdammitchris/noodl#readme",
   "keywords": [
     "noodl",
@@ -33,9 +30,9 @@
     "url": "git+https://github.com/pfftdammitchris/noodl-metadata.git"
   },
   "scripts": {
-    "build:funcs": "esbuild ./src/functions/* --bundle --outdir=functions --platform=node",
-    "prebuild:funcs": "rm -rf functions",
-    "start:funcs": "cross-env NODE_ENV=development netlify dev --port 3000",
+    "build": "esbuild ./src/functions/* --bundle --outdir=functions --platform=node",
+    "prebuild": "rm -rf functions",
+    "start": "cross-env NODE_ENV=development netlify dev --port 3000",
     "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
   },
   "typings": "./functions/metadata.d.ts",

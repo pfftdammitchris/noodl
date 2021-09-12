@@ -1,7 +1,14 @@
 import u from '@jsmanifest/utils'
+import * as nt from 'noodl-types'
 import { Handler } from '@netlify/functions'
-import yaml from 'yaml'
-import Aggregator from 'noodl-aggregator'
+import Metadata from '../Metadata'
+import { getSuccessResponse, getErrorResponse } from '../utils'
+import actionsVisitor, {
+  ActionsVisitorContext,
+} from '../Metadata/visitors/actionsVisitor.js'
+import componentsVisitor, {
+  ComponentsVisitorContext,
+} from '../Metadata/visitors/componentsVisitor.js'
 
 const hasuraApiEndpoint = 'https://data.pro.hasura.io/v1/graphql'
 const graphqlEndpoint = 'https://ecos-noodl.hasura.app/v1/graphql'
@@ -17,7 +24,11 @@ const owner = 'pfftdammitchris@gmail.com'
 interface Params {
   config?: string
   actionTypes?: boolean
-  componentTypes?: boolean
+  actionObjects?: boolean
+  actionsStats?: boolean
+  componentTypes?: string[]
+  componentObjects?: nt.ComponentObject[]
+  componentsStats?: Record<string, number>
 }
 
 export const handler: Handler = async (event, context) => {
@@ -27,62 +38,46 @@ export const handler: Handler = async (event, context) => {
 
     console.log({ params })
 
-    const aggregator = new Aggregator()
-    const configName = params?.config
+    const configName = params?.config || ''
 
-    if (configName) {
-      aggregator.configKey = configName
+    if (!configName) throw new Error(`Variable "config" is required`)
 
-      const {
-        doc: { root: rootDoc, app: appDoc },
-        raw: { root: rootYml, app: appYml },
-      } = await aggregator.init({
-        loadPages: true,
-        loadPreloadPages: true,
-      })
+    const metadata = new Metadata(configName)
 
-      const actionObjects = []
+    if (
+      [params.actionTypes, params.actionObjects, params.actionsStats].some(
+        (cond) => !!cond,
+      )
+    ) {
+      const options = {} as Record<keyof ActionsVisitorContext, boolean>
 
-      for (const [name, doc] of aggregator.root) {
-        yaml.visit(doc, {
-          Scalar() {},
-          Pair(key, node, path) {
-            if (
-              key === 'key' &&
-              yaml.isScalar(node.key) &&
-              node.key.value === 'actionType'
-            ) {
-              actionObjects.push(node.toJSON())
-              return yaml.visit.SKIP
-            }
-          },
-          Map() {},
-          Seq() {},
-          Value() {},
-        })
-      }
+      params.actionTypes && (options.actionTypes = true)
+      params.actionObjects && (options.actionObjects = true)
+      params.actionsStats && (options.actionsStats = true)
 
-      console.log(actionObjects)
-    } else {
-      //
+      metadata.createVisitor(actionsVisitor, options)
     }
 
-    return {
-      statusCode: 200,
-      body: '',
+    if (
+      [
+        params.componentTypes,
+        params.componentObjects,
+        params.componentsStats,
+      ].some((cond) => !!cond)
+    ) {
+      const options = {} as Record<keyof ComponentsVisitorContext, boolean>
+
+      params.componentTypes && (options.componentTypes = true)
+      params.componentObjects && (options.componentObjects = true)
+      params.componentsStats && (options.componentsStats = true)
+
+      metadata.createVisitor(componentsVisitor, options)
     }
+
+    await metadata.run()
+
+    return getSuccessResponse(metadata.context)
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify(
-        {
-          code: error.code,
-          name: error.name,
-          message: error.message,
-        },
-        null,
-        2,
-      ),
-    }
+    return getErrorResponse(error)
   }
 }

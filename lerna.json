@@ -3,7 +3,6 @@
 		"bootstrap": {},
 		"exec": {},
 		"publish": {
-			"conventionalCommits": true,
 			"yes": true
 		},
 		"publishChanges": {},
@@ -18,6 +17,6 @@
 		"packages/noodl-types",
 		"packages/noodl-utils"
 	],
-	"version": "independent",
-	"useWorkSpaces": true
+	"useWorkSpaces": true,
+	"version": "independent"
 }

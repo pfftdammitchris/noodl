@@ -1,7 +1,6 @@
-// @ts-nocheck
-import generator from 'generator'
 import fs from 'fs-extra'
 import path from 'path'
+import * as nt from 'noodl-types/dist/cjs'
 import * as nc from 'noodl-common'
 
 const outputPathname = 'generated'

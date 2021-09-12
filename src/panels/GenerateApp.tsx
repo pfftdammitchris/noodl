@@ -30,6 +30,7 @@ export interface Props {
 	isLocal?: boolean
 	port?: number
 	onEnd?(): void
+	isTemp?: boolean
 }
 
 export const initialState = {
@@ -53,6 +54,7 @@ function GenerateApp(props: Props) {
 		isLocal,
 		port,
 		onEnd,
+		isTemp,
 	} = props
 
 	const {
@@ -72,6 +74,12 @@ function GenerateApp(props: Props) {
 	const loadConfig = React.useCallback(
 		async (configKey: string) => {
 			if (configKey) {
+				const baseDir = isTemp
+					? configuration.getTempDir()
+					: configuration.getPathToGenerateDir()
+
+				const configDir = path.join(baseDir, configKey)
+
 				try {
 					log(`\nLoading config ${co.yellow(`${configKey}`)}`)
 
@@ -80,10 +88,6 @@ function GenerateApp(props: Props) {
 						? `${configKey}.yml`
 						: configKey
 
-					const configDir = path.join(
-						configuration.getPathToGenerateDir(),
-						configKey,
-					)
 					const configFilePath = path.join(configDir, configFileName)
 					const assetsDir = path.join(configDir, 'assets')
 
@@ -322,10 +326,7 @@ function GenerateApp(props: Props) {
 							)
 							doc.set('myBaseUrl', `http://${host}:${port}/`)
 						}
-						const dir = path.join(
-							configuration.getPathToGenerateDir(),
-							aggregator.configKey,
-						)
+						const dir = path.join(baseDir, aggregator.configKey)
 						const filename = nc
 							.withYmlExt(aggregator.configKey)
 							.replace('_en', '')
