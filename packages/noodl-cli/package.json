@@ -1,23 +1,6 @@
 {
-	"name": "noodl-cli",
-	"version": "0.0.99",
-	"typings": "./dist/cli.d.ts",
 	"bin": {
 		"noodl": "bin/cli.js"
-	},
-	"scripts": {
-		"postinstall": "npm run bootstrap",
-		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
-		"prebuild": "rm -rf dist",
-		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib es2020 --lib esnext --module es2020 --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false",
-		"bootstrap": "lerna bootstrap --hoist",
-		"start": "cross-env DEV=true CI=false npm run build -- --watch",
-		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",
-		"morph": "npx ts-node-dev --respawn --transpile-only dev/morph.ts",
-		"refs": "npx nodemon dev/refs/refs --ignore refs-output.json",
-		"test": "ava --watch",
-		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\"",
-		"pub": "node scripts/publish.js -p"
 	},
 	"dependencies": {
 		"@jsmanifest/utils": "^1.0.17",
@@ -43,9 +26,9 @@
 		"lodash": "^4.17.21",
 		"meow": "^10.1.1",
 		"mime": "^2.5.2",
-		"noodl-aggregator": "file:packages/noodl-aggregator",
-		"noodl-types": "file:packages/noodl-types",
-		"noodl-utils": "file:packages/noodl-utils",
+		"noodl-aggregator": "file:../noodl-aggregator",
+		"noodl-types": "file:../noodl-types",
+		"noodl-utils": "file:../noodl-utils",
 		"pretty-error": "^3.0.4",
 		"react": "^17.0.2",
 		"transducers-js": "^0.4.174",
@@ -106,14 +89,14 @@
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"eslint-plugin-unicorn": "^35.0.0",
 		"esm": "^3.2.25",
-		"generator": "file:packages/generator",
+		"generator": "../generator",
 		"globby": "^12.0.2",
 		"ink-testing-library": "^2.1.0",
 		"mocha": "^9.1.1",
 		"nock": "^13.1.3",
 		"node-cron": "^3.0.0",
-		"noodl-action-chain": "file:packages/noodl-action-chain",
-		"noodl-common": "file:packages/noodl-common",
+		"noodl-action-chain": "../noodl-action-chain",
+		"noodl-common": "../noodl-common",
 		"noodl-ui": "^0.1.75",
 		"noodl-ui-test-utils": "^0.0.13",
 		"prettier": "^2.3.2",
@@ -130,52 +113,15 @@
 		"type-fest": "^2.2.0",
 		"typescript": "^4.4.2"
 	},
-	"files": [
-		"bin/",
-		"dist/",
-		"src/",
-		"packages/noodl-aggregator/",
-		"packages/noodl-common/",
-		"packages/noodl-types/",
-		"packages/noodl-utils/",
-		"cli.js"
-	],
-	"exports": {
-		"import": "./dist/cli.js",
-		"require": "./bin/cli.js"
-	},
-	"type": "module",
-	"typesVersions": {
-		"*": {
-			"cli.d.ts": [
-				"./dist/cli.d.ts"
-			]
-		}
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/pfftdammitchris/noodl-cli"
-	},
 	"engines": {
 		"node": ">=12"
 	},
-	"license": "MIT",
-	"prettier": {
-		"arrowParens": "always",
-		"endOfLine": "lf",
-		"printWidth": 80,
-		"semi": false,
-		"singleQuote": true,
-		"tabWidth": 2,
-		"trailingComma": "all"
-	},
 	"eslintConfig": {
-		"root": true,
-		"parser": "@typescript-eslint/parser",
-		"parserOptions": {
-			"ecmaVersion": 2021,
-			"project": "./tsconfig.json",
-			"sourceType": "module"
+		"env": {
+			"browser": true,
+			"es6": true,
+			"node": true,
+			"webextensions": true
 		},
 		"extends": [
 			"eslint:recommended",
@@ -190,17 +136,18 @@
 			"dist",
 			"node_modules"
 		],
+		"parser": "@typescript-eslint/parser",
+		"parserOptions": {
+			"ecmaVersion": 2021,
+			"project": "./tsconfig.json",
+			"sourceType": "module"
+		},
 		"plugins": [
 			"@typescript-eslint",
 			"prettier",
 			"unicorn"
 		],
-		"env": {
-			"browser": true,
-			"es6": true,
-			"node": true,
-			"webextensions": true
-		},
+		"root": true,
 		"rules": {
 			"@typescript-eslint/ban-ts-comment": "off",
 			"@typescript-eslint/explicit-module-boundary-types": "off",
@@ -217,12 +164,13 @@
 			"@typescript-eslint/no-namespace": "off",
 			"@typescript-eslint/no-var-requires": "off",
 			"eqeqeq": 0,
-			"prefer-const": 0,
-			"prettier/prettier": 2,
 			"no-empty": "off",
 			"no-inner-declarations": "off",
+			"no-nested-ternary": "off",
 			"no-template-curly-in-string": "off",
 			"no-useless-escape": 2,
+			"prefer-const": 0,
+			"prettier/prettier": 2,
 			"unicorn/better-regex": "error",
 			"unicorn/catch-error-name": "error",
 			"unicorn/consistent-destructuring": "error",
@@ -251,7 +199,6 @@
 			"unicorn/no-invalid-remove-event-listener": "error",
 			"unicorn/no-keyword-prefix": "off",
 			"unicorn/no-lonely-if": "error",
-			"no-nested-ternary": "off",
 			"unicorn/no-nested-ternary": "error",
 			"unicorn/no-new-array": "error",
 			"unicorn/no-new-buffer": "error",
@@ -325,12 +272,65 @@
 			}
 		}
 	},
+	"exports": {
+		"import": "./dist/cli.js",
+		"require": "./bin/cli.js"
+	},
+	"files": [
+		"bin/",
+		"dist/",
+		"src/",
+		"packages/noodl-aggregator/",
+		"packages/noodl-common/",
+		"packages/noodl-types/",
+		"packages/noodl-utils/",
+		"cli.js"
+	],
+	"license": "MIT",
+	"name": "noodl-cli",
 	"nodemonConfig": {
 		"ignore": [
 			".yml"
 		]
 	},
+	"prettier": {
+		"arrowParens": "always",
+		"endOfLine": "lf",
+		"printWidth": 80,
+		"semi": false,
+		"singleQuote": true,
+		"tabWidth": 2,
+		"trailingComma": "all"
+	},
 	"publishConfig": {
 		"access": "public"
-	}
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pfftdammitchris/noodl-cli"
+	},
+	"scripts": {
+		"bootstrap": "lerna bootstrap --hoist",
+		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib es2020 --lib esnext --module es2020 --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false",
+		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
+		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",
+		"morph": "npx ts-node-dev --respawn --transpile-only dev/morph.ts",
+		"postinstall": "npm run bootstrap",
+		"prebuild": "rm -rf dist",
+		"pub": "node scripts/publish.js -p",
+		"refs": "npx nodemon dev/refs/refs --ignore refs-output.json",
+		"start": "cross-env DEV=true CI=false npm run build -- --watch",
+		"test": "ava --watch",
+		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\""
+	},
+	"type": "module",
+	"typesVersions": {
+		"*": {
+			"cli.d.ts": [
+				"./dist/cli.d.ts"
+			]
+		}
+	},
+	"typings": "./dist/cli.d.ts",
+	"version": "0.0.100"
 }
