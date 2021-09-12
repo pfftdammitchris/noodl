@@ -1,6 +1,6 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.92",
+	"version": "0.0.93",
 	"typings": "./dist/cli.d.ts",
 	"bin": {
 		"noodl": "bin/noodl-cli.js"
@@ -42,9 +42,9 @@
 		"lodash": "^4.17.21",
 		"meow": "^10.1.1",
 		"mime": "^2.5.2",
-		"noodl-aggregator": "^0.0.15",
-		"noodl-types": "^1.0.174",
-		"noodl-utils": "^0.0.67",
+		"noodl-aggregator": "file:packages/noodl-aggregator",
+		"noodl-types": "file:packages/noodl-types",
+		"noodl-utils": "file:packages/noodl-utils",
 		"pretty-error": "^3.0.4",
 		"react": "^17.0.2",
 		"transducers-js": "^0.4.174",
@@ -132,7 +132,8 @@
 	"files": [
 		"bin/",
 		"dist/",
-		"./cli.js"
+		"src/",
+		"cli.js"
 	],
 	"exports": {
 		"import": "./dist/cli.js",
