@@ -1,3 +1,4 @@
+console.clear()
 import * as u from '@jsmanifest/utils'
 import path from 'path'
 import execa from 'execa'
@@ -6,7 +7,8 @@ import yaml from 'yaml'
 import fs from 'fs-extra'
 
 const CONFIG_PATH = path.resolve(path.join(process.cwd(), 'config.yml'))
-const LOG_PATH = path.resolve(path.join(process.cwd(), 'logs/downloadApp.json'))
+const LOGS_DIR = path.resolve(path.join(process.cwd(), 'logs'))
+const LOG_PATH = path.join(LOGS_DIR, 'downloadApp.json')
 const everyMinute = '* * * * *'
 const everyHour = '*/60 * * * *'
 const schedule = everyHour
@@ -18,7 +20,7 @@ u.log(
 			: schedule === everyHour
 			? 'hour'
 			: '<unknown>',
-	)}`,
+	)}\n`,
 )
 
 const INITIAL_CONFIG = 'admind2'
@@ -26,6 +28,11 @@ const INITIAL_CONFIG = 'admind2'
 if (!fs.existsSync(CONFIG_PATH)) {
 	fs.ensureFileSync(CONFIG_PATH)
 	u.log(`Created missing config file at ${u.yellow(CONFIG_PATH)}`)
+}
+
+if (!fs.existsSync(LOGS_DIR)) {
+	fs.ensureDirSync(LOGS_DIR)
+	u.log(`Created missing logs directory at ${u.yellow(LOGS_DIR)}`)
 }
 
 if (!fs.existsSync(LOG_PATH)) {
@@ -50,12 +57,18 @@ if (!config.has('apps')) {
 
 const apps = config.get('apps')?.toJSON?.() || []
 
+u.newline()
+
 console.log({ apps, previousExecutions: logFile.executions?.length || 0 })
+
+u.newline()
 
 cron.schedule(
 	schedule,
 	async () => {
 		try {
+			u.log(`${u.white(u.bold(`Executing (${new Date().toISOString()})`))}\n`)
+
 			const success = []
 			const failed = []
 
