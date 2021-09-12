@@ -310,7 +310,7 @@ function GenerateApp(props: Props) {
 				} catch (error) {
 					logError(error as Error)
 				} finally {
-					// @ts-expect-error
+					// @ts-ignore
 					const doc = aggregator.root.get(aggregator.configKey) as
 						| yaml.Document<yaml.Node>
 						| yaml.Document.Parsed
