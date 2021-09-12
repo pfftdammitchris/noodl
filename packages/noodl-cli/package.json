@@ -282,7 +282,14 @@
 		"packages/noodl-aggregator/",
 		"packages/noodl-common/",
 		"packages/noodl-types/",
-		"packages/noodl-utils/"
+		"packages/noodl-utils/",
+		"tsconfig.json",
+		"tsconfig.test.json",
+		"readme.md",
+		".editorconfig",
+		".gitconfig",
+		".npmignore",
+		"noodl.yml"
 	],
 	"license": "MIT",
 	"name": "noodl-cli",
@@ -325,5 +332,5 @@
 		}
 	},
 	"typings": "./dist/cli.d.ts",
-	"version": "0.0.102"
+	"version": "0.0.103"
 }
