@@ -310,12 +310,10 @@
 		"url": "https://github.com/pfftdammitchris/noodl-cli"
 	},
 	"scripts": {
-		"bootstrap": "lerna bootstrap --hoist",
 		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib es2020 --lib esnext --module es2020 --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false",
-		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
+		"clean": "rm -rf dist node_modules package-lock.json",
 		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",
 		"morph": "npx ts-node-dev --respawn --transpile-only dev/morph.ts",
-		"postinstall": "npm run bootstrap",
 		"prebuild": "rm -rf dist",
 		"pub": "node scripts/publish.js -p",
 		"refs": "npx nodemon dev/refs/refs --ignore refs-output.json",
@@ -332,5 +330,5 @@
 		}
 	},
 	"typings": "./dist/cli.d.ts",
-	"version": "0.0.100"
+	"version": "0.0.101"
 }
