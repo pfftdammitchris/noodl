@@ -313,7 +313,6 @@
 	"scripts": {
 		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib es2020 --lib esnext --module es2020 --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false",
 		"clean": "rm -rf dist node_modules package-lock.json",
-		"postinstall": "npm run build",
 		"prebuild": "rm -rf dist",
 		"start": "cross-env DEV=true CI=false npm run build -- --watch",
 		"test": "ava --watch",
