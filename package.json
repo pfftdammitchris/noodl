@@ -1,6 +1,6 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.80",
+	"version": "0.0.81",
 	"typings": "./dist/cli.d.ts",
 	"bin": {
 		"noodl": "cli.js"
@@ -130,9 +130,9 @@
 		"type-fest": "^2.2.0",
 		"typescript": "^4.4.2"
 	},
-	"files": [
-		"./dist"
-	],
+	"directories": {
+		"dist": "dist"
+	},
 	"exports": {
 		"import": "./dist/cli.js",
 		"main": "./dist/cli.js"
