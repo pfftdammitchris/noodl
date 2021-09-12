@@ -279,10 +279,6 @@
 		"bin/",
 		"dist/",
 		"src/",
-		"packages/noodl-aggregator/",
-		"packages/noodl-common/",
-		"packages/noodl-types/",
-		"packages/noodl-utils/",
 		"tsconfig.json",
 		"tsconfig.test.json",
 		"readme.md",
@@ -332,5 +328,5 @@
 		}
 	},
 	"typings": "./dist/cli.d.ts",
-	"version": "0.0.103"
+	"version": "0.0.104"
 }
