@@ -273,8 +273,7 @@
 		}
 	},
 	"exports": {
-		"import": "./dist/cli.js",
-		"require": "./bin/cli.js"
+		"import": "./bin/cli.js"
 	},
 	"files": [
 		"bin/",
@@ -283,8 +282,7 @@
 		"packages/noodl-aggregator/",
 		"packages/noodl-common/",
 		"packages/noodl-types/",
-		"packages/noodl-utils/",
-		"cli.js"
+		"packages/noodl-utils/"
 	],
 	"license": "MIT",
 	"name": "noodl-cli",
@@ -312,11 +310,8 @@
 	"scripts": {
 		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib es2020 --lib esnext --module es2020 --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false",
 		"clean": "rm -rf dist node_modules package-lock.json",
-		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",
-		"morph": "npx ts-node-dev --respawn --transpile-only dev/morph.ts",
+		"postinstall": "npm run build",
 		"prebuild": "rm -rf dist",
-		"pub": "node scripts/publish.js -p",
-		"refs": "npx nodemon dev/refs/refs --ignore refs-output.json",
 		"start": "cross-env DEV=true CI=false npm run build -- --watch",
 		"test": "ava --watch",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\""
@@ -330,5 +325,5 @@
 		}
 	},
 	"typings": "./dist/cli.d.ts",
-	"version": "0.0.101"
+	"version": "0.0.102"
 }

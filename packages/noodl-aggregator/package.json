@@ -12,8 +12,8 @@
 		"lodash.chunk": "^4.2.0",
 		"minimatch": "^3.0.4",
 		"noodl-common": "file:../noodl-common",
-		"noodl-types": "^1.0.177",
-		"noodl-utils": "^0.0.70",
+		"noodl-types": "^1.0.178",
+		"noodl-utils": "^0.0.71",
 		"yaml": "^2.0.0-4"
 	},
 	"description": "Noodl aggregator",
@@ -52,5 +52,5 @@
 		"types": "tsc --emitDeclarationOnly"
 	},
 	"typings": "./dist/index.d.ts",
-	"version": "0.0.19"
+	"version": "0.0.20"
 }
