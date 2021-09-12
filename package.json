@@ -1,6 +1,6 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.91",
+	"version": "0.0.92",
 	"typings": "./dist/cli.d.ts",
 	"bin": {
 		"noodl": "bin/noodl-cli.js"
@@ -43,7 +43,6 @@
 		"meow": "^10.1.1",
 		"mime": "^2.5.2",
 		"noodl-aggregator": "^0.0.15",
-		"noodl-common": "file:packages/noodl-common",
 		"noodl-types": "^1.0.174",
 		"noodl-utils": "^0.0.67",
 		"pretty-error": "^3.0.4",
@@ -113,6 +112,7 @@
 		"nock": "^13.1.3",
 		"node-cron": "^3.0.0",
 		"noodl-action-chain": "file:packages/noodl-action-chain",
+		"noodl-common": "file:packages/noodl-common",
 		"noodl-ui": "^0.1.75",
 		"noodl-ui-test-utils": "^0.0.13",
 		"prettier": "^2.3.2",
