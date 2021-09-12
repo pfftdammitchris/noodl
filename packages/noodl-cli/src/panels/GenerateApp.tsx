@@ -256,7 +256,7 @@ function GenerateApp(props: Props) {
 							if (!doc) return u.log(doc)
 
 							if (type === 'root-config') {
-								nc.writeFileSync(filepath, nc.stringifyDoc(doc))
+								nc.writeFileSync(filepath, nc.stringifyDoc(doc as any))
 								const baseUrl = doc.get('cadlBaseUrl')
 								const appKey = doc.get('cadlMain')
 								log(`Base url: ${co.yellow(baseUrl)}`)
@@ -264,7 +264,7 @@ function GenerateApp(props: Props) {
 								log(`Saved root config object to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else if (type === 'app-config') {
-								nc.writeFileSync(filepath, nc.stringifyDoc(doc))
+								nc.writeFileSync(filepath, nc.stringifyDoc(doc as any))
 								numDocsFetching = aggregator.pageNames.length
 								log(
 									`\nTotal expected number of yml files we are retrieving is ${co.yellow(
@@ -275,7 +275,7 @@ function GenerateApp(props: Props) {
 								log(`Saved app config to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else {
-								nc.writeFileSync(filepath, nc.stringifyDoc(doc))
+								nc.writeFileSync(filepath, nc.stringifyDoc(doc as any))
 								const pageName = name.replace('_en', '')
 								log(
 									`Saved page ${co.magenta(pageName)} to ${co.yellow(
@@ -289,9 +289,9 @@ function GenerateApp(props: Props) {
 					}
 
 					await aggregator
-						.on(ON_RETRIEVED_ROOT_CONFIG, createOnDoc('root-config'))
-						.on(PARSED_APP_CONFIG, createOnDoc('app-config'))
-						.on(ON_RETRIEVED_APP_PAGE, createOnDoc('app-page'))
+						.on(ON_RETRIEVED_ROOT_CONFIG, createOnDoc('root-config') as any)
+						.on(PARSED_APP_CONFIG, createOnDoc('app-config') as any)
+						.on(ON_RETRIEVED_APP_PAGE, createOnDoc('app-page') as any)
 						.on(ON_RETRIEVE_APP_PAGE_FAILED, incrementProcessedDocs)
 						.init({
 							fallback: {
@@ -310,7 +310,10 @@ function GenerateApp(props: Props) {
 				} catch (error) {
 					logError(error as Error)
 				} finally {
-					const doc = aggregator.root.get(aggregator.configKey) as yaml.Document
+					// @ts-expect-error
+					const doc = aggregator.root.get(aggregator.configKey) as
+						| yaml.Document<yaml.Node>
+						| yaml.Document.Parsed
 					if (isLocal) {
 						log(
 							`Setting ${co.magenta('cadlBaseUrl')} to ${co.yellow(
@@ -331,7 +334,7 @@ function GenerateApp(props: Props) {
 							.withYmlExt(aggregator.configKey)
 							.replace('_en', '')
 						const filepath = path.join(dir, filename)
-						nc.writeFileSync(filepath, nc.stringifyDoc(doc))
+						nc.writeFileSync(filepath, nc.stringifyDoc(doc as any))
 					}
 				}
 			}

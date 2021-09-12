@@ -5,6 +5,7 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"allowSyntheticDefaultImports": true,
+		"baseUrl": ".",
 		"declaration": true,
 		"declarationDir": "dist",
 		"importHelpers": true,
