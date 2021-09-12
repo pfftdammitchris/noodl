@@ -1,6 +1,6 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.96",
+	"version": "0.0.97",
 	"typings": "./dist/cli.d.ts",
 	"bin": {
 		"noodl": "bin/cli.js"
@@ -134,7 +134,10 @@
 		"bin/",
 		"dist/",
 		"src/",
-		"packages/",
+		"packages/noodl-aggregator/",
+		"packages/noodl-common/",
+		"packages/noodl-types/",
+		"packages/noodl-utils/",
 		"cli.js"
 	],
 	"exports": {
