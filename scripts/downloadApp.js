@@ -3,18 +3,21 @@ import execa from 'execa'
 import cron from 'node-cron'
 import yaml from 'yaml'
 import fs from 'fs-extra'
-import chalk from 'chalk'
 
 const CONFIG_PATH = path.resolve(path.join(process.cwd(), 'config.yml'))
 const everyMinute = '0 0/1 * 1/1 * ? *'
 const everyHour = '0 0 0/1 1/1 * ? *'
 
-const coolGold = (s = '') => chalk.keyword('navajowhite')(s)
-
 cron.schedule(
 	everyMinute,
 	async () => {
 		try {
+			u.log(
+				`Scheduling task to run every ${u.cyan(
+					everyMinute ? 'minute' : everyHour ? 'hour' : '<unknown>',
+				)}`,
+			)
+
 			if (!fs.existsSync(CONFIG_PATH)) {
 				fs.ensureFileSync(CONFIG_PATH)
 				u.log(`Created missing config file at ${u.yellow(CONFIG_PATH)}`)
@@ -23,6 +26,7 @@ cron.schedule(
 			const config = yaml.parseDocument(fs.readFileSync('./config.yml', 'utf8'))
 
 			if (!config.has('apps')) {
+				u.log(`Setting initial list of apps ${u.yellow(CONFIG_PATH)}`)
 				config.set('apps', [])
 				fs.writeFileSync('./config.yml', yaml.stringify(config, { indent: 2 }))
 			}
