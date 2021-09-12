@@ -8,7 +8,7 @@
 		"lodash.flowright": "^3.5.0",
 		"lodash.get": "^4.4.2",
 		"lodash.has": "^4.5.2",
-		"noodl-types": "^1.0.180"
+		"noodl-types": "^1.0.181"
 	},
 	"description": "Utility/helpers for working with NOODL values",
 	"devDependencies": {
@@ -63,5 +63,5 @@
 		"test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src"
 	},
 	"types": "dist/index.d.ts",
-	"version": "0.0.73"
+	"version": "0.0.74"
 }
