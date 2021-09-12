@@ -1,4 +1,4 @@
-import { ComponentObject } from './componentTypes.js'
+import { ComponentObject } from './componentTypes'
 
 export interface PageObject {
 	components: ComponentObject[]

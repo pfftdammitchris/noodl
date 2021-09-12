@@ -1,4 +1,4 @@
-import { ReferenceString } from '../ecosTypes.js'
+import { ReferenceString } from '../ecosTypes'
 
 /**
  * Returns true if the value is prefixed with ~/ (placeholder for base url)

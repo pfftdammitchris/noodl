@@ -1,4 +1,4 @@
-import { ReferenceString } from '../ecosTypes.js'
+import { ReferenceString } from '../ecosTypes'
 
 /**
  * true: ".Global.currentUser.vertex.name.firstName@"

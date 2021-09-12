@@ -1,7 +1,7 @@
 import { LiteralUnion } from 'type-fest'
-import { OrArray } from './_internal/types.js'
-import { EmitObjectFold, GotoObject, IfObject } from './uncategorizedTypes.js'
-import { BuiltInEvalObject, DataIn, ReferenceString } from './ecosTypes.js'
+import { OrArray } from './_internal/types'
+import { EmitObjectFold, GotoObject, IfObject } from './uncategorizedTypes'
+import { BuiltInEvalObject, DataIn, ReferenceString } from './ecosTypes'
 
 export interface UncommonActionObjectProps {
 	actions?: any[]

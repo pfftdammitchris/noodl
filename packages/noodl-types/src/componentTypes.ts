@@ -1,17 +1,13 @@
-import { ActionObject } from './actionTypes.js'
-import { ContentType, EventType } from './constantTypes.js'
-import {
-	StyleObject,
-	StyleTextAlign,
-	StyleTextAlignObject,
-} from './styleTypes.js'
+import { ActionObject } from './actionTypes'
+import { ContentType, EventType } from './constantTypes'
+import { StyleObject, StyleTextAlign, StyleTextAlignObject } from './styleTypes'
 import {
 	ActionChain,
 	EmitObject,
 	GotoObject,
 	Path,
 	TextBoardObject,
-} from './uncategorizedTypes.js'
+} from './uncategorizedTypes'
 
 export type UncommonComponentObjectProps = {
 	[key in EventType]: ActionChain
