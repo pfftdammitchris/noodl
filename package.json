@@ -1,9 +1,9 @@
 {
 	"name": "noodl-cli",
-	"version": "0.0.85",
+	"version": "0.0.86",
 	"typings": "./dist/cli.d.ts",
 	"bin": {
-		"noodl": "cli.js"
+		"noodl": "bin/noodl-cli.js"
 	},
 	"scripts": {
 		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
@@ -132,11 +132,12 @@
 	},
 	"files": [
 		"bin/",
+		"dist/",
 		"./cli.js"
 	],
 	"exports": {
 		"import": "./dist/cli.js",
-		"main": "./dist/cli.js"
+		"require": "./bin/noodl-cli.js"
 	},
 	"type": "module",
 	"typesVersions": {
@@ -323,5 +324,8 @@
 		"ignore": [
 			".yml"
 		]
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
