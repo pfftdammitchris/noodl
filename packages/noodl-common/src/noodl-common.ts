@@ -8,13 +8,6 @@ import { Document, parseDocument as parseYmlToDoc } from 'yaml'
 import minimatch from 'minimatch'
 import normalizePath from './normalizePath.js'
 
-// const {
-// 	readdirSync: _readdirSync,
-// 	readFileSync,
-// 	statSync,
-// 	writeFileSync: _writeFileSync,
-// } = fs
-
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
 export const highlight = (...s: any[]) => chalk.yellow(...s)
 export const italic = (...s: any[]) => chalk.italic(chalk.white(...s))
