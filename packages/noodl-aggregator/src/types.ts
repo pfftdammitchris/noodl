@@ -19,6 +19,9 @@ export type Hooks = {
 	ON_PLACEHOLDER_PURGED: { args: { before: string; after: string } }
 	ON_RETRIEVING_APP_CONFIG: { args: { url: string } }
 	ON_RETRIEVED_APP_CONFIG: { args: string }
+	ON_RETRIEVED_APP_PAGE: {
+		args: { name: string; doc: yaml.Document; fromDir?: boolean }
+	}
 	ON_RETRIEVE_APP_PAGE_FAILED: { args: { name: string; error: Error } }
 	ON_RETRIEVING_ROOT_CONFIG: { args: { url: string } }
 	ON_RETRIEVED_ROOT_CONFIG: {

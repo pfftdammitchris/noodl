@@ -76,36 +76,8 @@ export function loadFilesAsDocs({
 	}).map((fpath) => xform(fpath))
 }
 
-/**
- * Resolves an array of promises safely, inserting each result to the list
- * including errors that occurred inbetween.
- * @param { Promise[] } promises - Array of promises
- */
-export async function promiseAllSafe(...promises: Promise<any>[]) {
-	const results = [] as any[]
-	for (const promise of promises) {
-		try {
-			const result = await promise
-			results.push(result)
-		} catch (error) {
-			results.push(error)
-		}
-	}
-	return results
-}
-
 export function withSuffix(suffix: string) {
 	return function (str: string) {
 		return str.endsWith(suffix) ? str : `${str}${suffix}`
 	}
 }
-
-export const withYmlExt = withSuffix('.yml')
-export const withEngLocale = withSuffix('_en')
-
-export function withoutExt(str: string) {
-	return !!str?.includes('.') ? str.substring(str.lastIndexOf('.')) : str
-}
-
-// prettier-ignore
-export const withTag = (colorFunc = cyan) => (s: string) => `[${colorFunc(s)}]`

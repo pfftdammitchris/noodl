@@ -12,6 +12,7 @@
 		"packages/noodl-action-chain",
 		"packages/noodl-cli",
 		"packages/noodl-common",
+		"packages/noodl-ec2",
 		"packages/noodl-types",
 		"packages/noodl-utils"
 	],

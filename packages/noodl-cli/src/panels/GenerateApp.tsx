@@ -3,6 +3,7 @@ import { UncontrolledTextInput } from 'ink-text-input'
 import { constants as noodlAggregatorConsts } from 'noodl-aggregator'
 import { LinkStructure } from 'noodl-common'
 import * as nc from 'noodl-common'
+import * as nu from 'noodl-utils'
 import { globbySync } from 'globby'
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
@@ -249,7 +250,7 @@ function GenerateApp(props: Props) {
 							name: string
 							doc: yaml.Document
 						}) {
-							const filename = nc.withYmlExt(name).replace('_en', '')
+							const filename = nu.withYmlExt(name).replace('_en', '')
 							const filepath = path
 								.join(configDir, filename)
 								.replace('/~/', '/')

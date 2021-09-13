@@ -1,10 +1,5 @@
 import * as u from '@jsmanifest/utils'
-import {
-	LinkStructure,
-	getLinkStructure,
-	stringifyDoc,
-	withYmlExt,
-} from 'noodl-common'
+import { LinkStructure, getLinkStructure, stringifyDoc } from 'noodl-common'
 import flatten from 'lodash/flatten'
 import path from 'path'
 import type { DeviceType, Env } from 'noodl-types'
@@ -12,6 +7,7 @@ import {
 	createNoodlPlaceholderReplacer,
 	hasNoodlPlaceholder,
 	isValidAsset,
+	withYmlExt,
 } from 'noodl-utils'
 import invariant from 'invariant'
 import axios from 'axios'
@@ -41,7 +37,7 @@ class NoodlAggregator {
 			value: () => {
 				const result = {}
 				for (const [name, doc] of this.root) {
-					yaml.isDocument(doc) && (result[name] = doc.toJSON())
+					yaml.isDocument(doc) && (result[name] = doc?.toJSON?.())
 				}
 				return result
 			},
@@ -107,8 +103,9 @@ class NoodlAggregator {
 
 	get pageNames() {
 		const appConfig = this.root.get(this.appKey) as yaml.Document
-		const preloadPages = (appConfig?.get('preload') as yaml.YAMLSeq).toJSON()
-		const pages = (appConfig?.get('page') as yaml.YAMLSeq).toJSON()
+		const preloadPages =
+			(appConfig?.get('preload') as yaml.YAMLSeq)?.toJSON?.() || []
+		const pages = (appConfig?.get('page') as yaml.YAMLSeq)?.toJSON?.() || []
 		return [...preloadPages, ...pages] as string[]
 	}
 
@@ -179,10 +176,12 @@ class NoodlAggregator {
 	}
 
 	async init({
+		dir = '',
 		fallback,
 		loadPages: shouldLoadPages = true,
 		loadPreloadPages: shouldLoadPreloadPages = true,
 	}: {
+		dir?: string
 		fallback?: {
 			// @ts-expect-error
 			appConfig?: Parameters<NoodlAggregator['loadAppConfig']>[0]['fallback']
@@ -194,44 +193,70 @@ class NoodlAggregator {
 			!!this.configKey,
 			`Cannot initiate the aggregator without setting a config key first`,
 		)
+
 		const result = {
 			doc: {
-				root: await this.loadRootConfig(),
-				app: await this.loadAppConfig({ fallback: fallback?.appConfig }),
+				root: await this.loadRootConfig({ dir }),
+				app: await this.loadAppConfig({ dir, fallback: fallback?.appConfig }),
 			},
 			raw: {
 				root: this.getRawRootConfigYml(),
 				app: this.getRawAppConfigYml(),
 			},
 		}
-		shouldLoadPreloadPages && (await this.loadPreloadPages())
-		shouldLoadPages && (await this.loadPages())
+
+		shouldLoadPreloadPages && (await this.loadPreloadPages({ dir }))
+		shouldLoadPages && (await this.loadPages({ dir }))
+
 		return result
 	}
 
+	/**
+	 *  Loads the root config. If a directory is given it will attempt to load from a file path. It will fallback to a fresh remote fetch if all else fails
+	 * @param { string | undefined } options.dir Directory to load the root config from if loading from a directory
+	 * @param { string | undefined } options.config Config name to override the current config name if provided
+	 */
+	async loadRootConfig(opts: {
+		dir: string
+		config?: string
+	}): Promise<yaml.Document>
 	async loadRootConfig(config: yaml.Document): Promise<yaml.Document>
 	async loadRootConfig(configName?: string): Promise<yaml.Document>
-	async loadRootConfig(configName: yaml.Document | string = this.configKey) {
+	async loadRootConfig(
+		options: yaml.Document | { dir: string; config?: string } | string = this
+			.configKey,
+	) {
 		let configDoc: yaml.Document | undefined
 		let configYml = ''
 
-		if (yaml.isDocument(configName)) {
-			configDoc = configName
-			configName = this.configKey
-		} else if (u.isStr(configName)) {
-			this.configKey = configName
+		if (yaml.isDocument(options)) {
+			configDoc = options
+			configYml = yaml.stringify(options, { indent: 2 })
+		} else if (u.isObj(options)) {
+			options?.config && (this.configKey = options.config)
+			const dir = options.dir || ''
+			const configFilePath = path.join(dir, this.configKey)
+			const { existsSync, readFile } = await import('fs-extra')
+			if (existsSync(configFilePath)) {
+				configYml = await readFile(configFilePath, 'utf8')
+				configDoc = yaml.parseDocument(configYml)
+			}
+		} else if (u.isStr(options)) {
+			this.configKey = options
 		}
 
 		invariant(
-			!!configName,
+			!!this.configKey,
 			`Cannot retrieve the root config because a config key was not passed in or set`,
 		)
-		if (configDoc) {
-			configYml = stringifyDoc(configDoc)
-		} else {
+
+		configDoc && !configYml && (configYml = stringifyDoc(configDoc))
+		configYml && !configDoc && (configDoc = yaml.parseDocument(configYml))
+
+		if (!configYml || !configDoc) {
 			const configUrl = `https://${
 				c.DEFAULT_CONFIG_HOSTNAME
-			}/config/${withYmlExt(configName)}`
+			}/config/${withYmlExt(this.configKey)}`
 			this.emit(c.ON_RETRIEVING_ROOT_CONFIG, { url: configUrl })
 			const { data: yml } = await axios.get(configUrl)
 			configDoc = yaml.parseDocument(yml)
@@ -245,13 +270,16 @@ class NoodlAggregator {
 			doc: configDoc,
 			yml: configYml,
 		})
+
 		this.configVersion = this.getConfigVersion(configDoc)
 		this.emit(c.ON_CONFIG_VERSION, this.configVersion)
+
 		const replacePlaceholders = createNoodlPlaceholderReplacer({
 			cadlBaseUrl: configDoc.get('cadlBaseUrl'),
 			cadlVersion: this.configVersion,
 			designSuffix: '',
 		})
+
 		yaml.visit(configDoc, {
 			Pair: (key, node) => {
 				if (yaml.isScalar(node.key) && node.key.value === 'cadlBaseUrl') {
@@ -281,36 +309,59 @@ class NoodlAggregator {
 				}
 			},
 		})
+
 		return configDoc
 	}
 
+	/**
+	 * Loads the app config. If a directory is passed it will attempt to load the app config from a file path. It will fallback to a fresh remote fetch if all else fails
+	 * @param { string | undefined } dir Directory to load from if loading from a directory
+	 * @param { function | undefined } fallback Used as a resolution strategy to load the app config if fetching fails
+	 * @returns
+	 */
 	async loadAppConfig({
+		dir,
 		fallback,
 	}: {
+		dir?: string
 		fallback?: () => Promise<string> | string
 	} = {}) {
 		invariant(
 			!!this.root.get(this.configKey),
 			'Cannot initiate app config without retrieving the root config',
 		)
-		this.emit(c.ON_RETRIEVING_APP_CONFIG, { url: this.appConfigUrl })
+
 		// Placeholders should already have been purged by this time
 		let appConfigYml = ''
 		let appConfigDoc: yaml.Document | undefined
 		let yml = ''
-		try {
-			yml = (await axios.get(this.appConfigUrl)).data
-		} catch (error) {
-			console.error(
-				`[${chalk.red('Error')}] ${chalk.yellow('loadAppConfig')}: ${
-					(error as Error).message
-				}. ` +
-					`If a fallback loader was provided, it will be used. ` +
-					`Otherwise the app config will be undefined`,
-				{ fallbackProvided: u.isFnc(fallback) },
-			)
-			u.isFnc(fallback) && (yml = await fallback())
+
+		if (dir) {
+			const appConfigFilePath = path.join(dir, this.appKey)
+			const { existsSync, readFile } = await import('fs-extra')
+			if (existsSync(appConfigFilePath)) {
+				appConfigYml = await readFile(appConfigFilePath, 'utf8')
+				appConfigDoc = yaml.parseDocument(appConfigYml)
+			}
 		}
+
+		if (!appConfigYml || !appConfigDoc) {
+			this.emit(c.ON_RETRIEVING_APP_CONFIG, { url: this.appConfigUrl })
+			try {
+				yml = (await axios.get(this.appConfigUrl)).data
+			} catch (error) {
+				console.error(
+					`[${chalk.red('Error')}] ${chalk.yellow('loadAppConfig')}: ${
+						(error as Error).message
+					}. ` +
+						`If a fallback loader was provided, it will be used. ` +
+						`Otherwise the app config will be undefined`,
+					{ fallbackProvided: u.isFnc(fallback) },
+				)
+				u.isFnc(fallback) && (yml = await fallback())
+			}
+		}
+
 		this.emit(c.ON_RETRIEVED_APP_CONFIG, (appConfigYml = yml))
 		this.root.set(`${this.appKey}_raw`, appConfigYml as any)
 		appConfigYml && (appConfigDoc = yaml.parseDocument(appConfigYml))
@@ -322,9 +373,64 @@ class NoodlAggregator {
 		return appConfigDoc
 	}
 
-	async loadPage(name: string | undefined = '', doc?: yaml.Document) {
+	async loadPage(options: {
+		name: string
+		doc?: yaml.Document
+		dir: string
+	}): Promise<yaml.Node | yaml.Document<unknown> | undefined>
+
+	async loadPage(
+		name: string | undefined,
+		doc?: yaml.Document,
+	): Promise<yaml.Node | yaml.Document<unknown> | undefined>
+
+	async loadPage(
+		options:
+			| {
+					name: string
+					doc?: yaml.Document
+					dir: string
+			  }
+			| string
+			| undefined = '',
+		doc?: yaml.Document,
+	) {
+		let dir = ''
+		let name = ''
+
+		if (u.isObj(options)) {
+			name = options.name
+			dir = options.dir
+			doc = options.doc
+		}
+
 		try {
 			const key = this.#toRootPageKey(name)
+
+			if (dir) {
+				const { existsSync, readFile } = await import('fs-extra')
+				if (existsSync(dir)) {
+					let filepath = ''
+
+					for (const filename of [`${key}.yml`, `${key}_en.yml`]) {
+						filepath = path.join(dir, filename)
+						if (existsSync(filepath)) {
+							const yml = await readFile(filepath, 'utf8')
+							if (yml) {
+								this.root.set(key, (doc = yaml.parseDocument(yml)))
+								this.emit(c.ON_RETRIEVED_APP_PAGE, {
+									name,
+									doc: doc as yaml.Document,
+									fromDir: true,
+								})
+								return this.root.get(key || '')
+							}
+							break
+						}
+					}
+				}
+			}
+
 			if (u.isStr(name)) {
 				const pageUrl = this.getPageUrl(`${key}_en.yml`)
 				const { data: yml } = await axios.get(pageUrl)
@@ -334,6 +440,7 @@ class NoodlAggregator {
 			} else {
 				u.log(u.red(`Page "${name}" was not loaded because of bad parameters`))
 			}
+
 			if (name) {
 				this.emit(c.ON_RETRIEVED_APP_PAGE, { name, doc: doc as yaml.Document })
 				return this.root.get(key || '')
@@ -362,28 +469,30 @@ class NoodlAggregator {
 		}
 	}
 
-	async loadPreloadPages(preloadPages: string[] = []) {
-		if (preloadPages.length) {
-			//
-		} else {
-			const seq = (this.root.get(this.appKey) as yaml.Document)?.get('preload')
-			if (yaml.isSeq(seq)) {
-				for (const node of seq.items) {
-					if (yaml.isScalar(node) && u.isStr(node.value)) {
-						!this.root.has(node.value) && preloadPages.push(node.value)
-					}
+	async loadPreloadPages({ dir = '' }: { dir?: string } = {}) {
+		const preloadPages = [] as string[]
+
+		const seq = (this.root.get(this.appKey) as yaml.Document)?.get('preload')
+
+		if (yaml.isSeq(seq)) {
+			for (const node of seq.items) {
+				if (yaml.isScalar(node) && u.isStr(node.value)) {
+					!this.root.has(node.value) && preloadPages.push(node.value)
 				}
 			}
 		}
+
 		return await promiseAllSafe(
-			...preloadPages.map(async (page) => this.loadPage(page)),
+			...preloadPages.map(async (page) => this.loadPage({ name: page, dir })),
 		)
 	}
 
 	async loadPages({
 		chunks = 4,
+		dir = '',
 	}: {
 		chunks?: number
+		dir?: string
 	} = {}) {
 		const pages = [] as string[]
 		const nodes = (this.root.get(this.appKey) as yaml.Document)?.get('page')
@@ -400,7 +509,7 @@ class NoodlAggregator {
 
 		const allPages = await Promise.all(
 			chunkedPages.map((chunked) =>
-				Promise.all(chunked.map((c) => this.loadPage(c))),
+				Promise.all(chunked.map(async (c) => this.loadPage({ name: c, dir }))),
 			),
 		)
 

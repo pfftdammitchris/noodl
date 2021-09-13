@@ -57,7 +57,7 @@ async function aggregate() {
 	scripts
 		.use({
 			script: u.values(scriptsToRegister),
-			onEnd: () => u.log(`${com.withTag(`End`)('')} script`),
+			onEnd: () => u.log(`[${u.cyan('End')}] script`),
 		})
 		.run()
 }

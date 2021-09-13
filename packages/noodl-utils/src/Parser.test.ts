@@ -17,7 +17,7 @@ const rootConfig = {
 const parsedBaseUrl = `https://public.aitmed.com/cadl/meet3_0.5d/`
 const parsedCadlEndpoint = parsedBaseUrl + rootConfig.cadlMain
 
-describe.only(coolGold(`Parser`), () => {
+describe(coolGold(`Parser`), () => {
 	describe(italic(`appConfigUrl`), () => {
 		it(`should support using a rootConfig object`, () => {
 			expect(parse.appConfigUrl(rootConfig, 'web', 'test')).to.eq(

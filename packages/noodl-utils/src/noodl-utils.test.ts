@@ -75,27 +75,6 @@ describe(coolGold('findDataValue'), () => {
 	})
 })
 
-// xdescribe(`findDataObject`, () => {
-//   it(`should return the data object`, () => {
-//     const obj = {
-//       formData: {
-//         items: {
-//           ages: [1, 2, 10, 11, 48],
-//           food: {
-//             fruits: 'apple',
-//             vegetables: { carrot: true, tomato: false },
-//           },
-//         },
-//       },
-//     }
-//     const dataKey = 'formData.items.food.vegetables'
-//   })
-
-//   xit(`should not return the data value but the obj that is wrapping it instead`, () => {
-//     //
-//   })
-// })
-
 describe(coolGold('isRootDataKey'), () => {
 	Object.entries({
 		'..SignIn.formData': true,
@@ -112,4 +91,12 @@ describe(coolGold('isRootDataKey'), () => {
 			expect(n.isRootDataKey(key)).to.be[expectedResult ? 'true' : 'false']
 		})
 	})
+})
+
+describe('withYmlExt', () => {
+	for (const value of ['Abc.yml', '']) {
+		it(`should transform ${value} to "Abc.yml"`, () => {
+			expect(n.withYmlExt(value)).to.eq('Abc.yml')
+		})
+	}
 })

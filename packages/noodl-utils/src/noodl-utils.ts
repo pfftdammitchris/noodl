@@ -165,27 +165,6 @@ export const findDataValue = <O extends FindDataValueItem = any>(
 	)
 }
 
-// TODO - Finish testing this
-// export function findDataObject<O extends FindDataValueItem = FindDataValueItem>(
-//   objs: O,
-//   path: string | undefined,
-// ) {
-//   if (!path) return u.unwrapObj(u.isArr(objs) ? objs[0] : objs)
-//   for (let obj of array(objs)) {
-//     obj = u.unwrapObj(obj)
-//     const parts = (path?.split('.') || []) as string[]
-//     console.info(parts)
-//     const depth = parts.length
-//     if (!depth || depth === 1) return obj
-//     if (depth === 2 && has(obj, parts[0])) return get(obj, parts[0])
-//     if (depth >= 3) path = parts.slice(0, depth - 1).join('.')
-//     if (has(obj, path)) {
-//       const value = get(obj, path)
-//       if (value && !u.isStr(value) && !u.isNum(value)) return value
-//     }
-//   }
-// }
-
 export function findReferences(obj: any): string[] {
 	let results = [] as string[]
 	;(Array.isArray(obj) ? obj : [obj]).forEach((o) => {
@@ -338,4 +317,9 @@ export function trimReference<
 	}
 
 	return v.replace(regex.prefix, '').replace(regex.suffix, '') || ''
+}
+
+export function withYmlExt(str = '') {
+	!str.endsWith('.yml') && (str += '.yml')
+	return str
 }
