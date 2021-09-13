@@ -1,2 +1,8 @@
 apps:
   - admind2
+  - meetd2
+  - patd2
+  - prod2
+  - search
+  - testpage
+  - www

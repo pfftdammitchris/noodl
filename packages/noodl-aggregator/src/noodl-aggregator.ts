@@ -2,7 +2,6 @@ import * as u from '@jsmanifest/utils'
 import {
 	LinkStructure,
 	getLinkStructure,
-	promiseAllSafe,
 	stringifyDoc,
 	withYmlExt,
 } from 'noodl-common'
@@ -19,6 +18,7 @@ import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
 import chunk from 'lodash.chunk'
+import { promiseAllSafe } from './utils.js'
 import * as c from './constants'
 import * as t from './types'
 

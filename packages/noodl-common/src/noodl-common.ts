@@ -1,11 +1,7 @@
-import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
 import { sync as globbySync } from 'globby'
-import { join as joinPaths, resolve as resolvePath } from 'path'
 import * as fs from 'fs-extra'
-import type { WriteFileOptions } from 'fs-extra'
 import { Document, parseDocument as parseYmlToDoc } from 'yaml'
-import minimatch from 'minimatch'
 import normalizePath from './normalizePath.js'
 
 export const captioning = (...s: any[]) => chalk.hex('#40E09F')(...s)
@@ -33,37 +29,6 @@ export const teal = (...s: any[]) => chalk.keyword('turquoise')(...s)
 export const white = (...s: any[]) => chalk.whiteBright(...s)
 export const yellow = (...s: any[]) => chalk.yellow(...s)
 export const newline = () => console.log('')
-
-export function ensureSlashPrefix(s: string) {
-	if (!s.startsWith('/')) s = `/${s}`
-	return s
-}
-
-export function ensureSuffix(value: string, s: string) {
-	if (!value.endsWith(s)) value = `${value}${s}`
-	return value
-}
-
-export function getExt(str: string) {
-	return hasDot(str) ? str.substring(str.lastIndexOf('.') + 1) : ''
-}
-
-export function getPathname(str: string) {
-	return hasSlash(str) ? str.substring(str.lastIndexOf('/') + 1) : ''
-}
-
-export function getFilename(str: string) {
-	if (!hasSlash(str)) return str
-	return str.substring(str.lastIndexOf('/') + 1)
-}
-
-export function hasDot(s: string) {
-	return !!s?.includes('.')
-}
-
-export function hasSlash(s: string) {
-	return !!s?.includes('/')
-}
 
 export function loadFileAsDoc(filepath: string) {
 	return parseYmlToDoc(fs.readFileSync(filepath, 'utf8'))
@@ -129,56 +94,6 @@ export async function promiseAllSafe(...promises: Promise<any>[]) {
 	return results
 }
 
-export function readdirSync(
-	dir: string | undefined = __dirname,
-	opts?: { concat?: string[]; glob?: string },
-) {
-	const args = { encoding: 'utf8' as BufferEncoding }
-	const files = [] as string[]
-	const filepaths = fs.readdirSync(dir, args)
-	const glob = opts?.glob || '**/*'
-	for (let filepath of filepaths) {
-		filepath = normalizePath(resolvePath(joinPaths(dir, filepath)))
-		const stat = fs.statSync(filepath)
-		if (stat.isFile()) {
-			if (minimatch(filepath, glob)) files.push(filepath)
-		} else if (stat.isDirectory()) {
-			files.push(...readdirSync(filepath, opts))
-		}
-	}
-	return files
-}
-
-export function sortObjPropsByKeys<O extends Record<string, any>>(obj: {
-	[key: string]: any
-}) {
-	return u
-		.entries(obj)
-		.sort((a, b) => {
-			if (a[1] > b[1]) return -1
-			if (a[1] === b[1]) return 0
-			return 1
-		})
-		.reduce(
-			(acc: O, [key, value]) => Object.assign(acc, { [key]: value }),
-			{} as O,
-		)
-}
-
-export function writeFileSync(
-	filepath = '',
-	data: string,
-	options?: WriteFileOptions,
-) {
-	fs.writeFileSync(
-		normalizePath(filepath),
-		data,
-		u.isStr(options)
-			? { encoding: options as BufferEncoding }
-			: { encoding: 'utf8', ...(options as any) },
-	)
-}
-
 export function withSuffix(suffix: string) {
 	return function (str: string) {
 		return str.endsWith(suffix) ? str : `${str}${suffix}`
@@ -189,7 +104,7 @@ export const withYmlExt = withSuffix('.yml')
 export const withEngLocale = withSuffix('_en')
 
 export function withoutExt(str: string) {
-	return hasDot(str) ? str.substring(str.lastIndexOf('.')) : str
+	return !!str?.includes('.') ? str.substring(str.lastIndexOf('.')) : str
 }
 
 // prettier-ignore

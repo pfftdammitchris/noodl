@@ -8,6 +8,7 @@ import yaml from 'yaml'
 import express from 'express'
 import path from 'path'
 import fs from 'fs-extra'
+import { ensureSlashPrefix } from '../utils/common.js'
 import TextInput from '../components/TextInput.js'
 import useCtx from '../useCtx.js'
 import useConfigInput from '../hooks/useConfigInput.js'
@@ -266,7 +267,7 @@ function Server({
 
 			if (metadata.yml) {
 				for (let { group, filepath, filename } of metadata.yml) {
-					filename = nc.ensureSlashPrefix(filename)
+					filename = ensureSlashPrefix(filename)
 					filename.endsWith('.yml') && (filename = filename.replace('.yml', ''))
 					// Config (ex: meet4d.yml)
 					if (filename.includes(aggregator.configKey)) {
@@ -313,7 +314,7 @@ function Server({
 			if (metadata.assets) {
 				for (let { filepath, filename, ext = '' } of metadata.assets) {
 					let middlePaths = ''
-					filename = nc.ensureSlashPrefix(filename)
+					filename = ensureSlashPrefix(filename)
 					if (filepath.includes('assets/')) {
 						middlePaths = filepath.substring(
 							filepath.indexOf('assets/') + 'assets/'.length,
