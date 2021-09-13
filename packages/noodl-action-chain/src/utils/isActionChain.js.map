@@ -1,1 +1,0 @@
-{"version":3,"file":"isActionChain.js","sourceRoot":"","sources":["isActionChain.ts"],"names":[],"mappings":";;AACA,yCAAiC;AAEjC,SAAS,aAAa,CAAC,GAAY;IAClC,OAAO,CAAC,CAAC,CACR,GAAG;QACH,OAAO,GAAG,KAAK,QAAQ;QACvB,CAAC,kBAAQ,CAAC,GAAG,CAAC;QACd,CAAC,OAAO,IAAI,GAAG,IAAI,WAAW,IAAI,GAAG,CAAC,CACtC,CAAA;AACF,CAAC;AAED,kBAAe,aAAa,CAAA"}
