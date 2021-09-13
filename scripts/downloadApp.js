@@ -42,10 +42,11 @@ if (!fs.existsSync(LOG_PATH)) {
 
 const config = yaml.parseDocument(fs.readFileSync(CONFIG_PATH, 'utf8'))
 const logFile = fs.readJsonSync(LOG_PATH)
+const saveConfig = () => fs.writeJsonSync(LOG_PATH, logFile, { spaces: 2 })
 
 if (!('executions' in logFile)) {
 	logFile.executions = []
-	fs.writeJsonSync(LOG_PATH, logFile, { spaces: 2 })
+	saveConfig()
 }
 
 if (!config.has('apps')) {
@@ -95,6 +96,8 @@ cron.schedule(
 					success,
 					failed,
 				})
+
+				saveConfig()
 			}
 		} catch (error) {
 			console.error(error)
