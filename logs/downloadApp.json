@@ -1,3 +1,34 @@
 {
-  "executions": []
+  "executions": [
+    {
+      "timestamp": 1631498400984,
+      "apps": [
+        "admind2"
+      ],
+      "success": [],
+      "failed": [
+        "admind2"
+      ]
+    },
+    {
+      "timestamp": 1631502000250,
+      "apps": [
+        "admind2"
+      ],
+      "success": [],
+      "failed": [
+        "admind2"
+      ]
+    },
+    {
+      "timestamp": 1631505600442,
+      "apps": [
+        "admind2"
+      ],
+      "success": [],
+      "failed": [
+        "admind2"
+      ]
+    }
+  ]
 }
