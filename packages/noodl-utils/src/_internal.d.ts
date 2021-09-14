@@ -1,0 +1,10 @@
+import { QueryObj } from './types';
+export declare const array: <O extends any[], P extends O[number]>(o: P | P[]) => P[];
+export declare const isArr: (v: any) => v is any[];
+export declare const isBool: (v: any) => v is boolean;
+export declare const isObj: (v: any) => v is object;
+export declare const isNum: (v: any) => v is number;
+export declare const isStr: (v: any) => v is string;
+export declare const isUnd: (v: any) => v is undefined;
+export declare const isFnc: <V extends (...args: any[]) => any>(v: any) => v is V;
+export declare const unwrapObj: (obj: QueryObj) => any;

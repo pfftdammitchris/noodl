@@ -1,0 +1,22 @@
+export declare const IDLE = "idle";
+export declare const IN_PROGRESS = "in.progress";
+export declare const ABORTED = "aborted";
+export declare const ERROR = "error";
+export declare const PENDING = "pending";
+export declare const RESOLVED = "resolved";
+export declare const TIMED_OUT = "timed.out";
+export declare const ON_ABORT = "on.abort";
+export declare const ON_STATUS = "on.status";
+export declare const ON_REFRESH = "on.refresh";
+export declare const trigger: {
+    readonly ON_BLUR: "onBlur";
+    readonly ON_CLICK: "onClick";
+    readonly ON_CHANGE: "onChange";
+    readonly ON_HOVER: "onHover";
+    readonly ON_MOUSEENTER: "onMouseEnter";
+    readonly ON_MOUSELEAVE: "onMouseLeave";
+    readonly ON_MOUSEOUT: "onMouseOut";
+    readonly ON_MOUSEOVER: "onMouseOver";
+};
+export declare const REFRESH = "refresh";
+export declare const triggers: ("onBlur" | "onClick" | "onChange" | "onHover" | "onMouseEnter" | "onMouseLeave" | "onMouseOut" | "onMouseOver")[];

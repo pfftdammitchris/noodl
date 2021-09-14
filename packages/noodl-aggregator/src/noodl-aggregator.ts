@@ -1,4 +1,5 @@
 import * as u from '@jsmanifest/utils'
+import type { OrArray } from '@jsmanifest/typefest'
 import { LinkStructure, getLinkStructure, stringifyDoc } from 'noodl-common'
 import flatten from 'lodash/flatten'
 import path from 'path'
@@ -180,6 +181,7 @@ class NoodlAggregator {
 		fallback,
 		loadPages: shouldLoadPages = true,
 		loadPreloadPages: shouldLoadPreloadPages = true,
+		spread,
 	}: {
 		dir?: string
 		fallback?: {
@@ -188,6 +190,7 @@ class NoodlAggregator {
 		}
 		loadPages?: boolean
 		loadPreloadPages?: boolean
+		spread?: string | string[]
 	} = {}) {
 		invariant(
 			!!this.configKey,
@@ -205,8 +208,8 @@ class NoodlAggregator {
 			},
 		}
 
-		shouldLoadPreloadPages && (await this.loadPreloadPages({ dir }))
-		shouldLoadPages && (await this.loadPages({ dir }))
+		shouldLoadPreloadPages && (await this.loadPreloadPages({ dir, spread }))
+		shouldLoadPages && (await this.loadPages({ dir, spread }))
 
 		return result
 	}
@@ -377,6 +380,7 @@ class NoodlAggregator {
 		name: string
 		doc?: yaml.Document
 		dir: string
+		spread?: OrArray<string>
 	}): Promise<yaml.Node | yaml.Document<unknown> | undefined>
 
 	async loadPage(
@@ -390,6 +394,7 @@ class NoodlAggregator {
 					name: string
 					doc?: yaml.Document
 					dir: string
+					spread?: OrArray<string>
 			  }
 			| string
 			| undefined = '',
@@ -397,11 +402,13 @@ class NoodlAggregator {
 	) {
 		let dir = ''
 		let name = ''
+		let spread = [] as string[]
 
 		if (u.isObj(options)) {
 			name = options.name
 			dir = options.dir
 			doc = options.doc
+			u.forEach((s) => s && spread.push(s), u.array(options.spread))
 		}
 
 		try {
@@ -431,12 +438,47 @@ class NoodlAggregator {
 				}
 			}
 
+			const spreadKeys = (
+				keys: OrArray<string>,
+				doc?: yaml.Document | yaml.Document.Parsed,
+			) => {
+				const spreadFn = (doc: yaml.Document | yaml.Document.Parsed) => {
+					if (yaml.isMap(doc)) {
+						for (const pair of doc.items) {
+							if (yaml.isScalar(pair.key)) {
+								this.root.set(String(pair.key.value), pair.value as any)
+							}
+						}
+					} else if (yaml.isDocument(doc)) {
+						if (yaml.isMap(doc.contents)) {
+							for (const pair of doc.contents.items) {
+								if (yaml.isScalar(pair.key)) {
+									this.root.set(String(pair.key.value), pair.value as any)
+								}
+							}
+						}
+					}
+				}
+
+				if (doc) {
+					spreadFn(doc)
+				} else {
+					for (const key of u.array(keys)) {
+						if (this.root.has(key)) {
+							spreadFn(this.root.get(key) as yaml.Document)
+						}
+					}
+				}
+			}
+
 			if (u.isStr(name)) {
 				const pageUrl = this.getPageUrl(`${key}_en.yml`)
 				const { data: yml } = await axios.get(pageUrl)
-				this.root.set(key, (doc = yaml.parseDocument(yml)))
+				if (spread.includes(name)) spreadKeys(name, yaml.parseDocument(yml))
+				else this.root.set(key, (doc = yaml.parseDocument(yml)))
 			} else if (name && yaml.isDocument(doc)) {
-				this.root.set(key, doc)
+				if (spread.includes(name)) spreadKeys(name, doc)
+				else this.root.set(key, doc)
 			} else {
 				u.log(u.red(`Page "${name}" was not loaded because of bad parameters`))
 			}
@@ -469,7 +511,10 @@ class NoodlAggregator {
 		}
 	}
 
-	async loadPreloadPages({ dir = '' }: { dir?: string } = {}) {
+	async loadPreloadPages({
+		dir = '',
+		spread,
+	}: { dir?: string; spread?: OrArray<string> } = {}) {
 		const preloadPages = [] as string[]
 
 		const seq = (this.root.get(this.appKey) as yaml.Document)?.get('preload')
@@ -483,16 +528,20 @@ class NoodlAggregator {
 		}
 
 		return await promiseAllSafe(
-			...preloadPages.map(async (page) => this.loadPage({ name: page, dir })),
+			...preloadPages.map(async (page) =>
+				this.loadPage({ name: page, dir, spread }),
+			),
 		)
 	}
 
 	async loadPages({
 		chunks = 4,
 		dir = '',
+		spread,
 	}: {
 		chunks?: number
 		dir?: string
+		spread?: OrArray<string>
 	} = {}) {
 		const pages = [] as string[]
 		const nodes = (this.root.get(this.appKey) as yaml.Document)?.get('page')
@@ -509,7 +558,9 @@ class NoodlAggregator {
 
 		const allPages = await Promise.all(
 			chunkedPages.map((chunked) =>
-				Promise.all(chunked.map(async (c) => this.loadPage({ name: c, dir }))),
+				Promise.all(
+					chunked.map(async (c) => this.loadPage({ name: c, dir, spread })),
+				),
 			),
 		)
 

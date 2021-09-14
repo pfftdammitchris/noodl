@@ -1,0 +1,7 @@
+export const prompts = {
+    INIT: 'INIT',
+    SET_OUTPUT_DIR: 'SET_OUTPUT_DIR',
+    ASK_GENERATE_PATH: 'ASK_GENERATE_PATH',
+    ASK_INSTANTIATE_GENERATE_PATH: 'ASK_INSTANTIATE_GENERATE_PATH',
+};
+//# sourceMappingURL=constants.js.map
