@@ -149,7 +149,6 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 
 		for (const docs of chunkedDocs) {
 			for (const obj of docs) {
-				// @ts-expect-error
 				yaml.visit(obj.doc, composed(obj))
 			}
 		}
