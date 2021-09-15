@@ -38,7 +38,7 @@ if (cli.flags.rmjs) {
 	const { rmjs: name } = cli.flags
 
 	function rm(name) {
-		let cmd = `lerna exec --scope ${name} `
+		let cmd = `npx lerna exec --scope ${name} `
 		cmd += `'`
 		cmd += `src/**.*.js `
 		cmd += `src/**.*.js.map `

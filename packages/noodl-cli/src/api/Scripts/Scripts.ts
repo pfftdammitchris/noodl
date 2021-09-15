@@ -1,7 +1,7 @@
 import { OrArray } from '@jsmanifest/typefest'
 import curry from 'lodash/curry.js'
+import flowRight from 'lodash/flowRight'
 import * as u from '@jsmanifest/utils'
-import * as tds from 'transducers-js'
 import invariant from 'invariant'
 import yaml from 'yaml'
 import chunk from 'lodash/chunk.js'
@@ -98,8 +98,8 @@ class Scripts<Store extends Record<string, any> = Record<string, any>> {
 			useCurriedTransformComposer(config.fn),
 		)
 
-		const createTransform = tds.comp(
-			...(registeredScripts.length == 1 ? [tds.identity] : []),
+		const createTransform = flowRight(
+			...(registeredScripts.length == 1 ? [(x) => x] : []),
 			...registeredScripts,
 		)
 
