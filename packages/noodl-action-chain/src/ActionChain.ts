@@ -367,7 +367,7 @@ class ActionChain<
 		evt: Evt,
 		...args: Parameters<ActionChainObserver<A>[Evt]>
 	) => {
-		this.#obs?.[evt]?.forEach?.((fn) => (fn as any)?.(...args))
+		this.#obs?.[evt]?.forEach?.((fn) => (fn as any)?.call?.(this, ...args))
 	}
 
 	use(obj?: Partial<ActionChainObserver>) {
