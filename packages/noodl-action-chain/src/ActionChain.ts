@@ -2,7 +2,7 @@ import { ActionObject } from 'noodl-types'
 import AbortExecuteError from './AbortExecuteError'
 import Action from './Action'
 import createAction from './utils/createAction'
-import { isArray, isPlainObject, isString } from './utils/common'
+import { createId, isArray, isPlainObject, isString } from './utils/common'
 import {
 	ActionChainInstancesLoader,
 	ActionChainIteratorResult,
@@ -33,6 +33,7 @@ class ActionChain<
 	#timeout: NodeJS.Timeout | null = null
 	data = new Map()
 	trigger: T
+	id: string
 
 	/**
 	 * Creates an asynchronous generator that generates the next immediate action
@@ -63,6 +64,7 @@ class ActionChain<
 		actions: A[],
 		loader?: ActionChainInstancesLoader<A, T>,
 	) {
+		this.id = createId()
 		this.trigger = trigger
 		this.#actions = actions
 		this.#loader = loader
