@@ -41,8 +41,8 @@
 		"node": ">=12"
 	},
 	"exports": {
-		"import": "./bin/cli.js",
-		"require": "./bin/cli.js"
+		"import": "./cli.esm",
+		"require": "./cli.cjs"
 	},
 	"files": [
 		"./bin/",
@@ -66,11 +66,12 @@
 		"url": "https://github.com/pfftdammitchris/noodl-cli"
 	},
 	"scripts": {
-		"build": "cross-env NODE_ENV=production tsc",
-		"build:cjs": "npm run build -- --module commonjs --target es2018",
+		"build": "cross-env NODE_ENV=production npm run build:esm && npm run build:cjs",
+		"build:cjs": "tsc --module commonjs --target es2018 --outDir ./dist/cjs --declaration --declarationDir ./dist/cjs",
+		"build:esm": "tsc",
 		"prebuild": "rm -rf dist",
-		"start": "cross-env NODE_ENV=development npm run build:cjs -- --watch",
-		"start:cjs": "cross-env NODE_ENV=development npm run build -- --watch",
+		"start": "cross-env NODE_ENV=development npm run build:esm -- --watch",
+		"start:cjs": "cross-env NODE_ENV=development npm run build:cjs -- --watch",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\""
 	},
 	"type": "module",
