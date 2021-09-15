@@ -24,6 +24,7 @@ class ActionChain<
 		ActionChainIteratorResult<A, T>[],
 		any
 	>
+	#id: string
 	#injected: Action<A['actionType'], T>[] = []
 	#loader: ActionChainInstancesLoader<A, T> | undefined
 	#obs: ActionChainObserver<A> = {}
@@ -33,7 +34,6 @@ class ActionChain<
 	#timeout: NodeJS.Timeout | null = null
 	data = new Map()
 	trigger: T
-	id: string
 
 	/**
 	 * Creates an asynchronous generator that generates the next immediate action
@@ -64,7 +64,7 @@ class ActionChain<
 		actions: A[],
 		loader?: ActionChainInstancesLoader<A, T>,
 	) {
-		this.id = createId()
+		this.#id = createId()
 		this.trigger = trigger
 		this.#actions = actions
 		this.#loader = loader
@@ -76,6 +76,10 @@ class ActionChain<
 
 	get current() {
 		return this.#current
+	}
+
+	get id() {
+		return this.#id || ''
 	}
 
 	get injected() {
