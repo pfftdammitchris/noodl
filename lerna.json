@@ -6,6 +6,10 @@
 		"publishChanges": {},
 		"run": {}
 	},
-	"packages": ["packages/noodl-cli"],
+	"packages": [
+		"packages/noodl-cli",
+		"packages/noodl-common",
+		"packages/noodl-aggregator"
+	],
 	"version": "independent"
 }

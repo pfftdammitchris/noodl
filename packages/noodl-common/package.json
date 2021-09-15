@@ -4,25 +4,18 @@
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
 	"dependencies": {
-		"@jsmanifest/utils": "^1.0.17",
-		"chalk": "^4.1.2",
-		"globby": "^10.0.2",
-		"lodash.set": "^4.3.2",
 		"mime-types": "^2.1.31",
-		"minimatch": "^3.0.4",
-		"yaml": "^2.0.0-4"
+		"minimatch": "^3.0.4"
 	},
 	"description": "Common NOODL file system utilities",
 	"devDependencies": {
-		"@types/mime-types": "^2.1.0",
-		"meow": "^9.0.0"
+		"@types/mime-types": "^2.1.0"
 	},
 	"directories": {
-		"dist": "./dist",
-		"test": "src/__tests__"
+		"dist": "./dist"
 	},
 	"files": [
-		"dist"
+		"./dist"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",

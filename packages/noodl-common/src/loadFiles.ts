@@ -1,5 +1,5 @@
 import * as u from '@jsmanifest/utils'
-import { sync as globbySync } from 'globby'
+import { globbySync } from 'globby'
 import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
 import path from 'path'
 import getAbsFilePath from './getAbsFilePath.js'

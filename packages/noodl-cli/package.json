@@ -1,6 +1,6 @@
 {
 	"bin": {
-		"noodl": "bin/cli.js"
+		"noodl": "./bin/cli.js"
 	},
 	"dependencies": {
 		"chokidar": "^3.5.1",

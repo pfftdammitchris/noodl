@@ -1,12 +1,12 @@
 {
+	"ts-node": {
+		"transpileOnly": true
+	},
 	"compilerOptions": {
-		"baseUrl": ".",
-		"module": "commonjs",
 		"declarationDir": "./dist",
 		"outDir": "./dist",
-		"rootDir": "./src",
-		"target": "es2018"
+		"target": "es2017"
 	},
-	"include": ["./src/**/*"],
+	"include": ["./src"],
 	"extends": "../../tsconfig.json"
 }

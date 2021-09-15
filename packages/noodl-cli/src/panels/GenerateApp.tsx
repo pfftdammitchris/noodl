@@ -1,10 +1,10 @@
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
 import { constants as noodlAggregatorConsts } from 'noodl-aggregator'
-import { LinkStructure } from 'noodl-common'
+import { globbySync } from 'globby'
+import type { LinkStructure } from 'noodl-common'
 import * as nc from 'noodl-common'
 import * as nu from 'noodl-utils'
-import { globbySync } from 'globby'
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
 import React from 'react'
@@ -93,7 +93,7 @@ function GenerateApp(props: Props) {
 					const assetsDir = path.join(configDir, 'assets')
 
 					await fs.ensureFile(configFilePath)
-					nc.writeFileSync(configFilePath, yml)
+					await fs.writeFile(configFilePath, yml)
 
 					log(`Saved ${co.yellow(configFileName)} to folder`)
 					aggregator.configKey = configKey
@@ -257,7 +257,7 @@ function GenerateApp(props: Props) {
 							if (!doc) return u.log(doc)
 
 							if (type === 'root-config') {
-								nc.writeFileSync(filepath, nc.stringifyDoc(doc as any))
+								await fs.writeFile(filepath, nc.stringifyDoc(doc as any))
 								const baseUrl = doc.get('cadlBaseUrl')
 								const appKey = doc.get('cadlMain')
 								log(`Base url: ${co.yellow(baseUrl)}`)
@@ -265,7 +265,7 @@ function GenerateApp(props: Props) {
 								log(`Saved root config object to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else if (type === 'app-config') {
-								nc.writeFileSync(filepath, nc.stringifyDoc(doc as any))
+								await fs.writeFile(filepath, nc.stringifyDoc(doc as any))
 								numDocsFetching = aggregator.pageNames.length
 								log(
 									`\nTotal expected number of yml files we are retrieving is ${co.yellow(
@@ -276,7 +276,7 @@ function GenerateApp(props: Props) {
 								log(`Saved app config to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else {
-								nc.writeFileSync(filepath, nc.stringifyDoc(doc as any))
+								await fs.writeFile(filepath, nc.stringifyDoc(doc as any))
 								const pageName = name.replace('_en', '')
 								log(
 									`Saved page ${co.magenta(pageName)} to ${co.yellow(
@@ -331,11 +331,10 @@ function GenerateApp(props: Props) {
 							doc.set('myBaseUrl', `http://${host}:${port}/`)
 						}
 						const dir = path.join(baseDir, aggregator.configKey)
-						const filename = nc
-							.withYmlExt(aggregator.configKey)
-							.replace('_en', '')
+						const withYmlExt = (s = '') => !s.endsWith('.yml') && (s += '.yml')
+						const filename = withYmlExt(aggregator.configKey).replace('_en', '')
 						const filepath = path.join(dir, filename)
-						nc.writeFileSync(filepath, nc.stringifyDoc(doc as any))
+						await fs.writeFile(filepath, nc.stringifyDoc(doc as any))
 					}
 				}
 			}
