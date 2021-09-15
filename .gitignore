@@ -1,7 +1,10 @@
+*.pem
 .env
 node_modules
 dist
 data
-output
 generated
-*.pem
+references.json
+lerna-debug.log
+npm-debug.log
+packages/*/dist

@@ -4,28 +4,10 @@
 	},
 	"compilerOptions": {
 		"allowJs": true,
-		"allowSyntheticDefaultImports": true,
-		"baseUrl": ".",
-		"declaration": true,
-		"declarationDir": "dist",
-		"importHelpers": true,
+		"declarationDir": "./dist",
 		"jsx": "react",
-		"keyofStringsOnly": true,
-		"lib": ["esnext"],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"noEmitOnError": false,
-		"noImplicitAny": false,
-		"outDir": "dist",
-		"pretty": true,
-		"resolveJsonModule": true,
-		"rootDir": "./src",
-		"skipLibCheck": true,
-		"strict": true,
-		"sourceMap": true,
-		"suppressImplicitAnyIndexErrors": true,
-		"target": "es2020"
+		"outDir": "./dist"
 	},
-	"exclude": ["./node_modules/**/*"],
-	"include": ["./src/**/*"]
+	"extends": "../../tsconfig.json",
+	"include": ["./src"]
 }

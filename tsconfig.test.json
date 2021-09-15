@@ -3,11 +3,9 @@
 		"transpileOnly": true
 	},
 	"compilerOptions": {
-		"baseUrl": ".",
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"module": "commonjs",
-		"target": "es2017",
-		"rootDir": "./src"
+		"lib": ["esnext"],
+		"module": "es2020",
+		"target": "es2020"
 	},
 	"extends": "./tsconfig.json",
 	"exclude": ["node_modules"],

@@ -4,22 +4,12 @@
 		"url": "https://github.com/pfftdammitchris/noodl/issues"
 	},
 	"dependencies": {
-		"@jsmanifest/utils": "^1.0.16",
-		"axios": "^0.21.1",
-		"chalk": "^4.1.1",
 		"configstore": "^6.0.0",
-		"globby": "^12.0.2",
 		"invariant": "^2.2.4",
-		"lodash.chunk": "^4.2.0",
-		"minimatch": "^3.0.4",
-		"noodl-common": "file:../noodl-common",
-		"noodl-types": "^1.0.183",
-		"noodl-utils": "^0.0.76",
-		"yaml": "^2.0.0-4"
+		"minimatch": "^3.0.4"
 	},
 	"description": "Noodl aggregator",
 	"devDependencies": {
-		"@types/lodash.chunk": "^4.2.6",
 		"meow": "^9.0.0"
 	},
 	"files": [

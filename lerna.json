@@ -6,15 +6,6 @@
 		"publishChanges": {},
 		"run": {}
 	},
-	"npmClient": "npm",
-	"packages": [
-		"packages/noodl-aggregator",
-		"packages/noodl-action-chain",
-		"packages/noodl-cli",
-		"packages/noodl-common",
-		"packages/noodl-ec2",
-		"packages/noodl-types",
-		"packages/noodl-utils"
-	],
+	"packages": ["packages/noodl-cli"],
 	"version": "independent"
 }

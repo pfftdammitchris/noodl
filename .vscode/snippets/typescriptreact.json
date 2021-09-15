@@ -1,29 +1,9 @@
 {
-	"test": {
-		"prefix": "test",
-		"body": [
-			"import { expect } from 'chai'",
-			"",
-			"describe(`$1`, () => {",
-			"  xit(`$2`, () => {",
-			"    $3",
-			"  })",
-			"})",
-			""
-		]
-	},
-	"prettyDOM": {
-		"prefix": "importpdom",
-		"body": "import { prettyDOM } from '@testing-library/dom'"
-	},
-	"prettyDOM() log": {
-		"prefix": "pdom",
-		"body": "console.info(prettyDOM())"
-	},
 	"component": {
-		"prefix": "component",
 		"body": [
 			"import * as u from '@jsmanifest/utils'",
+			"import * as nu from 'noodl-utils'",
+			"import * as nt from 'noodl-types'",
 			"import React from 'react'",
 			"import fs from 'fs-extra'",
 			"import produce, { Draft } from 'immer'",
@@ -34,8 +14,6 @@
 			"import useCtx from '../useCtx'",
 			"import Panel from '../components/Panel'",
 			"import Spinner from '../components/Spinner'",
-			"import * as co from '../utils/color'",
-			"import * as com from '../utils/common'",
 			"import * as c from '../constants'",
 			"import * as t from '../types'",
 			"",
@@ -53,6 +31,28 @@
 			"}",
 			"",
 			"export default $1"
-		]
+		],
+		"prefix": "component"
+	},
+	"prettyDOM": {
+		"body": "import { prettyDOM } from '@testing-library/dom'",
+		"prefix": "importpdom"
+	},
+	"prettyDOM() log": {
+		"body": "console.info(prettyDOM())",
+		"prefix": "pdom"
+	},
+	"test": {
+		"body": [
+			"import { expect } from 'chai'",
+			"",
+			"describe(`$1`, () => {",
+			"  xit(`$2`, () => {",
+			"    $3",
+			"  })",
+			"})",
+			""
+		],
+		"prefix": "test"
 	}
 }
