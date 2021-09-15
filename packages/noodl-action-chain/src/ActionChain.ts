@@ -27,7 +27,12 @@ class ActionChain<
 	#id: string
 	#injected: Action<A['actionType'], T>[] = []
 	#loader: ActionChainInstancesLoader<A, T> | undefined
-	#obs: ActionChainObserver<A> = {}
+	#obs = {} as Partial<
+		Record<
+			keyof ActionChainObserver<A>,
+			ActionChainObserver<A>[keyof ActionChainObserver<A>][]
+		>
+	>
 	#queue: Action<A['actionType'], T>[] = []
 	#results = [] as ActionChainIteratorResult<A, T>[]
 	#status: ActionChainStatus = c.IDLE
@@ -99,7 +104,7 @@ class ActionChain<
 	 * @param { string | string[] | undefined } reason
 	 */
 	async abort(_reason?: string | string[]) {
-		this.#obs.onAbortStart?.()
+		this.#emit('onAbortStart')
 
 		let reason: string | string[] | undefined
 
@@ -122,12 +127,12 @@ class ActionChain<
 			const action = this.#queue.shift() as Action<A['actionType'], T>
 			if (action && action.status !== 'aborted') {
 				try {
-					this.#obs.onBeforeAbortAction?.({ action, queue: this.#queue })
+					this.#emit('onBeforeAbortAction', { action, queue: this.#queue })
 					action?.abort(reason || '')
-					this.#obs.onAfterAbortAction?.({ action, queue: this.#queue })
+					this.#emit('onAfterAbortAction', { action, queue: this.#queue })
 				} catch (error) {
 					this.#error = error as Error
-					this.#obs.onAbortError?.({ action, error: error as Error })
+					this.#emit('onAbortError', { action, error: error as Error })
 				} finally {
 					this.#results.push({
 						action,
@@ -139,7 +144,7 @@ class ActionChain<
 			}
 		}
 		this.#current = null
-		this.#obs.onAbortEnd?.()
+		this.#emit('onAbortEnd')
 		return this.#results
 	}
 
@@ -158,7 +163,7 @@ class ActionChain<
 		try {
 			this.#results = []
 			this.#setStatus(c.IN_PROGRESS)
-			this.#obs.onExecuteStart?.()
+			this.#emit('onExecuteStart')
 			let action: Action<A['actionType'], T> | undefined
 			let iterator: IteratorResult<Action, ActionChainIteratorResult<A, T>[]>
 			let result: any
@@ -190,9 +195,9 @@ class ActionChain<
 								action = iterator?.value as Action<A['actionType'], T>
 
 								if (action?.status !== 'aborted') {
-									this.#obs.onBeforeActionExecute?.({ action, args })
+									this.#emit('onBeforeActionExecute', { action, args })
 									result = await action?.execute?.(args)
-									this.#obs.onExecuteResult?.(result)
+									this.#emit('onExecuteResult', result)
 									this.#results.push({
 										action: action as Action<A['actionType'], T>,
 										result: action?.result,
@@ -219,7 +224,7 @@ class ActionChain<
 							)
 						}
 					} catch (error) {
-						this.#obs.onExecuteError?.(this.current as Action, error as Error)
+						this.#emit('onExecuteError', this.current as Action, error as Error)
 						// TODO - replace throw with appending the error to the result item instead
 						throw error
 					} finally {
@@ -232,17 +237,17 @@ class ActionChain<
 			// throw new AbortExecuteError(error.message)
 		} finally {
 			this.#refresh?.()
-			this.#obs.onExecuteEnd?.()
+			this.#emit('onExecuteEnd')
 		}
 		return this.#results
 	}
 
 	inject(action: A | ActionObject) {
-		this.#obs.onBeforeInject?.(action)
+		this.#emit('onBeforeInject', action)
 		const inst = this.load(action)
 		this.#queue.unshift(inst)
 		this.#injected.push(inst)
-		this.#obs.onAfterInject?.(action, inst)
+		this.#emit('onAfterInject', action, inst)
 		return inst
 	}
 
@@ -313,7 +318,7 @@ class ActionChain<
 		this.#timeout && clearTimeout(this.#timeout)
 		this.loadQueue()
 		this.#setStatus(c.IDLE)
-		this.#obs.onRefresh?.()
+		this.#emit('onRefresh')
 	}
 
 	#setStatus = (
@@ -358,9 +363,19 @@ class ActionChain<
 		return snapshot as typeof snapshot & SnapshotResult
 	}
 
+	#emit = <Evt extends keyof ActionChainObserver<A>>(
+		evt: Evt,
+		...args: Parameters<ActionChainObserver<A>[Evt]>
+	) => {
+		this.#obs?.[evt]?.forEach?.((fn) => (fn as any)?.(...args))
+	}
+
 	use(obj?: Partial<ActionChainObserver>) {
 		if (isPlainObject(obj)) {
-			Object.entries(obj).forEach(([evt, fn]) => (this.#obs[evt] = fn))
+			Object.entries(obj).forEach(([evt, fn]) => {
+				if (!this.#obs[evt]) this.#obs[evt] = []
+				this.#obs[evt]?.push(fn)
+			})
 		}
 		return this
 	}
