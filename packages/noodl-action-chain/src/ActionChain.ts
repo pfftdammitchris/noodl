@@ -68,8 +68,9 @@ class ActionChain<
 		trigger: T,
 		actions: A[],
 		loader?: ActionChainInstancesLoader<A, T>,
+		id = createId(),
 	) {
-		this.#id = createId()
+		this.#id = id
 		this.trigger = trigger
 		this.#actions = actions
 		this.#loader = loader
