@@ -2,6 +2,7 @@ import * as u from '@jsmanifest/utils'
 import execa from 'execa'
 import meow from 'meow'
 import path from 'path'
+import rimraf from 'rimraf'
 
 const getAbsFilePath = (...s) => path.resolve(path.join(...s))
 
@@ -38,17 +39,27 @@ if (cli.flags.rmjs) {
 	const { rmjs: name } = cli.flags
 
 	function rm(name) {
-		let cmd = `npx lerna exec --scope ${name} `
-		cmd += `'`
-		cmd += `src/**.*.js `
-		cmd += `src/**.*.js.map `
-		cmd += `src/**.*.d.ts`
-		cmd += `'`
-		execa.commandSync(cmd, {
-			cwd: path.resolve(path.join(process.cwd(), `packages`, name)),
-			shell: true,
-			stdio: 'inherit',
-		})
+		// let cmd = ''
+		// cmd += 'rm -rf '
+		// cmd += `src/**/*.js `
+		// cmd += `src/**/*.js.map `
+		// cmd += `src/**/*.d.ts`
+		// execa.commandSync(cmd, {
+		// 	cwd: path.join(process.cwd(), `packages/${name}/`),
+		// 	shell: true,
+		// 	stdio: 'inherit',
+		// })
+		rimraf(
+			`src/**/*.js src/**/*.js.map src/**/*.d.ts`,
+			{
+				glob: {
+					cwd: path.join(process.cwd(), `packages/${name}/`),
+				},
+			},
+			function (err) {
+				if (err) u.throwError(err)
+			},
+		)
 	}
 
 	if (name === 'all') {
