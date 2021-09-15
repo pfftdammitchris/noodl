@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import path from 'path'
 import yaml from 'yaml'
 import fs from 'fs-extra'
-import * as nc from '..'
+import * as nc from '../index.js'
 
 const pathNameToFixtures = './src/__tests__/fixtures'
 const pathnameToAboutAitmedPage = `${pathNameToFixtures}/AboutAitmed.yml`

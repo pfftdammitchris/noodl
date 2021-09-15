@@ -1,6 +1,7 @@
 const u = require('@jsmanifest/utils')
 const esbuild = require('esbuild')
 const meow = require('meow')
+const path = require('path')
 
 const cli = meow('', {
 	flags: {
@@ -16,13 +17,14 @@ const tag = `[${u.cyan('noodl-common')}]`
 
 const options = {
 	bundle: true,
-	entryPoints: ['./src/index.ts'],
+	entryPoints: ['src/index.ts'],
 	format: 'cjs',
 	logLevel: 'debug',
 	outdir: `dist`,
 	platform: 'node',
 	sourcemap: true,
-	target: 'es2015',
+	target: 'es2018',
+	resolveExtensions: ['.ts', '.js'],
 }
 
 if (watch) {

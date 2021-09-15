@@ -1,10 +1,9 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"declarationDir": "./dist",
+		"isolatedModules": true,
 		"module": "commonjs",
 		"outDir": "./dist",
-		"rootDir": "./src",
 		"target": "es2018"
 	},
 	"include": ["./src/**/*"],

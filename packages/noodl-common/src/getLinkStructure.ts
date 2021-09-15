@@ -30,7 +30,7 @@ function getLinkStructure(
 		structure.group = 'document'
 	} else if (/.*(avi|mp4|mkv|wmv)$/i.test(structure.ext)) {
 		structure.group = 'video'
-	} else if (/.*(html|js)$/i.test(structure.ext)) {
+	} else if (/.*(html)$/i.test(structure.ext)) {
 		structure.group = 'script'
 	} else {
 		structure.group = 'unknown'

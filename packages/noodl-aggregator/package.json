@@ -12,8 +12,15 @@
 	"devDependencies": {
 		"meow": "^9.0.0"
 	},
+	"engines": {
+		"node": ">=14"
+	},
+	"exports": {
+		"import": "./dist/index.js",
+		"require": "./dist/cjs/index.js"
+	},
 	"files": [
-		"dist"
+		"./dist"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl#readme",
@@ -26,8 +33,6 @@
 		"telemedicine"
 	],
 	"license": "ISC",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
 	"name": "noodl-aggregator",
 	"publishConfig": {
 		"access": "public"
@@ -37,10 +42,22 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl.git"
 	},
 	"scripts": {
-		"build": "node build && npm run types",
-		"start": "node build -w",
+		"build": "cross-env NODE_ENV=production npm run build:esm && npm run build:cjs",
+		"build:cjs": "tsc --module commonjs --target es2018 --outDir ./dist/cjs --declaration --declarationDir ./dist/cjs",
+		"build:esm": "tsc --module es2020 --target es2020",
+		"prebuild": "rm -rf dist",
+		"start": "cross-env NODE_ENV=development npm run build:esm -- --watch",
+		"start:cjs": "cross-env NODE_ENV=development npm run build:cjs -- --watch",
 		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"types": "tsc --emitDeclarationOnly"
+	},
+	"type": "module",
+	"typesVersions": {
+		"*": {
+			"cli.d.ts": [
+				"./dist/cli.d.ts"
+			]
+		}
 	},
 	"typings": "./dist/index.d.ts",
 	"version": "0.0.25"

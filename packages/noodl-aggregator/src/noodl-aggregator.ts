@@ -1,7 +1,8 @@
 import * as u from '@jsmanifest/utils'
 import type { OrArray } from '@jsmanifest/typefest'
 import { LinkStructure, getLinkStructure, stringifyDoc } from 'noodl-common'
-import flatten from 'lodash/flatten'
+import chunk from 'lodash/chunk.js'
+import flatten from 'lodash/flatten.js'
 import path from 'path'
 import type { DeviceType, Env } from 'noodl-types'
 import {
@@ -14,10 +15,9 @@ import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
-import chunk from 'lodash.chunk'
 import { promiseAllSafe } from './utils.js'
-import * as c from './constants'
-import * as t from './types'
+import * as c from './constants.js'
+import * as t from './types.js'
 
 class NoodlAggregator {
 	#configKey = ''
@@ -185,7 +185,6 @@ class NoodlAggregator {
 	}: {
 		dir?: string
 		fallback?: {
-			// @ts-expect-error
 			appConfig?: Parameters<NoodlAggregator['loadAppConfig']>[0]['fallback']
 		}
 		loadPages?: boolean
@@ -239,7 +238,9 @@ class NoodlAggregator {
 			options?.config && (this.configKey = options.config)
 			const dir = options.dir || ''
 			const configFilePath = path.join(dir, this.configKey)
-			const { existsSync, readFile } = await import('fs-extra')
+			const {
+				default: { existsSync, readFile },
+			} = await import('fs-extra')
 			if (existsSync(configFilePath)) {
 				configYml = await readFile(configFilePath, 'utf8')
 				configDoc = yaml.parseDocument(configYml)

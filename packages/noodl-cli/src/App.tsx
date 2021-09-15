@@ -18,10 +18,7 @@ import * as co from './utils/color.js'
 import * as c from './constants.js'
 import * as t from './types.js'
 
-// @ts-expect-error
-const { default: Aggregator } = NoodlAggregator
-
-const aggregator = new Aggregator() as NoodlAggregator
+const aggregator = new NoodlAggregator()
 
 export const initialState = {
 	ready: false,

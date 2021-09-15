@@ -13,7 +13,7 @@
 		"refs": "npx nodemon dev/refs/refs --ignore refs-output.json",
 		"ssh2": "ssh -i '../Downloads/ecos-noodl.pem' ubuntu@ec2-54-219-91-202.us-west-1.compute.amazonaws.com",
 		"start": "cross-env DEV=true CI=false npm run build -- --watch",
-		"start:cli": "lerna exec --scope noodl-cli 'npm run start'",
+		"start:cli": "lerna exec --scope noodl-cli npm run start",
 		"test": "ava --watch",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\""
 	},

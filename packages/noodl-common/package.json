@@ -11,17 +11,19 @@
 	"devDependencies": {
 		"@types/mime-types": "^2.1.0"
 	},
-	"directories": {
-		"dist": "./dist"
+	"exports": {
+		"import": "./dist/index.js",
+		"require": "./dist/cjs/index.js"
 	},
 	"files": [
-		"./dist"
+		"./build.js",
+		"./dist",
+		"tsconfig.json",
+		"tsconfig.test.json"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"license": "ISC",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
 	"name": "noodl-common",
 	"publishConfig": {
 		"access": "public"
@@ -31,11 +33,17 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
 	"scripts": {
-		"build": "node build && npm run types",
-		"start": "node build -w",
+		"build": "cross-env NODE_ENV=production npm run build:esm && npm run build:cjs",
+		"build:esbuild": "cross-env NODE_ENV=production node build --esm && npm run types",
+		"build:cjs": "tsc --module commonjs --target es2018 --outDir ./dist/cjs --declaration --declarationDir ./dist/cjs",
+		"build:esm": "tsc --module es2020 --target es2020",
+		"start:esbuild": "cross-env NODE_ENV=development node build --esm -w",
+		"start": "cross-env NODE_ENV=development npm run build:esm -- --watch",
+		"start:cjs": "cross-env NODE_ENV=development npm run build:cjs -- --watch",
 		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"types": "tsc --emitDeclarationOnly"
 	},
+	"type": "module",
 	"typings": "./dist/index.d.ts",
 	"version": "0.0.56"
 }

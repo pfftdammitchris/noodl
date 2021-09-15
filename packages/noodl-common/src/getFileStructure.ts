@@ -30,7 +30,7 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
 		}
 	} else if (isImage(parsed.base)) {
 		structure.group = 'image'
-	} else if (structure.ext === '.js') {
+	} else if (structure.ext === '') {
 		structure.group = 'script'
 	} else if (/[./]*(doc|docx|json|pdf)$/i.test(parsed.base)) {
 		structure.group = 'document'
