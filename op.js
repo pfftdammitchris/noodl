@@ -39,31 +39,21 @@ if (cli.flags.rmjs) {
 	const { rmjs: name } = cli.flags
 
 	function rm(name) {
-		// let cmd = ''
-		// cmd += 'rm -rf '
-		// cmd += `src/**/*.js `
-		// cmd += `src/**/*.js.map `
-		// cmd += `src/**/*.d.ts`
-		// execa.commandSync(cmd, {
-		// 	cwd: path.join(process.cwd(), `packages/${name}/`),
-		// 	shell: true,
-		// 	stdio: 'inherit',
-		// })
-		rimraf(
-			`src/**/*.js src/**/*.js.map src/**/*.d.ts`,
-			{
-				glob: {
-					cwd: path.join(process.cwd(), `packages/${name}/`),
-				},
-			},
-			function (err) {
+		const paths = [
+			path.resolve(path.join(process.cwd(), `packages/${name}/src/*.js`)),
+			path.resolve(path.join(process.cwd(), `packages/${name}/src/*.js.map`)),
+			path.resolve(path.join(process.cwd(), `packages/${name}/src/*.d.ts`)),
+		]
+		for (const p of paths) {
+			console.log(`[${u.cyan('running')}] on path: ${u.yellow(p)}`)
+			rimraf(p, function (err) {
 				if (err) u.throwError(err)
-			},
-		)
+			})
+		}
 	}
 
 	if (name === 'all') {
-		u.forEach((name) => rm(name), u.keys(lib))
+		u.forEach(({ name }) => rm(name), u.values(lib))
 	} else {
 		rm(name)
 	}
