@@ -34,16 +34,23 @@
 	},
 	"scripts": {
 		"build": "cross-env NODE_ENV=production npm run build:esm && npm run build:cjs",
-		"build:esbuild": "cross-env NODE_ENV=production node build --esm && npm run types",
 		"build:cjs": "tsc --module commonjs --target es2018 --outDir ./dist/cjs --declaration --declarationDir ./dist/cjs",
+		"build:esbuild": "cross-env NODE_ENV=production node build --esm && npm run types",
 		"build:esm": "tsc --module es2020 --target es2020",
-		"start:esbuild": "cross-env NODE_ENV=development node build --esm -w",
 		"start": "cross-env NODE_ENV=development npm run build:esm -- --watch",
 		"start:cjs": "cross-env NODE_ENV=development npm run build:cjs -- --watch",
+		"start:esbuild": "cross-env NODE_ENV=development node build --esm -w",
 		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"types": "tsc --emitDeclarationOnly"
 	},
 	"type": "module",
+	"typesVersions": {
+		"*": {
+			"cli.d.ts": [
+				"./dist/cli.d.ts"
+			]
+		}
+	},
 	"typings": "./dist/index.d.ts",
 	"version": "0.0.57"
 }
