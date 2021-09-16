@@ -1,8 +1,8 @@
-import get from 'lodash.get'
-import { ReferenceString, ReferenceSymbol, IfObject } from 'noodl-types'
-import has from 'lodash.has'
+import * as nt from 'noodl-types'
 import curry from 'lodash.curry'
 import flowRight from 'lodash.flowright'
+import get from 'lodash.get'
+import has from 'lodash.has'
 import * as u from './_internal'
 import * as t from './types'
 
@@ -125,9 +125,9 @@ export function excludeIteratorVar(
  * deciding to be returned. If the callback returns true, item 2 is returned. If
  * false, item 3 is returned
  * @param { function } fn - Callback that receives the value being evaluated
- * @param { IfObject } ifObj - The object that contains the "if"
+ * @param { nt.IfObject } ifObj - The object that contains the "if"
  */
-export function evalIf<IfObj extends IfObject>(
+export function evalIf<IfObj extends nt.IfObject>(
 	fn: (
 		val: IfObj['if'][0],
 		onTrue: IfObj['if'][1],
@@ -260,9 +260,9 @@ const regex = {
  * @param fixType 'prefix'
  */
 export function trimReference(
-	v: ReferenceString,
+	v: nt.ReferenceString,
 	fixType: 'prefix',
-): ReferenceString<Exclude<ReferenceSymbol, '@'>>
+): nt.ReferenceString<Exclude<nt.ReferenceSymbol, '@'>>
 
 /**
  * Trims the reference suffix in the string
@@ -270,16 +270,16 @@ export function trimReference(
  * @param fixType 'suffix'
  */
 export function trimReference(
-	v: ReferenceString,
+	v: nt.ReferenceString,
 	fixType: 'suffix',
-): ReferenceString<Extract<ReferenceSymbol, '@'>>
+): nt.ReferenceString<Extract<nt.ReferenceSymbol, '@'>>
 
 /**
  * Trims the both prefix and the suffix symbol(s) in the reference string
  * @param v Reference string
  * @return { string }
  */
-export function trimReference(v: ReferenceString): string
+export function trimReference(v: nt.ReferenceString): string
 
 /**
  * Trims the both prefix and the suffix symbol(s) in the reference string
@@ -303,7 +303,7 @@ export function trimReference(v: ReferenceString): string
  * @returns string
  */
 export function trimReference<
-	V extends ReferenceString,
+	V extends nt.ReferenceString,
 	F extends 'prefix' | 'suffix',
 >(v: V, fixType?: F) {
 	if (fixType === 'prefix') {

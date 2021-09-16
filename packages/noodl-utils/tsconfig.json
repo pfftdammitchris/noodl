@@ -1,4 +1,5 @@
 {
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"allowJs": true,
 		"allowSyntheticDefaultImports": true,
@@ -16,8 +17,8 @@
 		"strictNullChecks": true,
 		"skipLibCheck": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "es6"
+		"target": "es2018"
 	},
-	"exclude": ["node_modules", "src/*.test.ts"],
-	"files": ["src/index.ts"]
+	"exclude": ["node_modules"],
+	"include": ["./src"]
 }

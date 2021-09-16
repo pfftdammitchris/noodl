@@ -1,7 +1,6 @@
 import * as u from '@jsmanifest/utils'
+import * as nt from 'noodl-types'
 import { expect } from 'chai'
-import { coolGold, italic } from 'noodl-common'
-import { RootConfig } from 'noodl-types'
 import Parser from './Parser'
 
 const parse = new Parser()
@@ -12,13 +11,13 @@ const rootConfig = {
 	web: { cadlVersion: { stable: '0.5d', test: '0.5d' } },
 	ios: { cadlVersion: { stable: '0.5d', test: '0.5d' } },
 	android: { cadlVersion: { stable: '0.5d', test: '0.5d' } },
-} as RootConfig
+} as nt.RootConfig
 
 const parsedBaseUrl = `https://public.aitmed.com/cadl/meet3_0.5d/`
 const parsedCadlEndpoint = parsedBaseUrl + rootConfig.cadlMain
 
-describe(coolGold(`Parser`), () => {
-	describe(italic(`appConfigUrl`), () => {
+describe(u.yellow(`Parser`), () => {
+	describe(u.italic(`appConfigUrl`), () => {
 		it(`should support using a rootConfig object`, () => {
 			expect(parse.appConfigUrl(rootConfig, 'web', 'test')).to.eq(
 				parsedCadlEndpoint,
@@ -38,7 +37,7 @@ describe(coolGold(`Parser`), () => {
 		})
 	})
 
-	describe(italic('destination'), () => {
+	describe(u.italic('destination'), () => {
 		u.eachEntries(
 			{
 				'^RedTag': {
@@ -71,7 +70,7 @@ describe(coolGold(`Parser`), () => {
 		)
 	})
 
-	describe(italic(`queryString`), () => {
+	describe(u.italic(`queryString`), () => {
 		u.eachEntries(
 			{
 				RedTag: {

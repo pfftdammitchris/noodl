@@ -4,6 +4,7 @@
 		"url": "https://github.com/pfftdammitchris/noodl/issues"
 	},
 	"dependencies": {
+		"@jsmanifest/utils": "^1.0.17",
 		"lodash.curry": "^4.1.1",
 		"lodash.flowright": "^3.5.0",
 		"lodash.get": "^4.4.2",
@@ -15,8 +16,12 @@
 		"@types/lodash.flowright": "^3.5.6",
 		"@types/lodash.get": "^4.4.6",
 		"@types/lodash.has": "^4.5.6",
+		"chai": "^4.3.4",
 		"jsdom": "^16.6.0",
-		"jsdom-global": "^3.0.2"
+		"jsdom-global": "^3.0.2",
+		"mocha": "^8.4.0",
+		"ts-mocha": "^8.0.0",
+		"type-fest": "^2.3.2"
 	},
 	"engines": {
 		"node": ">=14",

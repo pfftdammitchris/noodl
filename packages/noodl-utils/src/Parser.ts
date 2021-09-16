@@ -1,7 +1,7 @@
 import { DeviceType, Env, RootConfig, Url } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
-import get from 'lodash.get'
 import { createPlaceholderReplacer } from './noodl-utils'
+import get from 'lodash.get'
 import * as c from './constants'
 import * as t from './types'
 import * as u from './_internal'
@@ -85,7 +85,9 @@ class NoodlUtilsParser {
 			id: '',
 		}
 
-		function isPageComponentUrl<S extends string>(str: S) {
+		function isPageComponentUrl<S extends string>(
+			str: S,
+		): str is t.PageComponentUrl<string, string, string> {
 			const parts = str.split(/(@|#)/)
 			if (parts.length !== 5) return false
 			const [_, separator1, __, separator2, ___] = parts
