@@ -1,4 +1,5 @@
 import * as nt from 'noodl-types'
+import { Split } from 'type-fest'
 import curry from 'lodash.curry'
 import flowRight from 'lodash.flowright'
 import get from 'lodash.get'
@@ -247,6 +248,18 @@ export function isTest() {
 export function isValidAsset(value: string | undefined) {
 	if (value?.endsWith('..tar')) return false
 	return u.isStr(value) && /(.[a-zA-Z]+)$/i.test(value)
+}
+
+export function toDataPath<I extends string = string>(
+	key = '' as I | I[] | number | number[],
+): Split<I, '.'> {
+	return (
+		u.isArr(key)
+			? key
+			: u.isStr(key)
+			? key.split('.')
+			: u.array(key).filter((fn) => !u.isUnd(fn))
+	) as Split<I, '.'>
 }
 
 const regex = {
