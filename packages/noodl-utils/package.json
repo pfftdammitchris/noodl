@@ -28,7 +28,7 @@
 		"npm": ">=7"
 	},
 	"files": [
-		"./dist"
+		"dist"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl#readme",
@@ -53,5 +53,5 @@
 		"test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src"
 	},
 	"typings": "./dist/index.d.ts",
-	"version": "0.0.80"
+	"version": "0.0.81"
 }
