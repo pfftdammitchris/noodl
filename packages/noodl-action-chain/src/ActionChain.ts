@@ -149,15 +149,42 @@ class ActionChain<
 		return this.#results
 	}
 
-	clear() {
-		this.data.clear()
-		this.#current = null
-		this.#actions.length = 0
-		this.#queue.length = 0
-		this.#results.length = 0
-		this.#timeout && clearTimeout(this.#timeout)
-		this.#error && (this.#error = null)
-		Object.keys(this.#obs).forEach((key) => delete this.#obs[key])
+	clear(
+		key?:
+			| 'actions'
+			| 'data'
+			| 'error'
+			| 'hooks'
+			| 'queue'
+			| 'results'
+			| 'timeout',
+	) {
+		if (arguments.length) {
+			key === 'data'
+				? this.data.clear()
+				: key === 'actions'
+				? (this.#actions.length = 0)
+				: key === 'queue'
+				? (this.#queue.length = 0)
+				: key === 'results'
+				? (this.#results.length = 0)
+				: key === 'timeout'
+				? this.#timeout && (clearTimeout(this.#timeout), (this.#timeout = null))
+				: key === 'error'
+				? this.#error && (this.#error = null)
+				: key === 'hooks'
+				? Object.keys(this.#obs).forEach((key) => delete this.#obs[key])
+				: undefined
+		} else {
+			this.data.clear()
+			this.#current = null
+			this.#actions.length = 0
+			this.#queue.length = 0
+			this.#results.length = 0
+			this.#timeout && clearTimeout(this.#timeout)
+			this.#error && (this.#error = null)
+			Object.keys(this.#obs).forEach((key) => delete this.#obs[key])
+		}
 	}
 
 	async execute(args?: any, { timeout = 10000 }: { timeout?: number } = {}) {
