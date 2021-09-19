@@ -1,4 +1,4 @@
-import { DeviceType, Env, RootConfig, Url } from 'noodl-types'
+import { DeviceType, Env, PageComponentUrl, RootConfig } from 'noodl-types'
 import { LiteralUnion } from 'type-fest'
 import { createPlaceholderReplacer } from './noodl-utils'
 import get from 'lodash.get'
@@ -65,14 +65,14 @@ class NoodlUtilsParser {
 		return u.isStr(baseUrl) ? baseUrl : ''
 	}
 
-	destination(destination: Url.PageComponent): t.ParsedPageComponentUrlObject
+	destination(destination: PageComponentUrl): t.ParsedPageComponentUrlObject
 
 	destination(
 		destination: string | undefined,
 		args: { denoter?: string; duration?: number },
 	): t.ParsedGotoUrlObject
 
-	destination<D extends string | Url.PageComponent>(
+	destination<D extends string | PageComponentUrl>(
 		destination: D,
 		{
 			denoter = '^',
@@ -85,9 +85,7 @@ class NoodlUtilsParser {
 			id: '',
 		}
 
-		function isPageComponentUrl<S extends string>(
-			str: S,
-		): str is t.PageComponentUrl<string, string, string> {
+		function isPageComponentUrl(str = '') {
 			const parts = str.split(/(@|#)/)
 			if (parts.length !== 5) return false
 			const [_, separator1, __, separator2, ___] = parts
