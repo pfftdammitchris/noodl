@@ -53,5 +53,5 @@
 		"test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src"
 	},
 	"typings": "./dist/index.d.ts",
-	"version": "0.0.82"
+	"version": "0.0.83"
 }
