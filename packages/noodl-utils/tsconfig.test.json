@@ -1,13 +1,9 @@
 {
-	"ts-node": {
-		"transpileOnly": true
-	},
 	"compilerOptions": {
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"module": "commonjs",
 		"target": "es2017"
 	},
-	"extends": "../../tsconfig.test.json",
-	"exclude": [],
-	"files": ["src/**/*.test.ts"]
+	"extends": "./tsconfig.json",
+	"files": ["./src/**/*.test.ts"]
 }

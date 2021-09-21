@@ -49,7 +49,7 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "tsc -w",
-		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src src/**/*.test.ts --verbose",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r jsdom-global/register --file src/__tests__/setup.ts -r source-map-support/register --extensions ts --watch --watch-files src src/**/*.test.ts",
 		"test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src"
 	},
 	"typings": "./dist/index.d.ts",

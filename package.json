@@ -59,7 +59,7 @@
 		"noodl-action-chain": "file:packages/noodl-action-chain",
 		"noodl-aggregator": "file:packages/noodl-aggregator",
 		"noodl-common": "file:packages/noodl-common",
-		"noodl-types": "^1.0.190",
+		"noodl-types": "^1.0.197",
 		"noodl-ui-test-utils": "^0.0.13",
 		"noodl-utils": "file:packages/noodl-utils",
 		"prettier": "^2.3.2",

@@ -1,6 +1,6 @@
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
-import { constants as noodlAggregatorConsts } from 'noodl-aggregator'
+import * as NoodlAggregatorLib from 'noodl-aggregator'
 import { globbySync } from 'globby'
 import type { LinkStructure } from 'noodl-common'
 import * as nc from 'noodl-common'
@@ -23,7 +23,7 @@ const {
 	ON_RETRIEVE_APP_PAGE_FAILED,
 	ON_RETRIEVED_APP_PAGE,
 	PARSED_APP_CONFIG,
-} = noodlAggregatorConsts
+} = NoodlAggregatorLib.constants
 
 export interface Props {
 	config?: string
