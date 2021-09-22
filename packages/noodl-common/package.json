@@ -18,7 +18,7 @@
 	},
 	"files": [
 		"./build.js",
-		"./dist",
+		"dist",
 		"tsconfig.json",
 		"tsconfig.test.json"
 	],

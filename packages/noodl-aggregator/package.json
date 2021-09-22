@@ -21,7 +21,7 @@
 		"require": "./dist/cjs/index.js"
 	},
 	"files": [
-		"./dist"
+		"dist"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl#readme",

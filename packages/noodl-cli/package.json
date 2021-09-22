@@ -46,7 +46,7 @@
 	},
 	"files": [
 		"./bin/",
-		"./dist/",
+		"dist",
 		"./src/",
 		"tsconfig.json",
 		"tsconfig.test.json",

@@ -1,10 +1,7 @@
 {
 	"compilerOptions": {
 		"declarationDir": "./dist",
-		"isolatedModules": true,
-		"module": "commonjs",
-		"outDir": "./dist",
-		"target": "es2018"
+		"outDir": "./dist"
 	},
 	"include": ["./src/**/*"],
 	"extends": "../../tsconfig.json"

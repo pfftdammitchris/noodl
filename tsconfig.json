@@ -6,8 +6,10 @@
 		"allowSyntheticDefaultImports": true,
 		"declaration": true,
 		"emitDecoratorMetadata": true,
+		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"importHelpers": true,
+		"isolatedModules": true,
 		"keyofStringsOnly": true,
 		"lib": ["esnext"],
 		"module": "commonjs",
@@ -20,7 +22,7 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"target": "es2020"
+		"target": "es2017"
 	},
 	"exclude": ["node_modules", "packages/noodl"]
 }
