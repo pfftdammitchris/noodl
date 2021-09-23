@@ -2,7 +2,7 @@
 	"name": "noodl-monorepo",
 	"scripts": {
 		"bootstrap": "lerna bootstrap --hoist",
-		"build": "lerna exec --scope noodl-cli 'npm run build'",
+		"build": "lerna exec --scope noodl-cli npm run build",
 		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
 		"postinstall": "node scripts/postinstall.js",
 		"pub": "node scripts/publish.js -p",
