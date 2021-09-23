@@ -5,7 +5,7 @@ import chunk from 'lodash/chunk.js'
 import flatten from 'lodash/flatten.js'
 import path from 'path'
 import type { DeviceType, Env } from 'noodl-types'
-import * as nutils from 'noodl-utils'
+import nutils from 'noodl-utils'
 import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
@@ -14,12 +14,8 @@ import { promiseAllSafe } from './utils.js'
 import * as c from './constants.js'
 import * as t from './types.js'
 
-const {
-	createNoodlPlaceholderReplacer,
-	hasNoodlPlaceholder,
-	isValidAsset,
-	withYmlExt,
-} = nutils
+const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } =
+	nutils
 
 class NoodlAggregator {
 	#configKey = ''
@@ -258,6 +254,8 @@ class NoodlAggregator {
 
 		configDoc && !configYml && (configYml = stringifyDoc(configDoc))
 		configYml && !configDoc && (configDoc = yaml.parseDocument(configYml))
+
+		const withYmlExt = (s = '') => !s.endsWith('.yml') && (s += '.yml')
 
 		if (!configYml || !configDoc) {
 			const configUrl = `https://${

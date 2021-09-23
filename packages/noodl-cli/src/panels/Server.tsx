@@ -38,7 +38,7 @@ function Server({
 	wss: wssProp,
 }: Props) {
 	const ref = React.useRef<express.Express | null>(null)
-	const { aggregator, configuration, log, toggleSpinner } = useCtx()
+	const { aggregator, configuration, log, logError, toggleSpinner } = useCtx()
 
 	const getDir = React.useCallback(
 		(...s: string[]) =>
@@ -81,9 +81,7 @@ function Server({
 			toggleSpinner(false)
 		},
 		onNotFound() {},
-		onError(error) {
-			log(`[${u.red(error.name)}] ${u.yellow(error.message)}`)
-		},
+		onError: logError,
 	})
 
 	/* -------------------------------------------------------
@@ -191,9 +189,7 @@ function Server({
 					onClose() {
 						log(co.white(`WebSocket server has closed`))
 					},
-					onError(err) {
-						log(co.red(`[${err.name}] ${err.message}`))
-					},
+					onError: logError,
 					onListening() {
 						log(
 							`🚀 Wss is listening at: ${co.cyan(
@@ -240,6 +236,7 @@ function Server({
 					},
 					onError(err) {
 						u.log(`${watchTag} error`, err)
+						logError(err)
 						sendMessage({ type: 'WATCH_ERROR', error: err })
 					},
 					onUnlink(filepath) {

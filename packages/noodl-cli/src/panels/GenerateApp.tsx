@@ -41,6 +41,8 @@ export const initialState = {
 	}>,
 }
 
+const withYmlExt = (s = '') => !s.endsWith('.yml') && (s += '.yml')
+
 function GenerateApp(props: Props) {
 	const { aggregator, configuration, log, logError, spinner, toggleSpinner } =
 		useCtx()
@@ -250,7 +252,7 @@ function GenerateApp(props: Props) {
 							name: string
 							doc: yaml.Document
 						}) {
-							const filename = nu.withYmlExt(name).replace('_en', '')
+							const filename = withYmlExt(name).replace('_en', '')
 							const filepath = path
 								.join(configDir, filename)
 								.replace('/~/', '/')
@@ -331,7 +333,7 @@ function GenerateApp(props: Props) {
 							doc.set('myBaseUrl', `http://${host}:${port}/`)
 						}
 						const dir = path.join(baseDir, aggregator.configKey)
-						const withYmlExt = (s = '') => !s.endsWith('.yml') && (s += '.yml')
+
 						const filename = withYmlExt(aggregator.configKey).replace('_en', '')
 						const filepath = path.join(dir, filename)
 						await fs.writeFile(filepath, nc.stringifyDoc(doc as any))

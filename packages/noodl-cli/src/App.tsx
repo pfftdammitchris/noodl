@@ -60,14 +60,11 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 		highlight: (id) => set((d) => void (d.highlightedPanel = id)),
 		log: (text) => set((d) => void d.text.push(text)),
 		logError: (err) =>
-			set(
-				(d) =>
-					void d.text.push(
-						err instanceof Error
-							? `[${u.red(err.name)}]: ${u.yellow(err.message)}`
-							: err,
-					),
-			),
+			set((d) => {
+				const error = err instanceof Error ? err : new Error(err)
+				d.text.push(`[${u.red(error.name)}]: ${u.yellow(error.message)}`)
+				d.text.push(u.red(error.stack))
+			}),
 		toggleSpinner: (type) =>
 			set(
 				(d) =>

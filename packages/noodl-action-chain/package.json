@@ -1,21 +1,11 @@
 {
-	"name": "noodl-action-chain",
-	"version": "0.0.99",
-	"main": "dist/index.js",
-	"jsnext:main": "dist/index.js",
-	"module": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"build": "rm -rf dist && tsc",
-		"start": "tsc -w",
-		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --file src/setupTests.ts --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
+	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
+	"bugs": {
+		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
 	"dependencies": {
 		"noodl-types": "^1.0.183"
 	},
-	"author": "Christopher Tran <pfftdammitchris@gmail.com>",
-	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
-	"license": "ISC",
 	"directories": {
 		"dist": "dist",
 		"test": "__tests__"
@@ -23,12 +13,22 @@
 	"files": [
 		"dist"
 	],
+	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
+	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
+	"jsnext:main": "dist/index.js",
+	"license": "ISC",
+	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"name": "noodl-action-chain",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
-	"bugs": {
-		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
+	"scripts": {
+		"build": "tsc",
+		"start": "tsc -w",
+		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --file src/setupTests.ts --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
 	},
-	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee"
+	"types": "dist/index.d.ts",
+	"version": "0.0.99"
 }
