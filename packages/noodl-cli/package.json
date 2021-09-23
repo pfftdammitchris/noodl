@@ -45,9 +45,9 @@
 		"require": "./cli.cjs"
 	},
 	"files": [
-		"./bin/",
-		"dist",
-		"./src/",
+		"bin/",
+		"dist/",
+		"src/",
 		"tsconfig.json",
 		"tsconfig.test.json",
 		"readme.md",
