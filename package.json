@@ -2,20 +2,12 @@
 	"name": "noodl-monorepo",
 	"scripts": {
 		"bootstrap": "lerna bootstrap --hoist",
-		"build": "tsc --allowJs --outDir dist --declaration --allowSyntheticDefaultImports --lib es2020 --lib esnext --module es2020 --pretty --target es2020 --sourceMap --skipLibCheck --esModuleInterop --keyOfStringsOnly --noEmitOnError false",
-		"build:cli": "lerna exec --scope noodl-cli 'npm run build'",
+		"build": "lerna exec --scope noodl-cli 'npm run build'",
 		"clean": "rm -rf dist node_modules package-lock.json && lerna clean",
-		"gen:dev": "npx ts-node-dev --respawn --transpile-only --watch packages/generator/dist/index.d.ts dev/generator.ts",
-		"morph": "npx ts-node-dev --respawn --transpile-only dev/morph.ts",
-		"postinstall": "npm run bootstrap",
-		"prebuild": "rm -rf dist",
+		"postinstall": "node scripts/postinstall.js",
 		"pub": "node scripts/publish.js -p",
-		"refs": "npx nodemon dev/refs/refs --ignore refs-output.json",
 		"ssh2": "ssh -i '../Downloads/ecos-noodl.pem' ubuntu@ec2-54-219-91-202.us-west-1.compute.amazonaws.com",
-		"start": "cross-env DEV=true CI=false npm run build -- --watch",
-		"start:cli": "lerna exec --scope noodl-cli npm run start",
-		"test": "ava --watch",
-		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\""
+		"start": "lerna exec --scope noodl-cli npm run start"
 	},
 	"devDependencies": {
 		"@jsmanifest/typefest": "^1.0.9",
@@ -50,6 +42,7 @@
 		"file-type": "^16.5.3",
 		"fs-extra": "^10.0.0",
 		"globby": "^12.0.2",
+		"jsx-runtime": "^1.2.0",
 		"lodash": "^4.17.21",
 		"meow": "^9.0.0",
 		"mocha": "^9.1.1",

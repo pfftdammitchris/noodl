@@ -3,7 +3,8 @@
 		"allowJs": true,
 		"declarationDir": "./dist",
 		"jsx": "react",
-		"outDir": "./dist"
+		"outDir": "./dist",
+		"rootDir": "./src"
 	},
 	"extends": "../../tsconfig.json",
 	"include": ["./src"]

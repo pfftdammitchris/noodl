@@ -11,23 +11,15 @@ function isPathable(value: unknown): value is PathItem {
 	return u.isStr(value) || u.isNum(value)
 }
 
-function unwrap(root: RootArg) {
-	return (u.isFnc(root) ? root() : root) || {}
-}
-
-function getByRoot(root: RootArg, datapath = '') {
-	return _get_(unwrap(root), nu.toDataPath(datapath))
-}
-
-function getByLocalRoot(root: RootArg, localKey = '', datapath = '') {
-	return _get_(unwrap(root), [localKey, ...nu.toDataPath(datapath)])
-}
-
 function keyExists(key: PathItem | undefined, obj: unknown) {
 	if (key === undefined) return false
 	if (u.isArr(obj) && isPathable(key)) return obj.indexOf(Number(key)) == key
 	if (u.isObj(obj)) return key in obj
 	return false
+}
+
+function unwrap(root: RootArg) {
+	return (u.isFnc(root) ? root() : root) || {}
 }
 
 export function getValue<O extends any[]>(dataObject: O, paths: PathItem[]): any
@@ -155,7 +147,9 @@ const get = curry<Parameters<typeof unwrap>[0], string, string, any>(
 
 			while (nt.Identify.reference(value)) {
 				datapathStr = nu.trimReference(value).concat(datapathStr)
-				datapath = nu.toDataPath(nu.trimReference(value)).concat(datapath)
+				datapath = nu
+					.toDataPath(nu.trimReference(value))
+					.concat(datapath as string[])
 
 				console.log(`[while] value`, { datapath, datapathStr, value })
 
