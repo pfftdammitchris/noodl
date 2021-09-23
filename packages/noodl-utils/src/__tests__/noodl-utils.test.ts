@@ -1,7 +1,7 @@
 import * as u from '@jsmanifest/utils'
 import { coolGold, italic, magenta } from 'noodl-common'
 import { expect } from 'chai'
-import * as n from '.'
+import * as n from '..'
 
 describe(coolGold('createEmitDataKey'), () => {
 	const dataObject = { key: 'gender', value: 'Female' }

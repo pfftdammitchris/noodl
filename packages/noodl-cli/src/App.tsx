@@ -156,6 +156,7 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 					port={cli.flags.port}
 					isRemote={!!cli.flags.remote}
 					wss={cli.flags.wss ? { port: cli.flags.wssPort } : undefined}
+					watch={cli.flags.wss}
 				/>
 			) : (
 				<Box paddingLeft={1} flexDirection="column">

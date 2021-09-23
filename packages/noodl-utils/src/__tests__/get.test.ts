@@ -188,7 +188,7 @@ describe(chalk.keyword('navajowhite')('get'), () => {
 		expect(get('.Forest.formData.profile')).to.deep.eq(root.Forest.profile)
 	})
 
-	it.only(`should support single dots "." deeply`, () => {
+	it.skip(`should support single dots "." deeply`, () => {
 		expect(get('.Forest.formData.profile.user.email')).to.eq('henry@gmail.com')
 	})
 
