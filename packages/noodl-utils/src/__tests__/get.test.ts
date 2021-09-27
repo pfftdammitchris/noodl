@@ -16,8 +16,7 @@ function getRoot() {
 }
 
 beforeEach(() => {
-	// console.clear()
-	process.stdout.write('\x1Bc')
+	console.clear()
 	root = {
 		get Cereal() {
 			const ifObject = {
@@ -175,7 +174,7 @@ describe(chalk.keyword('navajowhite')('getValue'), () => {
 	})
 })
 
-describe(chalk.keyword('navajowhite')('get'), () => {
+describe.only(chalk.keyword('navajowhite')('get'), () => {
 	it(`should support double dots ".." with a local key`, () => {
 		expect(get('..icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
 	})

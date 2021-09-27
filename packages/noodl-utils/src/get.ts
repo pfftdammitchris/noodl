@@ -35,17 +35,7 @@ export function getValue<O extends Record<string, any> | any[]>(
 ) {
 	dataObject = unwrap(dataObject)
 	paths = nu.toDataPath(nu.trimReference(paths.join('.') as any))
-	// let datapath = nu.trimReference(paths.join('.') as any)
-	// let unvisited = nu.toDataPath(datapath) as PathItem[]
-	// let currentKey = unvisited.shift() as PathItem
-	// let currentValue =
-	// 	isPathable(currentKey) && unvisited.length
-	// 		? unwrap(dataObject)[currentKey]
-	// 		: undefined
-	// let currentPath = [currentKey] as PathItem[]
-	// let localKey = paths.shift()
-	// let lastValue: any = currentValue
-	// let prevKey
+
 	let localKey =
 		u.isStr(paths[0]) && nt.Identify.rootKey(paths[0]) ? paths[0] : undefined
 	let datapath = paths.join('.')
@@ -55,22 +45,12 @@ export function getValue<O extends Record<string, any> | any[]>(
 	let lastValue
 	let prevKey: PathItem | undefined
 
-	// currentPath.push(paths.shift() as PathItem)
-
 	while (paths.length) {
 		lastValue = currentValue
 		prevKey = currentKey
 		currentKey = paths.shift() as PathItem
 		currentPath.push(currentKey)
 		currentValue = currentValue[currentKey]
-
-		// if (unvisited.length) {
-		// 	if (u.isArr(currentValue) && !currentValue.includes(paths[0])) {
-		// 		break
-		// 	} else if (u.isObj(currentValue) && !(paths[0] in currentValue)) {
-		// 		break
-		// 	}
-		// }
 
 		if (u.isStr(currentValue)) {
 			if (nt.Identify.reference(currentValue)) {
