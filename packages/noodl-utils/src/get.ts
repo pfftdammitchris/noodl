@@ -76,98 +76,45 @@ export function getValue<O extends Record<string, any> | any[]>(
 }
 
 const get = curry<Parameters<typeof unwrap>[0], string, string, any>(
-	(root: Parameters<typeof unwrap>[0], key = '', localKey: PathItem = '') => {
-		if (u.isNum(key)) {
-			//
+	(
+		root: Parameters<typeof unwrap>[0],
+		path: PathItem | PathItem[],
+		rootKey: PathItem = '',
+	) => {
+		const paths = [] as PathItem[]
+
+		if (u.isStr(path)) {
+			const datapath = nu.toDataPath(nu.trimReference(path as any))
+			if (nt.Identify.rootKey(datapath[0])) {
+				if (rootKey !== datapath[0]) rootKey = datapath[0]
+				datapath.shift()
+			}
+			paths.push(...datapath)
+		} else if (u.isNum(path)) {
+			paths.push(path)
+		} else if (u.isArr(path)) {
+			paths.push(...path)
 		}
 
-		if (u.isStr(key)) {
-			let datapathStr = nt.Identify.reference(key) ? nu.trimReference(key) : key
-			let datapath = nu.toDataPath(datapathStr) as PathItem[]
-			let value: any = key
+		const key = paths.shift()
+		const value = unwrap(root)[key]
 
-			if (!localKey && nt.Identify.rootKey(datapathStr)) {
-				localKey = datapath[0]
-			}
-
-			console.log(`[${u.green('1')}]`, {
-				datapath,
-				datapathStr,
-				localKey,
-				value,
-			})
-
-			let result: ReturnType<typeof getValue>
-
+		if (value !== undefined) {
+			// if (u.isObj)
 			if (u.isStr(value)) {
 				if (nt.Identify.reference(value)) {
-					if (nt.Identify.localReference(value)) {
-						result = getValue(root, [localKey, ...datapath])
-					} else {
-						result = getValue(root, datapath)
+					//
+				} else {
+					if (nt.Identify.rootKey(value)) {
+						return get(root, paths, rootKey)
 					}
-					value = result.currentValue
-				} else {
-					result = getValue(
-						root,
-						nt.Identify.localKey(value) ? [localKey, ...datapath] : datapath,
-					)
-					value = result.currentValue
+					return value
 				}
 			}
-
-			console.log(`[${u.green('4')}]`, {
-				datapath,
-				datapathStr,
-				value,
-				key,
-				localKey,
-				result,
-			})
-
-			while (nt.Identify.reference(value)) {
-				datapathStr = nu.trimReference(value).concat(datapathStr)
-				datapath = nu
-					.toDataPath(nu.trimReference(value))
-					.concat(datapath as string[])
-
-				console.log(`[while] value`, { datapath, datapathStr, value })
-
-				if (value.startsWith('..') || nt.Identify.localKey(datapathStr)) {
-					result = getValue(unwrap(root), [localKey, ...datapath])
-					console.log(`[${u.green('5A')}]`, u.omit(result, ['dataObject']))
-				} else {
-					console.log(`[${u.green('5B')}]`, {
-						datapath,
-						datapathStr,
-						localKey,
-						key,
-						value,
-					})
-					result = getValue(unwrap(root), datapath)
-					console.log(`[${u.green('5C')}]`, u.omit(result, ['dataObject']))
-				}
-
-				value = result.currentValue
-
-				if (!nt.Identify.reference(value)) {
-					console.log(`[${u.green('7 - break')}]`, result)
-					break
-				}
-			}
-
-			console.log(`[${u.green('8 - final')}]`, {
-				datapath,
-				datapathStr,
-				localKey,
-				value,
-			})
-
-			return value
 		}
 
 		// Fall back with a normal retrieval as a last resort
-		return unwrap(root)[String(key)]
+		return unwrap(root)[String(rootKey)]
 	},
 	2,
 )

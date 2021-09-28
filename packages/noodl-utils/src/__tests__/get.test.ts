@@ -191,6 +191,11 @@ describe.only(chalk.keyword('navajowhite')('get'), () => {
 		expect(get('.Forest.formData.profile.user.email')).to.eq('henry@gmail.com')
 	})
 
+	it.only(`should be able to retrieve nested references`, () => {
+		expect(get('.Forest.formData.profile')).to.deep.eq(root.Forest.profile)
+		// expect(get('.Forest.formData.profile.user.email')).to.eq('henry@gmail.com')
+	})
+
 	it.skip(`should be able to deeply retrieve nested references`, () => {
 		expect(get('.Forest.key')).to.eq('password.jpg')
 	})
