@@ -81,13 +81,14 @@ const get = curry<Parameters<typeof unwrap>[0], string, string, any>(
 		path: PathItem | PathItem[],
 		rootKey: PathItem = '',
 	) => {
+		const dataObjects = u.isArr(root) ? root : [root]
 		const paths = [] as PathItem[]
 
 		if (u.isStr(path)) {
 			const datapath = nu.toDataPath(nu.trimReference(path as any))
 			if (nt.Identify.rootKey(datapath[0])) {
 				if (rootKey !== datapath[0]) rootKey = datapath[0]
-				datapath.shift()
+				// datapath.shift()
 			}
 			paths.push(...datapath)
 		} else if (u.isNum(path)) {
@@ -97,24 +98,49 @@ const get = curry<Parameters<typeof unwrap>[0], string, string, any>(
 		}
 
 		const key = paths.shift()
-		const value = unwrap(root)[key]
+		const value = unwrap(
+			dataObjects.find((unwrappedObj) => {
+				const dataObject = unwrap(unwrappedObj)
+				return u.isObj(dataObject) ? key in dataObject : false
+			}),
+		)?.[key]
 
-		if (value !== undefined) {
-			// if (u.isObj)
+		console.log({ value })
+
+		if (!u.isNil(value)) {
 			if (u.isStr(value)) {
 				if (nt.Identify.reference(value)) {
-					//
+					if (nt.Identify.localReference(value)) {
+						console.log({
+							root: unwrap(root),
+							key,
+							value,
+							unvisited: paths,
+							paths,
+							rootKey,
+						})
+						const result = get(dataObjects, [key, ...paths], rootKey)
+						// console.log({ result })
+						// return result
+					}
 				} else {
 					if (nt.Identify.rootKey(value)) {
 						return get(root, paths, rootKey)
 					}
 					return value
 				}
+			} else if (u.isArr(value)) {
+				//
+			} else if (u.isObj(value)) {
+				if (u.isStr(key)) {
+					console.log({ key, value, paths, rootKey })
+					return get([root, value], paths, rootKey)
+				}
 			}
 		}
 
 		// Fall back with a normal retrieval as a last resort
-		return unwrap(root)[String(rootKey)]
+		return unwrap(root)[rootKey]
 	},
 	2,
 )

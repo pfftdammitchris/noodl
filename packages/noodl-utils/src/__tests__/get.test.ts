@@ -175,12 +175,29 @@ describe(chalk.keyword('navajowhite')('getValue'), () => {
 })
 
 describe.only(chalk.keyword('navajowhite')('get'), () => {
-	it(`should support double dots ".." with a local key`, () => {
+	it(`should be able to retrieve local references`, () => {
 		expect(get('..icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
 	})
 
-	it(`should retrieve locally if not in reference format and first letter is lowercased`, () => {
+	it(`should be able to retrieve root references`, () => {
+		expect(get('..icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
+	})
+
+	// Local key must be given
+	it(`should be able to retrieve locally if not in reference format`, () => {
 		expect(get('icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
+	})
+
+	// Local key should not be given if intended to retrieve by root
+	it.skip(`should be able to retrieve through root if not in reference format`, () => {
+		expect(get('Tiger.icon')).to.eq(getRoot().Tiger.icon)
+	})
+
+	it.only(`should be `, () => {
+		const o = { get }
+		const spy = sinon.spy(o, 'get')
+		o.get('.Forest.formData.profile.user.email')
+		console.log(spy.args)
 	})
 
 	it(`should support single dots "."`, () => {
@@ -191,7 +208,7 @@ describe.only(chalk.keyword('navajowhite')('get'), () => {
 		expect(get('.Forest.formData.profile.user.email')).to.eq('henry@gmail.com')
 	})
 
-	it.only(`should be able to retrieve nested references`, () => {
+	it.skip(`should be able to retrieve nested references`, () => {
 		expect(get('.Forest.formData.profile')).to.deep.eq(root.Forest.profile)
 		// expect(get('.Forest.formData.profile.user.email')).to.eq('henry@gmail.com')
 	})
