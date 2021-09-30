@@ -4,12 +4,12 @@ import sinon from 'sinon'
 import { isActionChain } from 'noodl-action-chain'
 import { userEvent } from 'noodl-types'
 import { expect } from 'chai'
-import createGet, { getValue, PathItem } from '../get'
+import createGet, { Options, PathItem } from '../get'
 import * as c from '../constants'
 import * as t from '../types'
 
 let root: Record<string, any>
-let get: (key: PathItem, value?: any) => any
+let get: (path: PathItem | PathItem[]) => any
 
 function getRoot() {
 	return root
@@ -175,7 +175,24 @@ describe(chalk.keyword('navajowhite')('getValue'), () => {
 })
 
 describe.only(chalk.keyword('navajowhite')('get'), () => {
-	it(`should be able to retrieve local references`, () => {
+	it.only(``, () => {
+		process.stdout.write('\x1Bc')
+		root = {
+			SignIn: {
+				formData: { gender: 'Male', profile: '..profile' },
+				profile: { user: { email: 'abc@gmail.com' } },
+			},
+		}
+		const o = {
+			get: createGet({ root, rootKey: 'SignIn' }),
+		}
+		const spy = sinon.spy(o, 'get')
+		const result = o.get('.SignIn.formData.profile.user.email')
+		console.log({ result })
+		// console.log(spy.args)
+	})
+
+	it.skip(`should be able to retrieve local references`, () => {
 		expect(get('..icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
 	})
 
@@ -193,7 +210,7 @@ describe.only(chalk.keyword('navajowhite')('get'), () => {
 		expect(get('Tiger.icon')).to.eq(getRoot().Tiger.icon)
 	})
 
-	it.only(`should be `, () => {
+	it(`should be `, () => {
 		const o = { get }
 		const spy = sinon.spy(o, 'get')
 		o.get('.Forest.formData.profile.user.email')

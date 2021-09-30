@@ -5,6 +5,7 @@ import get from 'lodash.get'
 import has from 'lodash.has'
 import * as u from './_internal'
 import * as t from './types'
+import { LiteralUnion } from 'type-fest'
 
 export function createPlaceholderReplacer(
 	placeholders: string | string[],
@@ -270,7 +271,7 @@ const regex = {
  * @param fixType 'prefix'
  */
 export function trimReference(
-	v: nt.ReferenceString,
+	v: LiteralUnion<nt.ReferenceString, string>,
 	fixType: 'prefix',
 ): nt.ReferenceString<Exclude<nt.ReferenceSymbol, '@'>>
 
@@ -280,7 +281,7 @@ export function trimReference(
  * @param fixType 'suffix'
  */
 export function trimReference(
-	v: nt.ReferenceString,
+	v: LiteralUnion<nt.ReferenceString, string>,
 	fixType: 'suffix',
 ): nt.ReferenceString<Extract<nt.ReferenceSymbol, '@'>>
 
@@ -289,7 +290,9 @@ export function trimReference(
  * @param v Reference string
  * @return { string }
  */
-export function trimReference(v: nt.ReferenceString): string
+export function trimReference(
+	v: LiteralUnion<nt.ReferenceString, string>,
+): string
 
 /**
  * Trims the both prefix and the suffix symbol(s) in the reference string
@@ -313,7 +316,7 @@ export function trimReference(v: nt.ReferenceString): string
  * @returns string
  */
 export function trimReference<
-	V extends nt.ReferenceString,
+	V extends LiteralUnion<nt.ReferenceString, string>,
 	F extends 'prefix' | 'suffix',
 >(v: V, fixType?: F) {
 	if (fixType === 'prefix') {

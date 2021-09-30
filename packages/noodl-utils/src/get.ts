@@ -2,13 +2,24 @@ import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
 import * as nu from 'noodl-utils'
 import curry from 'lodash.curry'
-import _get_ from 'lodash.get'
 
 export type RootArg = Record<string, any> | (() => Record<string, any>)
 export type PathItem = string | number
 
+export interface Options {
+	locations?: any
+	local?: Record<string, any>
+	root?: RootArg
+	rootKey?: string
+	unvisited?: PathItem[]
+}
+
 function isPathable(value: unknown): value is PathItem {
 	return u.isStr(value) || u.isNum(value)
+}
+
+function isDataObject(value: unknown): value is Record<string, any> | any[] {
+	return u.isArr(value) || u.isObj(value)
 }
 
 function keyExists(key: PathItem | undefined, obj: unknown) {
@@ -22,125 +33,75 @@ function unwrap(root: RootArg) {
 	return (u.isFnc(root) ? root() : root) || {}
 }
 
-export function getValue<O extends any[]>(dataObject: O, paths: PathItem[]): any
-
-export function getValue<O extends Record<string, any>>(
-	dataObject: O,
-	paths: PathItem[],
-): any
-
-export function getValue<O extends Record<string, any> | any[]>(
-	dataObject: O,
-	paths: PathItem[],
-) {
-	dataObject = unwrap(dataObject)
-	paths = nu.toDataPath(nu.trimReference(paths.join('.') as any))
-
-	let localKey =
-		u.isStr(paths[0]) && nt.Identify.rootKey(paths[0]) ? paths[0] : undefined
-	let datapath = paths.join('.')
-	let currentKey: PathItem | undefined = paths.shift()
-	let currentValue: any = dataObject[currentKey as string]
-	let currentPath = [currentKey] as PathItem[]
-	let lastValue
-	let prevKey: PathItem | undefined
-
-	while (paths.length) {
-		lastValue = currentValue
-		prevKey = currentKey
-		currentKey = paths.shift() as PathItem
-		currentPath.push(currentKey)
-		currentValue = currentValue[currentKey]
-
-		if (u.isStr(currentValue)) {
-			if (nt.Identify.reference(currentValue)) {
-				break
-			}
-		}
-
-		if (!keyExists(paths[0], currentValue)) {
-			break
-		}
-	}
-
-	return {
-		currentKey,
-		currentValue,
-		currentPath,
-		dataObject,
-		localKey,
-		lastValue,
-		path: datapath,
-		unvisited: paths,
-	}
+unwrap.find = function (locations = [] as any[], path: PathItem) {
+	return locations.find((obj) => keyExists(path, unwrap(obj)))
 }
 
-const get = curry<Parameters<typeof unwrap>[0], string, string, any>(
+const get = curry(
 	(
-		root: Parameters<typeof unwrap>[0],
-		path: PathItem | PathItem[],
-		rootKey: PathItem = '',
+		options: (Options & { visited?: PathItem[] }) | undefined = undefined,
+		pathProp?: PathItem | PathItem[],
 	) => {
-		const dataObjects = u.isArr(root) ? root : [root]
-		const paths = [] as PathItem[]
+		if (pathProp) {
+			if (u.isStr(pathProp)) {
+				let dataPath = nu.toDataPath(nu.trimReference(pathProp))
+				let rootKey = options.rootKey
 
-		if (u.isStr(path)) {
-			const datapath = nu.toDataPath(nu.trimReference(path as any))
-			if (nt.Identify.rootKey(datapath[0])) {
-				if (rootKey !== datapath[0]) rootKey = datapath[0]
-				// datapath.shift()
+				if (nt.Identify.rootKey(dataPath[0])) {
+					if (rootKey !== dataPath[0]) rootKey = dataPath.shift()
+				}
+
+				return get(
+					{
+						...options,
+						local: unwrap(options.root)[rootKey],
+						rootKey,
+						unvisited: dataPath.slice(),
+					},
+					dataPath,
+				)
 			}
-			paths.push(...datapath)
-		} else if (u.isNum(path)) {
-			paths.push(path)
-		} else if (u.isArr(path)) {
-			paths.push(...path)
 		}
 
-		const key = paths.shift()
-		const value = unwrap(
-			dataObjects.find((unwrappedObj) => {
-				const dataObject = unwrap(unwrappedObj)
-				return u.isObj(dataObject) ? key in dataObject : false
-			}),
-		)?.[key]
+		let { locations, local, root, rootKey, unvisited = [] } = options
 
-		console.log({ value })
+		let dataObjects = u.filter(Boolean, u.array(locations))
+		let value: any
 
-		if (!u.isNil(value)) {
-			if (u.isStr(value)) {
+		!dataObjects.length && dataObjects.push(root)
+		local && !dataObjects.includes(local) && dataObjects.push(local)
+
+		while (unvisited.length) {
+			const nextKey = unvisited.shift() as PathItem
+			const dataObject = unwrap.find(dataObjects, nextKey)
+
+			if (keyExists(nextKey, dataObject)) {
+				value = dataObject[nextKey]
+			} else if (u.isStr(nextKey) && nt.Identify.reference(nextKey)) {
 				if (nt.Identify.reference(value)) {
-					if (nt.Identify.localReference(value)) {
-						console.log({
-							root: unwrap(root),
-							key,
-							value,
-							unvisited: paths,
-							paths,
-							rootKey,
-						})
-						const result = get(dataObjects, [key, ...paths], rootKey)
-						// console.log({ result })
-						// return result
-					}
-				} else {
-					if (nt.Identify.rootKey(value)) {
-						return get(root, paths, rootKey)
-					}
-					return value
-				}
-			} else if (u.isArr(value)) {
-				//
-			} else if (u.isObj(value)) {
-				if (u.isStr(key)) {
-					console.log({ key, value, paths, rootKey })
-					return get([root, value], paths, rootKey)
+					console.log({ reference: nextKey })
 				}
 			}
+
+			if (
+				unvisited.length &&
+				isDataObject(value) &&
+				!dataObjects.includes(value)
+			) {
+				dataObjects.push(value)
+			}
+
+			console.log({
+				nextKey,
+				dataObject,
+				dataObjects,
+				pathProp,
+				unvisited,
+				value,
+			})
 		}
 
-		// Fall back with a normal retrieval as a last resort
-		return unwrap(root)[rootKey]
+		return value
 	},
 	2,
 )
