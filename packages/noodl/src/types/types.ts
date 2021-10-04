@@ -1,8 +1,45 @@
-import { Node } from 'yaml'
-import { InternalComposerBaseArgs, YAMLNode } from './internalTypes'
-import Page from '../Page'
-import NoodlUtils from '../Utils'
-import Transformer from '../Transformer'
+import type { Node } from 'yaml'
+import type { OrArray } from '@jsmanifest/typefest'
+import type { InternalComposerBaseArgs } from './internalTypes'
+import type Page from '../Page'
+
+export interface BaseStructure {
+	ext: string
+	filename: string
+	group:
+		| 'config'
+		| 'document'
+		| 'image'
+		| 'page'
+		| 'script'
+		| 'video'
+		| 'unknown'
+}
+
+export interface FileStructure extends BaseStructure {
+	dir: string
+	filepath: string
+	rootDir: string
+}
+
+export interface LinkStructure extends BaseStructure {
+	isRemote: boolean
+	url: string
+}
+
+export type LoadType = 'doc' | 'json' | 'yml'
+export type LoadFilesAs = 'list' | 'map' | 'object'
+
+export interface LoadFilesOptions<
+	LType extends LoadType = 'yml',
+	LFType extends LoadFilesAs = 'list',
+> {
+	as?: LFType
+	includeExt?: boolean
+	preload?: OrArray<string>
+	spread?: OrArray<string>
+	type?: LType
+}
 
 export declare namespace OriginalVisitor {
 	export type ArgsList<N extends Node = Node> = [
@@ -20,17 +57,9 @@ export declare namespace OriginalVisitor {
 	export type ReturnType = number | symbol | void | Node
 }
 
-export declare namespace NoodlTransformer {
-	export interface Execute<N extends Node | YAMLNode = Node | YAMLNode> {
-		(this: Transformer, node: N, util: NoodlVisitor.Utils): void
-	}
-}
-
 export declare namespace NoodlVisitor {
-	export type Utils = NoodlUtils
-
 	export interface Visit {
-		(args: Args[0], util: Args[1]): OriginalVisitor.ReturnType
+		(args: Args[0]): OriginalVisitor.ReturnType
 	}
 
 	export type Args = [
@@ -38,7 +67,6 @@ export declare namespace NoodlVisitor {
 			node: Node
 		} & InternalComposerBaseArgs &
 			OriginalVisitor.ArgsObject,
-		Utils,
 	]
 }
 

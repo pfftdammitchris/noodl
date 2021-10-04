@@ -1,15 +1,13 @@
-import { YAMLMap, YAMLSeq } from 'yaml'
+import { YAMLMap } from 'yaml'
+import type { YAMLSeq } from 'yaml'
 import { isActionLike, isEmitObject, isGotoObject, isToastObject } from './map'
 
 export function isActionChain(node: YAMLSeq) {
 	return node.items.some((value) => {
 		if (value instanceof YAMLMap) {
-			return [
-				isEmitObject,
-				isGotoObject,
-				isToastObject,
-				isActionLike,
-			].some((fn) => fn(value))
+			return [isEmitObject, isGotoObject, isToastObject, isActionLike].some(
+				(fn) => fn(value),
+			)
 		}
 		return false
 	})

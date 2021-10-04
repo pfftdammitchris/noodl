@@ -110,7 +110,7 @@ beforeEach(() => {
 			}
 		},
 	}
-	get = createGet(getRoot)
+	get = createGet({ root: getRoot, rootKey: 'Forest' })
 })
 
 describe(chalk.keyword('navajowhite')('getValue'), () => {
@@ -174,63 +174,38 @@ describe(chalk.keyword('navajowhite')('getValue'), () => {
 	})
 })
 
-describe.only(chalk.keyword('navajowhite')('get'), () => {
-	it.only(``, () => {
-		process.stdout.write('\x1Bc')
+describe(chalk.keyword('navajowhite')('get'), () => {
+	it(`should resolve cross references in path order`, () => {
 		root = {
 			SignIn: {
 				formData: { gender: 'Male', profile: '..profile' },
 				profile: { user: { email: 'abc@gmail.com' } },
 			},
 		}
-		const o = {
-			get: createGet({ root, rootKey: 'SignIn' }),
-		}
-		const spy = sinon.spy(o, 'get')
-		const result = o.get('.SignIn.formData.profile.user.email')
-		console.log({ result })
-		// console.log(spy.args)
+		process.stdout.write('\x1Bc')
+		get = createGet({ root, rootKey: 'SignIn' })
+		expect(get('.SignIn.formData.profile.user.email')).to.eq(
+			root.SignIn.profile.user.email,
+		)
+		// expect(get('.SignIn.profile.formData.profile.user.email')).to.not.eq(
+		// 	root.SignIn.profile.user.email,
+		// )
 	})
 
-	it.skip(`should be able to retrieve local references`, () => {
-		expect(get('..icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
+	it(`should be able to retrieve local references`, () => {
+		expect(get('..currentFirstName')).to.eq(root.Forest.currentFirstName)
+		expect(get('.Forest.formData.profile')).to.deep.eq(root.Forest.profile)
 	})
 
 	it(`should be able to retrieve root references`, () => {
-		expect(get('..icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
+		expect(get('.Forest.Stars')).to.eq(root.Forest.Stars)
 	})
 
-	// Local key must be given
-	it(`should be able to retrieve locally if not in reference format`, () => {
-		expect(get('icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
-	})
-
-	// Local key should not be given if intended to retrieve by root
-	it.skip(`should be able to retrieve through root if not in reference format`, () => {
-		expect(get('Tiger.icon')).to.eq(getRoot().Tiger.icon)
-	})
-
-	it(`should be `, () => {
-		const o = { get }
-		const spy = sinon.spy(o, 'get')
-		o.get('.Forest.formData.profile.user.email')
-		console.log(spy.args)
-	})
-
-	it(`should support single dots "."`, () => {
-		expect(get('.Forest.formData.profile')).to.deep.eq(root.Forest.profile)
-	})
-
-	it.skip(`should support single dots "." deeply`, () => {
+	it(`should support single dots "." deeply`, () => {
 		expect(get('.Forest.formData.profile.user.email')).to.eq('henry@gmail.com')
 	})
 
-	it.skip(`should be able to retrieve nested references`, () => {
-		expect(get('.Forest.formData.profile')).to.deep.eq(root.Forest.profile)
-		// expect(get('.Forest.formData.profile.user.email')).to.eq('henry@gmail.com')
-	})
-
-	it.skip(`should be able to deeply retrieve nested references`, () => {
+	it.only(`should be able to deeply retrieve nested cross references`, () => {
 		expect(get('.Forest.key')).to.eq('password.jpg')
 	})
 

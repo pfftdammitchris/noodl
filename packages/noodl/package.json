@@ -9,7 +9,11 @@
 		"test": "__tests__"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"README.md",
+		"rollup.config.js",
+		"tsconfig.json",
+		"tsconfig.test.json"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
@@ -40,10 +44,9 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "rollup -c --environment BUILD:production",
 		"prebuild": "rm -rf dist",
-		"prestart": "rm -rf dist",
-		"start": "tsc --watch",
+		"start": "rollup -c -w --environment BUILD:development",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --file src/setupTests.ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src"
 	},

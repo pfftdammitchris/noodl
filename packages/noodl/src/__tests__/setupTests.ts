@@ -2,7 +2,7 @@ import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
-import { noodl } from './utils/test-utils'
+import { noodl } from '../utils/test-utils'
 
 const ymlFiles = globby
 	.sync(

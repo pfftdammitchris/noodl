@@ -318,7 +318,7 @@ export function trimReference(
 export function trimReference<
 	V extends LiteralUnion<nt.ReferenceString, string>,
 	F extends 'prefix' | 'suffix',
->(v: V, fixType?: F) {
+>(v: LiteralUnion<V, string>, fixType?: F) {
 	if (fixType === 'prefix') {
 		if (regex.prefix.test(v)) return v.replace(regex.prefix, '')
 		return v

@@ -1,4 +1,4 @@
-// @ts-nocheck
+import * as u from '@jsmanifest/utils'
 import { Document as YAMLDocument, YAMLMap, YAMLSeq } from 'yaml'
 import {
 	loadFiles,
@@ -8,7 +8,6 @@ import {
 } from 'noodl-common'
 import { YAMLNode } from './types/internalTypes'
 import Page from './Page'
-import * as u from './utils/internal'
 
 interface RootItems {
 	[key: string]: Page | YAMLNode
@@ -18,7 +17,8 @@ class NoodlRoot<
 	Type extends LoadType = 'yml',
 	As extends LoadFilesAs = 'list',
 > {
-	#docs = {};
+	#docs = {}
+	options = {};
 
 	[Symbol.iterator]() {
 		let items = Object.entries(this.#docs)
@@ -33,14 +33,25 @@ class NoodlRoot<
 		}
 	}
 
-	constructor({
-		docs,
-		loadOptions,
-	}: {
+	constructor(docs: YAMLDocument[])
+	constructor(options: {
 		docs: YAMLDocument[]
 		loadOptions: Partial<LoadFilesOptions>
-	}) {
-		//
+	})
+	constructor(
+		opts:
+			| YAMLDocument[]
+			| {
+					docs: YAMLDocument[]
+					loadOptions: Partial<LoadFilesOptions>
+			  },
+	) {
+		if (u.isArr(opts)) {
+			this.#docs = opts
+		} else if (opts) {
+			this.#docs = opts.docs
+			this.options = opts.loadOptions
+		}
 	}
 
 	get Global() {

@@ -1,7 +1,7 @@
+import * as u from '@jsmanifest/utils'
 import yaml, { isNode, isMap, isPair, isSeq, isScalar, Document } from 'yaml'
 import { Node } from 'yaml'
 import { YAMLNode } from './types'
-import * as u from './utils/internal'
 
 export interface NoodlPageOptions {
 	name?: string
@@ -38,15 +38,17 @@ class NoodlPage {
 		let result: boolean | undefined
 
 		if (isNode(node)) {
-			const key = (isScalar(node)
-				? 'Scalar'
-				: isPair(node)
-				? 'Pair'
-				: isMap(node)
-				? 'Map'
-				: isSeq(node)
-				? 'Seq'
-				: undefined) as 'Scalar' | 'Pair' | 'Map' | 'Seq'
+			const key = (
+				isScalar(node)
+					? 'Scalar'
+					: isPair(node)
+					? 'Pair'
+					: isMap(node)
+					? 'Map'
+					: isSeq(node)
+					? 'Seq'
+					: undefined
+			) as 'Scalar' | 'Pair' | 'Map' | 'Seq'
 
 			if (key) {
 				yaml.visit(this.doc, {
