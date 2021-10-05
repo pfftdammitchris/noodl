@@ -11,7 +11,14 @@ export interface SpinnerProps {
 
 function Spinner(props: SpinnerProps) {
 	const implicitProps = { interval: 80 } as any
-	return <InkSpinner type="point" {...props} {...implicitProps} />
+	console.info({
+		props,
+		implicitProps,
+	})
+
+	const spinner = <InkSpinner {...props} {...implicitProps} type="point" />
+
+	return spinner
 }
 
 export default Spinner
