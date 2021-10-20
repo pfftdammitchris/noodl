@@ -4,7 +4,6 @@ import curry from 'lodash/curry.js'
 import flowRight from 'lodash/flowRight.js'
 import Aggregator from 'noodl-aggregator'
 import yaml from 'yaml'
-import NOODL from 'noodl'
 import fs from 'fs-extra'
 import path from 'path'
 
@@ -28,14 +27,14 @@ const {
 
 const config = 'meetd2'
 const configUrl = `https://public.aitmed.com/config/${config}.yml`
-const dir = `./generated/${config}`
+const dir = `./data/${config}`
 
 const agg = new Aggregator(config)
 
 agg.root.set(
 	'SignIn',
 	parseDocument(
-		fs.readFileSync(path.resolve(path.join(dir, 'SignIn.yml')), 'utf8'),
+		fs.readFileSync(path.resolve(path.join(dir, 'SignIn_en.yml')), 'utf8'),
 		{
 			logLevel: 'debug',
 		},
@@ -49,6 +48,7 @@ const data = {
 	dataKey: [],
 	funcName: [],
 	goto: [],
+	listObject: [],
 	paths: [],
 	placeholder: [],
 	popUpViews: [],
@@ -127,6 +127,7 @@ const getContentType = createGetPairKeyValue('contentType', 'contentTypes')
 const getDataKey = createGetPairKeyValue('dataKey', 'dataKey')
 const getFuncName = createGetPairKeyValue('funcName', 'funcName')
 const getGotoDestinations = createGetPairKeyValue('goto', 'goto')
+const getListObjects = createGetPairKeyValue('listObject', 'listObject')
 const getPaths = createGetPairKeyValue('path', 'paths')
 const getPlaceholder = createGetPairKeyValue('placeholder', 'placeholder')
 const getPopUpView = createGetPairKeyValue('popUpView', 'popUpViews')
@@ -139,6 +140,7 @@ const composedFn = createDataStoreFn(data, [
 	getDataKey,
 	getFuncName,
 	getGotoDestinations,
+	getListObjects,
 	getPaths,
 	getPlaceholder,
 	getPopUpView,
