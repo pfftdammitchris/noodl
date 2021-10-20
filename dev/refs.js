@@ -71,6 +71,7 @@ const data = {
 
 /**
  * @typedef { Parameters<Extract<Parameters<typeof visit>[1], Function>>[0] } VisitKey
+ * @typedef { Parameters<typeof visit> } VisitArgs
  */
 
 const createDataFn = curry(
@@ -109,7 +110,7 @@ const createDataStoreFn = createDataFn(function (data, funcs) {
 
 /**
  * @param { string } key
- * @param { string } dataProp
+ * @param { string | ((...args) => any) } dataProp
  */
 const createGetPairKeyValue = function (keyProp, dataProp) {
 	return createPairFn((data, key, node, path) => {
