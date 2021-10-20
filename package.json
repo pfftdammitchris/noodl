@@ -12,7 +12,7 @@
 	},
 	"devDependencies": {
 		"@jsmanifest/typefest": "^1.0.9",
-		"@jsmanifest/utils": "^1.0.17",
+		"@jsmanifest/utils": "^1.0.21",
 		"@rollup/plugin-commonjs": "^21.0.0",
 		"@rollup/plugin-node-resolve": "^13.0.5",
 		"@types/express": "^4.17.13",

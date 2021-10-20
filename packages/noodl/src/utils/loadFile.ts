@@ -1,11 +1,15 @@
+// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import fs from 'fs-extra'
 import type { LiteralUnion } from 'type-fest'
-import type { Document } from 'yaml'
 import path from 'path'
-import { parse as parseYmlToJson, parseDocument as parseYmlToDoc } from 'yaml'
-import { getAbsFilePath } from './fs'
-import * as t from '../types'
+import {
+	Document,
+	parse as parseYmlToJson,
+	parseDocument as parseYmlToDoc,
+} from 'yaml'
+import getAbsFilePath from './getAbsFilePath.js'
+import * as t from './types'
 
 /**
  * Loads a file at filepath relative to the current file

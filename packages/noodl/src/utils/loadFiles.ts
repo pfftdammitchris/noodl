@@ -1,15 +1,14 @@
+// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import { globbySync } from 'globby'
 import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
 import path from 'path'
-import {
-	getAbsFilePath,
-	getFileStructure,
-	getFileName,
-	normalizeFilePath,
-} from './fs'
-import loadFile from './loadFile'
-import * as t from '../types'
+import getAbsFilePath from './getAbsFilePath.js'
+import getBasename from './getBasename.js'
+import getFileStructure from './getFileStructure.js'
+import loadFile from './loadFile.js'
+import normalizePath from './normalizePath.js'
+import * as t from './types.js'
 
 /**
  * Load files from dir and optionally provide a second argument as an options
@@ -135,7 +134,7 @@ function loadFiles<
 		opts === 'json' && (ext = 'json')
 
 		const glob = `**/*.${ext}`
-		const _path = normalizeFilePath(getAbsFilePath(path.join(dir, glob)))
+		const _path = normalizePath(getAbsFilePath(path.join(dir, glob)))
 
 		if (u.isStr(opts)) {
 			type = opts === 'json' ? 'json' : opts === 'doc' ? 'doc' : type
@@ -148,7 +147,7 @@ function loadFiles<
 			const keysToSpread = opts.spread ? u.array(opts.spread) : []
 
 			function getKey(metadata: t.FileStructure) {
-				return includeExt ? getFileName(metadata.filepath) : metadata.filename
+				return includeExt ? getBasename(metadata.filepath) : metadata.filename
 			}
 
 			function listReducer(acc: any[] = [], filepath: string) {
@@ -167,8 +166,7 @@ function loadFiles<
 							acc.set(itemKey.value, item.value)
 						}
 					} else if (u.isObj(data)) {
-						for (const [key, value] of u.entries(data))
-							acc.set(key as any, value)
+						for (const [key, value] of u.entries(data)) acc.set(key, value)
 					}
 				} else {
 					acc.set(key, data)

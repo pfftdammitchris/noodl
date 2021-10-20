@@ -41,7 +41,7 @@
 		"start": "cross-env NODE_ENV=development npm run build:esm -- --watch",
 		"start:cjs": "cross-env NODE_ENV=development npm run build:cjs -- --watch",
 		"start:esbuild": "cross-env NODE_ENV=development node build --esm -w",
-		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
+		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --loader=ts-node/esm --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"types": "tsc --emitDeclarationOnly"
 	},
 	"type": "module",

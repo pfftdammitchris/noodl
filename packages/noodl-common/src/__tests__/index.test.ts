@@ -3,19 +3,25 @@ import { expect } from 'chai'
 import path from 'path'
 import yaml from 'yaml'
 import fs from 'fs-extra'
-import * as nc from '../index.js'
+import getFileStructure from '../getFileStructure.js'
+import getLinkStructure from '../getLinkStructure.js'
+import isImage from '../isImage.js'
+import isVideo from '../isVideo.js'
+import loadFiles from '../loadFiles.js'
+import loadFile from '../loadFile.js'
+import normalizePath from '../normalizePath.js'
 
 const pathNameToFixtures = './src/__tests__/fixtures'
 const pathnameToAboutAitmedPage = `${pathNameToFixtures}/AboutAitmed.yml`
 const filenames = fs.readdirSync(pathNameToFixtures, 'utf8')
 
-describe(nc.coolGold(`noodl-common`), () => {
-	describe(nc.italic(`getFileStructure`), () => {
+describe(u.yellow(`noodl-common`), () => {
+	describe(u.italic(`getFileStructure`), () => {
 		const docExts = ['json', 'pdf', 'doc', 'docx'] as const
 		docExts.forEach((docExt) => {
 			const documentStructPath = `/Users/christ/noodl-cli/SignIn.${docExt}`
 			it(`should return the expected document file structure for "${documentStructPath}"`, () => {
-				const fileStructure = nc.getFileStructure(documentStructPath)
+				const fileStructure = getFileStructure(documentStructPath)
 				expect(fileStructure).to.have.property('dir', `/Users/christ/noodl-cli`)
 				expect(fileStructure).to.have.property('ext', `.${docExt}`)
 				expect(fileStructure).to.have.property('filename', `SignIn`)
@@ -27,7 +33,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		const configStructPath = '/christ/noodl-cli/meet4d.yml'
 		it(`should return the expected config file structure for "${configStructPath}"`, () => {
-			const fileStructure = nc.getFileStructure(configStructPath, {
+			const fileStructure = getFileStructure(configStructPath, {
 				config: 'meet4d',
 			})
 			expect(fileStructure).to.have.property('dir', `/christ/noodl-cli`)
@@ -40,7 +46,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		const imageStructPath = '/christ/noodl-cli/pop.jpeg'
 		it(`should return the expected image file structure for "${imageStructPath}"`, () => {
-			const fileStructure = nc.getFileStructure(imageStructPath, {
+			const fileStructure = getFileStructure(imageStructPath, {
 				config: 'meet4d',
 			})
 			expect(fileStructure).to.have.property('dir', `/christ/noodl-cli`)
@@ -53,7 +59,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		const pageStructPath = '/christ/noodl-cli/CreateNewAccount.yml'
 		it(`should return the expected page file structure for "${pageStructPath}"`, () => {
-			const fileStructure = nc.getFileStructure(pageStructPath, {
+			const fileStructure = getFileStructure(pageStructPath, {
 				config: 'meet4d',
 			})
 			expect(fileStructure).to.have.property('dir', `/christ/noodl-cli`)
@@ -66,7 +72,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		const videoStructPath = '/christ/noodl-cli/hi.mp4'
 		it(`should return the expected video file structure for "${imageStructPath}"`, () => {
-			const fileStructure = nc.getFileStructure(videoStructPath)
+			const fileStructure = getFileStructure(videoStructPath)
 			expect(fileStructure).to.have.property('dir', `/christ/noodl-cli`)
 			expect(fileStructure).to.have.property('ext', `.mp4`)
 			expect(fileStructure).to.have.property('filename', 'hi')
@@ -76,12 +82,12 @@ describe(nc.coolGold(`noodl-common`), () => {
 		})
 	})
 
-	describe(nc.italic(`getLinkStructure`), () => {
+	describe(u.italic(`getLinkStructure`), () => {
 		const docExts = ['json', 'pdf', 'doc', 'docx'] as const
 		docExts.forEach((docExt) => {
 			const documentStructPath = `https://aitmed.io/config/index.${docExt}`
 			it(`should return the expected document file structure for "${documentStructPath}"`, () => {
-				const linkStructure = nc.getLinkStructure(documentStructPath)
+				const linkStructure = getLinkStructure(documentStructPath)
 				expect(linkStructure).to.have.property('ext', `.${docExt}`)
 				expect(linkStructure).to.have.property('filename', `index`)
 				expect(linkStructure).to.have.property('isRemote', true)
@@ -92,7 +98,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		const configStructurePath = `https://aitmed.io/config/index/abc.yml`
 		it(`should return the expected config file structure for "${configStructurePath}"`, () => {
-			const linkStructure = nc.getLinkStructure(configStructurePath, {
+			const linkStructure = getLinkStructure(configStructurePath, {
 				config: 'abc',
 			})
 			expect(linkStructure).to.have.property('ext', `.yml`)
@@ -104,7 +110,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		const imageStructurePath = `https://aitmed.io/config/index/abc.png`
 		it(`should return the expected config file structure for "${imageStructurePath}"`, () => {
-			const linkStructure = nc.getLinkStructure(imageStructurePath)
+			const linkStructure = getLinkStructure(imageStructurePath)
 			expect(linkStructure).to.have.property('ext', `.png`)
 			expect(linkStructure).to.have.property('filename', `abc`)
 			expect(linkStructure).to.have.property('isRemote', true)
@@ -114,7 +120,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		const pageStructurePath = `https://aitmed.io/config/index/Abc.yml`
 		it(`should return the expected config file structure for "${pageStructurePath}"`, () => {
-			const linkStructure = nc.getLinkStructure(pageStructurePath, {
+			const linkStructure = getLinkStructure(pageStructurePath, {
 				config: 'ab',
 			})
 			expect(linkStructure).to.have.property('ext', `.yml`)
@@ -126,7 +132,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		const videoStructurePath = `https://aitmed.io/config/index/loop.mp4`
 		it(`should return the expected config file structure for "${videoStructurePath}"`, () => {
-			const linkStructure = nc.getLinkStructure(videoStructurePath, {
+			const linkStructure = getLinkStructure(videoStructurePath, {
 				config: 'ab',
 			})
 			expect(linkStructure).to.have.property('ext', `.mp4`)
@@ -137,7 +143,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 		})
 	})
 
-	describe(nc.italic(`isImage`), () => {
+	describe(u.italic(`isImage`), () => {
 		const tests = {
 			'image/png': true,
 			'image/jpg/': false,
@@ -151,12 +157,12 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		u.eachEntries(tests, (value, expectedValue) => {
 			it(`should return ${expectedValue} for "${value}"`, () => {
-				expect(nc.isImage(value)).to.be[expectedValue]
+				expect(isImage(value)).to.be[expectedValue]
 			})
 		})
 	})
 
-	describe(nc.italic(`isVideo`), () => {
+	describe(u.italic(`isVideo`), () => {
 		const tests = {
 			'video/mp4': true,
 			'video/mkv/': false,
@@ -170,24 +176,24 @@ describe(nc.coolGold(`noodl-common`), () => {
 
 		u.eachEntries(tests, (value, expectedValue) => {
 			it(`should return ${expectedValue} for "${value}"`, () => {
-				expect(nc.isVideo(value)).to.be[expectedValue]
+				expect(isVideo(value)).to.be[expectedValue]
 			})
 		})
 	})
 
-	describe(nc.italic(`loadFile`), () => {
+	describe(u.italic(`loadFile`), () => {
 		it(`should return the raw file data as string by default when given only the filepath`, () => {
-			const data = nc.loadFile(pathnameToAboutAitmedPage)
+			const data = loadFile(pathnameToAboutAitmedPage)
 			expect(data).to.be.a.string
 		})
 
 		it(`should return the file data as a yaml doc when passing 'doc' as 2nd arg`, () => {
-			expect(yaml.isDocument(nc.loadFile(pathnameToAboutAitmedPage, 'doc'))).to
-				.be.true
+			expect(yaml.isDocument(loadFile(pathnameToAboutAitmedPage, 'doc'))).to.be
+				.true
 		})
 
 		it(`should return the file data as a JSON object when passing 'json' as 2nd arg`, () => {
-			const data = nc.loadFile(pathnameToAboutAitmedPage, 'json')
+			const data = loadFile(pathnameToAboutAitmedPage, 'json')
 			expect(u.isStr(data)).to.be.false
 			expect(yaml.isDocument(data)).to.be.false
 			expect(u.isObj(data)).to.be.true
@@ -195,39 +201,39 @@ describe(nc.coolGold(`noodl-common`), () => {
 		})
 	})
 
-	describe(nc.italic(`loadFiles`), () => {
+	describe(u.italic(`loadFiles`), () => {
 		describe(`when passing in filepath and 2nd arg type`, () => {
 			it(`should return an array of yml data by default`, () => {
-				const ymls = nc.loadFiles(pathNameToFixtures)
+				const ymls = loadFiles(pathNameToFixtures)
 				expect(ymls).to.have.lengthOf(filenames.length)
 				ymls.forEach((yml) => expect(yml).to.be.a.string)
 			})
 
 			it(`should return an array of docs when 2nd arg is "doc"`, () => {
-				const ymls = nc.loadFiles(pathNameToFixtures, 'doc')
+				const ymls = loadFiles(pathNameToFixtures, 'doc')
 				expect(ymls).to.have.lengthOf(filenames.length)
 				ymls.forEach((yml) => expect(yaml.isDocument(yml)).to.be.true)
 			})
 
 			it(`should return an array of objects when 2nd arg is "json"`, () => {
-				const ymls = nc.loadFiles(pathNameToFixtures, 'json')
+				const ymls = loadFiles(pathNameToFixtures, 'json')
 				expect(ymls).to.be.an('array')
 			})
 
 			it(`should load them into an array if as is "list"`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, { as: 'list' })
+				const result = loadFiles(pathNameToFixtures, { as: 'list' })
 				expect(result).to.be.an('array').with.lengthOf(filenames.length)
 				u.eachEntries(result, (filename, yml) => expect(yml).to.be.a.string)
 			})
 
 			it(`should load them into a map if as is "map"`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, { as: 'map' })
+				const result = loadFiles(pathNameToFixtures, { as: 'map' })
 				expect(result).to.be.instanceOf(Map)
 				expect(result.size).to.eq(filenames.length)
 			})
 
 			it(`should load them into an object if as is "object"`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, { as: 'object' })
+				const result = loadFiles(pathNameToFixtures, { as: 'object' })
 				const keys = u.keys(result)
 				expect(result).to.be.an('object')
 				expect(keys).to.have.lengthOf(filenames.length)
@@ -235,14 +241,14 @@ describe(nc.coolGold(`noodl-common`), () => {
 			})
 
 			it(`should not include the ext as their keys by default for object keys`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, { as: 'object' })
+				const result = loadFiles(pathNameToFixtures, { as: 'object' })
 				filenames.forEach((filename) =>
 					expect(result).to.have.property(path.basename(filename, '.yml')),
 				)
 			})
 
 			it(`should not include the ext by default for map keys`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, { as: 'map' })
+				const result = loadFiles(pathNameToFixtures, { as: 'map' })
 				expect(result.size).to.eq(filenames.length)
 				filenames.forEach(
 					(filename) =>
@@ -251,7 +257,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 			})
 
 			it(`should include the ext in the keys if includeExt is true`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, {
+				const result = loadFiles(pathNameToFixtures, {
 					as: 'object',
 					includeExt: true,
 				})
@@ -262,7 +268,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 			})
 
 			it(`should include the ext in the keys if includeExt is true for map output`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, {
+				const result = loadFiles(pathNameToFixtures, {
 					as: 'map',
 					includeExt: true,
 				})
@@ -273,7 +279,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 			})
 
 			it(`should not be nested for Map outputs (ex: root.VideoChat.VideoChat.micOn)`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, {
+				const result = loadFiles(pathNameToFixtures, {
 					as: 'map',
 					type: 'doc',
 				})
@@ -286,7 +292,7 @@ describe(nc.coolGold(`noodl-common`), () => {
 			})
 
 			it(`should not be nested for object outputs (ex: root.VideoChat.VideoChat.micOn)`, () => {
-				const result = nc.loadFiles(pathNameToFixtures, {
+				const result = loadFiles(pathNameToFixtures, {
 					as: 'object',
 					type: 'doc',
 				})
@@ -300,10 +306,10 @@ describe(nc.coolGold(`noodl-common`), () => {
 		})
 	})
 
-	describe(nc.italic(`normalizePath`), () => {
+	describe(u.italic(`normalizePath`), () => {
 		it(`should erase the myBaseUrl tilde (~/)`, () => {
 			const filepath = `https://public.aitmed.com/cadl/meet3_0.45d/~/HomePageUrl.yml`
-			expect(nc.normalizePath(filepath)).to.eq(
+			expect(normalizePath(filepath)).to.eq(
 				`https://public.aitmed.com/cadl/meet3_0.45d/HomePageUrl.yml`,
 			)
 		})
