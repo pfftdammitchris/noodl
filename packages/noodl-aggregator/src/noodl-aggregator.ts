@@ -342,7 +342,9 @@ class NoodlAggregator {
 
 		if (dir) {
 			const appConfigFilePath = path.join(dir, this.appKey)
-			const { existsSync, readFile } = await import('fs-extra')
+			const {
+				default: { existsSync, readFile },
+			} = await import('fs-extra')
 			if (existsSync(appConfigFilePath)) {
 				appConfigYml = await readFile(appConfigFilePath, 'utf8')
 				appConfigDoc = yaml.parseDocument(appConfigYml)
@@ -416,7 +418,9 @@ class NoodlAggregator {
 			const key = this.#toRootPageKey(name)
 
 			if (dir) {
-				const { existsSync, readFile } = await import('fs-extra')
+				const {
+					default: { existsSync, readFile },
+				} = await import('fs-extra')
 				if (existsSync(dir)) {
 					let filepath = ''
 

@@ -2,13 +2,25 @@ import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
 import * as nu from 'noodl-utils'
 import curry from 'lodash.curry'
-import _get_ from 'lodash.get'
 
 export type RootArg = Record<string, any> | (() => Record<string, any>)
 export type PathItem = string | number
 
+export interface Options {
+	locations?: any
+	local?: Record<string, any>
+	root?: RootArg
+	rootKey?: string
+	path?: PathItem[]
+	unvisited?: PathItem[]
+}
+
 function isPathable(value: unknown): value is PathItem {
 	return u.isStr(value) || u.isNum(value)
+}
+
+function isDataObject(value: unknown): value is Record<string, any> | any[] {
+	return u.isArr(value) || u.isObj(value)
 }
 
 function keyExists(key: PathItem | undefined, obj: unknown) {
@@ -19,175 +31,200 @@ function keyExists(key: PathItem | undefined, obj: unknown) {
 }
 
 function unwrap(root: RootArg) {
-	return (u.isFnc(root) ? root() : root) || {}
+	return u.isFnc(root) ? root() : root
 }
 
-export function getValue<O extends any[]>(dataObject: O, paths: PathItem[]): any
-
-export function getValue<O extends Record<string, any>>(
-	dataObject: O,
-	paths: PathItem[],
-): any
-
-export function getValue<O extends Record<string, any> | any[]>(
-	dataObject: O,
-	paths: PathItem[],
-) {
-	dataObject = unwrap(dataObject)
-	paths = nu.toDataPath(nu.trimReference(paths.join('.') as any))
-	// let datapath = nu.trimReference(paths.join('.') as any)
-	// let unvisited = nu.toDataPath(datapath) as PathItem[]
-	// let currentKey = unvisited.shift() as PathItem
-	// let currentValue =
-	// 	isPathable(currentKey) && unvisited.length
-	// 		? unwrap(dataObject)[currentKey]
-	// 		: undefined
-	// let currentPath = [currentKey] as PathItem[]
-	// let localKey = paths.shift()
-	// let lastValue: any = currentValue
-	// let prevKey
-	let localKey =
-		u.isStr(paths[0]) && nt.Identify.rootKey(paths[0]) ? paths[0] : undefined
-	let datapath = paths.join('.')
-	let currentKey: PathItem | undefined = paths.shift()
-	let currentValue: any = dataObject[currentKey as string]
-	let currentPath = [currentKey] as PathItem[]
-	let lastValue
-	let prevKey: PathItem | undefined
-
-	// currentPath.push(paths.shift() as PathItem)
-
-	while (paths.length) {
-		lastValue = currentValue
-		prevKey = currentKey
-		currentKey = paths.shift() as PathItem
-		currentPath.push(currentKey)
-		currentValue = currentValue[currentKey]
-
-		// if (unvisited.length) {
-		// 	if (u.isArr(currentValue) && !currentValue.includes(paths[0])) {
-		// 		break
-		// 	} else if (u.isObj(currentValue) && !(paths[0] in currentValue)) {
-		// 		break
-		// 	}
-		// }
-
-		if (u.isStr(currentValue)) {
-			if (nt.Identify.reference(currentValue)) {
-				break
-			}
-		}
-
-		if (!keyExists(paths[0], currentValue)) {
-			break
-		}
-	}
-
-	return {
-		currentKey,
-		currentValue,
-		currentPath,
-		dataObject,
-		localKey,
-		lastValue,
-		path: datapath,
-		unvisited: paths,
-	}
+unwrap.find = function (locations = [] as any[], path: PathItem) {
+	return locations.find((obj) => keyExists(path, unwrap(obj)))
 }
 
-const get = curry<Parameters<typeof unwrap>[0], string, string, any>(
-	(root: Parameters<typeof unwrap>[0], key = '', localKey: PathItem = '') => {
-		if (u.isNum(key)) {
-			//
-		}
+const get = curry(
+	(
+		options: (Options & { visited?: PathItem[] }) | undefined = undefined,
+		pathProp?: PathItem | PathItem[],
+	) => {
+		let value: any
 
-		if (u.isStr(key)) {
-			let datapathStr = nt.Identify.reference(key) ? nu.trimReference(key) : key
-			let datapath = nu.toDataPath(datapathStr) as PathItem[]
-			let value: any = key
+		if (pathProp) {
+			if (u.isStr(pathProp)) {
+				// Spawn a new instance
+				if (nt.Identify.reference(pathProp)) {
+					let dataPath = nu.toDataPath(nu.trimReference(pathProp))
+					let rootKey = options.rootKey
+					let startKey = dataPath[0]
+					let path = [] as PathItem[]
 
-			if (!localKey && nt.Identify.rootKey(datapathStr)) {
-				localKey = datapath[0]
-			}
-
-			console.log(`[${u.green('1')}]`, {
-				datapath,
-				datapathStr,
-				localKey,
-				value,
-			})
-
-			let result: ReturnType<typeof getValue>
-
-			if (u.isStr(value)) {
-				if (nt.Identify.reference(value)) {
-					if (nt.Identify.localReference(value)) {
-						result = getValue(root, [localKey, ...datapath])
+					if (nt.Identify.rootKey(startKey)) {
+						if (rootKey !== startKey) rootKey = dataPath.shift()
+						else dataPath.shift()
+						path[0] = rootKey
 					} else {
-						result = getValue(root, datapath)
+						path[0] = startKey
 					}
-					value = result.currentValue
-				} else {
-					result = getValue(
-						root,
-						nt.Identify.localKey(value) ? [localKey, ...datapath] : datapath,
+
+					if (!rootKey) {
+						throw new Error('rootKey not found on a new instance')
+					}
+
+					const locations = options.locations ? u.array(options.locations) : []
+					let local
+
+					if (options.root) {
+						local = unwrap(options.root)[rootKey]
+						!locations.includes(options.root) && locations.unshift(options.root)
+						if (local) {
+							!locations.includes(local) && locations.push(local)
+						}
+					}
+
+					console.log(`[1]`, {
+						...options,
+						locations,
+						local,
+						path,
+						rootKey,
+						unvisited: dataPath,
+					})
+
+					return get(
+						{
+							...options,
+							local,
+							locations,
+							path,
+							rootKey,
+							unvisited: dataPath,
+						},
+						dataPath,
 					)
-					value = result.currentValue
 				}
-			}
+			} else if (u.isArr(pathProp)) {
+				if (pathProp.length) {
+					const find = (locs, key) => {
+						let count = locs.length
+						while (count > 0) {
+							--count
+							console.log(`[find]`, { obj: locs[count], key })
+							if (keyExists(key, locs[count])) return locs[count][key]
+						}
+					}
 
-			console.log(`[${u.green('4')}]`, {
-				datapath,
-				datapathStr,
-				value,
-				key,
-				localKey,
-				result,
-			})
+					const { local, locations, path: currentPath, root } = options
 
-			while (nt.Identify.reference(value)) {
-				datapathStr = nu.trimReference(value).concat(datapathStr)
-				datapath = nu
-					.toDataPath(nu.trimReference(value))
-					.concat(datapath as string[])
+					// Continue existing
+					let nextKey = pathProp.shift()
+					value = find(locations, nextKey)
 
-				console.log(`[while] value`, { datapath, datapathStr, value })
+					if (isDataObject(value)) {
+						currentPath.push(nextKey)
+						!locations.includes(value) && locations.push(value)
 
-				if (value.startsWith('..') || nt.Identify.localKey(datapathStr)) {
-					result = getValue(unwrap(root), [localKey, ...datapath])
-					console.log(`[${u.green('5A')}]`, u.omit(result, ['dataObject']))
-				} else {
-					console.log(`[${u.green('5B')}]`, {
-						datapath,
-						datapathStr,
-						localKey,
-						key,
+						console.log(`[2]`, {
+							...options,
+							unvisited: pathProp,
+							nextKey,
+							value,
+						})
+
+						if (pathProp.length) {
+							return get(
+								{
+									...options,
+									path: currentPath,
+									locations,
+									unvisited: pathProp,
+								},
+								pathProp,
+							)
+						}
+					}
+
+					if (nt.Identify.reference(value)) {
+						if (nt.Identify.localReference(value)) {
+							if (locations.length > 2) locations.length = 2
+							let reference = value
+
+							console.log(`[3]`, {
+								local,
+								locations,
+								root: options.root,
+								rootKey: options.rootKey,
+								value,
+							})
+
+							value = get(
+								{
+									local,
+									locations,
+									root: options.root,
+									rootKey: options.rootKey,
+								},
+								value,
+							)
+
+							if (value === undefined) {
+								throw new Error(
+									`value was undefined in mid reference "${reference}"`,
+								)
+							}
+						}
+					}
+
+					console.log(`[4]`, {
+						...options,
+						currentPath,
+						unvisited: pathProp,
+						nextKey,
 						value,
 					})
-					result = getValue(unwrap(root), datapath)
-					console.log(`[${u.green('5C')}]`, u.omit(result, ['dataObject']))
-				}
 
-				value = result.currentValue
-
-				if (!nt.Identify.reference(value)) {
-					console.log(`[${u.green('7 - break')}]`, result)
-					break
+					if (pathProp.length) {
+						return get(options, pathProp)
+					}
 				}
 			}
-
-			console.log(`[${u.green('8 - final')}]`, {
-				datapath,
-				datapathStr,
-				localKey,
-				value,
-			})
-
-			return value
 		}
 
-		// Fall back with a normal retrieval as a last resort
-		return unwrap(root)[String(key)]
+		// console.log({ options, pathProp })
+
+		// let { locations, local, root, rootKey, unvisited = [] } = options
+
+		// let dataObjects = u.filter(Boolean, u.array(locations))
+
+		// !dataObjects.length && dataObjects.push(root)
+		// local && !dataObjects.includes(local) && dataObjects.push(local)
+
+		// while (unvisited.length) {
+		// 	const nextKey = unvisited.shift() as PathItem
+		// 	const dataObject = unwrap.find(dataObjects, nextKey)
+
+		// 	if (keyExists(nextKey, dataObject)) {
+		// 		value = dataObject[nextKey]
+		// 	} else if (u.isStr(nextKey) && nt.Identify.reference(nextKey)) {
+		// 		if (nt.Identify.reference(value)) {
+		// 			console.log({ reference: nextKey })
+		// 		}
+		// 	}
+
+		// 	if (
+		// 		unvisited.length &&
+		// 		isDataObject(value) &&
+		// 		!dataObjects.includes(value)
+		// 	) {
+		// 		dataObjects.push(value)
+		// 	}
+
+		// 	console.log({
+		// 		nextKey,
+		// 		dataObject,
+		// 		dataObjects,
+		// 		pathProp,
+		// 		unvisited,
+		// 		value,
+		// 	})
+		// }
+
+		return value
 	},
 	2,
 )

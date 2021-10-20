@@ -1,7 +1,5 @@
 import { isScalar, Scalar, YAMLMap } from 'yaml'
-import Aggregator from 'noodl-aggregator'
 import { YAMLNode } from './types'
-import NoodlUtils from './Utils'
 import {
 	getScalarValue,
 	isReference,
@@ -10,25 +8,20 @@ import {
 } from './utils/scalar'
 import NoodlPage from './Page'
 import * as T from './types'
-import * as u from './utils/internal'
 
 class Dereferencer {
 	#pages: T.InternalComposerBaseArgs['pages']
 	#root: T.InternalComposerBaseArgs['root']
-	#util: NoodlUtils
 
 	constructor({
 		pages,
 		root,
-		util = new NoodlUtils({ pages, root }),
 	}: {
 		pages: T.InternalComposerBaseArgs['pages']
 		root: T.InternalComposerBaseArgs['root']
-		util?: NoodlUtils
 	}) {
 		this.#pages = pages
 		this.#root = root
-		this.#util = util
 	}
 
 	// * Deeply finds the value to the reference and returns it (Does not mutate)

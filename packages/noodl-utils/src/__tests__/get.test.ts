@@ -4,20 +4,19 @@ import sinon from 'sinon'
 import { isActionChain } from 'noodl-action-chain'
 import { userEvent } from 'noodl-types'
 import { expect } from 'chai'
-import createGet, { getValue, PathItem } from '../get'
+import createGet, { Options, PathItem } from '../get'
 import * as c from '../constants'
 import * as t from '../types'
 
 let root: Record<string, any>
-let get: (key: PathItem, value?: any) => any
+let get: (path: PathItem | PathItem[]) => any
 
 function getRoot() {
 	return root
 }
 
 beforeEach(() => {
-	// console.clear()
-	process.stdout.write('\x1Bc')
+	console.clear()
 	root = {
 		get Cereal() {
 			const ifObject = {
@@ -111,7 +110,7 @@ beforeEach(() => {
 			}
 		},
 	}
-	get = createGet(getRoot)
+	get = createGet({ root: getRoot, rootKey: 'Forest' })
 })
 
 describe(chalk.keyword('navajowhite')('getValue'), () => {
@@ -176,23 +175,37 @@ describe(chalk.keyword('navajowhite')('getValue'), () => {
 })
 
 describe(chalk.keyword('navajowhite')('get'), () => {
-	it(`should support double dots ".." with a local key`, () => {
-		expect(get('..icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
+	it(`should resolve cross references in path order`, () => {
+		root = {
+			SignIn: {
+				formData: { gender: 'Male', profile: '..profile' },
+				profile: { user: { email: 'abc@gmail.com' } },
+			},
+		}
+		process.stdout.write('\x1Bc')
+		get = createGet({ root, rootKey: 'SignIn' })
+		expect(get('.SignIn.formData.profile.user.email')).to.eq(
+			root.SignIn.profile.user.email,
+		)
+		// expect(get('.SignIn.profile.formData.profile.user.email')).to.not.eq(
+		// 	root.SignIn.profile.user.email,
+		// )
 	})
 
-	it(`should retrieve locally if not in reference format and first letter is lowercased`, () => {
-		expect(get('icon', 'Tiger')).to.eq(getRoot().Tiger.icon)
-	})
-
-	it(`should support single dots "."`, () => {
+	it(`should be able to retrieve local references`, () => {
+		expect(get('..currentFirstName')).to.eq(root.Forest.currentFirstName)
 		expect(get('.Forest.formData.profile')).to.deep.eq(root.Forest.profile)
 	})
 
-	it.skip(`should support single dots "." deeply`, () => {
+	it(`should be able to retrieve root references`, () => {
+		expect(get('.Forest.Stars')).to.eq(root.Forest.Stars)
+	})
+
+	it(`should support single dots "." deeply`, () => {
 		expect(get('.Forest.formData.profile.user.email')).to.eq('henry@gmail.com')
 	})
 
-	it.skip(`should be able to deeply retrieve nested references`, () => {
+	it.only(`should be able to deeply retrieve nested cross references`, () => {
 		expect(get('.Forest.key')).to.eq('password.jpg')
 	})
 

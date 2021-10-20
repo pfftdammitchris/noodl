@@ -1,9 +1,8 @@
 import * as u from '@jsmanifest/utils'
-import { coolGold, italic, magenta } from 'noodl-common'
 import { expect } from 'chai'
 import * as n from '..'
 
-describe(coolGold('createEmitDataKey'), () => {
+describe(u.yellow('createEmitDataKey'), () => {
 	const dataObject = { key: 'gender', value: 'Female' }
 	const pageObject = { genderInfo: dataObject }
 	const root = { Global: {}, MeetingRoomCreate: pageObject }
@@ -36,7 +35,7 @@ describe(coolGold('createEmitDataKey'), () => {
 	})
 })
 
-describe(coolGold('excludeIteratorVar'), () => {
+describe(u.yellow('excludeIteratorVar'), () => {
 	const iteratorVar = 'itemObject'
 	const tests = {
 		[iteratorVar]: ``,
@@ -58,7 +57,7 @@ describe(coolGold('excludeIteratorVar'), () => {
 	})
 })
 
-describe(coolGold('findDataValue'), () => {
+describe(u.yellow('findDataValue'), () => {
 	const listObject = [
 		{ fruits: ['apple'], color: 'purple' },
 		{ fruits: ['banana'], color: 'red' },
@@ -75,7 +74,7 @@ describe(coolGold('findDataValue'), () => {
 	})
 })
 
-describe(coolGold('isRootDataKey'), () => {
+describe(u.yellow('isRootDataKey'), () => {
 	Object.entries({
 		'..SignIn.formData': true,
 		'.SignIn.formData': true,
@@ -91,12 +90,4 @@ describe(coolGold('isRootDataKey'), () => {
 			expect(n.isRootDataKey(key)).to.be[expectedResult ? 'true' : 'false']
 		})
 	})
-})
-
-describe('withYmlExt', () => {
-	for (const value of ['Abc.yml', '']) {
-		it(`should transform ${value} to "Abc.yml"`, () => {
-			expect(n.withYmlExt(value)).to.eq('Abc.yml')
-		})
-	}
 })

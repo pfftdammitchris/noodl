@@ -2,26 +2,15 @@ import { Node, isNode } from 'yaml'
 import yaml from 'yaml'
 import Page from './Page'
 import Root from './Root'
-import Utils from './Utils'
 import * as T from './types'
 
 class NoodlVisitor implements T.InternalComposerBaseArgs {
 	pages: T.InternalComposerBaseArgs['pages']
 	root: T.InternalComposerBaseArgs['root']
-	util: Utils
 
-	constructor({
-		pages,
-		root,
-		util = new Utils({ pages, root }),
-	}: {
-		pages: T.Pages
-		root: Root
-		util?: Utils
-	}) {
+	constructor({ pages, root }: { pages: T.Pages; root: Root }) {
 		this.pages = pages
 		this.root = root
-		this.util = util
 	}
 
 	visit<N extends Page>(node: N, visitor: T.NoodlVisitor.Visit): N
@@ -56,16 +45,13 @@ class NoodlVisitor implements T.InternalComposerBaseArgs {
 
 	#wrapVisitorFn = (visitor: T.NoodlVisitor.Visit): yaml.visitor => {
 		return (key, node, path) => {
-			return visitor(
-				{
-					pages: this.pages,
-					root: this.root,
-					key,
-					node: node as Node,
-					path: path as Node[],
-				},
-				this.util,
-			)
+			return visitor({
+				pages: this.pages,
+				root: this.root,
+				key,
+				node: node as Node,
+				path: path as Node[],
+			})
 		}
 	}
 }

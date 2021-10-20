@@ -57,4 +57,6 @@ if (cli.flags.rmjs) {
 	} else {
 		rm(name)
 	}
+} else {
+	// execa.commandSync(`lerna exec --scope `)
 }

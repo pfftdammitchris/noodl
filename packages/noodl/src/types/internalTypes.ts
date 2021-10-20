@@ -1,6 +1,6 @@
-import { Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml'
-import Root from '../Root'
-import { Pages } from './types'
+import type { Scalar, Pair, YAMLMap, YAMLSeq } from 'yaml'
+import type { Pages } from './types'
+import type Root from '../Root'
 
 export interface InternalComposerBaseArgs {
 	pages: Pages

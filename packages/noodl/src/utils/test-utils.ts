@@ -1,8 +1,7 @@
 import yaml from 'yaml'
 import Noodl from '../Noodl'
 import Dereferencer from '../Dereferencer'
-import Transformer from '../Transformer'
-import Visitor from '../Visitor'
+import Visitor from '../visit'
 
 export const globalPathToUserVertex = '.Global.currentUser.vertex'
 export const pathToUserVertex = globalPathToUserVertex.split('.').slice(2) // currentUser.vertex
@@ -10,12 +9,6 @@ export const pathToUserVertex = globalPathToUserVertex.split('.').slice(2) // cu
 export const noodl = new Noodl()
 
 export const dereferencer = new Dereferencer({
-	pages: noodl.pages,
-	root: noodl.root,
-	util: noodl.util,
-})
-
-export const transformer = new Transformer({
 	pages: noodl.pages,
 	root: noodl.root,
 	util: noodl.util,

@@ -5,6 +5,7 @@ const cmds = [
 	`lerna exec --scope noodl-action-chain npm run build`,
 	`lerna exec --scope noodl-common npm run build`,
 	`lerna exec --scope noodl-aggregator npm run build`,
+	`lerna exec --scope noodl-cli npm i`,
 	`npm run build`,
 ]
 

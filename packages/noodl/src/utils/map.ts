@@ -1,6 +1,5 @@
 import { action, component, ComponentType } from 'noodl-types'
 import { isMap, isSeq, YAMLMap } from 'yaml'
-import * as u from './internal'
 
 /* -------------------------------------------------------
 	---- ACTIONS

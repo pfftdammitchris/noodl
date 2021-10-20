@@ -1,10 +1,8 @@
-// process.stdout.write('\x1Bc')
 import * as u from '@jsmanifest/utils'
 import * as nc from 'noodl-common'
 import * as nu from 'noodl-utils'
 import flowRight from 'lodash.flowright'
 import path from 'path'
-import tds from 'transducers-js'
 import Aggregator from 'noodl-aggregator'
 import { Identify } from 'noodl-types'
 import {
@@ -131,67 +129,6 @@ function createVisitorFactory(
 	return o
 }
 
-function getParentInfo<N extends YAMLNode>(node: N | null | undefined) {
-	if (node) {
-		if (isSeq(node)) {
-			//
-		} else if (isMap(node)) {
-			//
-		} else if (isPair(node)) {
-			//
-		}
-	}
-	return null
-}
-
-function createReferenceDataObject<T extends 'pair'>({
-	page = '',
-	parent,
-	type,
-	isKey,
-	value,
-}: {
-	page: string
-	parent: YAMLNode
-	type: T
-	isKey?: boolean
-	value: string
-}): t.DataObject {
-	const reference = value
-
-	switch (type) {
-		case 'pair':
-			if (isKey) {
-				return {
-					isActionChain: Identify.actionChain(parent),
-					isDataKey: null,
-					isKey,
-					isFunction: null,
-					location: 'unknown',
-					operator: getOperators(reference),
-					page,
-					parent,
-					reference,
-					value,
-				} as t.DataObject
-			} else {
-				// isValue
-				return {
-					isActionChain: Identify.actionChain(parent),
-					isDataKey: null,
-					isKey,
-					isFunction: null,
-					location: 'unknown',
-					operator: getOperators(reference),
-					page,
-					parent,
-					reference,
-					value,
-				}
-			}
-	}
-}
-
 function getOperators(v = ''): t.Operator[] {
 	return u.reduce(
 		u.entries(getOperators.map),
@@ -253,32 +190,15 @@ const doc = nc.loadFileAsDoc(
 	path.join(__dirname, '../generated/meet4d/SignIn.yml'),
 )
 
-// ;(async () => {
-// 	try {
-// 		const { doc, raw: yml } = await this.agg.init({
-// 			loadPages: false,
-// 			loadPreloadPages: false,
-// 		})
-// 		const preloadPages = await this.agg.loadPreloadPages()
-// 	} catch (error) {
-// 		console.error(error)
-// 	}
-// })()
-
 const aggregator = new Aggregator('meetd2')
 
 const visitorFactory = createVisitorFactory(CONFIG)
-
-const composedVisitors = (context: {
-	name: string
-	visitee: YAMLNode | YAMLDocument
-	root: Aggregator['root']
-}): t.VisitFn => visitorFactory.compose(actionsVisitor)
 
 aggregator
 	.init({
 		loadPages: true,
 		loadPreloadPages: true,
+		spread: ['BaseCSS', 'BasePage', 'BaseDataMode'],
 	})
 	.then(() => {
 		const evalObjects = {

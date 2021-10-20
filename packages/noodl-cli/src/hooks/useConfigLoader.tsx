@@ -56,7 +56,7 @@ function useConfigLoader({ dir: dirProp = '' }: Options = {}) {
 					configObject = opts.configObject as RootConfig
 				}
 			} catch (error) {
-				console.error(error)
+				console.error({ error })
 			}
 		},
 		[dirProp],
