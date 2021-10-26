@@ -3,8 +3,6 @@ import { Box, Newline, Static, Text, useApp } from 'ink'
 import merge from 'lodash/merge.js'
 import React from 'react'
 import { produce, Draft } from 'immer'
-import BigText from 'ink-big-text'
-import Gradient from 'ink-gradient'
 import * as NoodlAggregatorLib from 'noodl-aggregator'
 import Select from './components/Select.js'
 import HighlightedText from './components/HighlightedText.js'
@@ -117,13 +115,13 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 	return (
 		<Provider value={ctx}>
 			{state.activePanel === c.DEFAULT_PANEL && (
-				<Gradient name="vice">
-					<BigText text="noodl-cli" font="tiny" letterSpacing={1} />{' '}
+				<>
+					<Text color="magenta">noodl-cli</Text>
 					<Text color="white" bold>
 						{cli.pkg.version}
 					</Text>
 					<Newline />
-				</Gradient>
+				</>
 			)}
 			{!state.ready ? (
 				<Settings
