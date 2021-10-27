@@ -1,24 +1,16 @@
 import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
-import { GraphQLClient, request, gql } from 'graphql-request'
-import curry from 'lodash/curry.js'
 import get from 'lodash/get.js'
 import has from 'lodash/has.js'
 import set from 'lodash/set.js'
-import flowRight from 'lodash/flowRight.js'
 import Aggregator from 'noodl-aggregator'
 import yaml from 'yaml'
 import fs from 'fs-extra'
-import path from 'path'
+import path from 'node:path'
 import meow from 'meow'
-
-const log = console.log
-const cli = meow('', {
-	flags: {
-		atype: { type: 'string', default: 'get' },
-		properties: { type: 'string' },
-	},
-})
+import NoodlMetadata from './NoodlMetadata.js'
+import Actions from './Actions.js'
+import Cache from './Cache.js'
 
 const {
 	isScalar,
@@ -35,13 +27,120 @@ const {
 	YAMLMap,
 	YAMLSeq,
 	visit,
+	C,
 } = yaml
+
+const firebaseConfig = {
+	apiKey: 'AIzaSyAOfZtjW1AwASUlj9Uv7viAawWerPx_TbI',
+	authDomain: 'aitmed-dev.firebaseapp.com',
+	projectId: 'aitmed-dev',
+	storageBucket: 'aitmed-dev.appspot.com',
+	messagingSenderId: '958291731658',
+	appId: '1:958291731658:web:c688e785f71a9553b6c033',
+}
+
+const firebaseCredentials = fs.readJsonSync(
+	path.resolve(
+		path.join(
+			process.cwd(),
+			'aitmed-dev-firebase-adminsdk-c0ao1-79b04cd527.json',
+		),
+	),
+)
+
+const log = console.log
+
+const cli = meow('', {
+	flags: {
+		atype: { type: 'string', default: 'get' },
+		properties: { type: 'string' },
+	},
+})
 
 const config = 'meetd2'
 const configUrl = `https://public.aitmed.com/config/${config}.yml`
 const dir = `./generated/admind2/${config}`
 const agg = new Aggregator(config)
 const data = {}
+
+/**
+ * @typedef { object } Cache
+ * @property { object } Cache.actions
+ * @property { Record<string, { actionType: string; knownProperties }> } } Cache.actions
+ * @property { object } Cache.components
+ * @property { string[] } Cache.components.type
+ */
+
+/**
+ * @param { Partial<Cache> } [cache]
+ * @returns { Cache }
+ */
+function createCache() {
+	const obj = new Cache()
+	return obj
+}
+
+class NoodlData {
+	#cache = createCache()
+	/** @type { object } */
+	#credentials
+	/** @type { NoodlMetadata } */
+	#metadata
+	/** @type { FirebaseFirestore.Firestore } */
+	#db
+
+	/**
+	 *
+	 * @param { object } options
+	 * @param { object } options.credentials
+	 */
+	constructor(options) {
+		this.#credentials = options.credentials
+		this.#metadata = new NoodlMetadata({
+			credentials: {
+				firebase: {
+					serviceAccount: this.#credentials,
+				},
+			},
+		})
+		this.#db = this.#metadata.getDb()
+	}
+
+	/**
+	 * @param { string } actionType
+	 * @param { string | string[] } [properties]
+	 */
+	async createActionType(actionType, properties) {
+		try {
+			properties = u.array(properties)
+			let action = this.get(actionType, properties)
+			if (!action) action = this.add(actionType, properties)
+			return this.#db.collection('actions').doc(actionType).create({
+				actionType: action.actionType.value,
+				properties: action.properties.value,
+			})
+		} catch (error) {
+			console.error(error)
+			throw error
+		}
+	}
+
+	async fetchActions() {
+		return this.#db.collection('actions').listDocuments()
+	}
+
+	async fetchActionTypes() {
+		try {
+			return Promise.all((await this.getActions()).map((obj) => obj.id))
+		} catch (error) {
+			throw error
+		}
+	}
+}
+
+const ndata = new NoodlData({
+	credentials: firebaseCredentials,
+})
 
 // agg
 // 	.init({
@@ -201,7 +300,7 @@ const getByKeyValue = function (key) {
 	return createFn(
 		(store, _, node) =>
 			isPair(node) && isScalar(node.key) && node.key.value === key,
-		(store, _, node, path) => {
+		(store, _, node) => {
 			const result = node.value.value
 			if (!u.isNil(result)) {
 				!has(store, key) && set(store, key, [])
@@ -217,7 +316,7 @@ const getContentType = getByKeyValue('contentType')
 const getDataKey = getByKeyValue('dataKey')
 const getEmit = getByKeyValue('emit')
 const getFuncName = getByKeyValue('funcName')
-// const getGoto = getByKeyValue('goto')
+const getGoto = getByKeyValue('goto')
 const getIteratorVar = getByKeyValue('iteratorVar')
 const getListObjects = getByKeyValue('listObject')
 const getPaths = getByKeyValue('path')
@@ -266,285 +365,6 @@ const composedFn = createDataStoreFn(data, [
 	getViewTag,
 ])
 
-/**
- *
- * @param { Aggregator } agg
- */
-async function start(agg) {
-	try {
-		for (const [name, doc] of agg.root) {
-			visit(doc, function (key, node, path) {
-				composedFn(key, node, path)
-			})
-		}
-		return data
-	} catch (error) {
-		if (error instanceof Error) throw error
-		throw new Error(String(error))
-	}
-}
-
-async function done(data) {
-	try {
-		if (!data) return console.log(u.yellow(`Done, but with no data`))
-		await fs.writeJson(`./data/data.json`, data, { spaces: 2 })
-	} catch (error) {
-		if (error instanceof Error) throw error
-		throw new Error(String(error))
-	}
-}
-
-// start(agg)
-
-// postgres://abkxzivnrcrnkl:2e52ac34f476e57b51e5ba017f8bc2642a88a8d15037e28ff7bb3a61e9cb5dee@ec2-3-233-100-43.compute-1.amazonaws.com:5432/d5qdkdfonbm2jr
-// Hasura console domain ecos-noodl.hasura.app
-
-class GraphqlDB {
-	appName = 'ecos-noodl'
-	endpoint = `https://${this.appName}.hasura.app/v1/graphql`
-	adminSecret = ''
-	personalAccessToken = ''
-	graphqlClient = new GraphQLClient(this.endpoint)
-
-	constructor({ adminSecret, personalAccessToken }) {
-		this.adminSecret = adminSecret
-		this.personalAccessToken = personalAccessToken
-	}
-
-	/**
-	 *
-	 * @param { string } query
-	 * @param { Record<string, any> | undefined } variables
-	 */
-	async send(query, variables) {
-		const response = await this.graphqlClient.request(
-			query,
-			variables,
-			this.getHeaders(),
-		)
-		return response
-	}
-
-	/**
-	 * @param { Record<string, any> } [headers]
-	 */
-	getHeaders(headers) {
-		return {
-			Authorization: `pat ${this.personalAccessToken}`,
-			'x-hasura-admin-secret': this.adminSecret,
-			...headers,
-		}
-	}
-}
-
-const graphqldb = new GraphqlDB({
-	adminSecret:
-		'VzqnFhstCXpdPz6bl76kmALogk8n0dDxAm1Y6DFj2k7xcy25Dpu86HzSq5aG6wQo',
-	personalAccessToken:
-		'Gv654gYiq4YKgFbzIk4rJ2FkV1LiNyWGw1S7CMCrmPHVrahRYdzZCKkfvoSLP7NJ',
-})
-
-function createKeyValueCRUDApi(key) {
-	const label = key.charAt(0).toUpperCase().concat(key.substring(1))
-
-	async function create(args) {
-		try {
-			//
-		} catch (error) {
-			throw error
-		}
-	}
-
-	async function get(args) {
-		try {
-			//
-		} catch (error) {
-			throw error
-		}
-	}
-
-	async function remove(args) {
-		try {
-			//
-		} catch (error) {
-			throw error
-		}
-	}
-
-	async function update(args) {
-		try {
-			//
-		} catch (error) {
-			throw error
-		}
-	}
-
-	return {
-		[`create${label}`]: create,
-		[`get${label}`]: get,
-		[`remove${label}`]: remove,
-		[`update${label}`]: update,
-	}
-}
-
-/**
- *
- * @param { GraphqlDB } graphqldb
- */
-const GraphqldbAPI = function (graphqldb) {
-	/**
-	 * @param { string } actionType
-	 * @param { string | string[] } [propertiesProp]
-	 */
-	async function createActionType(actionType, propertiesProp = []) {
-		try {
-			let isCreating = true
-			let properties = u.array(propertiesProp)
-			let { actions: currentActions } = await getActionTypes()
-			let item = currentActions.find((o) => o.actionType === actionType)
-
-			if (!item) item = { actionType, properties: [] }
-			else isCreating = false
-
-			if (!isCreating) {
-				const newProperties = []
-
-				for (const prop of properties) {
-					if (prop && !newProperties.includes(prop)) newProperties.push(prop)
-				}
-
-				if (newProperties.length) {
-					log(
-						`Action type "${actionType}" already exists. Redirecting to updateActionTypeProperties instead`,
-					)
-					return updateActionTypeProperties(actionType, { add: newProperties })
-				} else {
-					throw new Error(
-						`An item with action type "${actionType}" already exists in the database with all of the ${properties.length} properties provided`,
-					)
-				}
-			}
-
-			return graphqldb.send(
-				gql`
-					mutation ($actionType: String, $properties: json) {
-						insert_actions_one(
-							object: { actionType: $actionType, properties: $properties }
-						) {
-							properties
-							actionType
-						}
-					}
-				`,
-				{ actionType, properties },
-			)
-		} catch (error) {
-			console.error(error)
-			throw error
-		}
-	}
-
-	/**
-	 * @param { string } actionType
-	 * @param {{ add?: string | string[]; remove?: string | string[] }} properties
-	 */
-	async function updateActionTypeProperties(actionType, { add, remove }) {
-		try {
-			const { actions: currentActions } = await getActionTypes()
-			const item = currentActions.find((o) => o.actionType === actionType)
-
-			if (item) {
-				const properties = [...item.properties]
-				const added = []
-				const removed = []
-
-				if (add) {
-					u.forEach((prop) => {
-						if (!properties.includes(prop)) {
-							added.push(prop)
-							properties.push(prop)
-						}
-					}, u.array(add))
-				}
-
-				if (remove) {
-					u.forEach((prop) => {
-						if (properties.includes(prop)) {
-							const index = properties.indexOf(prop)
-
-							if (index > -1) {
-								const prop = properties[index]
-								properties.splice(index, 1)
-								if (added.includes(prop)) {
-									added.splice(added.indexOf(prop), 1)
-									removed.push(prop)
-								}
-							}
-						}
-					}, u.array(remove))
-				}
-
-				await graphqldb.send(
-					gql`
-						mutation ($actionType: String!, $properties: json) {
-							update_actions_by_pk(
-								pk_columns: { actionType: $actionType }
-								_set: { properties: $properties }
-							) {
-								properties
-							}
-						}
-					`,
-					{ actionType, properties },
-				)
-
-				return { added, removed }
-			} else {
-				throw new Error(
-					`Action type "${actionType}" does not exist in the database`,
-				)
-			}
-		} catch (error) {
-			if (error instanceof Error) throw error
-			throw new Error(String(error))
-		}
-	}
-
-	/**
-	 *
-	 * @returns {Promise<{ actions: { actionType: string; properties: string[] }[]>}}
-	 */
-	async function getActionTypes() {
-		try {
-			return {
-				actions:
-					(
-						await graphqldb.send(gql`
-							query {
-								actions {
-									actionType
-									properties
-								}
-							}
-						`)
-					)?.actions || [],
-			}
-		} catch (error) {
-			throw error
-		}
-	}
-
-	const o = {
-		createActionType,
-		getActionTypes,
-		updateActionTypeProperties,
-	}
-
-	return o
-}
-
-const db = GraphqldbAPI(graphqldb)
-
 const { flags, input = [] } = cli
 
 ;(async () => {
@@ -561,8 +381,8 @@ const { flags, input = [] } = cli
 				case 'get':
 				case 'update': {
 					if (command === 'get') {
-						const { actions } = await db.getActionTypes()
-						for (const { actionType, properties = [] } of actions) {
+						const actionTypes = await ndata.getActionTypes()
+						for (const actionType of actionTypes) {
 							const logActionType = u.yellow(actionType)
 							const logProperties = `Properties: ${
 								properties.length
@@ -623,7 +443,10 @@ const { flags, input = [] } = cli
 		}
 	} catch (error) {
 		if (error instanceof Error) {
-			console.error(`[${u.yellow(error.name)}] ${u.red(error.message)}`)
+			console.error(
+				`[${u.yellow(error.name)}] ${u.red(error.message)}`,
+				error.stack,
+			)
 			process.exit(0)
 		}
 		throw new Error(u.red(String(error)))
