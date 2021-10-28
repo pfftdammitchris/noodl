@@ -1,0 +1,16 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": "./",
+		"declarationDir": "./dist",
+		"lib": ["dom", "dom.iterable", "es2020"],
+		"isolatedModules": false,
+		"module": "esnext",
+		"outDir": "./dist",
+		"target": "esnext",
+		"types": ["pdfdocs", "jspdf", "html2canvas"]
+	},
+	"exclude": ["./src/**/*.test.ts"],
+	"include": ["./src"],
+	"files": ["./src/index.ts"]
+}

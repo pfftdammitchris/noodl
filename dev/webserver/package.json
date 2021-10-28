@@ -1,0 +1,29 @@
+{
+	"author": "",
+	"description": "",
+	"devDependencies": {
+		"@types/jspdf": "^2.0.0",
+		"pdfdocs": "file:../../packages/pdfdocs",
+		"snowpack": "^3.8.8",
+		"typescript": "^4.4.4"
+	},
+	"eslintConfig": {
+		"globals": {
+			"jspdf": "readonly",
+			"pdfdocs": "readonly"
+		}
+	},
+	"exports": {
+		"default": "./dist/index.js",
+		"import": "./dist/index.js",
+		"require": "./dist/index.js"
+	},
+	"keywords": [],
+	"license": "ISC",
+	"name": "webserver",
+	"scripts": {
+		"build": "snowpack build",
+		"start": "snowpack dev"
+	},
+	"version": "1.0.0"
+}
