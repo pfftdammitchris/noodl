@@ -3,6 +3,13 @@ import type { OrArray } from '@jsmanifest/typefest'
 import type { DeviceType, Env } from 'noodl-types'
 import yaml from 'yaml'
 
+export interface IAggregator<DataType extends RootDataType = RootDataType> {
+	root: Root<DataType>
+	options: {
+		dataType: DataType extends 'object' ? Root<'object'> | Root<'map'>
+	}
+}
+
 export type CommonEmitEvents =
 	| 'PARSED_APP_CONFIG'
 	| 'RETRIEVED_ROOT_BASE_URL'
@@ -35,14 +42,29 @@ export type LoadOptions<Type extends 'doc' | 'yml' = 'doc' | 'yml'> =
 			? OrArray<{ name: string; doc: yaml.Document }>
 			: OrArray<{ name: string; yml: string }>)
 
-export interface Options {
-	config?: string
+export interface Options<ConfigKey extends string = string> {
+	config?: ConfigKey
 	deviceType?: DeviceType
 	env?: Env
 	version?: LiteralUnion<'latest', string>
+	dataType?: RootDataType
 }
 
-export type Root = Map<
-	LiteralUnion<'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage', string>,
-	yaml.Node | yaml.Document
-> & { toJSON(): Record<string, any> }
+export type Root<DataType extends RootDataType = 'map'> =
+	DataType extends 'object'
+		? Record<
+				LiteralUnion<
+					'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage',
+					string
+				>,
+				any
+		  >
+		: Map<
+				LiteralUnion<
+					'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage',
+					string
+				>,
+				yaml.Node | yaml.Document
+		  > & { toJSON(): Record<string, any> }
+
+export type RootDataType = 'object' | 'map'

@@ -1,15 +1,17 @@
 import { Identify } from 'noodl-types'
-import * as nu from 'noodl-utils'
+import nu from 'noodl-utils'
 
-class StringValue extends String {
-	type = 'string'
-	value
+class StringValue {
+	value;
+
+	[Symbol.for('nodejs.util.inspect.custom')]() {
+		return this.toJSON()
+	}
 
 	/**
 	 * @param { string } value
 	 */
 	constructor(value) {
-		super(value)
 		this.value = value
 	}
 
@@ -58,11 +60,15 @@ class StringValue extends String {
 	}
 
 	toJSON() {
-		return this.toString()
+		return {
+			value: this.value,
+			rootKey: this.isRootKey(),
+			reference: this.isReference(),
+		}
 	}
 
 	toString() {
-		return String(this.value)
+		return JSON.stringify(this.toJSON(), null, 2)
 	}
 }
 

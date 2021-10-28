@@ -8,6 +8,7 @@ import yaml from 'yaml'
 import fs from 'fs-extra'
 import path from 'node:path'
 import meow from 'meow'
+import NoodlData from './NoodlData.js'
 import NoodlMetadata from './NoodlMetadata.js'
 import Actions from './Actions.js'
 import Cache from './Cache.js'
@@ -70,73 +71,6 @@ const data = {}
  * @property { object } Cache.components
  * @property { string[] } Cache.components.type
  */
-
-/**
- * @param { Partial<Cache> } [cache]
- * @returns { Cache }
- */
-function createCache() {
-	const obj = new Cache()
-	return obj
-}
-
-class NoodlData {
-	#cache = createCache()
-	/** @type { object } */
-	#credentials
-	/** @type { NoodlMetadata } */
-	#metadata
-	/** @type { FirebaseFirestore.Firestore } */
-	#db
-
-	/**
-	 *
-	 * @param { object } options
-	 * @param { object } options.credentials
-	 */
-	constructor(options) {
-		this.#credentials = options.credentials
-		this.#metadata = new NoodlMetadata({
-			credentials: {
-				firebase: {
-					serviceAccount: this.#credentials,
-				},
-			},
-		})
-		this.#db = this.#metadata.getDb()
-	}
-
-	/**
-	 * @param { string } actionType
-	 * @param { string | string[] } [properties]
-	 */
-	async createActionType(actionType, properties) {
-		try {
-			properties = u.array(properties)
-			let action = this.get(actionType, properties)
-			if (!action) action = this.add(actionType, properties)
-			return this.#db.collection('actions').doc(actionType).create({
-				actionType: action.actionType.value,
-				properties: action.properties.value,
-			})
-		} catch (error) {
-			console.error(error)
-			throw error
-		}
-	}
-
-	async fetchActions() {
-		return this.#db.collection('actions').listDocuments()
-	}
-
-	async fetchActionTypes() {
-		try {
-			return Promise.all((await this.getActions()).map((obj) => obj.id))
-		} catch (error) {
-			throw error
-		}
-	}
-}
 
 const ndata = new NoodlData({
 	credentials: firebaseCredentials,
@@ -381,7 +315,8 @@ const { flags, input = [] } = cli
 				case 'get':
 				case 'update': {
 					if (command === 'get') {
-						const actionTypes = await ndata.getActionTypes()
+						const [actionType, properties = ''] = input
+						const actionTypes = await ndata.fetchActionTypes()
 						for (const actionType of actionTypes) {
 							const logActionType = u.yellow(actionType)
 							const logProperties = `Properties: ${
@@ -394,8 +329,6 @@ const { flags, input = [] } = cli
 						u.newline()
 						break
 					}
-
-					const [actionType, properties = ''] = input
 
 					if (actionType && u.isStr(actionType)) {
 						const label = command
@@ -452,3 +385,5 @@ const { flags, input = [] } = cli
 		throw new Error(u.red(String(error)))
 	}
 })()
+
+export default {}

@@ -77,11 +77,4 @@ class Actions {
 	}
 }
 
-const actions = new Actions()
-actions.add('builtIn')
-actions.add('popUp', 'popUpView')
-actions.add('evalObject', ['actionType', 'object'])
-
-console.log(actions)
-
 export default Actions

@@ -5,7 +5,7 @@ import chunk from 'lodash/chunk.js'
 import flatten from 'lodash/flatten.js'
 import path from 'path'
 import type { DeviceType, Env } from 'noodl-types'
-import nutils from 'noodl-utils'
+import nu from 'noodl-utils'
 import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
@@ -14,31 +14,50 @@ import { promiseAllSafe } from './utils.js'
 import * as c from './constants.js'
 import * as t from './types.js'
 
-const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } =
-	nutils
+const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
 
-class NoodlAggregator {
+class NoodlAggregator<
+	Opts extends string,
+	DataType extends t.RootDataType = 'map',
+> implements t.IAggregator<DataType>
+{
 	#configKey = ''
 	#configVersion = 'latest'
 	cbs = {} as Record<string, ((...args: any[]) => any)[]>
 	deviceType: DeviceType = 'web'
 	env: Env = 'test'
-	options = {} as t.Options
-	root: t.Root
+	options = { dataType: 'map' } as t.Options<Opts>
+	root: t.Root<DataType>
 
-	constructor(opts?: string | t.Options) {
-		if (u.isStr(opts)) this.configKey = opts
-		else u.assign(this.options, opts)
+	constructor(opts?: Opts | t.Options<Opts>) {
+		if (u.isStr(opts)) {
+			this.configKey = opts
+		} else {
+			u.assign(this.options, opts)
+			this.#configKey = opts.config || ''
 
-		this.root = new Map([['Global', new yaml.Document()]]) as t.Root
+			if (opts.dataType === 'object') {
+				;(this.root as Record<string, any>) = { Global: {} }
+			}
+		}
+
+		if (!this.root) {
+			;(this.root as Map<any, any>) = new Map([['Global', new yaml.Document()]])
+		}
 
 		Object.defineProperty(this.root, 'toJSON', {
 			value: () => {
-				const result = {}
-				for (const [name, doc] of this.root) {
-					yaml.isDocument(doc) && (result[name] = doc?.toJSON?.())
+				if (this.root instanceof Map) {
+					return u.reduce(
+						[...this.root],
+						(acc, [name, doc]) => {
+							yaml.isDocument(doc) && (acc[name] = doc?.toJSON?.())
+							return acc
+						},
+						{},
+					)
 				}
-				return result
+				return this.root
 			},
 		})
 	}
