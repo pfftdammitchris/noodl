@@ -8,11 +8,11 @@
 	},
 	"packages": [
 		"packages/noodl",
-		"packages/noodl-action-chain",
 		"packages/noodl-cli",
 		"packages/noodl-common",
 		"packages/noodl-aggregator",
-		"packages/noodl-utils"
+		"packages/noodl-utils",
+		"packages/pdfdocs"
 	],
 	"version": "independent"
 }
