@@ -5,7 +5,7 @@
 	"compilerOptions": {
 		"lib": ["esnext"],
 		"module": "commonjs",
-		"target": "es2015"
+		"target": "es2018"
 	},
 	"extends": "./tsconfig.json",
 	"exclude": ["node_modules"],

@@ -4,8 +4,9 @@
 	},
 	"compilerOptions": {
 		"declarationDir": "./dist",
+		"importHelpers": true,
 		"outDir": "./dist",
-		"target": "es2017",
+		"target": "es2017"
 	},
 	"include": ["./src"],
 	"extends": "../../tsconfig.json"

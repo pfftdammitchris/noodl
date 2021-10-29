@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { globbySync } from 'globby'
+import { sync as globbySync } from 'globby'
 import fs from 'fs-extra'
 import { Document, parseDocument as parseYmlToDoc } from 'yaml'
 import normalizePath from './normalizePath.js'

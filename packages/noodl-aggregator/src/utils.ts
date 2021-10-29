@@ -19,6 +19,13 @@ export function extractPages(doc: yaml.Document | AppConfig | undefined) {
 	}
 }
 
+export function shallowMerge<O = any>(obj: O, value: any) {
+	if (value !== null && typeof value === 'object') {
+		for (const [key, val] of Object.entries(value)) obj[key] = val
+	}
+	return obj
+}
+
 /**
  * Resolves an array of promises safely, inserting each result to the list
  * including errors that occurred inbetween.

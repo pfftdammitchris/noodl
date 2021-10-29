@@ -1,5 +1,5 @@
-import * as u from '@jsmanifest/utils'
-import fs from 'fs-extra'
+import u = require('@jsmanifest/utils')
+import fs = require('fs-extra')
 import type { LiteralUnion } from 'type-fest'
 import path from 'path'
 import {

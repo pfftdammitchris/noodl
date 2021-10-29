@@ -32,7 +32,7 @@ const mockAllPageRequests = (_aggregator = aggregator) => {
 	}
 }
 
-let aggregator: Aggregator
+let aggregator: Aggregator<any, any>
 let assetsUrl = `https://public.aitmed.com/cadl/meet3_0.45d/assets/`
 let baseConfigUrl = `https://${c.DEFAULT_CONFIG_HOSTNAME}/config`
 let baseUrl = `https://public.aitmed.com/cadl/meet3_0.45d/`

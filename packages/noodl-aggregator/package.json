@@ -3,23 +3,13 @@
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl/issues"
 	},
-	"dependencies": {
-		"configstore": "^6.0.0",
-		"invariant": "^2.2.4",
-		"minimatch": "^3.0.4",
-		"noodl-utils": "file:../noodl-utils"
-	},
+	"dependencies": {},
 	"description": "Noodl aggregator",
 	"devDependencies": {
 		"meow": "^9.0.0"
 	},
 	"engines": {
 		"node": ">=14"
-	},
-	"exports": {
-		"default": "./dist/index.js",
-		"import": "./dist/index.js",
-		"require": "./dist/cjs/index.js"
 	},
 	"files": [
 		"dist"
@@ -35,6 +25,8 @@
 		"telemedicine"
 	],
 	"license": "ISC",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/index.js",
 	"name": "noodl-aggregator",
 	"publishConfig": {
 		"access": "public"
@@ -52,7 +44,7 @@
 		"test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"types": "tsc --emitDeclarationOnly"
 	},
-	"type": "module",
+	"types": "./dist/index.d.ts",
 	"typesVersions": {
 		"*": {
 			"cli.d.ts": [
@@ -60,6 +52,8 @@
 			]
 		}
 	},
-	"typings": "./dist/index.d.ts",
-	"version": "0.0.26"
+	"version": "0.0.26",
+	"workspaces": [
+		"packages/*"
+	]
 }

@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"declarationDir": "./dist",
+		"module": "nodenext",
 		"outDir": "./dist"
 	},
 	"include": ["./src/**/*"],

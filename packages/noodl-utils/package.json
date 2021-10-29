@@ -4,7 +4,7 @@
 		"url": "https://github.com/pfftdammitchris/noodl/issues"
 	},
 	"dependencies": {
-		"@jsmanifest/utils": "^1.0.17",
+		"@jsmanifest/utils": "^1.0.30",
 		"lodash.curry": "^4.1.1",
 		"lodash.flowright": "^3.5.0",
 		"lodash.get": "^4.4.2",

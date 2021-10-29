@@ -41,6 +41,7 @@ const agg = new Aggregator('admind2')
 		})
 
 		for (const [name, doc] of agg.root) {
+			console.log(name)
 		}
 	} catch (error) {
 		if (error instanceof Error) throw error

@@ -1,23 +1,23 @@
 import * as u from '@jsmanifest/utils'
 import type { OrArray } from '@jsmanifest/typefest'
-import { LinkStructure, getLinkStructure, stringifyDoc } from 'noodl-common'
+import { LinkStructure, getLinkStructure, stringifyDoc, } from 'noodl'
 import chunk from 'lodash/chunk.js'
 import flatten from 'lodash/flatten.js'
 import path from 'path'
 import type { DeviceType, Env } from 'noodl-types'
-import nu from 'noodl-utils'
+import * as nu from 'noodl-utils'
 import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
-import { promiseAllSafe } from './utils.js'
+import { promiseAllSafe, shallowMerge } from './utils.js'
 import * as c from './constants.js'
 import * as t from './types.js'
 
 const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
 
 class NoodlAggregator<
-	Opts extends string,
+	Opts extends string = string,
 	DataType extends t.RootDataType = 'map',
 > implements t.IAggregator<DataType>
 {
@@ -26,18 +26,17 @@ class NoodlAggregator<
 	cbs = {} as Record<string, ((...args: any[]) => any)[]>
 	deviceType: DeviceType = 'web'
 	env: Env = 'test'
-	options = { dataType: 'map' } as t.Options<Opts>
+	options = { dataType: 'map' as const }
 	root: t.Root<DataType>
 
 	constructor(opts?: Opts | t.Options<Opts>) {
 		if (u.isStr(opts)) {
 			this.configKey = opts
 		} else {
-			u.assign(this.options, opts)
+			this.options = shallowMerge(this.options, opts)
 			this.#configKey = opts.config || ''
-
 			if (opts.dataType === 'object') {
-				;(this.root as Record<string, any>) = { Global: {} }
+				this.root = { Global: {} } as t.Root<DataType>
 			}
 		}
 
@@ -48,14 +47,11 @@ class NoodlAggregator<
 		Object.defineProperty(this.root, 'toJSON', {
 			value: () => {
 				if (this.root instanceof Map) {
-					return u.reduce(
-						[...this.root],
-						(acc, [name, doc]) => {
-							yaml.isDocument(doc) && (acc[name] = doc?.toJSON?.())
-							return acc
-						},
-						{},
-					)
+					const output = {}
+					for (const [name, doc] of this.root) {
+						yaml.isDocument(doc) && (output[name] = doc?.toJSON?.())
+					}
+					return output
 				}
 				return this.root
 			},
@@ -63,7 +59,7 @@ class NoodlAggregator<
 	}
 
 	#toRootPageKey = (filepath: string, ext = '.yml') =>
-		path.posix
+		path
 			.basename(filepath, ext.startsWith('.') ? ext : `.${ext}`)
 			.replace(/(_en|~\/)/gi, '')
 
@@ -202,7 +198,9 @@ class NoodlAggregator<
 	}: {
 		dir?: string
 		fallback?: {
-			appConfig?: Parameters<NoodlAggregator['loadAppConfig']>[0]['fallback']
+			appConfig?: Parameters<
+				NoodlAggregator<Opts, DataType>['loadAppConfig']
+			>[0]['fallback']
 		}
 		loadPages?: boolean
 		loadPreloadPages?: boolean

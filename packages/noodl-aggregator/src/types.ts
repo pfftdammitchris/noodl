@@ -5,9 +5,7 @@ import yaml from 'yaml'
 
 export interface IAggregator<DataType extends RootDataType = RootDataType> {
 	root: Root<DataType>
-	options: {
-		dataType: DataType extends 'object' ? Root<'object'> | Root<'map'>
-	}
+	options: Options<DataType>
 }
 
 export type CommonEmitEvents =
@@ -50,21 +48,13 @@ export interface Options<ConfigKey extends string = string> {
 	dataType?: RootDataType
 }
 
+export type BaseRootKey = 'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage'
+
 export type Root<DataType extends RootDataType = 'map'> =
 	DataType extends 'object'
-		? Record<
-				LiteralUnion<
-					'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage',
-					string
-				>,
-				any
-		  >
-		: Map<
-				LiteralUnion<
-					'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage',
-					string
-				>,
-				yaml.Node | yaml.Document
-		  > & { toJSON(): Record<string, any> }
+		? Record<LiteralUnion<BaseRootKey, string>, any>
+		: Map<LiteralUnion<BaseRootKey, string>, yaml.Node | yaml.Document> & {
+				toJSON(): Record<string, any>
+		  }
 
 export type RootDataType = 'object' | 'map'
