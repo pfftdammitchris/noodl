@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import fs from 'fs-extra'
 import type { LiteralUnion } from 'type-fest'
@@ -8,27 +7,33 @@ import {
 	parse as parseYmlToJson,
 	parseDocument as parseYmlToDoc,
 } from 'yaml'
-import getAbsFilePath from './getAbsFilePath.js'
-import * as t from './types'
+import { getAbsFilePath } from './fs.js'
+import * as t from '../types.js'
 
 /**
- * Loads a file at filepath relative to the current file
- * @param { string } filepath - File path of file to be loaded
+ * Loads a file as a yaml string
+ * @param filepath
+ * @param type
  */
 function loadFile<T extends 'yml'>(
 	filepath: string,
 	type?: LiteralUnion<T, string>,
 ): string
 
-function loadFile<T extends 'doc'>(
-	filepath: string,
-	type: LiteralUnion<T, string>,
-): Document
+/**
+ * Loads a file as a document
+ * @link https://eemeli.org/yaml/#documents
+ * @param filepath
+ * @param type
+ */
+function loadFile(filepath: string, type: 'doc'): Document
 
-function loadFile<T extends 'json'>(
-	filepath: string,
-	type: LiteralUnion<T, string>,
-): Record<string, any>
+/**
+ * Loads a file as json
+ * @param filepath
+ * @param type
+ */
+function loadFile(filepath: string, type: 'json'): Record<string, any>
 
 function loadFile<T extends t.LoadType = t.LoadType>(
 	filepath: string,

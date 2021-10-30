@@ -3,38 +3,31 @@
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl-cli/issues"
 	},
-	"description": "NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it",
+	"description": "NOODL is a language stemmed from the YAML language. This library gives you the tools to build JavaScript applications using Neural Object Oriented Descriptive Language",
 	"directories": {
-		"dist": "dist",
-		"test": "__tests__"
+		"dist": "dist"
+	},
+	"exports": {
+		"default": "./dist/noodl.mjs",
+		"import": "./dist/noodl.mjs",
+		"require": "./dist/noodl.cjs"
 	},
 	"files": [
-		"dist",
-		"README.md",
-		"rollup.config.js",
-		"tsconfig.json",
-		"tsconfig.test.json"
+		"dist"
 	],
 	"gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
 	"homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
 	"keywords": [
 		"noodl",
-		"javascript",
-		"web",
-		"ast",
 		"yaml",
 		"ecos",
 		"edge",
 		"vertex",
 		"aitmed",
 		"telemedicine",
-		"abstract",
-		"syntax",
-		"tree"
+		"health"
 	],
 	"license": "ISC",
-	"main": "dist/index.js",
-	"module": "dist/index.js",
 	"name": "noodl",
 	"publishConfig": {
 		"access": "public"
@@ -44,12 +37,20 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
 	"scripts": {
-		"build": "rollup -c --environment BUILD:production",
-		"prebuild": "rm -rf dist",
-		"start": "rollup -c -w --environment BUILD:development",
-		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --file src/setupTests.ts --watch --watch-files src \"src/**/*.test.ts\"",
-		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src"
+		"build": "concurrently \"rollup -c --environment BUILD:production\" \"npm run types\"",
+		"start": "cross-env NODE_ENV=development concurrently \"rollup -c -w\" \"npm run types\"",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
+		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src",
+		"types": "tsc --emitDeclarationOnly"
 	},
-	"typings": "dist/index.d.ts",
+	"type": "module",
+	"types": "dist/noodl.d.ts",
+	"typesVersions": {
+		"*": {
+			"index.d.ts": [
+				"./dist/noodl.d.ts"
+			]
+		}
+	},
 	"version": "0.0.7"
 }

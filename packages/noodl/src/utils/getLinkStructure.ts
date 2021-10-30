@@ -1,6 +1,5 @@
-// @ts-nocheck
 import path from 'path'
-import { LinkStructure } from './types.js'
+import { LinkStructure } from '../types.js'
 
 /**
  * @param { string } link
@@ -11,7 +10,7 @@ function getLinkStructure(
 	link: string,
 	opts?: { config?: string; prefix?: string },
 ) {
-	const parsed = path.posix.parse(link)
+	const parsed = path.parse(link)
 	const structure = {
 		ext: parsed.ext,
 		filename: parsed.name,

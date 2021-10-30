@@ -1,8 +1,5 @@
-// @ts-nocheck
 import path from 'path'
-import isImage from './isImage.js'
-import isVideo from './isVideo.js'
-import { FileStructure } from './types.js'
+import { FileStructure } from '../types.js'
 
 /**
  * @param { string } filepath
@@ -29,13 +26,13 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
 		} else {
 			structure.group = 'page'
 		}
-	} else if (isImage(parsed.base)) {
+	} else if (/.(gif|jpg|jpeg|png|bmp|tif|tiff)$/.test(parsed.base)) {
 		structure.group = 'image'
 	} else if (structure.ext === '') {
 		structure.group = 'script'
 	} else if (/[./]*(doc|docx|json|pdf)$/i.test(parsed.base)) {
 		structure.group = 'document'
-	} else if (isVideo(parsed.base)) {
+	} else if (/.(avi|mkv|mp4|wmv|ogg|mpg|mpeg|flav)$/.test(parsed.base)) {
 		structure.group = 'video'
 	} else {
 		structure.group = 'unknown'

@@ -6,7 +6,6 @@
 		"outDir": "./dist",
 		"target": "esnext"
 	},
-	"exclude": ["./src/**/*.test.ts"],
 	"include": ["./src"],
-	"files": ["./src/index.ts"]
+	"exclude": ["node_modules", "src/__tests__"]
 }

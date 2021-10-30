@@ -1,14 +1,12 @@
-// @ts-nocheck
 import * as u from '@jsmanifest/utils'
+import path from 'path'
 import { globbySync } from 'globby'
 import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
-import path from 'path'
-import getAbsFilePath from './getAbsFilePath.js'
-import getBasename from './getBasename.js'
+import { getAbsFilePath, getFileName } from './fs.js'
 import getFileStructure from './getFileStructure.js'
 import loadFile from './loadFile.js'
 import normalizePath from './normalizePath.js'
-import * as t from './types.js'
+import * as t from '../types.js'
 
 /**
  * Load files from dir and optionally provide a second argument as an options
@@ -43,81 +41,78 @@ function loadFiles<T extends 'json', A extends 'list'>(
 /**
  * Load files into an array of yaml documents
  */
-function loadFiles<T extends 'doc', A extends 'list'>(
+function loadFiles(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, A>,
+	opts?: t.LoadFilesOptions<'doc', 'list'>,
 ): YAMLDocument[]
 
 /**
  * Load files into an object literal where key is the name and the value is
  * their yml
  */
-function loadFiles<T extends 'yml', A extends 'object'>(
+function loadFiles(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, A>,
+	opts?: t.LoadFilesOptions<'yml', 'object'>,
 ): Record<string, string>
 
 /**
  * Load files into an object literal where key is the name and the value is a
  * JS object
  */
-function loadFiles<T extends 'json', A extends 'object'>(
+function loadFiles(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, A>,
+	opts?: t.LoadFilesOptions<'json', 'object'>,
 ): Record<string, any>
 
 /**
  * Load files into an object literal where key is the name and the value is a
  * yaml node
  */
-function loadFiles<T extends 'doc', A extends 'object'>(
+function loadFiles(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, A>,
+	opts?: t.LoadFilesOptions<'doc', 'object'>,
 ): Record<string, YAMLDocument>
 
 /**
  * Load files into a Map where key is the name and value is their yml
  */
-function loadFiles<T extends 'yml', A extends 'map'>(
+function loadFiles(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, A>,
+	opts?: t.LoadFilesOptions<'yml', 'map'>,
 ): Map<string, string>
 
 /**
  * Load files into a Map where key is the name and value is a JS object
  */
-function loadFiles<T extends 'json', A extends 'map'>(
+function loadFiles(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, A>,
+	opts?: t.LoadFilesOptions<'json', 'map'>,
 ): Map<string, any>
 
 /**
  * Load files into a Map where key is the name and value is a yaml node
  */
-function loadFiles<T extends 'doc', A extends 'map'>(
+function loadFiles(
 	dir: string,
-	opts?: t.LoadFilesOptions<T, A>,
+	opts?: t.LoadFilesOptions<'doc', 'map'>,
 ): Map<string, YAMLDocument>
 
 /**
  * Load files from dir and optionally a second argument as 'yml' (default) for an array of yml data
  */
-function loadFiles<T extends 'yml'>(dir: string, type?: undefined | T): string[]
+function loadFiles(dir: string, type?: undefined | 'yml'): string[]
 
 /**
  * Load files from dir and optionally a second argument as 'json' to receive
  * an array of objects
  */
-function loadFiles<T extends 'json'>(
-	dir: string,
-	type: T,
-): Record<string, any>[]
+function loadFiles(dir: string, type: 'json'): Record<string, any>[]
 
 /**
  * Load files from dir and optionally a second argument as 'doc' to receive
  * an array of yaml nodes
  */
-function loadFiles<T extends 'doc'>(dir: string, type: T): YAMLDocument[]
+function loadFiles(dir: string, type: 'doc'): YAMLDocument[]
 
 /**
  *
@@ -147,7 +142,7 @@ function loadFiles<
 			const keysToSpread = opts.spread ? u.array(opts.spread) : []
 
 			function getKey(metadata: t.FileStructure) {
-				return includeExt ? getBasename(metadata.filepath) : metadata.filename
+				return includeExt ? getFileName(metadata.filepath) : metadata.filename
 			}
 
 			function listReducer(acc: any[] = [], filepath: string) {

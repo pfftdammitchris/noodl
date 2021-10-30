@@ -1,17 +1,17 @@
 # `noodl`
 
-> NOODL is a language based from the YAML AST. This library gives you the tools to build JavaScript applications with it
+> NOODL is a language stemmed from the YAML language. This library gives you the tools to build JavaScript applications using Neural Object Oriented Descriptive Language
 
 ## Usage
 
 ### ES5
 
 ```js
-const NOODL = require('noodl')
+const Noodl = require('noodl')
 ```
 
 ### ES6
 
 ```js
-import NOODL from 'noodl'
+import Noodl from 'noodl'
 ```
