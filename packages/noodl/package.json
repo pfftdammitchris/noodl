@@ -43,7 +43,7 @@
 		"build:esm": "npm run build:esbuild -- --outdir=dist --format=esm && npm run types",
 		"start": "cross-env NODE_ENV=development concurrently \"npm run build:esm -- --watch\" \"npm run types\"",
 		"start:cjs": "cross-env NODE_ENV=development npm run build:cjs -- --watch",
-		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
+		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --require esm --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
 		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src",
 		"types": "tsc --emitDeclarationOnly"
 	},

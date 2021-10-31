@@ -9,8 +9,6 @@ describe(`getFileStructure`, () => {
 	describe(filepath, () => {
 		const result = getFileStructure(filepath)
 
-		console.log(result)
-
 		it(`should set the ext to .mk4`, () => {
 			expect(result).to.have.property('ext', '.json')
 		})

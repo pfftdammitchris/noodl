@@ -1,4 +1,4 @@
-import { join as joinPath } from 'node:path'
+import { join as joinPath } from 'path'
 
 /**
  * Normalizes the path (compatible with win).

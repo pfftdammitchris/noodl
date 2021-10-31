@@ -1,5 +1,5 @@
 import * as u from '@jsmanifest/utils'
-import { join as joinPath } from 'node:path'
+import { join as joinPath } from 'path'
 import fg from 'fast-glob'
 import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
 import { getAbsFilePath, getFileName } from './fileSystem.js'

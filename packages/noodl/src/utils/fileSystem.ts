@@ -2,7 +2,7 @@ import {
 	basename,
 	isAbsolute as isAbsolutePath,
 	resolve as resolvePath,
-} from 'node:path'
+} from 'path'
 import normalizePath from './normalizePath'
 
 /**

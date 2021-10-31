@@ -1,7 +1,6 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2017"
+		"module": "commonjs"
 	},
 	"extends": "../../tsconfig.test.json",
 	"exclude": ["node_modules"],

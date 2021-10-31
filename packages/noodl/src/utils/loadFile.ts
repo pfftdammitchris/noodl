@@ -1,7 +1,7 @@
 import * as u from '@jsmanifest/utils'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'fs'
 import type { LiteralUnion } from 'type-fest'
-import { isAbsolute as isAbsolutePath } from 'node:path'
+import { isAbsolute as isAbsolutePath } from 'path'
 import {
 	Document,
 	parse as parseYmlToJson,
