@@ -1,8 +1,10 @@
 import React from 'react'
 import { IncomingMessage } from 'http'
-// @ts-expect-error
-import { WebSocketServer, ServerOptions } from 'ws'
+import * as _ws from 'ws'
+import type { ServerOptions } from 'ws'
 import * as c from '../constants.js'
+
+const { Server: WebSocketServer } = _ws
 
 export interface Hooks {
 	onListening?(this: any): void

@@ -1,13 +1,13 @@
 import * as u from '@jsmanifest/utils'
-import fs from 'fs-extra'
+import { existsSync, readFileSync } from 'node:fs'
 import type { LiteralUnion } from 'type-fest'
-import path from 'path'
+import { isAbsolute as isAbsolutePath } from 'node:path'
 import {
 	Document,
 	parse as parseYmlToJson,
 	parseDocument as parseYmlToDoc,
 } from 'yaml'
-import { getAbsFilePath } from './fs.js'
+import { getAbsFilePath } from './fileSystem.js'
 import * as t from '../types.js'
 
 /**
@@ -40,12 +40,12 @@ function loadFile<T extends t.LoadType = t.LoadType>(
 	type?: T,
 ) {
 	if (u.isStr(filepath)) {
-		if (!path.isAbsolute(filepath)) filepath = getAbsFilePath(filepath)
-		if (fs.existsSync(filepath)) {
-			const yml = fs.readFileSync(filepath, 'utf8')
+		if (!isAbsolutePath(filepath)) filepath = getAbsFilePath(filepath)
+		if (existsSync(filepath)) {
+			const yml = readFileSync(filepath, 'utf8')
 			if (type === 'doc') return parseYmlToDoc(yml)
 			if (type === 'json') return parseYmlToJson(yml)
-			return fs.readFileSync(filepath, 'utf8')
+			return readFileSync(filepath, 'utf8')
 		}
 	}
 }

@@ -1,19 +1,13 @@
 // @ts-nocheck
 // Recurses through objects and exposes all the properties of objects and
 // its nested objects
-import fs from 'fs-extra'
 import orderBy from 'lodash/orderBy'
 import isPlainObject from 'lodash/isPlainObject'
 import chalk from 'chalk'
 import Aggregator from './modules/Aggregator'
-import Saver, { DataOptions } from './modules/Saver'
+import Saver from './modules/Saver'
 import { sortObjByProperties } from './utils/common'
-import { getDirFilesAsJson } from './utils/filesystem'
-import {
-	forEachDeepEntries,
-	forEachDeepEntriesOnObj,
-} from '../src/utils/common'
-import { paths } from './config'
+import { forEachDeepEntries } from '../src/utils/common'
 import * as log from './utils/log'
 
 export interface GetAllPropertiesOutput {

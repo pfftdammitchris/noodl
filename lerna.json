@@ -7,8 +7,8 @@
 		"run": {}
 	},
 	"packages": [
+		"packages/noodl",
 		"packages/noodl-cli",
-		"packages/noodl-common",
 		"packages/noodl-aggregator",
 		"packages/noodl-utils"
 	],

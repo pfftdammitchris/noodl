@@ -1,8 +1,8 @@
 import * as u from '@jsmanifest/utils'
-import path from 'path'
-import { globbySync } from 'globby'
+import { join as joinPath } from 'node:path'
+import fg from 'fast-glob'
 import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
-import { getAbsFilePath, getFileName } from './fs.js'
+import { getAbsFilePath, getFileName } from './fileSystem.js'
 import getFileStructure from './getFileStructure.js'
 import loadFile from './loadFile.js'
 import normalizePath from './normalizePath.js'
@@ -129,13 +129,13 @@ function loadFiles<
 		opts === 'json' && (ext = 'json')
 
 		const glob = `**/*.${ext}`
-		const _path = normalizePath(getAbsFilePath(path.join(dir, glob)))
+		const _path = normalizePath(getAbsFilePath(joinPath(dir, glob)))
 
 		if (u.isStr(opts)) {
 			type = opts === 'json' ? 'json' : opts === 'doc' ? 'doc' : type
-			return globbySync(_path, { onlyFiles: true }).map((filepath) =>
-				loadFile(filepath, type),
-			)
+			return fg
+				.sync(_path, { onlyFiles: true })
+				.map((filepath) => loadFile(filepath as string, type))
 		} else if (u.isObj(opts)) {
 			type = opts.type || type
 			const includeExt = opts?.includeExt
@@ -188,7 +188,7 @@ function loadFiles<
 				return acc
 			}
 
-			const items = globbySync(_path, { onlyFiles: true })
+			const items = fg.sync(_path, { onlyFiles: true })
 			if (opts.as === 'list') return u.reduce(items, listReducer, [])
 			if (opts.as === 'map') return u.reduce(items, mapReducer, new Map())
 			return u.reduce(items, objectReducer, {})

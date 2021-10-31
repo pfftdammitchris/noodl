@@ -1,9 +1,9 @@
 import * as u from '@jsmanifest/utils'
-import * as nc from 'noodl-common'
+import type { FileStructure } from 'noodl'
+import { getAbsFilePath, getFileStructure } from 'noodl'
 import React from 'react'
-import { FileStructure } from 'noodl-common'
 import { Box, Newline, Text } from 'ink'
-import { globbySync } from 'globby'
+import fg from 'fast-glob'
 import yaml from 'yaml'
 import express from 'express'
 import path from 'path'
@@ -122,17 +122,17 @@ function Server({
 			if (stat.isFile()) {
 				if (filepath.includes('/assets')) {
 					acc.assets.push(
-						nc.getFileStructure(filepath, { config: aggregator.configKey }),
+						getFileStructure(filepath, { config: aggregator.configKey }),
 					)
 				} else {
 					acc.yml.push(
-						nc.getFileStructure(filepath, { config: aggregator.configKey }),
+						getFileStructure(filepath, { config: aggregator.configKey }),
 					)
 				}
 			}
 			return acc
 		}
-		const localFiles = globbySync(getWatchGlob().replace(/\\/g, '/'))
+		const localFiles = fg.sync(getWatchGlob().replace(/\\/g, '/'))
 		log(
 			`Picked up ${u.yellow(
 				String(localFiles.length),
@@ -213,10 +213,10 @@ function Server({
 					},
 					onAdd(args) {
 						u.log(`${watchTag} file added`, args.path)
-						const metadata = nc.getFileStructure(
+						const metadata = getFileStructure(
 							path.isAbsolute(args.path)
 								? args.path
-								: nc.getAbsFilePath(args.path),
+								: getAbsFilePath(args.path),
 							{ config: aggregator.configKey },
 						)
 						if (args.path.includes('/assets')) {

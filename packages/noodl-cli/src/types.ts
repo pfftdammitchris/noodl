@@ -1,13 +1,13 @@
-import Aggregator from 'noodl-aggregator'
-import { Draft } from 'immer'
-import { Cli } from './cli.js'
+import type NoodlAggregator from 'noodl-aggregator'
+import type { Draft } from 'immer'
+import type { Cli } from './cli.js'
 import { initialState as initialAppState } from './App.js'
 import useConfiguration from './hooks/useConfiguration.js'
 // import createAggregator from './api/createAggregator'
 
 export namespace App {
 	export interface Context extends State {
-		aggregator: Aggregator
+		aggregator: NoodlAggregator
 		// aggregator: ReturnType<typeof createAggregator>
 		cli: Cli
 		configuration: ReturnType<typeof useConfiguration>

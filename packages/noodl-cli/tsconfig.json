@@ -3,8 +3,10 @@
 		"allowJs": true,
 		"declarationDir": "./dist",
 		"jsx": "react",
+		"module": "commonjs",
 		"outDir": "./dist",
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"target": "es2018"
 	},
 	"extends": "../../tsconfig.json",
 	"include": ["./src"]

@@ -1,4 +1,4 @@
-import path from 'path'
+import { join as joinPath } from 'node:path'
 
 /**
  * Normalizes the path (compatible with win).
@@ -7,7 +7,7 @@ import path from 'path'
  * @returns { string }
  */
 function normalizePath(...s: string[]) {
-	let result = (s.length > 1 ? path.join(...s) : s[0]).replace(/\\/g, '/')
+	let result = (s.length > 1 ? joinPath(...s) : s[0]).replace(/\\/g, '/')
 	if (result.includes('/~/')) result = result.replace('~/', '')
 	return result
 }

@@ -1,5 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import axios, { AxiosError, AxiosResponse } from 'axios'
+import xmlParser from 'fast-xml-parser'
 import * as c from '../constants.js'
 
 // Note: this function does not throw. It returns the Error object instead
@@ -48,7 +49,6 @@ export async function s3FileExists(
 			if (u.isStr(res.data)) {
 				const xmlData = res.data.trim()
 				if (xmlData.startsWith('<?xml')) {
-					const { default: xmlParser } = await import('fast-xml-parser')
 					const err = xmlParser.parse(xmlData, { allowBooleanAttributes: true })
 					if (u.isObj(err) && err.Error) {
 						return (

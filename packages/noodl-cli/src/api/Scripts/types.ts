@@ -1,5 +1,5 @@
 import yaml from 'yaml'
-import { LiteralUnion } from 'type-fest'
+import type { LiteralUnion } from 'type-fest'
 
 export namespace Script {
 	export interface Register<

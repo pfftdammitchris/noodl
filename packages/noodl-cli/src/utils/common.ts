@@ -1,5 +1,5 @@
 import * as u from '@jsmanifest/utils'
-import * as nc from 'noodl-common'
+import { getAbsFilePath } from 'noodl'
 import fs from 'fs-extra'
 import path from 'path'
 import type { WriteFileOptions } from 'fs-extra'
@@ -11,7 +11,7 @@ export function ensureSlashPrefix(s: string) {
 }
 
 export function getCliConfig() {
-	return yaml.parse(fs.readFileSync(nc.getAbsFilePath('noodl.yml'), 'utf8'))
+	return yaml.parse(fs.readFileSync(getAbsFilePath('noodl.yml'), 'utf8'))
 }
 
 /**

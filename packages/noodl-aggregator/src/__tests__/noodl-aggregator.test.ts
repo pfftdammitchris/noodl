@@ -1,6 +1,7 @@
+import * as u from '@jsmanifest/utils'
 import { expect } from 'chai'
-import * as com from 'noodl-common'
-import fs from 'fs-extra'
+import { loadFiles } from 'noodl'
+import * as fs from 'fs-extra'
 import path from 'path'
 import nock from 'nock'
 import yaml from 'yaml'
@@ -23,7 +24,7 @@ const preloadPages = (
 	cadlEndpointDoc.get('preload') as yaml.YAMLSeq
 ).toJSON() as string[]
 const pages = (cadlEndpointDoc.get('page') as yaml.YAMLSeq).toJSON() as string[]
-const data = com.loadFiles(pathToFixtures, { as: 'object' })
+const data = loadFiles(pathToFixtures, { as: 'object' })
 
 const mockAllPageRequests = (_aggregator = aggregator) => {
 	for (let page of [...preloadPages, ...pages] as string[]) {
@@ -50,8 +51,8 @@ afterEach(() => {
 const init = async (_aggregator = aggregator) =>
 	_aggregator.init({ loadPages: false, loadPreloadPages: false })
 
-describe(com.coolGold(`noodl-aggregator`), () => {
-	describe(com.italic(`init`), () => {
+describe(u.yellow(`noodl-aggregator`), () => {
+	describe(u.italic(`init`), () => {
 		it(`should initiate both the root config and app config`, async () => {
 			const { doc } = await init()
 			expect(doc.root?.has('cadlMain')).to.be.true
@@ -113,7 +114,7 @@ describe(com.coolGold(`noodl-aggregator`), () => {
 		})
 	})
 
-	describe(com.italic(`extractAssets`), () => {
+	describe(u.italic(`extractAssets`), () => {
 		it(`should extract the assets`, async () => {
 			mockAllPageRequests()
 			await aggregator.init()

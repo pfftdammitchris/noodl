@@ -1,8 +1,6 @@
 // @ts-nocheck
 import yaml, { Pair, YAMLMap } from 'yaml'
 import * as t from '../api/Scripts/types'
-import * as n from '../utils/noodl-utils'
-import * as u from '../utils/common'
 
 const log = console.log
 

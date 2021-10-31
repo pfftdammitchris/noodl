@@ -1,9 +1,11 @@
 import * as u from '@jsmanifest/utils'
 import type { OrArray } from '@jsmanifest/typefest'
-import { LinkStructure, getLinkStructure, stringifyDoc, } from 'noodl'
+import type { LinkStructure } from 'noodl'
+import { getLinkStructure, stringifyDoc } from 'noodl'
 import chunk from 'lodash/chunk.js'
 import flatten from 'lodash/flatten.js'
 import path from 'path'
+import * as fs from 'fs-extra'
 import type { DeviceType, Env } from 'noodl-types'
 import * as nu from 'noodl-utils'
 import invariant from 'invariant'
@@ -14,6 +16,7 @@ import { promiseAllSafe, shallowMerge } from './utils.js'
 import * as c from './constants.js'
 import * as t from './types.js'
 
+const { existsSync, readFile } = fs
 const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
 
 class NoodlAggregator<
@@ -29,7 +32,7 @@ class NoodlAggregator<
 	options = { dataType: 'map' as const }
 	root: t.Root<DataType>
 
-	constructor(opts?: Opts | t.Options<Opts>) {
+	constructor(opts: Opts | t.Options<Opts> = {}) {
 		if (u.isStr(opts)) {
 			this.configKey = opts
 		} else {
@@ -253,9 +256,6 @@ class NoodlAggregator<
 			options?.config && (this.configKey = options.config)
 			const dir = options.dir || ''
 			const configFilePath = path.join(dir, this.configKey)
-			const {
-				default: { existsSync, readFile },
-			} = await import('fs-extra')
 			if (existsSync(configFilePath)) {
 				configYml = await readFile(configFilePath, 'utf8')
 				configDoc = yaml.parseDocument(configYml)
@@ -359,9 +359,6 @@ class NoodlAggregator<
 
 		if (dir) {
 			const appConfigFilePath = path.join(dir, this.appKey)
-			const {
-				default: { existsSync, readFile },
-			} = await import('fs-extra')
 			if (existsSync(appConfigFilePath)) {
 				appConfigYml = await readFile(appConfigFilePath, 'utf8')
 				appConfigDoc = yaml.parseDocument(appConfigYml)
@@ -435,9 +432,6 @@ class NoodlAggregator<
 			const key = this.#toRootPageKey(name)
 
 			if (dir) {
-				const {
-					default: { existsSync, readFile },
-				} = await import('fs-extra')
 				if (existsSync(dir)) {
 					let filepath = ''
 

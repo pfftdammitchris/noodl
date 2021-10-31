@@ -3,7 +3,7 @@ import { Box, Newline, Static, Text, useApp } from 'ink'
 import merge from 'lodash/merge.js'
 import React from 'react'
 import { produce, Draft } from 'immer'
-import * as NoodlAggregatorLib from 'noodl-aggregator'
+import NoodlAggregator from 'noodl-aggregator'
 import Select from './components/Select.js'
 import HighlightedText from './components/HighlightedText.js'
 import Spinner from './components/Spinner.js'
@@ -16,7 +16,7 @@ import * as co from './utils/color.js'
 import * as c from './constants.js'
 import * as t from './types.js'
 
-const aggregator = new NoodlAggregatorLib.default()
+const aggregator = new NoodlAggregator()
 
 export const initialState = {
 	ready: false,

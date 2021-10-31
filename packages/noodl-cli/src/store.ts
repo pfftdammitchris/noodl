@@ -1,5 +1,5 @@
 import ConfigStore from 'configstore'
-import { LiteralUnion } from 'type-fest'
+import type { LiteralUnion } from 'type-fest'
 
 export interface Store<
 	O extends Record<string, any>,

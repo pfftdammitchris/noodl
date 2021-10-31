@@ -2,9 +2,9 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"declarationDir": "./dist",
-		"module": "esnext",
+		"module": "es2020",
 		"outDir": "./dist",
-		"target": "esnext"
+		"target": "es2020"
 	},
 	"include": ["./src"],
 	"exclude": ["node_modules", "src/__tests__"]

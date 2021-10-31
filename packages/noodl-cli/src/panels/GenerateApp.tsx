@@ -1,10 +1,9 @@
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
-import * as NoodlAggregatorLib from 'noodl-aggregator'
-import { globbySync } from 'globby'
-import type { LinkStructure } from 'noodl-common'
-import * as nc from 'noodl-common'
-import * as nu from 'noodl-utils'
+import { constants as noodlAggregatorConstants } from 'noodl-aggregator'
+import fg from 'fast-glob'
+import type { LinkStructure } from 'noodl'
+import { getFileStructure, normalizePath, stringifyDoc } from 'noodl'
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
 import React from 'react'
@@ -23,7 +22,7 @@ const {
 	ON_RETRIEVE_APP_PAGE_FAILED,
 	ON_RETRIEVED_APP_PAGE,
 	PARSED_APP_CONFIG,
-} = NoodlAggregatorLib.constants
+} = noodlAggregatorConstants
 
 export interface Props {
 	config?: string
@@ -156,10 +155,10 @@ function GenerateApp(props: Props) {
 						const localAssetsAsPlainFileNames = [] as string[]
 						const localAssetsAsFilePaths = [] as string[]
 
-						for (const filepath of globbySync(path.join(assetsDir, '**/*'), {
+						for (const filepath of fg.sync(path.join(assetsDir, '**/*'), {
 							onlyFiles: true,
 						})) {
-							const fileStructure = nc.getFileStructure(filepath, {
+							const fileStructure = getFileStructure(filepath as string, {
 								config: configKey,
 							})
 							localAssetsAsPlainFileNames.push(fileStructure.filename)
@@ -259,7 +258,7 @@ function GenerateApp(props: Props) {
 							if (!doc) return u.log(doc)
 
 							if (type === 'root-config') {
-								await fs.writeFile(filepath, nc.stringifyDoc(doc as any))
+								await fs.writeFile(filepath, stringifyDoc(doc as any))
 								const baseUrl = doc.get('cadlBaseUrl')
 								const appKey = doc.get('cadlMain')
 								log(`Base url: ${co.yellow(baseUrl)}`)
@@ -267,7 +266,7 @@ function GenerateApp(props: Props) {
 								log(`Saved root config object to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else if (type === 'app-config') {
-								await fs.writeFile(filepath, nc.stringifyDoc(doc as any))
+								await fs.writeFile(filepath, stringifyDoc(doc as any))
 								numDocsFetching = aggregator.pageNames.length
 								log(
 									`\nTotal expected number of yml files we are retrieving is ${co.yellow(
@@ -278,7 +277,7 @@ function GenerateApp(props: Props) {
 								log(`Saved app config to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else {
-								await fs.writeFile(filepath, nc.stringifyDoc(doc as any))
+								await fs.writeFile(filepath, stringifyDoc(doc as any))
 								const pageName = name.replace('_en', '')
 								log(
 									`Saved page ${co.magenta(pageName)} to ${co.yellow(
@@ -299,7 +298,7 @@ function GenerateApp(props: Props) {
 						.init({
 							fallback: {
 								appConfig: async () => {
-									const pathsToFallbackFile = nc.normalizePath(
+									const pathsToFallbackFile = normalizePath(
 										...[configDir, 'cadlEndpoint.yml'],
 									)
 									console.log(
@@ -336,7 +335,7 @@ function GenerateApp(props: Props) {
 
 						const filename = withYmlExt(aggregator.configKey).replace('_en', '')
 						const filepath = path.join(dir, filename)
-						await fs.writeFile(filepath, nc.stringifyDoc(doc as any))
+						await fs.writeFile(filepath, stringifyDoc(doc as any))
 					}
 				}
 			}

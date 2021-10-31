@@ -1,9 +1,9 @@
-import { LiteralUnion } from 'type-fest'
+import type { LiteralUnion } from 'type-fest'
 import React from 'react'
 import fs from 'fs-extra'
-import * as com from 'noodl-common'
+import { getAbsFilePath } from 'noodl'
 import store from '../store.js'
-import { Cli } from '../cli.js'
+import type { Cli } from '../cli.js'
 import * as c from '../constants.js'
 
 export interface Options {
@@ -16,7 +16,7 @@ function useConfiguration({ cli, onInit }: Options) {
 	const getAll = React.useCallback(() => store.all, [])
 
 	const getDefaultGenerateDir = React.useCallback(
-		() => com.getAbsFilePath(c.DEFAULT_OUTPUT_DIR),
+		() => getAbsFilePath(c.DEFAULT_OUTPUT_DIR),
 		[],
 	)
 
@@ -34,7 +34,7 @@ function useConfiguration({ cli, onInit }: Options) {
 		) => {
 			store.set(
 				c.GENERATE_DIR_KEY,
-				path === 'default' ? getDefaultGenerateDir() : com.getAbsFilePath(path),
+				path === 'default' ? getDefaultGenerateDir() : getAbsFilePath(path),
 			)
 			const pathToGenerateDir = getPathToGenerateDir()
 			refreshLastUpdatedTimestamp()
