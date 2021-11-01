@@ -2,11 +2,11 @@ import * as u from '@jsmanifest/utils'
 import { existsSync, readFileSync } from 'fs'
 import type { LiteralUnion } from 'type-fest'
 import { isAbsolute as isAbsolutePath } from 'path'
+import type { YAMLDocument } from '../internal/yaml'
 import {
-	Document,
 	parse as parseYmlToJson,
 	parseDocument as parseYmlToDoc,
-} from 'yaml'
+} from '../internal/yaml'
 import { getAbsFilePath } from './fileSystem.js'
 import * as t from '../types.js'
 
@@ -26,7 +26,7 @@ function loadFile<T extends 'yml'>(
  * @param filepath
  * @param type
  */
-function loadFile(filepath: string, type: 'doc'): Document
+function loadFile(filepath: string, type: 'doc'): YAMLDocument
 
 /**
  * Loads a file as json

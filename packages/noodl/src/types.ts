@@ -1,4 +1,7 @@
 import type { OrArray } from '@jsmanifest/typefest'
+import type { YAMLNode, visitorFn } from './internal/yaml.js'
+
+export type YAMLVisitArgs<N> = Parameters<visitorFn<N>>
 
 export interface BaseStructure {
 	ext: string
@@ -36,4 +39,18 @@ export interface LoadFilesOptions<
 	preload?: OrArray<string>
 	spread?: OrArray<string>
 	type?: LType
+}
+
+export interface MetaObject<N = any> {
+	_node?: N
+	key?: string
+	value?: any
+	length?: number
+	keys?: string[]
+	isReference?: boolean
+	isRootKey?: boolean
+}
+
+export interface Root {
+	[key: string]: YAMLNode | null | undefined
 }

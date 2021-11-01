@@ -3,7 +3,7 @@ import {
 	isAbsolute as isAbsolutePath,
 	resolve as resolvePath,
 } from 'path'
-import normalizePath from './normalizePath'
+import normalizePath from './normalizePath.js'
 
 /**
  * Returns the path as an absolute path

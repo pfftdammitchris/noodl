@@ -46,6 +46,7 @@ export interface Options<ConfigKey extends string = string> {
 	env?: Env
 	version?: LiteralUnion<'latest', string>
 	dataType?: RootDataType
+	loglevel?: 'error' | 'debug' | 'http' | 'info' | 'verbose' | 'warn'
 }
 
 export type BaseRootKey = 'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage'

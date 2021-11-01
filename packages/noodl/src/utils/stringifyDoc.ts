@@ -1,12 +1,13 @@
-import { Document, ToStringOptions, stringify } from 'yaml'
+import { ToStringOptions, stringify } from 'yaml'
+import type { YAMLDocument } from '../internal/yaml'
 
 /**
  * Returns the stringified output of the yaml document. If there are errors, it
  * returns a stringified yaml output of the errors instead
- * @param { Document } doc
+ * @param { YAMLDocument } doc
  */
 function stringifyDoc(
-	doc: Document | undefined | null,
+	doc: YAMLDocument | undefined | null,
 	opts?: ToStringOptions,
 ) {
 	let result = ''

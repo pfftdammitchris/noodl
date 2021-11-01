@@ -1,13 +1,9 @@
 {
-	"ts-node": {
-		"transpileOnly": true
-	},
 	"compilerOptions": {
-		"lib": ["esnext"],
 		"module": "es2020",
 		"target": "es2020"
 	},
 	"extends": "./tsconfig.json",
 	"exclude": ["node_modules"],
-	"include": ["src/**/*.test.ts"]
+	"include": ["./src/**/*.test.ts"]
 }
