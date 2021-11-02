@@ -34,7 +34,7 @@ const aggregator = new NoodlAggregator({
 	loglevel: 'info',
 })
 
-const result = await aggregator.init({
+await aggregator.init({
 	dir: 'generated/meetd2',
 	spread: ['BaseDataModel', 'BaseCSS', 'BasePage'],
 })
@@ -43,7 +43,6 @@ const visitor = new Visitor()
 visitor.root = aggregator.root
 
 const visitorFns = flowRight(referenceVisitor, ({ key, node, path, meta }) => {
-	console.log(meta)
 	return node
 })
 
