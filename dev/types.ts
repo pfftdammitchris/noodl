@@ -1,3 +1,4 @@
+import * as nt from 'noodl-types'
 import NoodlAggregator from 'noodl-aggregator'
 import {
 	isDocument,
@@ -86,3 +87,30 @@ export type VisitTransducerFn<N extends YAMLNode = YAMLNode> = (
 		args: Parameters<VisitFn<N>>[0],
 	) => (args: Parameters<VisitFn<N>>[0]) => VisitFn<N>,
 ) => any
+
+/* -------------------------------------------------------
+	---- BRAINSTORM
+-------------------------------------------------------- */
+
+export interface NoodlObject {
+	[key: string]: any
+}
+
+export type NoodlString = string
+
+export type NoodlReferenceString<S extends string = string> =
+	nt.ReferenceString<S>
+
+export type NoodlArray<O = any> = any[]
+
+export interface NoodlPage extends NoodlObject {
+	[name: string]: {
+		components?: NoodlArray[]
+	}
+}
+
+export type NoodlPageInit = NoodlArray
+
+export interface NoodlFunction extends NoodlObject {
+	(...args: any[]): void
+}

@@ -1,19 +1,10 @@
 {
   "ts-node": {
-    "compilerOptions": {
-      "module": "commonjs",
-      "target": "es2015"
-    },
     "transpileOnly": true
   },
   "compilerOptions": {
-    "baseUrl": ".",
-    "declarationDir": "./functions",
-    "esModuleInterop": true,
-    "isolatedModules": true,
+    "baseUrl": "./src",
     "module": "es2020",
-    "outDir": "./functions",
-    "rootDir": "./src",
     "target": "es2020"
   },
   "include": ["./src/**/*"],

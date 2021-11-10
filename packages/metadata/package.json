@@ -8,8 +8,7 @@
   },
   "description": "Metadata for noodl applications",
   "directories": {
-    "functions": "./functions",
-    "test": "__tests__"
+    "functions": "./functions"
   },
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
@@ -30,10 +29,12 @@
     "url": "git+https://github.com/pfftdammitchris/noodl-metadata.git"
   },
   "scripts": {
-    "build": "esbuild ./src/functions/* --bundle --outdir=functions --platform=node",
+    "build": "esbuild ./src/functions --bundle --outdir=functions --platform=node --target=es2020 --sourcemap",
     "prebuild": "rm -rf functions",
+    "pretypes": "rm -rf dist",
     "start": "cross-env NODE_ENV=development netlify dev --port 3000",
-    "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\""
+    "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
+    "types": "tsc --emitDeclarationOnly --outFile \"./functions/types.d.ts\""
   },
   "typings": "./functions/metadata.d.ts",
   "version": "0.0.1"

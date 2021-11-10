@@ -1,3 +1,6 @@
+import * as nt from 'noodl-types'
+import { LiteralUnion } from 'type-fest'
+import yaml from 'yaml'
 import type { OrArray } from '@jsmanifest/typefest'
 import type { YAMLNode, visitorFn } from './internal/yaml.js'
 
@@ -53,4 +56,58 @@ export interface MetaObject<N = any> {
 
 export interface Root {
 	[key: string]: YAMLNode | null | undefined
+}
+
+export namespace Loader {
+	export type CommonEmitEvents =
+		| 'PARSED_APP_CONFIG'
+		| 'RETRIEVED_ROOT_BASE_URL'
+		| 'ON_RETRIEVED_ROOT_CONFIG'
+		| 'RETRIEVED_APP_ENDPOINT'
+		| 'RETRIEVED_APP_BASE_URL'
+		| 'ON_RETRIEVED_APP_PAGE'
+		| 'RETRIEVED_CONFIG_VERSION'
+
+	export type Hooks = {
+		ON_APP_PAGE_DOESNT_EXIST: { args: { name: string; error: Error } }
+		ON_CONFIG_KEY: { args: string }
+		ON_CONFIG_VERSION: { args: string }
+		ON_PLACEHOLDER_PURGED: { args: { before: string; after: string } }
+		ON_RETRIEVING_APP_CONFIG: { args: { url: string } }
+		ON_RETRIEVED_APP_CONFIG: { args: string }
+		ON_RETRIEVED_APP_PAGE: {
+			args: { name: string; doc: yaml.Document; fromDir?: boolean }
+		}
+		ON_RETRIEVE_APP_PAGE_FAILED: { args: { name: string; error: Error } }
+		ON_RETRIEVING_ROOT_CONFIG: { args: { url: string } }
+		ON_RETRIEVED_ROOT_CONFIG: {
+			args: { doc: yaml.Document; name: string; yml: string }
+		}
+	} & Record<CommonEmitEvents, { args: { name: string; doc: yaml.Document } }>
+
+	export type LoadOptions<Type extends 'doc' | 'yml' = 'doc' | 'yml'> =
+		| string
+		| (Type extends 'doc'
+				? OrArray<{ name: string; doc: yaml.Document }>
+				: OrArray<{ name: string; yml: string }>)
+
+	export interface Options<ConfigKey extends string = string> {
+		config?: ConfigKey
+		deviceType?: nt.DeviceType
+		env?: nt.Env
+		version?: LiteralUnion<'latest', string>
+		dataType?: RootDataType
+		loglevel?: 'error' | 'debug' | 'http' | 'info' | 'verbose' | 'warn'
+	}
+
+	export type BaseRootKey = 'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage'
+
+	export type Root<DataType extends RootDataType = 'map'> =
+		DataType extends 'object'
+			? Record<LiteralUnion<BaseRootKey, string>, any>
+			: Map<LiteralUnion<BaseRootKey, string>, yaml.Node | yaml.Document> & {
+					toJSON(): Record<string, any>
+			  }
+
+	export type RootDataType = 'object' | 'map'
 }
