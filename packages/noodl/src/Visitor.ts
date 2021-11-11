@@ -1,4 +1,4 @@
-import curry from 'lodash/curry.js'
+import curry from 'lodash-es/curry.js'
 import * as nt from 'noodl-types'
 import * as u from '@jsmanifest/utils'
 import * as nu from 'noodl-utils'
@@ -22,8 +22,6 @@ import NoodlReference from './Reference.js'
 import * as t from './types'
 
 const is = nt.Identify
-
-
 
 const wrapNativeVisitFn = curry(function wrappedNativeVisitFn(
 	root: Record<string, YAMLNode>,

@@ -1,8 +1,8 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
 import filesize from 'rollup-plugin-filesize'
 import progress from 'rollup-plugin-progress'
-import babel from '@rollup/plugin-babel'
-import commonjs from '@rollup/plugin-commonjs'
 import esbuild from 'rollup-plugin-esbuild'
 
 const extensions = ['.js', '.ts']
@@ -24,6 +24,7 @@ const configs = [
 			},
 		],
 		plugins: [
+			json(),
 			commonjs(),
 			filesize(),
 			progress(),
@@ -32,13 +33,8 @@ const configs = [
 				moduleDirectories: ['node_modules'],
 				preferBuiltins: true,
 			}),
-			babel({
-				babelHelpers: 'runtime',
-				presets: ['@babel/preset-env'],
-				plugins: ['babel-plugin-lodash', '@babel/plugin-transform-runtime'],
-			}),
 			esbuild({
-				include: /\.[t]s?$/,
+				include: /\.[jt]s?$/,
 				exclude: /node_modules/,
 				minify: !_DEV_,
 				target: 'es2018',

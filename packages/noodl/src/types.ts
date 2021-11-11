@@ -6,6 +6,13 @@ import type { YAMLNode, visitorFn } from './internal/yaml.js'
 
 export type YAMLVisitArgs<N> = Parameters<visitorFn<N>>
 
+export interface IAggregator<
+	DataType extends Loader.RootDataType = Loader.RootDataType,
+> {
+	root: Root
+	options: Loader.Options<DataType>
+}
+
 export interface BaseStructure {
 	ext: string
 	filename: string
