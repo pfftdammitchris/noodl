@@ -14,9 +14,9 @@ import yaml from 'yaml'
 import promiseAllSafely from './utils/promiseAllSafely.js'
 import stringifyDoc from './utils/stringifyDoc.js'
 import shallowMerge from './utils/shallowMerge.js'
+import { getLinkStructure } from './index.js'
 import * as c from './constants.js'
 import * as t from './types.js'
-import { getLinkStructure } from './index.js'
 
 const { existsSync, readFile } = fs
 const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
@@ -36,6 +36,7 @@ class NoodlLoader<
 		dataType: 'map' as const,
 		loglevel: 'error' as t.Loader.Options['loglevel'],
 	}
+	// @ts-expect-error
 	root: t.Loader.Root<DataType>
 
 	constructor(opts: Opts | t.Loader.Options<Opts> = {}) {

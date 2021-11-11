@@ -1,4 +1,5 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve'
+import polyfills from 'rollup-plugin-polyfill-node'
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
 import filesize from 'rollup-plugin-filesize'
@@ -18,21 +19,24 @@ const configs = [
 			{
 				dir: './dist',
 				exports: 'named',
-				format: 'esm',
+				format: 'umd',
 				name: 'noodl',
 				sourcemap: true,
 			},
 		],
+		context: 'global',
 		plugins: [
 			json(),
+			polyfills(),
+			nodeResolve({
+				browser: false,
+				extensions,
+				moduleDirectories: ['node_modules'],
+				preferBuiltins: false,
+			}),
 			commonjs(),
 			filesize(),
 			progress(),
-			nodeResolve({
-				extensions,
-				moduleDirectories: ['node_modules'],
-				preferBuiltins: true,
-			}),
 			esbuild({
 				include: /\.[jt]s?$/,
 				exclude: /node_modules/,

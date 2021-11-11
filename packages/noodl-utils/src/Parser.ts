@@ -1,5 +1,5 @@
-import { DeviceType, Env, PageComponentUrl, RootConfig } from 'noodl-types'
-import { LiteralUnion } from 'type-fest'
+import type { DeviceType, Env, PageComponentUrl, RootConfig } from 'noodl-types'
+import type { LiteralUnion } from 'type-fest'
 import { createPlaceholderReplacer } from './noodl-utils'
 import get from 'lodash.get'
 import * as c from './constants'

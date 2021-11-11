@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
-import { LiteralUnion } from 'type-fest'
+import type { LiteralUnion } from 'type-fest'
 
 export type BaseRootKey = 'Config' | 'Global' | 'Style'
 export type RootObject<K extends string = string> = Record<
