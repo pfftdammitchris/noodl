@@ -1,0 +1,87 @@
+{
+	"$defs": {
+		"Component": {
+			"properties": {
+				"children": {
+					"$ref": "#/$defs/Component",
+					"type": "array"
+				},
+				"image": {
+					"type": "string"
+				},
+				"onClick": {
+					"type": "array"
+				},
+				"onHover": {
+					"type": "array"
+				},
+				"onMouseEnter": {
+					"type": "array"
+				},
+				"onMouseLeave": {
+					"type": "array"
+				},
+				"onMouseOut": {
+					"type": "array"
+				},
+				"path": {
+					"type": "string"
+				},
+				"resource": {
+					"type": "string"
+				},
+				"style": {
+					"$ref": "#/$defs/Style"
+				},
+				"text": {
+					"type": "string"
+				},
+				"textBoard": {
+					"type": "array"
+				},
+				"type": {
+					"type": "string"
+				},
+				"viewTag": {
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"Page": {
+			"type": "object"
+		},
+		"PageNumber": {
+			"type": "string"
+		},
+		"Style": {
+			"type": "object"
+		},
+		"TextBoard": {
+			"items": {
+				"color": {
+					"type": "string"
+				},
+				"text": {
+					"type": "string"
+				}
+			},
+			"type": "array"
+		}
+	},
+	"$id": "noodl-schema",
+	"$ref": "#/$defs/Page",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"properties": {
+		"components": {
+			"items": {
+				"$ref": "#/$defs/Component"
+			},
+			"type": "array"
+		},
+		"pageNumber": {
+			"type": "string"
+		}
+	},
+	"title": "JSON schema for NOODL files"
+}
