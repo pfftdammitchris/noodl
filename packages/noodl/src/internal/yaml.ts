@@ -1,6 +1,6 @@
 import type { LiteralUnion } from 'type-fest'
 import * as u from '@jsmanifest/utils'
-import nu from 'noodl-utils'
+import * as nu from 'noodl-utils'
 import * as nt from 'noodl-types'
 import {
 	Document as YAMLDocument,

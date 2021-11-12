@@ -1,4 +1,3 @@
-export { default } from './noodl.js'
 export { default as getFileStructure } from './utils/getFileStructure.js'
 export { default as getLinkStructure } from './utils/getLinkStructure.js'
 export { default as loadFile } from './utils/loadFile.js'

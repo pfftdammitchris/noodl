@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import * as _internal from '../_internal'
+import * as _internal from '../_internal.js'
 
 describe('_internal', () => {
 	describe('unwrapObj', () => {

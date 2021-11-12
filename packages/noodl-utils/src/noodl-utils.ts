@@ -1,11 +1,11 @@
+import type { LiteralUnion } from 'type-fest'
 import * as nt from 'noodl-types'
-import curry from 'lodash.curry'
-import flowRight from 'lodash.flowright'
-import get from 'lodash.get'
-import has from 'lodash.has'
-import * as u from './_internal'
-import * as t from './types'
-import { LiteralUnion } from 'type-fest'
+import curry from 'lodash-es/curry.js'
+import flowRight from 'lodash-es/flowRight.js'
+import get from 'lodash-es/get.js'
+import has from 'lodash-es/has.js'
+import * as u from './_internal.js'
+import * as t from './types.js'
 
 export function createPlaceholderReplacer(
 	placeholders: string | string[],

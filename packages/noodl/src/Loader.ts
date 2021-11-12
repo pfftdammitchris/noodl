@@ -36,6 +36,7 @@ class NoodlLoader<
 		dataType: 'map' as const,
 		loglevel: 'error' as t.Loader.Options['loglevel'],
 	}
+	// @ts-expect-error
 	root: t.Loader.Root<DataType>
 
 	constructor(opts: Opts | t.Loader.Options<Opts> = {}) {

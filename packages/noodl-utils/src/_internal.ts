@@ -1,4 +1,4 @@
-import { QueryObj } from './types'
+import { QueryObj } from './types.js'
 
 export const array = <O extends any[], P extends O[number]>(o: P | P[]): P[] =>
 	isArr(o) ? o : [o]

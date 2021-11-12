@@ -1,5 +1,5 @@
 import * as u from '@jsmanifest/utils'
-import { existsSync, readFileSync } from 'fs'
+import fs from 'fs'
 import type { LiteralUnion } from 'type-fest'
 import { isAbsolute as isAbsolutePath } from 'path'
 import type { YAMLDocument } from '../internal/yaml'
@@ -41,11 +41,11 @@ function loadFile<T extends t.LoadType = t.LoadType>(
 ) {
 	if (u.isStr(filepath)) {
 		if (!isAbsolutePath(filepath)) filepath = getAbsFilePath(filepath)
-		if (existsSync(filepath)) {
-			const yml = readFileSync(filepath, 'utf8')
+		if (fs.existsSync(filepath)) {
+			const yml = fs.readFileSync(filepath, 'utf8')
 			if (type === 'doc') return parseYmlToDoc(yml)
 			if (type === 'json') return parseYmlToJson(yml)
-			return readFileSync(filepath, 'utf8')
+			return fs.readFileSync(filepath, 'utf8')
 		}
 	}
 }

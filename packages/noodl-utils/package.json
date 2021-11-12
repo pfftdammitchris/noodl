@@ -3,29 +3,15 @@
 	"bugs": {
 		"url": "https://github.com/pfftdammitchris/noodl/issues"
 	},
-	"dependencies": {
-		"@jsmanifest/utils": "^1.0.30",
-		"lodash.curry": "^4.1.1",
-		"lodash.flowright": "^3.5.0",
-		"lodash.get": "^4.4.2",
-		"lodash.has": "^4.5.2"
-	},
 	"description": "Utility/helpers for working with NOODL values",
-	"devDependencies": {
-		"@types/lodash.curry": "^4.1.6",
-		"@types/lodash.flowright": "^3.5.6",
-		"@types/lodash.get": "^4.4.6",
-		"@types/lodash.has": "^4.5.6",
-		"chai": "^4.3.4",
-		"jsdom": "^16.6.0",
-		"jsdom-global": "^3.0.2",
-		"mocha": "^8.4.0",
-		"ts-mocha": "^8.0.0",
-		"type-fest": "^2.3.2"
-	},
 	"engines": {
 		"node": ">=14",
 		"npm": ">=7"
+	},
+	"exports": {
+		"default": "./dist/noodl-utils.esm.js",
+		"import": "./dist/noodl-utils.esm.js",
+		"require": "./dist/noodl-utils.cjs.js"
 	},
 	"files": [
 		"dist"
@@ -36,8 +22,6 @@
 		"noodl"
 	],
 	"license": "ISC",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
 	"name": "noodl-utils",
 	"publishConfig": {
 		"access": "public"
@@ -47,11 +31,21 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl.git"
 	},
 	"scripts": {
-		"build": "tsc",
-		"start": "tsc -w",
+		"build": "cross-env NODE_ENV=production concurrently \"rollup -c\" \"npm run types\"",
+		"prebuild": "rm -rf dist",
+		"start": "cross-env NODE_ENV=development concurrently \"rollup -c -w\" \"npm run types\"",
 		"test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r jsdom-global/register --file src/__tests__/setup.ts -r source-map-support/register --extensions ts --watch --watch-files src src/**/*.test.ts",
-		"test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src"
+		"test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src",
+		"types": "tsc --emitDeclarationOnly --outFile dist/noodl-utils.d.ts"
 	},
-	"typings": "./dist/index.d.ts",
+	"type": "module",
+	"typesVersions": {
+		"*": {
+			"noodl-utils.d.ts": [
+				"./dist/noodl-utils.d.ts"
+			]
+		}
+	},
+	"typings": "./dist/noodl-utils.d.ts",
 	"version": "0.0.84"
 }

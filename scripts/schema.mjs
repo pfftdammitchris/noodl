@@ -1,6 +1,7 @@
 import * as u from '@jsmanifest/utils'
 import * as ts from 'ts-morph'
 import * as nt from 'noodl-types'
+import {} from 'noodl'
 import fs from 'fs-extra'
 import NoodlAggregator from 'noodl-aggregator'
 import path from 'path'
@@ -32,18 +33,6 @@ agg
 		}
 
 		const schema = {}
-
-		/** @param { yaml.YAMLMap } node */
-		const isAction = (node) =>
-			['actionType', 'goto'].some((key) => node.has(key))
-
-		/** @param { yaml.YAMLMap } node */
-		const isComponent = (node) =>
-			node.has('type') && ['children', 'style'].some((key) => node.has(key))
-
-		/** @param { yaml.Pair } node */
-		const isStyle = (node) =>
-			yaml.isScalar(node.key) && node.key.value === 'style'
 
 		for (const [name, doc] of agg.root) {
 			yaml.visit(doc, {

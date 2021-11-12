@@ -5,9 +5,7 @@
 	},
 	"description": "NOODL is a language stemmed from the YAML language. This library gives you the tools to build JavaScript applications using Neural Object Oriented Descriptive Language",
 	"exports": {
-		"default": "./dist/noodl.js",
-		"import": "./dist/noodl.js",
-		"require": "./dist/cjs/noodl.js"
+		"import": "./dist/noodl.js"
 	},
 	"files": [
 		"dist"
@@ -34,14 +32,13 @@
 		"url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
 	},
 	"scripts": {
-		"build": "cross-env NODE_ENV=production concurrently \"npm run build:js\" \"npm run build:types\"",
+		"build": "cross-env NODE_ENV=production concurrently \"rollup -c\" \"npm run types\"",
 		"build:esbuild": "esbuild src/index.ts --banner:js='import { createRequire as topLevelCreateRequire } from \"module\";\n const require = topLevelCreateRequire(import.meta.url);' --bundle --sourcemap --platform=node --target=es2020",
-		"build:js": "rollup -c",
-		"build:types": "tsc --emitDeclarationOnly",
-		"start": "cross-env NODE_ENV=development concurrently \"npm run build:js -- --watch\" \"npm run build:types -- -w\"",
-		"test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --watch"
+		"prebuild": "rm -rf dist",
+		"start": "cross-env NODE_ENV=development concurrently \"rollup -c -w\" \"npm run types\"",
+		"test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --watch",
+		"types": "tsc --declaration --emitDeclarationOnly --outFile dist/noodl.d.ts"
 	},
-	"sideEffects": false,
 	"type": "module",
 	"typesVersions": {
 		"*": {
@@ -50,5 +47,6 @@
 			]
 		}
 	},
+	"typings": "./dist/noodl.d.ts",
 	"version": "0.0.7"
 }

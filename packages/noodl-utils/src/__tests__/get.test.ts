@@ -4,9 +4,9 @@ import sinon from 'sinon'
 import { isActionChain } from 'noodl-action-chain'
 import { userEvent } from 'noodl-types'
 import { expect } from 'chai'
-import createGet, { Options, PathItem } from '../get'
-import * as c from '../constants'
-import * as t from '../types'
+import createGet, { Options, PathItem } from '../get.js'
+import * as c from '../constants.js'
+import * as t from '../types.js'
 
 let root: Record<string, any>
 let get: (path: PathItem | PathItem[]) => any
