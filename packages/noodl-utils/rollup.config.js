@@ -25,7 +25,7 @@ const configs = [
 			{
 				file: pkg.exports.import,
 				exports: 'named',
-				format: 'esm',
+				format: 'es',
 				sourcemap: true,
 			},
 			{

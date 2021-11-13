@@ -5,7 +5,9 @@
 	},
 	"description": "NOODL is a language stemmed from the YAML language. This library gives you the tools to build JavaScript applications using Neural Object Oriented Descriptive Language",
 	"exports": {
-		"import": "./dist/noodl.js"
+		"default": "./dist/noodl.js",
+		"import": "./dist/noodl.js",
+		"require": "./dist/noodl.js"
 	},
 	"files": [
 		"dist"
@@ -23,6 +25,8 @@
 		"health"
 	],
 	"license": "ISC",
+	"main": "./dist/noodl.js",
+	"module": "./dist/noodl.js",
 	"name": "noodl",
 	"publishConfig": {
 		"access": "public"

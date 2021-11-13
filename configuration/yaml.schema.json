@@ -1,87 +1,530 @@
 {
-	"$defs": {
-		"Component": {
-			"properties": {
-				"children": {
-					"$ref": "#/$defs/Component",
-					"type": "array"
-				},
-				"image": {
-					"type": "string"
-				},
-				"onClick": {
-					"type": "array"
-				},
-				"onHover": {
-					"type": "array"
-				},
-				"onMouseEnter": {
-					"type": "array"
-				},
-				"onMouseLeave": {
-					"type": "array"
-				},
-				"onMouseOut": {
-					"type": "array"
-				},
-				"path": {
-					"type": "string"
-				},
-				"resource": {
-					"type": "string"
-				},
-				"style": {
-					"$ref": "#/$defs/Style"
-				},
-				"text": {
-					"type": "string"
-				},
-				"textBoard": {
-					"type": "array"
-				},
-				"type": {
-					"type": "string"
-				},
-				"viewTag": {
-					"type": "string"
-				}
-			},
-			"type": "object"
-		},
-		"Page": {
-			"type": "object"
-		},
-		"PageNumber": {
-			"type": "string"
-		},
-		"Style": {
-			"type": "object"
-		},
-		"TextBoard": {
-			"items": {
-				"color": {
-					"type": "string"
-				},
-				"text": {
-					"type": "string"
-				}
-			},
-			"type": "array"
-		}
-	},
-	"$id": "noodl-schema",
-	"$ref": "#/$defs/Page",
-	"$schema": "http://json-schema.org/draft-07/schema#",
-	"properties": {
-		"components": {
-			"items": {
-				"$ref": "#/$defs/Component"
-			},
-			"type": "array"
-		},
-		"pageNumber": {
-			"type": "string"
-		}
-	},
-	"title": "JSON schema for NOODL files"
+    "$defs": {
+        "Action": {
+            "accessToken": {
+                "type": "string"
+            },
+            "actionType": {
+                "description": "Used as an identifier for an action",
+                "type": "string"
+            },
+            "contentType": {
+                "description": "Determines the content type of the component. For example, a textField component may be a date textField if it has contentType: dateSelect, or a password textField with contentType: password, etc",
+                "type": "string"
+            },
+            "dataKey": {
+                "description": "The path to a data object or value. It might provide a different behavior depending on where it is placed. For example, a dataKey set on a textField component will bind its value to the path in the dataKey, enabling it to mutate the value while updating textField's value",
+                "type": "string"
+            },
+            "dataObject": {
+                "description": "An object that contains data. It is most commonly used in actions such as updateObject as a way to update its data values",
+                "type": "string"
+            },
+            "dismissOnTouchOutside": {
+                "description": "Signals that a popup should close when a user clicks outside of it. This is used for closing modals/popups",
+                "type": "boolean"
+            },
+            "funcName": {
+                "description": "A name/identifier for a function. This is used mainly for builtIn actions, where applications implement their own behavior and binds it to some object in the noodl",
+                "type": "string"
+            },
+            "goto": {
+                "description": "A destination the user should navigate to",
+                "type": "string"
+            },
+            "object": {
+                "type": "object"
+            },
+            "popUpView": {
+                "description": "A binding between a popUp or popUpDismiss component to a popUp action.",
+                "type": "string"
+            },
+            "reload": {
+                "description": "When set to true, this signals that a page should run its \"init\" operation upon visiting from the user. If it is false, a page will not run it, which can be used to  persist values when navigating pages",
+                "title": "Skip or run \"init\"",
+                "type": "boolean"
+            },
+            "roomId": {
+                "type": "string"
+            },
+            "timer": {
+                "type": "string"
+            },
+            "timerTag": {
+                "type": "string"
+            },
+            "viewTag": {
+                "description": "An identifier which is used to bind a component and an action together. Actions can define a viewTag that invokes certain behavior towards a component. The component must also contain the same viewTag key/value. If multiple components have the same viewTag, then the action will effect multiple components",
+                "type": "string"
+            },
+            "wait": {
+                "description": "Used to prevent further actions from happening. For example, a popUp action with \"wait: true\" will open a pop up in the page and will not run actions that are next in the call stack. This can be used to restrict access to pages when authenticating",
+                "type": "boolean"
+            }
+        },
+        "Component": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/UserEvent"
+                }
+            ],
+            "properties": {
+                "audioStream": {
+                    "type": "boolean"
+                },
+                "borderRadius": {
+                    "type": "number"
+                },
+                "children": {
+                    "$ref": "#/$defs/Component",
+                    "type": "array"
+                },
+                "colorChange": {
+                    "type": "string"
+                },
+                "contentType": {
+                    "type": "string"
+                },
+                "dataId": {
+                    "type": "string"
+                },
+                "dataKey": {
+                    "type": "string"
+                },
+                "dataModel": {
+                    "type": "string"
+                },
+                "ecosObj": {
+                    "type": "string"
+                },
+                "global": {
+                    "type": "boolean"
+                },
+                "height": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "imgPath": {
+                    "type": "string"
+                },
+                "isEdit": {
+                    "type": "boolean"
+                },
+                "isEditable": {
+                    "type": "string"
+                },
+                "itemObject": {
+                    "type": "string"
+                },
+                "iteratorVar": {
+                    "type": "string"
+                },
+                "listObject": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "message2": {
+                    "type": "string"
+                },
+                "onChange": {
+                    "type": "array"
+                },
+                "onClick": {
+                    "items": {
+                        "$ref": "#/$defs/Action"
+                    },
+                    "type": "array"
+                },
+                "onHover": {
+                    "type": "array"
+                },
+                "onMouseEnter": {
+                    "type": "array"
+                },
+                "onMouseLeave": {
+                    "type": "array"
+                },
+                "onMouseOut": {
+                    "type": "array"
+                },
+                "options": {
+                    "type": "string"
+                },
+                "overflow": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "placeHolder": {
+                    "type": "string"
+                },
+                "placeholder": {
+                    "type": "string"
+                },
+                "postMessage": {
+                    "type": "array"
+                },
+                "required": {
+                    "type": "string"
+                },
+                "resource": {
+                    "type": "string"
+                },
+                "style": {
+                    "$ref": "#/$defs/Style"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "text2": {
+                    "type": "string"
+                },
+                "text3": {
+                    "type": "string"
+                },
+                "text4": {
+                    "type": "string"
+                },
+                "text=func": {
+                    "type": "string"
+                },
+                "textAlign": {
+                    "type": "object"
+                },
+                "textBoard": {
+                    "type": "array"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "videoStream": {
+                    "type": "boolean"
+                },
+                "viewTag": {
+                    "type": "string"
+                },
+                "zIndex": {
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "Emit": {
+            "properties": {
+                "emit": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ]
+                }
+            }
+        },
+        "Page": {
+            "type": "object"
+        },
+        "PageNumber": {
+            "type": "string"
+        },
+        "RootConfig": {
+            "properties": {
+                "android": {
+                    "type": "object"
+                },
+                "apiCheck": {
+                    "type": "object"
+                },
+                "apiHost": {
+                    "type": "string"
+                },
+                "apiPort": {
+                    "type": "string"
+                },
+                "appApiHost": {
+                    "type": "string"
+                },
+                "cadlBaseUrl": {
+                    "type": "string"
+                },
+                "cadlMain": {
+                    "type": "string"
+                },
+                "cadlVersion": {
+                    "type": "object"
+                },
+                "connectiontimeout": {
+                    "type": "string"
+                },
+                "debug": {
+                    "type": "object"
+                },
+                "ios": {
+                    "type": "object"
+                },
+                "keywords": {
+                    "type": "array"
+                },
+                "loadingLevel": {
+                    "type": "number"
+                },
+                "log": {
+                    "type": "string"
+                },
+                "max": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number"
+                },
+                "myBaseUrl": {
+                    "type": "string"
+                },
+                "pathNotFound": {
+                    "type": "object"
+                },
+                "return": {
+                    "type": "string"
+                },
+                "stable": {
+                    "type": "string"
+                },
+                "test": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "number"
+                },
+                "unEvolvedValue": {
+                    "type": "string"
+                },
+                "viewWidthHeightRatio": {
+                    "type": "object"
+                },
+                "web": {
+                    "type": "object"
+                },
+                "webApiHost": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "Style": {
+            "properties": {
+                "Index": {
+                    "type": "number"
+                },
+                "axis": {
+                    "type": "string"
+                },
+                "backgroundColor": {
+                    "type": "string"
+                },
+                "border": {
+                    "type": null
+                },
+                "borderBottom": {
+                    "type": "string"
+                },
+                "borderColor": {
+                    "type": "string"
+                },
+                "borderRadius": {
+                    "type": "string"
+                },
+                "borderRaduis": {
+                    "type": "string"
+                },
+                "borderWidth": {
+                    "type": "string"
+                },
+                "box-sizing": {
+                    "type": "string"
+                },
+                "boxShadow": {
+                    "type": "string"
+                },
+                "boxSizing": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "contentSize": {
+                    "type": null
+                },
+                "display": {
+                    "type": "string"
+                },
+                "flex": {
+                    "type": "string"
+                },
+                "fonSize": {
+                    "type": "string"
+                },
+                "fontFamily": {
+                    "type": "string"
+                },
+                "fontSize": {
+                    "type": "string"
+                },
+                "fontStyle": {
+                    "type": "string"
+                },
+                "fontSytle": {
+                    "type": "string"
+                },
+                "fontWeight": {
+                    "type": "number"
+                },
+                "fontweight": {
+                    "type": "number"
+                },
+                "height": {
+                    "type": "string"
+                },
+                "isEditable": {
+                    "type": "string"
+                },
+                "isHidden": {
+                    "type": "boolean"
+                },
+                "justifyContent": {
+                    "type": "string"
+                },
+                "left": {
+                    "type": "string"
+                },
+                "letterSpacing": {
+                    "type": "string"
+                },
+                "lineHeight": {
+                    "type": "string"
+                },
+                "margin": {
+                    "type": "string"
+                },
+                "marginTop": {
+                    "type": "string"
+                },
+                "onClick": {
+                    "type": null
+                },
+                "opacity": {
+                    "type": "string"
+                },
+                "overflow": {
+                    "type": "string"
+                },
+                "padding": {
+                    "type": "string"
+                },
+                "paddingBottom": {
+                    "type": "string"
+                },
+                "paddingLeft": {
+                    "type": "string"
+                },
+                "placeholder": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "string"
+                },
+                "shadow": {
+                    "type": "string"
+                },
+                "style": {
+                    "type": null
+                },
+                "textAlign": {
+                    "type": null
+                },
+                "textIndent": {
+                    "type": "string"
+                },
+                "top": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "string"
+                },
+                "zIndex": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "TextBoard": {
+            "items": {
+                "color": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            },
+            "type": "array"
+        },
+        "UserEvent": {
+            "items": {
+                "$ref": "#/$defs/Action"
+            },
+            "type": "array"
+        }
+    },
+    "$id": "noodl-schema",
+    "$ref": "#/$defs/Page",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "anyOf": [
+        {
+            "$ref": "#/$defs/RootConfig"
+        },
+        {
+            "type": "string"
+        }
+    ],
+    "patternProperties": {
+        "^[a-zA-Z0-9_]*$": {
+            "properties": {
+                "components": {
+                    "$ref": "#/$defs/Component",
+                    "type": "array"
+                },
+                "pageNumber": {
+                    "description": "A page number may help distinguish between pages with similar names",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Titles can be used to represent the page",
+                    "type": "string"
+                },
+                "viewPort": {
+                    "description": "Determines the initial scroll position for the user",
+                    "enum": [
+                        "top",
+                        "center",
+                        "bottom"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "title": "JSON schema for NOODL files"
 }

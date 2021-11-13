@@ -15,17 +15,17 @@ const _DEV_ = process.env.NODE_ENV === 'development'
  */
 const configs = [
 	{
-		cache: false,
 		input: 'src/index.ts',
 		output: [
 			{
 				file: './dist/noodl.js',
-				format: 'esm',
+				format: 'es',
 				name: 'noodl',
-				exports: 'named',
+				exports: 'auto',
 				sourcemap: true,
 			},
 		],
+
 		plugins: [
 			json(),
 			nodeResolve({
@@ -34,9 +34,7 @@ const configs = [
 				preferBuiltins: true,
 			}),
 			nodePolyfills(),
-			commonjs({
-				include: /node_modules/,
-			}),
+			commonjs(),
 			filesize(),
 			progress(),
 			babel({
@@ -46,13 +44,19 @@ const configs = [
 				plugins: ['@babel/transform-runtime'],
 			}),
 			esbuild({
+				experimentalBundling: true,
 				include: /\.[jt]s?$/,
 				exclude: /node_modules/,
 				minify: !_DEV_,
-				target: 'es2018',
+				target: 'es2020',
 				sourceMap: true,
 			}),
+			{
+				banner: `import { createRequire as topLevelCreateRequire } from "module";
+const require = topLevelCreateRequire(import.meta.url);`,
+			},
 		],
+
 		context: 'global',
 	},
 ]

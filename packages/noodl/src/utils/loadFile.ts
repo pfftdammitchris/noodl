@@ -1,5 +1,5 @@
 import * as u from '@jsmanifest/utils'
-import fs from 'fs'
+import * as fs from 'fs-extra'
 import type { LiteralUnion } from 'type-fest'
 import { isAbsolute as isAbsolutePath } from 'path'
 import type { YAMLDocument } from '../internal/yaml'

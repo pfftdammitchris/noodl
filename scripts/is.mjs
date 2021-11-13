@@ -1,3 +1,5 @@
+import yaml from 'yaml'
+
 /** @param { yaml.YAMLMap } node */
 export function isAction(node) {
 	return ['actionType', 'goto'].some((key) => node.has(key))

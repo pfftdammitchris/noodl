@@ -1,5 +1,5 @@
 import * as nt from 'noodl-types'
-import { LiteralUnion } from 'type-fest'
+import type { LiteralUnion } from 'type-fest'
 import yaml from 'yaml'
 import type { OrArray } from '@jsmanifest/typefest'
 import type { YAMLNode, visitorFn } from './internal/yaml.js'
