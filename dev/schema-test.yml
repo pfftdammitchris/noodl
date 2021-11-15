@@ -1,0 +1,10 @@
+SignIn:
+  components:
+    - type: chatList
+      text=func: =.builtIn.system.configUrl
+      style:
+        borderColor: '0x000000'
+      path:
+        emit:
+          actions:
+            - =.builtIn.string.concat: dataIn

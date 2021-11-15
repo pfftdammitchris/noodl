@@ -1,5 +1,7 @@
 {
-	"yaml.schemas": {
-		"./configuration/yaml.schema.json": "dev/schema-test.yml"
-	}
+  "yaml.schemas": {
+    "noodl.schema.json": "cst.yml"
+  },
+  "yaml.schemaStore.enable": true,
+  "yaml.schemaStore.url": "https://www.schemastore.org/api/json/catalog.json"
 }

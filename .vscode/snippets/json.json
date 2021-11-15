@@ -1,0 +1,6 @@
+{
+  "$ref": {
+    "body": "\"\\$ref\": \"#/definitions/$1\"",
+    "prefix": "ref"
+  }
+}
