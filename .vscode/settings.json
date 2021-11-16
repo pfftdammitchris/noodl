@@ -1,1 +1,5 @@
-{}
+{
+	"yaml.schemas": {
+		"./configuration/noodl.schema.json": "cst.yml"
+	}
+}
