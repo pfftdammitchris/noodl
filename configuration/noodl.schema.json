@@ -44,6 +44,9 @@
             },
             {
               "type": "object"
+            },
+            {
+              "type": "array"
             }
           ]
         },
@@ -117,9 +120,18 @@
     },
     "AwaitReference": {
       "description": "A reference that returns its result after the value at the referenced path is received",
-      "pattern": "^[=.]*[a-zA-Z0-9]+@$",
+      "pattern": "^[=.]*[a-zA-Z0-9]+.*@$",
       "title": "Await reference",
       "type": "string"
+    },
+    "Boolean": {
+      "enum": [
+        "true",
+        "false",
+        true,
+        false
+      ],
+      "title": "Boolean"
     },
     "Border": {
       "oneOf": [
@@ -152,40 +164,100 @@
       "title": "Border"
     },
     "BorderPreset1": {
-      "const": "1",
       "description": "Removes border including the radius",
-      "title": "Border style preset #1",
-      "type": "string"
+      "enum": [
+        "1",
+        1
+      ],
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Border style preset #1"
     },
     "BorderPreset2": {
-      "const": "2",
       "description": "Removes border from all sides (including radius) except the bottom. This will create an underline effect",
-      "title": "Border style preset #2",
-      "type": "string"
+      "enum": [
+        2,
+        "2"
+      ],
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Border style preset #2"
     },
     "BorderPreset3": {
-      "const": "3",
       "description": "Applies a solid border to all sides",
-      "title": "Border style preset #3",
-      "type": "string"
+      "enum": [
+        "3",
+        3
+      ],
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Border style preset #3"
     },
     "BorderPreset4": {
-      "const": "4",
       "description": "Sets the border to be a dashed border",
-      "title": "Border style preset #4",
-      "type": "string"
+      "enum": [
+        "4",
+        4
+      ],
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Border style preset #4"
     },
     "BorderPreset5": {
-      "const": "5",
       "description": "Removes border from all sides",
-      "title": "Border style preset #5",
-      "type": "string"
+      "enum": [
+        "5",
+        5
+      ],
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Border style preset #5"
     },
     "BorderPreset6": {
-      "const": "6",
       "description": "Sets the border to be a solid border. This will also remove border radius from all sides",
-      "title": "Border style preset #1",
-      "type": "string"
+      "enum": [
+        "6",
+        6
+      ],
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Border style preset #1"
     },
     "BorderStylePreset": {
       "oneOf": [
@@ -207,8 +279,7 @@
         {
           "$ref": "#/definitions/BorderPreset6"
         }
-      ],
-      "type": "string"
+      ]
     },
     "BuiltInEval": {
       "patternProperties": {
@@ -225,6 +296,7 @@
           "type": "object"
         }
       },
+      "title": "Built in eval object",
       "type": "object"
     },
     "Color": {
@@ -247,7 +319,14 @@
         },
         "children": {
           "items": {
-            "$ref": "#/definitions/Component"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/Component"
+              },
+              {
+                "$ref": "#/definitions/Reference"
+              }
+            ]
           },
           "type": "array"
         },
@@ -269,9 +348,6 @@
           ],
           "type": "boolean"
         },
-        "height": {
-          "$ref": "#/definitions/NoodlUnit"
-        },
         "image": {
           "type": "string"
         },
@@ -279,12 +355,12 @@
           "type": "string"
         },
         "isEdit": {
-          "type": "boolean"
+          "$ref": "#/definitions/Boolean"
         },
         "isEditable": {
           "anyOf": [
             {
-              "type": "boolean"
+              "$ref": "#/definitions/Boolean"
             },
             {
               "type": "string"
@@ -292,32 +368,33 @@
           ]
         },
         "itemObject": {
+          "description": "This is a common value used for iteratorVar",
+          "title": "itemObject",
           "type": "string"
         },
         "iteratorVar": {
           "examples": [
             "itemObject"
           ],
+          "title": "Iterator variable",
           "type": "string"
         },
         "listObject": {
-          "examples": [
-            "..listData"
-          ],
-          "oneOf": [
+          "anyOf": [
             {
               "$ref": "#/definitions/Empty"
             },
             {
+              "$ref": "#/definitions/Reference",
+              "examples": [
+                "..listData.contactList.docs"
+              ]
+            },
+            {
               "type": "array"
             }
-          ]
-        },
-        "message": {
-          "type": "string"
-        },
-        "message2": {
-          "type": "string"
+          ],
+          "title": "List data"
         },
         "onBlur": {
           "oneOf": [
@@ -544,9 +621,6 @@
           "type": "number"
         }
       },
-      "required": [
-        "type"
-      ],
       "title": "Component",
       "type": "object"
     },
@@ -626,6 +700,7 @@
         "timer",
         "videoSubStream"
       ],
+      "title": "Content type",
       "type": "string"
     },
     "DataKey": {
@@ -679,6 +754,7 @@
               }
             ]
           },
+          "title": "Emit actions",
           "type": "array"
         },
         "dataKey": {
@@ -689,7 +765,8 @@
             {
               "type": "object"
             }
-          ]
+          ],
+          "title": "Emit action data key string or data key object"
         }
       },
       "required": [
@@ -764,36 +841,44 @@
       "type": "object"
     },
     "Init": {
-      "items": {
-        "anyOf": [
-          {
-            "$ref": "#/definitions/If"
+      "anyOf": [
+        {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/If"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/definitions/Goto"
+              },
+              {
+                "const": [
+                  ""
+                ],
+                "title": "Page init",
+                "type": "string"
+              }
+            ]
           },
-          {
-            "type": "string"
-          },
-          {
-            "$ref": "#/definitions/Goto"
-          },
-          {
-            "const": [
-              ""
-            ],
-            "type": "string"
-          }
-        ]
-      },
-      "type": "array"
+          "type": "array"
+        },
+        {
+          "$ref": "#/definitions/MixedActionChain"
+        }
+      ]
     },
     "LocalEvalReference": {
       "description": "Mutates the value at the referenced path after receiving its result",
-      "pattern": "^=[.][.][a-zA-Z0-9]+$",
+      "pattern": "^=[.][.][a-zA-Z0-9]+.*$",
       "title": "Local eval reference",
       "type": "string"
     },
     "LocalReference": {
       "description": "A reference whose scope is within the page object, making them invisible to the objects outside of its scope",
-      "pattern": "^[.][.][a-zA-Z0-9]+$",
+      "pattern": "^[.][.][a-zA-Z0-9]+.*$",
       "title": "Local reference",
       "type": "string"
     },
@@ -836,32 +921,24 @@
       "description": "The page object for a page",
       "properties": {
         "check": {
-          "items": {
-            "$ref": "#/definitions/MixedActionChain"
-          },
-          "type": "array"
+          "$ref": "#/definitions/Init"
         },
         "components": {
           "items": {
             "$ref": "#/definitions/Component"
           },
+          "title": "Page components",
           "type": "array"
         },
         "init": {
-          "items": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/Init"
-              },
-              {
-                "items": {
-                  "$ref": "#/definitions/MixedActionChain"
-                },
-                "type": "array"
-              }
-            ]
-          },
-          "type": "array"
+          "oneOf": [
+            {
+              "$ref": "#/definitions/Init"
+            },
+            {
+              "const": ""
+            }
+          ]
         },
         "module": {
           "$ref": "#/definitions/PageModule"
@@ -870,23 +947,18 @@
           "$ref": "#/definitions/PageNumber"
         },
         "save": {
-          "items": {
-            "$ref": "#/definitions/MixedActionChain"
-          },
-          "type": "array"
+          "$ref": "#/definitions/Init"
         },
         "title": {
           "description": "Titles can be used to represent the page",
           "examples": [
             "My Title"
           ],
+          "title": "Page title",
           "type": "string"
         },
         "update": {
-          "items": {
-            "$ref": "#/definitions/MixedActionChain"
-          },
-          "type": "array"
+          "$ref": "#/definitions/Init"
         },
         "viewPort": {
           "description": "Determines the initial scroll position for the user",
@@ -937,36 +1009,45 @@
       "examples": [
         "\"219\""
       ],
+      "title": "Page number",
       "type": "string"
     },
     "Path": {
-      "anyOf": [
+      "description": "A path can be in the form of a string, an if object, or an emit object",
+      "oneOf": [
         {
-          "examples": [
-            "logo.png",
-            "SignIn"
-          ],
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/If"
-        },
-        {
-          "properties": {
-            "emit": {
-              "$ref": "#/definitions/Emit"
+          "anyOf": [
+            {
+              "examples": [
+                "logo.png",
+                "SignIn"
+              ],
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/GotoPageComponentUrl"
             }
-          },
-          "type": "object"
+          ]
         },
         {
-          "$ref": "#/definitions/GotoPageComponentUrl"
-        },
-        {
-          "$ref": "#/definitions/BuiltInEval"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BuiltInEval"
+            },
+            {
+              "$ref": "#/definitions/If"
+            },
+            {
+              "properties": {
+                "emit": {
+                  "$ref": "#/definitions/Emit"
+                }
+              },
+              "type": "object"
+            }
+          ]
         }
       ],
-      "description": "A path can be in the form of a string, an if object, or an emit object",
       "title": "Destination pointing to a separate page or url"
     },
     "Reference": {
@@ -1093,8 +1174,7 @@
           "type": "object"
         },
         "isGetPosition": {
-          "default": false,
-          "type": "boolean"
+          "$ref": "#/definitions/Boolean"
         },
         "keywords": {
           "items": {
@@ -1154,13 +1234,13 @@
     },
     "RootEvalReference": {
       "description": "Mutates the value at the root referenced path after receiving its result",
-      "pattern": "^=[.][a-zA-Z0-9]+$",
+      "pattern": "^=[.][a-zA-Z0-9]+.*$",
       "title": "Root eval reference",
       "type": "string"
     },
     "RootReference": {
       "description": "A reference whose scope is at the global level",
-      "pattern": "^[.][a-zA-Z0-9]+$",
+      "pattern": "^[.][a-zA-Z0-9]+.*$",
       "title": "Root reference",
       "type": "string"
     },
@@ -1187,6 +1267,7 @@
             "centerX",
             "centerY"
           ],
+          "title": "Alignment",
           "type": "string"
         },
         "axis": {
@@ -1194,24 +1275,28 @@
             "horizontal",
             "vertical"
           ],
+          "title": "Axis",
           "type": "string"
         },
         "backgroundColor": {
           "examples": [
             "\"0x030303\""
           ],
+          "title": "Background color",
           "type": "string"
         },
         "border": {
           "$ref": "#/definitions/Border"
         },
         "borderBottom": {
+          "title": "Bottom border",
           "type": "string"
         },
         "borderColor": {
           "examples": [
             "\"0x000000\""
           ],
+          "title": "Border color",
           "type": "string"
         },
         "borderRadius": {
@@ -1221,6 +1306,8 @@
           "$ref": "#/definitions/NoodlUnit"
         },
         "boxShadow": {
+          "description": "Applies a box shadow style effect",
+          "title": "Box shadow",
           "type": "string"
         },
         "boxSizing": {
@@ -1228,12 +1315,14 @@
             "border-box",
             "content-box"
           ],
+          "title": "Box sizing",
           "type": "string"
         },
         "color": {
           "examples": [
             "\"0x000000\""
           ],
+          "title": "Color",
           "type": "string"
         },
         "fontFamily": {
@@ -1245,34 +1334,47 @@
             "Consolas",
             "Helvetica"
           ],
+          "title": "Font family",
           "type": "string"
         },
         "fontSize": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Font size"
         },
         "fontStyle": {
+          "title": "Font style",
           "type": "string"
         },
         "fontWeight": {
-          "examples": [
-            100,
-            200,
-            400,
-            500,
-            700,
-            900,
-            "bold"
+          "oneOf": [
+            {
+              "description": "Applies a thickness style effect",
+              "examples": [
+                100,
+                200,
+                400,
+                500,
+                700,
+                900,
+                "bold"
+              ],
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
           ],
-          "type": "number"
+          "title": "Font weight"
         },
         "height": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Component Height"
         },
         "isEditable": {
-          "type": "boolean"
+          "$ref": "#/definitions/Boolean"
         },
         "isHidden": {
-          "type": "boolean"
+          "$ref": "#/definitions/Boolean"
         },
         "justifyContent": {
           "examples": [
@@ -1281,40 +1383,52 @@
             "flex-end",
             "space-around"
           ],
+          "title": "Justify content",
           "type": "string"
         },
         "left": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Component left position"
         },
         "letterSpacing": {
+          "title": "Letter spacing",
           "type": "string"
         },
         "lineHeight": {
+          "title": "Line height",
           "type": "string"
         },
         "margin": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Margin"
         },
         "marginTop": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Margin top"
         },
         "opacity": {
+          "description": "Applies a transparenct style effect. The lower the opacity, the more the transparent effect is applied",
           "examples": [
             "0.5"
           ],
+          "title": "Opacity",
           "type": "number"
         },
         "overflow": {
+          "description": "If hidden, any styles flowing outside of a component's bounds will be invisible",
           "examples": [
             "hidden"
           ],
+          "title": "Overflow",
           "type": "string"
         },
         "paddingBottom": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Padding bottom"
         },
         "paddingLeft": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Padding left"
         },
         "position": {
           "examples": [
@@ -1323,12 +1437,14 @@
             "fixed",
             "static"
           ],
+          "title": "Position",
           "type": "string"
         },
         "required": {
           "type": "string"
         },
         "shadow": {
+          "description": "Applies a box shadow effect",
           "oneOf": [
             {
               "examples": [
@@ -1340,7 +1456,8 @@
             {
               "type": "boolean"
             }
-          ]
+          ],
+          "title": "Shadow"
         },
         "textAlign": {
           "$ref": "#/definitions/TextAlign"
@@ -1352,18 +1469,23 @@
           "type": "string"
         },
         "top": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Component top position"
         },
         "width": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Component width"
         },
         "zIndex": {
+          "description": "Applies a level of precedence/importance to a component. The higher the zIndex the higher level the component will be placed. For example, if a child 3 levels down applies a higher zIndex than the parent, then the child will appear to be on top in the page",
           "examples": [
             "\"1000\""
           ],
+          "title": "zIndex",
           "type": "string"
         }
       },
+      "title": "Component style object",
       "type": "object"
     },
     "Text": {
@@ -1374,7 +1496,8 @@
         {
           "$ref": "#/definitions/If"
         }
-      ]
+      ],
+      "title": "Text"
     },
     "TextAlign": {
       "oneOf": [
@@ -1384,7 +1507,8 @@
         {
           "$ref": "#/definitions/TextAlignObject"
         }
-      ]
+      ],
+      "title": "Text alignment"
     },
     "TextAlignEnum": {
       "examples": [
@@ -1428,6 +1552,7 @@
         },
         "type": "object"
       },
+      "title": "Textboard components",
       "type": "array"
     },
     "UserEvent": {
