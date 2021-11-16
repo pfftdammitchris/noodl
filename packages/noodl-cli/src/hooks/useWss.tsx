@@ -1,10 +1,11 @@
 import React from 'react'
-import { IncomingMessage } from 'http'
-import * as ws from 'ws'
-import type { ServerOptions } from 'ws'
+import type { IncomingMessage } from 'http'
+// @ts-expect-error
+import { WebSocketServer as WebSocketServer } from 'ws'
+import type { Server, ServerOptions } from 'ws'
 import * as c from '../constants.js'
 
-const WebSocketServer = ws.default.Server
+const WebsocketServer = WebSocketServer as Server
 
 export interface Hooks {
 	onListening?(this: any): void
@@ -19,10 +20,11 @@ function useWss({
 	port = c.DEFAULT_WSS_PORT,
 	...options
 }: ServerOptions = {}) {
-	const wss = React.useRef<any | null>(null)
+	const wss = React.useRef<typeof WebsocketServer | null>(null)
 
 	const connect = React.useCallback((opts?: Hooks) => {
-		wss.current = new WebSocketServer({ ...options, host, port })
+		// @ts-expect-error
+		wss.current = new WebsocketServer({ ...options, host, port })
 		opts?.onClose && wss.current?.on('close', opts.onClose)
 		opts?.onConnection && wss.current?.on('connection', opts.onConnection)
 		opts?.onError && wss.current?.on('error', opts.onError)

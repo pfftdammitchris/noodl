@@ -1,5 +1,4 @@
 {
   "yaml.schemas": {
-    "./configuration/noodl.schema.json": "*.noodl.yml"
   }
 }

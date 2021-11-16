@@ -27,11 +27,7 @@
         },
         "funcName": {
           "description": "A name/identifier for a function. This is used mainly for builtIn actions, where applications implement their own behavior and binds it to some object in the noodl",
-          "examples": [
-            "redraw",
-            "goto",
-            "saveSignature"
-          ],
+          "examples": ["redraw", "goto", "saveSignature"],
           "type": "string"
         },
         "goto": {
@@ -72,11 +68,9 @@
           "$ref": "#/definitions/ViewTag"
         },
         "wait": {
+          "title": "Wait",
           "description": "Used to prevent further actions from happening. For example, a popUp action with \"wait: true\" will open a pop up in the page and will not run actions that are next in the call stack. This can be used to restrict access to pages when authenticating",
-          "examples": [
-            true,
-            "5000"
-          ],
+          "examples": [true, "5000"],
           "oneOf": [
             {
               "type": "boolean"
@@ -125,13 +119,9 @@
       "type": "string"
     },
     "Boolean": {
-      "enum": [
-        "true",
-        "false",
-        true,
-        false
-      ],
-      "title": "Boolean"
+      "enum": ["true", "false", true, false],
+      "title": "Boolean",
+      "description": "A boolean value is either one of \"true\", true, \"false\", or false"
     },
     "Border": {
       "oneOf": [
@@ -145,10 +135,7 @@
               "$ref": "#/definitions/Color"
             },
             "line": {
-              "examples": [
-                "dashed",
-                "solid"
-              ],
+              "examples": ["dashed", "solid"],
               "type": "string"
             },
             "style": {
@@ -161,14 +148,12 @@
           "type": "object"
         }
       ],
-      "title": "Border"
+      "title": "Border",
+      "description": "Border styles"
     },
     "BorderPreset1": {
       "description": "Removes border including the radius",
-      "enum": [
-        "1",
-        1
-      ],
+      "enum": ["1", 1],
       "oneOf": [
         {
           "type": "string"
@@ -181,10 +166,7 @@
     },
     "BorderPreset2": {
       "description": "Removes border from all sides (including radius) except the bottom. This will create an underline effect",
-      "enum": [
-        2,
-        "2"
-      ],
+      "enum": [2, "2"],
       "oneOf": [
         {
           "type": "string"
@@ -197,10 +179,7 @@
     },
     "BorderPreset3": {
       "description": "Applies a solid border to all sides",
-      "enum": [
-        "3",
-        3
-      ],
+      "enum": ["3", 3],
       "oneOf": [
         {
           "type": "string"
@@ -213,10 +192,7 @@
     },
     "BorderPreset4": {
       "description": "Sets the border to be a dashed border",
-      "enum": [
-        "4",
-        4
-      ],
+      "enum": ["4", 4],
       "oneOf": [
         {
           "type": "string"
@@ -229,10 +205,7 @@
     },
     "BorderPreset5": {
       "description": "Removes border from all sides",
-      "enum": [
-        "5",
-        5
-      ],
+      "enum": ["5", 5],
       "oneOf": [
         {
           "type": "string"
@@ -245,10 +218,7 @@
     },
     "BorderPreset6": {
       "description": "Sets the border to be a solid border. This will also remove border radius from all sides",
-      "enum": [
-        "6",
-        6
-      ],
+      "enum": ["6", 6],
       "oneOf": [
         {
           "type": "string"
@@ -260,6 +230,8 @@
       "title": "Border style preset #1"
     },
     "BorderStylePreset": {
+      "title": "Border style (presets)",
+      "description": "A set of border presets, each applying a different style",
       "oneOf": [
         {
           "$ref": "#/definitions/BorderPreset1"
@@ -281,28 +253,37 @@
         }
       ]
     },
+    "DataIn": {
+      "title": "Data in",
+      "description": "Argument(s) to the surrounding built in function",
+      "$ref": "#/definitions/Value"
+    },
+    "DataOut": {
+      "title": "Data out",
+      "description": "Return value(s) to the surrounding built in function",
+      "$ref": "#/definitions/Value"
+    },
     "BuiltInEval": {
       "patternProperties": {
         "^=.builtIn.[a-zA-Z0-9]+$": {
           "additionalProperties": true,
           "properties": {
             "dataIn": {
-              "$ref": "#/definitions/Value"
+              "$ref": "#/definitions/DataIn"
             },
             "dataOut": {
-              "$ref": "#/definitions/Value"
+              "$ref": "#/definitions/DataOut"
             }
           },
           "type": "object"
         }
       },
       "title": "Built in eval object",
+      "description": "Objects that become built in functions when parsed/serialized",
       "type": "object"
     },
     "Color": {
-      "examples": [
-        "\"0x000000\""
-      ],
+      "examples": ["\"0x000000\""],
       "pattern": "^(0x)[a-zA-Z0-9]+$",
       "title": "Color",
       "type": "string"
@@ -337,16 +318,12 @@
           "$ref": "#/definitions/DataKey"
         },
         "ecosObj": {
-          "examples": [
-            "..document.ecosObj"
-          ],
+          "examples": ["..document.ecosObj"],
           "type": "string"
         },
         "global": {
-          "examples": [
-            "true"
-          ],
-          "type": "boolean"
+          "examples": ["true"],
+          "$ref": "#/definitions/Boolean"
         },
         "image": {
           "type": "string"
@@ -373,9 +350,7 @@
           "type": "string"
         },
         "iteratorVar": {
-          "examples": [
-            "itemObject"
-          ],
+          "examples": ["itemObject"],
           "title": "Iterator variable",
           "type": "string"
         },
@@ -386,9 +361,7 @@
             },
             {
               "$ref": "#/definitions/Reference",
-              "examples": [
-                "..listData.contactList.docs"
-              ]
+              "examples": ["..listData.contactList.docs"]
             },
             {
               "type": "array"
@@ -427,9 +400,7 @@
           ]
         },
         "onEvent": {
-          "examples": [
-            "onNewEcosDoc"
-          ],
+          "examples": ["onNewEcosDoc"],
           "type": "string"
         },
         "onFocus": {
@@ -503,9 +474,7 @@
           ]
         },
         "options": {
-          "examples": [
-            "..formData.options"
-          ],
+          "examples": ["..formData.options"],
           "oneOf": [
             {
               "type": "string"
@@ -516,9 +485,7 @@
           ]
         },
         "overflow": {
-          "examples": [
-            "hidden"
-          ],
+          "examples": ["hidden"],
           "type": "string"
         },
         "path": {
@@ -527,9 +494,7 @@
         "placeholder": {
           "oneOf": [
             {
-              "examples": [
-                "..myPlaceholder"
-              ],
+              "examples": ["..myPlaceholder"],
               "type": "string"
             },
             {
@@ -553,19 +518,14 @@
         },
         "poster": {
           "description": "A cover image used on video components. When a video has not been interacted with by a user, a cover image is displayed. This value can be used for the cover image",
-          "examples": [
-            "poster.png"
-          ],
+          "examples": ["poster.png"],
           "title": "Cover image",
           "type": "string"
         },
         "required": {
           "oneOf": [
             {
-              "examples": [
-                "true",
-                "false"
-              ],
+              "examples": ["true", "false"],
               "type": "string"
             },
             {
@@ -574,9 +534,7 @@
           ]
         },
         "resource": {
-          "examples": [
-            "https://google.com/someImage.jpeg"
-          ],
+          "examples": ["https://google.com/someImage.jpeg"],
           "type": "string"
         },
         "style": {
@@ -587,9 +545,7 @@
         },
         "text=func": {
           "description": "A function to transform a component's text. A component must have the 'text' property.",
-          "examples": [
-            "=.builtIn.system.configUrl"
-          ],
+          "examples": ["=.builtIn.system.configUrl"],
           "title": "Text transformer",
           "type": "string"
         },
@@ -603,9 +559,7 @@
           "$ref": "#/definitions/ComponentType"
         },
         "videoFormat": {
-          "examples": [
-            "mp4"
-          ],
+          "examples": ["mp4"],
           "type": "string"
         },
         "videoStream": {
@@ -615,9 +569,7 @@
           "$ref": "#/definitions/ViewTag"
         },
         "zIndex": {
-          "examples": [
-            "\"1000\""
-          ],
+          "examples": ["\"1000\""],
           "type": "number"
         }
       },
@@ -661,15 +613,11 @@
         "cadlVersion": {
           "properties": {
             "stable": {
-              "examples": [
-                "0.56d"
-              ],
+              "examples": ["0.56d"],
               "type": "string"
             },
             "test": {
-              "examples": [
-                "0.56d"
-              ],
+              "examples": ["0.56d"],
               "type": "string"
             }
           },
@@ -717,9 +665,7 @@
       "description": "Data key in the emit object",
       "patternProperties": {
         "^[a-zA-Z0-9]+$": {
-          "examples": [
-            "{var:\"\"}"
-          ],
+          "examples": ["{var:\"\"}"],
           "type": "object"
         }
       },
@@ -728,10 +674,7 @@
     },
     "DataKeyString": {
       "description": "The path to a data object or value. It might provide a different behavior depending on where it is placed. For example, a dataKey set on a textField component will bind its value to the path in the dataKey, enabling it to mutate the value while updating textField's value",
-      "examples": [
-        "formData.password",
-        "SignIn.formData.password"
-      ],
+      "examples": ["formData.password", "SignIn.formData.password"],
       "title": "Data key",
       "type": "string"
     },
@@ -769,9 +712,7 @@
           "title": "Emit action data key string or data key object"
         }
       },
-      "required": [
-        "actions"
-      ],
+      "required": ["actions"],
       "type": "object"
     },
     "Empty": {
@@ -781,9 +722,7 @@
     "Goto": {
       "anyOf": [
         {
-          "examples": [
-            "SignIn"
-          ],
+          "examples": ["SignIn"],
           "type": "string"
         },
         {
@@ -803,25 +742,18 @@
     "GotoObject": {
       "properties": {
         "destination": {
-          "examples": [
-            "SignIn"
-          ],
+          "examples": ["SignIn"],
           "type": "string"
         }
       },
       "type": "object"
     },
     "GotoPage": {
-      "examples": [
-        "SignIn",
-        "SignOut"
-      ],
+      "examples": ["SignIn", "SignOut"],
       "type": "string"
     },
     "GotoPageComponentUrl": {
-      "examples": [
-        "Dashboard@SignIn#someViewTag"
-      ],
+      "examples": ["Dashboard@SignIn#someViewTag"],
       "pattern": "[a-zA-Z0-9]+@[a-zA-Z0-9]+#[a-zA-Z0-9]+",
       "type": "string"
     },
@@ -855,9 +787,7 @@
                 "$ref": "#/definitions/Goto"
               },
               {
-                "const": [
-                  ""
-                ],
+                "const": [""],
                 "title": "Page init",
                 "type": "string"
               }
@@ -909,11 +839,7 @@
     },
     "NoodlUnit": {
       "description": "A measurement adaptive to the size of the viewport",
-      "examples": [
-        "\"0\"",
-        "\"0.1\"",
-        "\"1\""
-      ],
+      "examples": ["\"0\"", "\"0.1\"", "\"1\""],
       "type": "string"
     },
     "Page": {
@@ -951,9 +877,7 @@
         },
         "title": {
           "description": "Titles can be used to represent the page",
-          "examples": [
-            "My Title"
-          ],
+          "examples": ["My Title"],
           "title": "Page title",
           "type": "string"
         },
@@ -962,11 +886,7 @@
         },
         "viewPort": {
           "description": "Determines the initial scroll position for the user",
-          "examples": [
-            "top",
-            "center",
-            "bottom"
-          ],
+          "examples": ["top", "center", "bottom"],
           "type": "string"
         }
       },
@@ -998,17 +918,12 @@
       "type": "array"
     },
     "PageModule": {
-      "examples": [
-        "admin",
-        "business"
-      ],
+      "examples": ["admin", "business"],
       "type": "string"
     },
     "PageNumber": {
       "description": "A page number may help distinguish between pages with similar names",
-      "examples": [
-        "\"219\""
-      ],
+      "examples": ["\"219\""],
       "title": "Page number",
       "type": "string"
     },
@@ -1018,10 +933,7 @@
         {
           "anyOf": [
             {
-              "examples": [
-                "logo.png",
-                "SignIn"
-              ],
+              "examples": ["logo.png", "SignIn"],
               "type": "string"
             },
             {
@@ -1127,9 +1039,7 @@
           "type": "string"
         },
         "apiPort": {
-          "examples": [
-            "443"
-          ],
+          "examples": ["443"],
           "type": "string"
         },
         "appApiHost": {
@@ -1139,26 +1049,20 @@
           "type": "string"
         },
         "cadlMain": {
-          "examples": [
-            "cadlEndpoint.yml"
-          ],
+          "examples": ["cadlEndpoint.yml"],
           "type": "string"
         },
         "cadlVersion": {
           "type": "object"
         },
         "connectiontimeout": {
-          "examples": [
-            "5"
-          ],
+          "examples": ["5"],
           "type": "string"
         },
         "debug": {
           "oneOf": [
             {
-              "examples": [
-                "console_log_api"
-              ],
+              "examples": ["console_log_api"],
               "type": "string"
             },
             {
@@ -1183,9 +1087,7 @@
           "type": "array"
         },
         "loadingLevel": {
-          "examples": [
-            "1"
-          ],
+          "examples": ["1"],
           "type": "number"
         },
         "log": {
@@ -1201,23 +1103,17 @@
           "type": "string"
         },
         "timestamp": {
-          "examples": [
-            5272021
-          ],
+          "examples": [5272021],
           "type": "number"
         },
         "viewWidthHeightRatio": {
           "properties": {
             "max": {
-              "examples": [
-                0.56
-              ],
+              "examples": [0.56],
               "type": "number"
             },
             "min": {
-              "examples": [
-                0.7
-              ],
+              "examples": [0.7],
               "type": "number"
             }
           },
@@ -1263,25 +1159,19 @@
       "additionalProperties": true,
       "properties": {
         "align": {
-          "examples": [
-            "centerX",
-            "centerY"
-          ],
+          "examples": ["centerX", "centerY"],
           "title": "Alignment",
+          "description": "The alignment in a block. If align is horizontal, siblings will align horizontally, vice versa. This is functionally equivalent to the \"axis\" keyword",
           "type": "string"
         },
         "axis": {
-          "examples": [
-            "horizontal",
-            "vertical"
-          ],
+          "examples": ["horizontal", "vertical"],
           "title": "Axis",
+          "description": "The axis in a block. If axis is horizontal, siblings will align horizontally, vice versa. This was previously used in list/listItem components",
           "type": "string"
         },
         "backgroundColor": {
-          "examples": [
-            "\"0x030303\""
-          ],
+          "examples": ["\"0x030303\""],
           "title": "Background color",
           "type": "string"
         },
@@ -1293,16 +1183,16 @@
           "type": "string"
         },
         "borderColor": {
-          "examples": [
-            "\"0x000000\""
-          ],
+          "examples": ["\"0x000000\""],
           "title": "Border color",
           "type": "string"
         },
         "borderRadius": {
+          "title": "Border radius",
           "$ref": "#/definitions/NoodlUnit"
         },
         "borderWidth": {
+          "title": "Border width",
           "$ref": "#/definitions/NoodlUnit"
         },
         "boxShadow": {
@@ -1311,17 +1201,12 @@
           "type": "string"
         },
         "boxSizing": {
-          "examples": [
-            "border-box",
-            "content-box"
-          ],
+          "examples": ["border-box", "content-box"],
           "title": "Box sizing",
           "type": "string"
         },
         "color": {
-          "examples": [
-            "\"0x000000\""
-          ],
+          "examples": ["\"0x000000\""],
           "title": "Color",
           "type": "string"
         },
@@ -1349,15 +1234,7 @@
           "oneOf": [
             {
               "description": "Applies a thickness style effect",
-              "examples": [
-                100,
-                200,
-                400,
-                500,
-                700,
-                900,
-                "bold"
-              ],
+              "examples": [100, 200, 400, 500, 700, 900, "bold"],
               "type": "number"
             },
             {
@@ -1374,28 +1251,27 @@
           "$ref": "#/definitions/Boolean"
         },
         "isHidden": {
+          "description": "Used for hiding/showing components",
           "$ref": "#/definitions/Boolean"
         },
         "justifyContent": {
-          "examples": [
-            "flex-start",
-            "center",
-            "flex-end",
-            "space-around"
-          ],
+          "examples": ["flex-start", "center", "flex-end", "space-around"],
           "title": "Justify content",
           "type": "string"
         },
         "left": {
           "$ref": "#/definitions/NoodlUnit",
-          "title": "Component left position"
+          "title": "Component left position",
+          "description": "Left position. The greater the value, the further away from the left position"
         },
         "letterSpacing": {
           "title": "Letter spacing",
+          "description": "Spacing between each letter",
           "type": "string"
         },
         "lineHeight": {
           "title": "Line height",
+          "description": "Spacing between each line",
           "type": "string"
         },
         "margin": {
@@ -1408,17 +1284,13 @@
         },
         "opacity": {
           "description": "Applies a transparenct style effect. The lower the opacity, the more the transparent effect is applied",
-          "examples": [
-            "0.5"
-          ],
+          "examples": ["0.5"],
           "title": "Opacity",
           "type": "number"
         },
         "overflow": {
           "description": "If hidden, any styles flowing outside of a component's bounds will be invisible",
-          "examples": [
-            "hidden"
-          ],
+          "examples": ["hidden"],
           "title": "Overflow",
           "type": "string"
         },
@@ -1431,12 +1303,7 @@
           "title": "Padding left"
         },
         "position": {
-          "examples": [
-            "relative",
-            "absolute",
-            "fixed",
-            "static"
-          ],
+          "examples": ["relative", "absolute", "fixed", "static"],
           "title": "Position",
           "type": "string"
         },
@@ -1447,10 +1314,7 @@
           "description": "Applies a box shadow effect",
           "oneOf": [
             {
-              "examples": [
-                "true",
-                "false"
-              ],
+              "examples": ["true", "false"],
               "type": "string"
             },
             {
@@ -1470,7 +1334,8 @@
         },
         "top": {
           "$ref": "#/definitions/NoodlUnit",
-          "title": "Component top position"
+          "title": "Component top position",
+          "description": "Top position. The greater the value, the further away from the top position"
         },
         "width": {
           "$ref": "#/definitions/NoodlUnit",
@@ -1478,9 +1343,7 @@
         },
         "zIndex": {
           "description": "Applies a level of precedence/importance to a component. The higher the zIndex the higher level the component will be placed. For example, if a child 3 levels down applies a higher zIndex than the parent, then the child will appear to be on top in the page",
-          "examples": [
-            "\"1000\""
-          ],
+          "examples": ["\"1000\""],
           "title": "zIndex",
           "type": "string"
         }
@@ -1497,6 +1360,7 @@
           "$ref": "#/definitions/If"
         }
       ],
+      "description": "Used to display text in the user interface. Most commonly used in label components",
       "title": "Text"
     },
     "TextAlign": {
@@ -1511,36 +1375,25 @@
       "title": "Text alignment"
     },
     "TextAlignEnum": {
-      "examples": [
-        "left",
-        "center",
-        "centerX",
-        "right"
-      ],
+      "examples": ["left", "center", "centerX", "right"],
       "type": "string"
     },
     "TextAlignObject": {
       "additionalProperties": true,
       "properties": {
         "x": {
-          "examples": [
-            "left",
-            "center",
-            "centerX",
-            "right"
-          ],
+          "examples": ["left", "center", "centerX", "right"],
           "type": "string"
         },
         "y": {
-          "examples": [
-            "center"
-          ],
+          "examples": ["center"],
           "type": "string"
         }
       },
       "type": "object"
     },
     "TextBoard": {
+      "description": "A component that contains children of text that are positioned inline (side by side)",
       "items": {
         "properties": {
           "color": {
@@ -1556,6 +1409,8 @@
       "type": "array"
     },
     "UserEvent": {
+      "title": "User event",
+      "description": "User events such as onClick, onHover, onMouseEnter, etc. take in a list of actions, in other words an ActionChain",
       "anyOf": [
         {
           "$ref": "#/definitions/Action",
@@ -1567,6 +1422,7 @@
       ]
     },
     "Value": {
+      "title": "Noodl value",
       "description": "A valid value in accordance to the noodl specification",
       "oneOf": [
         {
