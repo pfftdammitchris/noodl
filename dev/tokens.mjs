@@ -13,12 +13,12 @@ const lexer = new yaml.Lexer()
 const tokens = lexer.lex(configYml)
 
 fs.writeJsonSync(toAbsPath('data/meetd2tokens.json'), Array.from(tokens), {
-	spaces: 2,
+  spaces: 2,
 })
 
 const tokenCode = {
-	'\u0002': 'START_OF_TEXT',
-	'\u001f': 'UNIT_SEPARATOR',
-	'\r': 'NEWLINE',
-	'\r\n': 'NEWLINE',
+  '\u0002': 'START_OF_TEXT',
+  '\u001f': 'UNIT_SEPARATOR',
+  '\r': 'NEWLINE',
+  '\r\n': 'NEWLINE',
 }
