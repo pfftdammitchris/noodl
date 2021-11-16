@@ -1,6 +1,6 @@
 import { Box, Static, Text } from 'ink'
 import { UncontrolledTextInput } from 'ink-text-input'
-import { constants as noodlAggregatorConstants } from 'noodl-aggregator'
+import { consts as noodlAggregatorConstants } from 'noodl'
 import fg from 'fast-glob'
 import type { LinkStructure } from 'noodl'
 import { getFileStructure, normalizePath, stringifyDoc } from 'noodl'

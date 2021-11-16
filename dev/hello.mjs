@@ -7,44 +7,44 @@ import * as nu from 'noodl-utils'
 import fs from 'fs-extra'
 import path from 'path'
 import axios from 'axios'
-import NoodlAggregator from 'noodl-aggregator'
+import { Loader } from 'noodl'
 import yaml from 'yaml'
 
 const {
-	isNode,
-	isScalar,
-	isPair,
-	isMap,
-	isSeq,
-	isDocument,
-	Scalar,
-	Pair,
-	YAMLMap,
-	YAMLSeq,
-	Document: YAMLDocument,
-	visit: YAMLVisit,
-	visitorFn: YAMLVisitorFn,
+  isNode,
+  isScalar,
+  isPair,
+  isMap,
+  isSeq,
+  isDocument,
+  Scalar,
+  Pair,
+  YAMLMap,
+  YAMLSeq,
+  Document: YAMLDocument,
+  visit: YAMLVisit,
+  visitorFn: YAMLVisitorFn,
 } = yaml
 
-const aggregator = new NoodlAggregator({
-	config: 'meetd2',
-	deviceType: 'web',
-	dataType: 'object',
-	env: 'test',
-	version: 'latest',
-	loglevel: 'info',
+const aggregator = new Loader({
+  config: 'meetd2',
+  deviceType: 'web',
+  dataType: 'object',
+  env: 'test',
+  version: 'latest',
+  loglevel: 'info',
 })
 
 await aggregator.init({
-	dir: 'generated/meetd2',
-	spread: ['BaseDataModel', 'BaseCSS', 'BasePage'],
+  dir: 'generated/meetd2',
+  spread: ['BaseDataModel', 'BaseCSS', 'BasePage'],
 })
 
 const visitor = new Visitor()
 visitor.root = aggregator.root
 
 const visitorFns = flowRight(referenceVisitor, ({ key, node, path, meta }) => {
-	return node
+  return node
 })
 
 // for (const [name, node] of u.entries(visitor.root)) {
@@ -52,36 +52,36 @@ const visitorFns = flowRight(referenceVisitor, ({ key, node, path, meta }) => {
 // }
 
 ;(async () => {
-	try {
-		// const ymlDocsString = u.reduce(
-		// 	await globby(
-		// 		path.resolve(path.join(process.cwd(), 'generated/meetd2/**/*.yml')),
-		// 	),
-		// 	(acc, filepath) => {
-		// 		try {
-		// 			let yml = fs.readFile(filepath, 'utf8')
-		// 			return acc + yml + `\n...\n`
-		// 		} catch (error) {
-		// 			console.error(`[${u.yellow(error.name)}] ${u.red(error.message)}`)
-		// 		}
-		// 		return acc
-		// 	},
-		// 	'',
-		// )
-		// const docsStream = yaml.parseAllDocuments(ymlDocsString, {
-		// 	logLevel: 'debug',
-		// })
-		// console.log(docsStream)
-	} catch (error) {
-		console.error(`[${u.yellow(error.name)}] ${u.red(error.message)}`)
-	}
+  try {
+    // const ymlDocsString = u.reduce(
+    // 	await globby(
+    // 		path.resolve(path.join(process.cwd(), 'generated/meetd2/**/*.yml')),
+    // 	),
+    // 	(acc, filepath) => {
+    // 		try {
+    // 			let yml = fs.readFile(filepath, 'utf8')
+    // 			return acc + yml + `\n...\n`
+    // 		} catch (error) {
+    // 			console.error(`[${u.yellow(error.name)}] ${u.red(error.message)}`)
+    // 		}
+    // 		return acc
+    // 	},
+    // 	'',
+    // )
+    // const docsStream = yaml.parseAllDocuments(ymlDocsString, {
+    // 	logLevel: 'debug',
+    // })
+    // console.log(docsStream)
+  } catch (error) {
+    console.error(`[${u.yellow(error.name)}] ${u.red(error.message)}`)
+  }
 })()
 
 function referenceVisitor({ key, node, path, root }) {
-	if (isScalar(node)) {
-		if (is.reference(node.value)) {
-			//
-		}
-	}
-	return node
+  if (isScalar(node)) {
+    if (is.reference(node.value)) {
+      //
+    }
+  }
+  return node
 }

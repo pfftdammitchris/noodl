@@ -1,5 +1,5 @@
 import yaml from 'yaml'
-import NoodlAggregator from 'noodl-aggregator'
+import { Loader } from 'noodl'
 
 export type ParsedDocument = yaml.Document | yaml.Document.Parsed
 
@@ -23,7 +23,7 @@ export interface VisitorCreation<
   C = any,
   O extends Record<string, any> = Record<string, any>,
 > {
-  (aggregator: NoodlAggregator, options?: O): {
+  (aggregator: Loader, options?: O): {
     context: C
     visit: Visitor<any, C>
   }
@@ -31,7 +31,7 @@ export interface VisitorCreation<
 
 export type Visitor<N extends VisitorNode, C = any> =
   | VisitorMapping<C>
-  | ((agg: NoodlAggregator) => VisitFn<N, C>)
+  | ((agg: Loader) => VisitFn<N, C>)
 
 export interface VisitorMapping<C = any> {
   Node?: VisitFn<yaml.Node, C>

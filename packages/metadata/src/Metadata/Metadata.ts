@@ -2,7 +2,7 @@ import * as u from '@jsmanifest/utils'
 import * as nu from 'noodl-utils'
 import * as nt from 'noodl-types'
 import flowRight from 'lodash/flowRight'
-import NoodlAggregator from 'noodl-aggregator'
+import NoodlAggregator from 'noodl'
 import {
   Document,
   Scalar,

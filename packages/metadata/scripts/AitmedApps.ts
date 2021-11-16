@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
-import NoodlAggregator from 'noodl-aggregator'
+import { Loader } from 'noodl'
 import fs from 'fs-extra'
 import path from 'path'
 import axios from 'axios'
@@ -43,7 +43,7 @@ function createAppObject(config = '') {
 
 class AitmedApps {
   #apps = new Map<string, AppObject>()
-  #aggregators = new Map<string, NoodlAggregator>()
+  #aggregators = new Map<string, Loader>()
 
   constructor(apps: string | string[]) {
     this.load(apps)
@@ -56,7 +56,7 @@ class AitmedApps {
           try {
             const appObject = createAppObject(config)
             this.#apps.set(config, appObject)
-            const aggregator = new NoodlAggregator(config)
+            const aggregator = new Loader(config)
             this.#aggregators.set(config, aggregator)
             await aggregator.init({ loadPages: true, loadPreloadPages: true })
             return {

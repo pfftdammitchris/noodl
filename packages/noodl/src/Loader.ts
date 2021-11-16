@@ -3,7 +3,7 @@ import * as u from '@jsmanifest/utils'
 import type { OrArray } from '@jsmanifest/typefest'
 import chunk from 'lodash-es/chunk.js'
 import flatten from 'lodash-es/flatten.js'
-import * as path from 'node:path'
+import * as path from 'path'
 import * as fs from 'fs-extra'
 import type { DeviceType, Env } from 'noodl-types'
 import * as nu from 'noodl-utils'
@@ -218,8 +218,8 @@ class NoodlLoader<
 
     for (const visitee of this.root.values()) {
       yaml.visit(visitee, {
-        Map(key, node) {
-          for (const key of u) {
+        Map: (key, node) => {
+          for (const key of commonUrlKeys) {
             if (node.has(key)) {
               const value = node.get(key)
               if (u.isStr(value)) {
@@ -231,8 +231,8 @@ class NoodlLoader<
             }
           }
         },
-        Pair(key, node) {
-          for (const key of u) {
+        Pair: (key, node) => {
+          for (const key of commonUrlKeys) {
             if (
               yaml.isScalar(node.key) &&
               u.isStr(node.key.value) &&
@@ -345,9 +345,6 @@ class NoodlLoader<
     config?: string
   }): Promise<yaml.Document>
 
-
-
-  
   async loadRootConfig(config: yaml.Document): Promise<yaml.Document>
   async loadRootConfig(configName?: string): Promise<yaml.Document>
   async loadRootConfig(

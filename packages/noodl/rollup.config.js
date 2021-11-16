@@ -14,51 +14,52 @@ const _DEV_ = process.env.NODE_ENV === 'development'
  * @type { import('rollup').RollupOptions[] }
  */
 const configs = [
-	{
-		input: 'src/index.ts',
-		output: [
-			{
-				file: './dist/noodl.js',
-				format: 'es',
-				name: 'noodl',
-				exports: 'auto',
-				sourcemap: true,
-			},
-		],
+  {
+    input: 'src/index.ts',
+    output: [
+      {
+        file: './dist/noodl.cjs.js',
+        format: 'cjs',
+        sourcemap: true,
+      },
+      {
+        file: './dist/noodl.es.js',
+        format: 'es',
+        sourcemap: true,
+        banner: `import { createRequire as topLevelCreateRequire } from "module";
+        const require = topLevelCreateRequire(import.meta.url);`,
+      },
+    ],
 
-		plugins: [
-			json(),
-			nodeResolve({
-				extensions,
-				moduleDirectories: ['node_modules'],
-				preferBuiltins: true,
-			}),
-			nodePolyfills(),
-			commonjs(),
-			filesize(),
-			progress(),
-			babel({
-				extensions: ['.js'],
-				babelHelpers: 'runtime',
-				presets: ['@babel/preset-env'],
-				plugins: ['@babel/transform-runtime'],
-			}),
-			esbuild({
-				experimentalBundling: true,
-				include: /\.[jt]s?$/,
-				exclude: /node_modules/,
-				minify: !_DEV_,
-				target: 'es2020',
-				sourceMap: true,
-			}),
-			{
-				banner: `import { createRequire as topLevelCreateRequire } from "module";
-const require = topLevelCreateRequire(import.meta.url);`,
-			},
-		],
+    plugins: [
+      json(),
+      nodeResolve({
+        extensions,
+        moduleDirectories: ['node_modules'],
+        preferBuiltins: true,
+      }),
+      nodePolyfills(),
+      commonjs(),
+      filesize(),
+      progress(),
+      babel({
+        extensions: ['.js'],
+        babelHelpers: 'runtime',
+        presets: ['@babel/preset-env'],
+        plugins: ['@babel/transform-runtime'],
+      }),
+      esbuild({
+        experimentalBundling: true,
+        include: /\.[jt]s?$/,
+        exclude: /node_modules/,
+        minify: !_DEV_,
+        target: 'es2020',
+        sourceMap: true,
+      }),
+    ],
 
-		context: 'global',
-	},
+    context: 'global',
+  },
 ]
 
 export default configs
