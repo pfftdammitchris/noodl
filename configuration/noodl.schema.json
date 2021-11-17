@@ -129,6 +129,7 @@
       "type": "string"
     },
     "Boolean": {
+      "description": "A boolean value is either one of \"true\", true, \"false\", or false",
       "enum": [
         "true",
         "false",
@@ -138,6 +139,7 @@
       "title": "Boolean"
     },
     "Border": {
+      "description": "Border styles",
       "oneOf": [
         {
           "type": "string"
@@ -264,6 +266,7 @@
       "title": "Border style preset #1"
     },
     "BorderStylePreset": {
+      "description": "A set of border presets, each applying a different style",
       "oneOf": [
         {
           "$ref": "#/definitions/BorderPreset1"
@@ -287,15 +290,16 @@
       "title": "Border style preset"
     },
     "BuiltInEval": {
+      "description": "Objects that become built in functions when parsed/serialized",
       "patternProperties": {
         "^=.builtIn.[a-zA-Z0-9]+$": {
           "additionalProperties": true,
           "properties": {
             "dataIn": {
-              "$ref": "#/definitions/Value"
+              "$ref": "#/definitions/DataIn"
             },
             "dataOut": {
-              "$ref": "#/definitions/Value"
+              "$ref": "#/definitions/DataOut"
             }
           },
           "type": "object"
@@ -348,10 +352,10 @@
           "type": "string"
         },
         "global": {
+          "$ref": "#/definitions/Boolean",
           "examples": [
             "true"
-          ],
-          "type": "boolean"
+          ]
         },
         "image": {
           "type": "string"
@@ -709,6 +713,11 @@
       "title": "Content type",
       "type": "string"
     },
+    "DataIn": {
+      "$ref": "#/definitions/Value",
+      "description": "Argument(s) to the surrounding built in function",
+      "title": "Data in"
+    },
     "DataKey": {
       "anyOf": [
         {
@@ -747,6 +756,11 @@
       "description": "An object that contains data. It is most commonly used in actions such as updateObject as a way to update its data values",
       "title": "Data object",
       "type": "string"
+    },
+    "DataOut": {
+      "$ref": "#/definitions/Value",
+      "description": "Return value(s) to the surrounding built in function",
+      "title": "Data out"
     },
     "Emit": {
       "additionalProperties": false,
@@ -1295,6 +1309,7 @@
       "additionalProperties": true,
       "properties": {
         "align": {
+          "description": "The alignment in a block. If align is horizontal, siblings will align horizontally, vice versa. This is functionally equivalent to the \"axis\" keyword",
           "examples": [
             "centerX",
             "centerY"
@@ -1303,6 +1318,7 @@
           "type": "string"
         },
         "axis": {
+          "description": "The axis in a block. If axis is horizontal, siblings will align horizontally, vice versa. This was previously used in list/listItem components",
           "examples": [
             "horizontal",
             "vertical"
@@ -1332,10 +1348,12 @@
           "type": "string"
         },
         "borderRadius": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Border radius"
         },
         "borderWidth": {
-          "$ref": "#/definitions/NoodlUnit"
+          "$ref": "#/definitions/NoodlUnit",
+          "title": "Border width"
         },
         "boxShadow": {
           "description": "Applies a box shadow style effect",
@@ -1406,7 +1424,8 @@
           "$ref": "#/definitions/Boolean"
         },
         "isHidden": {
-          "$ref": "#/definitions/Boolean"
+          "$ref": "#/definitions/Boolean",
+          "description": "Used for hiding/showing components"
         },
         "justifyContent": {
           "examples": [
@@ -1420,13 +1439,16 @@
         },
         "left": {
           "$ref": "#/definitions/NoodlUnit",
+          "description": "Left position. The greater the value, the further away from the left position",
           "title": "Component left position"
         },
         "letterSpacing": {
+          "description": "Spacing between each letter",
           "title": "Letter spacing",
           "type": "string"
         },
         "lineHeight": {
+          "description": "Spacing between each line",
           "title": "Line height",
           "type": "string"
         },
@@ -1502,6 +1524,7 @@
         },
         "top": {
           "$ref": "#/definitions/NoodlUnit",
+          "description": "Top position. The greater the value, the further away from the top position",
           "title": "Component top position"
         },
         "width": {
@@ -1521,7 +1544,7 @@
       "type": "object"
     },
     "Text": {
-      "description": "Information/context. Most commonly used in label or textboard components",
+      "description": "Used to display text in the user interface. Most commonly used in label components",
       "oneOf": [
         {
           "type": "string"
@@ -1576,6 +1599,7 @@
       "type": "object"
     },
     "TextBoard": {
+      "description": "A component that contains children of text that are positioned inline (side by side)",
       "items": {
         "properties": {
           "color": {
