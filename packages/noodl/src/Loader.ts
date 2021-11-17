@@ -24,7 +24,7 @@ const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
 class NoodlLoader<
   Options extends string = string,
   DataType extends t.Loader.RootDataType = 'map',
-> implements t.IAggregator<DataType>
+> implements t.ILoader<DataType>
 {
   #configKey = ''
 

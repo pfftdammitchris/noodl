@@ -1,5 +1,11 @@
 {
-	"compilerOptions": {},
-	"extends": "../../tsconfig.test.json",
-	"include": ["./src/**/*.test.ts"]
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "compilerOptions": {
+    "module": "es2020",
+    "target": "es2020"
+  },
+  "extends": "./tsconfig.json",
+  "include": ["./src/**/*.test.ts"]
 }

@@ -38,7 +38,6 @@ const config = {
         loader: 'babel-loader',
         options: {
           plugins: ['@babel/plugin-transform-runtime'],
-          presets: ['@babel/preset-typescript'],
         },
       },
       {

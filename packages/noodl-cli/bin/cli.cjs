@@ -1,1 +1,1 @@
-require('../dist/cjs/cli.js')
+require('../dist/cjs/cli.jsx')

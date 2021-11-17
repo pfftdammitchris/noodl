@@ -1,11 +1,9 @@
 {
 	"compilerOptions": {
 		"allowJs": true,
-		"declarationDir": "./dist",
+		"outDir": "./dist",
 		"jsx": "react",
 		"module": "commonjs",
-		"outDir": "./dist",
-		"rootDir": "./src",
 		"target": "es2018"
 	},
 	"extends": "../../tsconfig.json",
