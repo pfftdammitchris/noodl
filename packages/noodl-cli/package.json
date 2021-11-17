@@ -1,66 +1,70 @@
 {
-	"bin": {
-		"noodl": "./bin/cli.js"
-	},
-	"dependencies": {
-		"immer": "^9.0.6",
-		"ink": "^3.0.9",
-		"ink-multi-select": "^2.0.0",
-		"ink-progress-bar": "^3.0.0",
-		"ink-select-input": "^4.2.0",
-		"ink-spinner": "^4.0.3",
-		"ink-text-input": "^4.0.1",
-		"invariant": "^2.2.4",
-		"react": "^16.14.0"
-	},
-	"devDependencies": {
-		"@types/ink-select-input": "^3.0.1",
-		"@types/react": "^17.0.20",
-		"ink-testing-library": "^2.1.0",
-		"node-cron": "^3.0.0"
-	},
-	"engines": {
-		"node": ">=14"
-	},
-	"exports": {
-		"import": "./cli.js",
-		"require": "./cli.cjs"
-	},
-	"files": [
-		"bin",
-		"dist",
-		"tsconfig.json",
-		"tsconfig.test.json",
-		"readme.md",
-		".editorconfig",
-		".gitconfig",
-		"noodl.yml"
-	],
-	"license": "MIT",
-	"name": "noodl-cli",
-	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/pfftdammitchris/noodl-cli"
-	},
-	"scripts": {
-		"build": "cross-env NODE_ENV=production concurrently \"npm run build:esm\" \"npm run build:cjs\"",
-		"build:cjs": "tsc --module commonjs --target es2018 --outDir ./dist/cjs --declaration --declarationDir ./dist/cjs",
-		"build:esm": "tsc --module es2015 --target es2020",
-		"start": "cross-env NODE_ENV=development npm run build:esm -- --watch",
-		"start:cjs": "cross-env NODE_ENV=development npm run build:cjs -- --watch",
-		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\""
-	},
-	"type": "module",
-	"typesVersions": {
-		"*": {
-			"cli.d.ts": [
-				"./dist/cli.d.ts"
-			]
-		}
-	},
-	"typings": "./dist/cli.d.ts",
-	"version": "0.0.112"
+    "bin": {
+        "noodl": "./bin/cli.js"
+    },
+    "dependencies": {
+        "immer": "^9.0.6",
+        "ink": "^3.0.9",
+        "ink-multi-select": "^2.0.0",
+        "ink-progress-bar": "^3.0.0",
+        "ink-select-input": "^4.2.0",
+        "ink-spinner": "^4.0.3",
+        "ink-text-input": "^4.0.1",
+        "invariant": "^2.2.4",
+        "react": "^16.14.0"
+    },
+    "devDependencies": {
+        "@types/ink-select-input": "^3.0.1",
+        "@types/react": "^17.0.20",
+        "ink-testing-library": "^2.1.0",
+        "node-cron": "^3.0.0"
+    },
+    "engines": {
+        "node": ">=14"
+    },
+    "exports": {
+        "default": "./dist/cli.js",
+        "import": "./cli.js",
+        "require": "./dist/cli.js"
+    },
+    "files": [
+        "bin",
+        "dist",
+        "tsconfig.json",
+        "tsconfig.test.json",
+        "readme.md",
+        ".editorconfig",
+        ".gitconfig",
+        "noodl.yml"
+    ],
+    "license": "MIT",
+    "main": "./dist/cjs/cli.js",
+    "module": "./dist/cli.js",
+    "name": "noodl-cli",
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pfftdammitchris/noodl-cli"
+    },
+    "scripts": {
+        "build": "cross-env NODE_ENV=production concurrently \"npm run build:esm\" \"npm run build:cjs\" \"npm run types\"",
+        "build:cjs": "tsc --module commonjs --target es2018 --outDir ./dist/cjs",
+        "build:esm": "tsc --module es2020 --target es2020 --outDir ./dist",
+        "start": "cross-env NODE_ENV=development npm run build:esm -- --watch",
+        "start:cjs": "cross-env NODE_ENV=development npm run build:es -- --watch",
+        "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\"",
+        "types": "tsc --emitDeclarationOnly --declarationDir dist"
+    },
+    "type": "module",
+    "typesVersions": {
+        "*": {
+            "cli.d.ts": [
+                "./dist/cli.d.ts"
+            ]
+        }
+    },
+    "typings": "./dist/cli.d.ts",
+    "version": "0.0.112"
 }
