@@ -38,15 +38,16 @@
         "build:esbuild": "esbuild src/index.ts --banner:js='import { createRequire as topLevelCreateRequire } from \"module\";\n const require = topLevelCreateRequire(import.meta.url);' --bundle --sourcemap --platform=node --target=es2020",
         "prebuild": "rm -rf dist",
         "start": "cross-env NODE_ENV=development concurrently \"rollup -c -w\" \"npm run types\"",
-        "test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --watch",
+        "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts \"src/**/*.ts\"",
+        "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src",
         "types": "tsc --declaration --emitDeclarationOnly"
     },
     "type": "module",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/noodl.d.ts",
     "typesVersions": {
         "*": {
-            "index.d.ts": [
-                "./dist/index.d.ts"
+            "noodl.d.ts": [
+                "./dist/noodl.d.ts"
             ]
         }
     },

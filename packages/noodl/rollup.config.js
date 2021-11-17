@@ -15,7 +15,7 @@ const _DEV_ = process.env.NODE_ENV === 'development'
  */
 const configs = [
   {
-    input: 'src/index.ts',
+    input: 'src/noodl.ts',
     output: [
       {
         file: './dist/noodl.cjs.js',

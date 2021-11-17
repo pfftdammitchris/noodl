@@ -1,15 +1,12 @@
 import * as u from '@jsmanifest/utils'
-import { Loader } from 'noodl'
+import * as nt from 'noodl-types'
+import { getAbsFilePath, loadFile, Visitor } from 'noodl'
+import fs from 'fs-extra'
+import path from 'path'
 import flowRight from 'lodash/flowRight.js'
 import yaml from 'yaml'
-import tsn from 'ts-node'
 
-const repl = tsn.createRepl()
-const service = tsn.create({ ...repl.evalAwarePartialHost })
-repl.setService(service)
-repl.start()
-
-repl.evalCode(String(yaml.parse()))
+const doc = loadFile(getAbsFilePath('generated/meetd2/SignIn.yml'), 'doc')
 
 // const loader = new Loader({
 //   config: 'meetd2',
@@ -24,3 +21,21 @@ repl.evalCode(String(yaml.parse()))
 //   dir: 'generated/meetd2',
 //   spread: ['BaseDataModel', 'BaseCSS', 'BasePage'],
 // })
+
+const store = {}
+const root = {}
+let c = 0
+
+const visit = Visitor(store, root, (args) => {
+  if (yaml.isScalar(args.node)) {
+    c++
+    if (u.isStr(args.node.value)) {
+      if (nt.Identify.reference(args.node.value)) {
+        console.log(args.node.value)
+        return yaml.visit.SKIP
+      }
+    }
+  }
+})
+
+visit('SignIn', doc)
