@@ -1,6 +1,6 @@
 {
     "bin": {
-        "noodl": "./bin/cli.js"
+        "noodl": "bin/cli.js"
     },
     "dependencies": {
         "immer": "^9.0.6",
@@ -69,5 +69,5 @@
         }
     },
     "typings": "./dist/cli.d.ts",
-    "version": "0.0.116"
+    "version": "0.0.117"
 }
