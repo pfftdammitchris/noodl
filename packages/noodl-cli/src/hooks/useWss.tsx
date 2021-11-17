@@ -1,7 +1,7 @@
 import React from 'react'
 import type { IncomingMessage } from 'http'
 // @ts-expect-error
-import { WebSocketServer as WebSocketServer } from 'ws'
+import { WebSocketServer } from 'ws'
 import type { Server, ServerOptions } from 'ws'
 import * as c from '../constants.js'
 
