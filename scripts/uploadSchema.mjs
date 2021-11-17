@@ -1,3 +1,5 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import * as u from '@jsmanifest/utils'
 import fs from 'fs-extra'
 import path from 'path'
@@ -12,8 +14,8 @@ const schemaUrl = `https://noodl.s3.us-west-1.amazonaws.com/noodl.schema.json`
 
 const s3 = new S3Client({
   credentials: {
-    accessKeyId: 'AKIAZVHIRXCPF3JR47T5',
-    secretAccessKey: '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',
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
   },
   region: 'us-west-1',
 })
