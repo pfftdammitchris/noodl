@@ -23,10 +23,12 @@
         "node": ">=14"
     },
     "exports": {
-        "default": "./dist/cjs/cli.js",
-        "import": "./dist/cli.js",
-        "package.json": "./package.json",
-        "require": "./dist/cjs/cli.js"
+        ".": {
+            "import": "./dist/cli.js",
+            "node": "./dist/cjs/cli.js",
+            "require": "./dist/cjs/cli.js"
+        },
+        "./package.json": "./package.json"
     },
     "files": [
         "bin",
