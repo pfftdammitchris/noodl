@@ -7,6 +7,7 @@
     "exports": {
         "default": "./dist/noodl.cjs.js",
         "import": "./dist/noodl.es.js",
+        "package.json": "./package.json",
         "require": "./dist/noodl.cjs.js"
     },
     "files": [

@@ -25,6 +25,7 @@
     "exports": {
         "default": "./dist/cjs/cli.js",
         "import": "./dist/cli.js",
+        "package.json": "./package.json",
         "require": "./dist/cjs/cli.js"
     },
     "files": [
