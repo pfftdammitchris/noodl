@@ -23,9 +23,9 @@
         "node": ">=14"
     },
     "exports": {
-        "default": "./dist/cli.js",
-        "import": "./cli.js",
-        "require": "./dist/cli.js"
+        "default": "./dist/cjs/cli.js",
+        "import": "./dist/cli.js",
+        "require": "./dist/cjs/cli.js"
     },
     "files": [
         "bin",
