@@ -32,6 +32,7 @@
             "goto",
             "saveSignature"
           ],
+          "title": "Function name",
           "type": "string"
         },
         "goto": {
@@ -48,7 +49,8 @@
             {
               "type": "array"
             }
-          ]
+          ],
+          "title": "Eval object's object"
         },
         "popUpView": {
           "description": "A binding between a popUp or popUpDismiss component to a popUp action.",
@@ -66,6 +68,7 @@
           "type": "string"
         },
         "timerTag": {
+          "title": "Timer tag",
           "type": "string"
         },
         "viewTag": {
@@ -84,7 +87,8 @@
             {
               "type": "number"
             }
-          ]
+          ],
+          "title": "Wait"
         }
       },
       "type": "object"
@@ -279,7 +283,8 @@
         {
           "$ref": "#/definitions/BorderPreset6"
         }
-      ]
+      ],
+      "title": "Border style preset"
     },
     "BuiltInEval": {
       "patternProperties": {
@@ -676,6 +681,7 @@
           "type": "object"
         }
       },
+      "title": "Root config version object",
       "type": "object"
     },
     "ContentType": {
@@ -711,7 +717,9 @@
         {
           "$ref": "#/definitions/DataKeyObject"
         }
-      ]
+      ],
+      "description": "A value/pointer to a a property of an object",
+      "title": "Data key"
     },
     "DataKeyObject": {
       "description": "Data key in the emit object",
@@ -737,6 +745,7 @@
     },
     "DataObject": {
       "description": "An object that contains data. It is most commonly used in actions such as updateObject as a way to update its data values",
+      "title": "Data object",
       "type": "string"
     },
     "Emit": {
@@ -772,10 +781,13 @@
       "required": [
         "actions"
       ],
+      "title": "Emit",
       "type": "object"
     },
     "Empty": {
       "const": "",
+      "description": "Empty value (empty string)",
+      "title": "Empty",
       "type": "string"
     },
     "Goto": {
@@ -798,7 +810,8 @@
       "description": "The destination the user should navigate to",
       "not": {
         "type": "number"
-      }
+      },
+      "title": "Goto"
     },
     "GotoObject": {
       "properties": {
@@ -809,6 +822,7 @@
           "type": "string"
         }
       },
+      "title": "Goto (object)",
       "type": "object"
     },
     "GotoPage": {
@@ -816,6 +830,7 @@
         "SignIn",
         "SignOut"
       ],
+      "title": "Goto (string)",
       "type": "string"
     },
     "GotoPageComponentUrl": {
@@ -823,6 +838,7 @@
         "Dashboard@SignIn#someViewTag"
       ],
       "pattern": "[a-zA-Z0-9]+@[a-zA-Z0-9]+#[a-zA-Z0-9]+",
+      "title": "Goto url",
       "type": "string"
     },
     "If": {
@@ -868,7 +884,9 @@
         {
           "$ref": "#/definitions/MixedActionChain"
         }
-      ]
+      ],
+      "description": "One or more action(s) which will occur when entering a page",
+      "title": "Init"
     },
     "LocalEvalReference": {
       "description": "Mutates the value at the referenced path after receiving its result",
@@ -905,6 +923,7 @@
           }
         ]
       },
+      "title": "ActionChain + Init",
       "type": "array"
     },
     "NoodlUnit": {
@@ -914,11 +933,12 @@
         "\"0.1\"",
         "\"1\""
       ],
+      "title": "Noodl unit (ex: \"0.1\", \"0.25\", etc)",
       "type": "string"
     },
     "Page": {
       "additionalProperties": {},
-      "description": "The page object for a page",
+      "description": "A page object",
       "properties": {
         "check": {
           "$ref": "#/definitions/Init"
@@ -970,6 +990,7 @@
           "type": "string"
         }
       },
+      "title": "Page",
       "type": "object"
     },
     "PageActions": {
@@ -995,6 +1016,7 @@
         ],
         "type": "array"
       },
+      "title": "Page actions",
       "type": "array"
     },
     "PageModule": {
@@ -1002,6 +1024,7 @@
         "admin",
         "business"
       ],
+      "title": "Page module",
       "type": "string"
     },
     "PageNumber": {
@@ -1074,6 +1097,7 @@
     },
     "Root": {
       "additionalProperties": true,
+      "description": "The root/base object. It is global to all descendants",
       "properties": {
         "BaseCSS": {
           "properties": {
@@ -1081,6 +1105,7 @@
               "$ref": "#/definitions/Style"
             }
           },
+          "title": "Base CSS styles",
           "type": "object"
         },
         "BaseDataModel": {
@@ -1099,18 +1124,24 @@
               "type": "object"
             }
           },
+          "title": "Base data models",
           "type": "object"
         },
         "BasePage": {
+          "title": "Base page components",
           "type": "object"
         },
         "Config": {
-          "$ref": "#/definitions/RootConfig"
+          "$ref": "#/definitions/RootConfig",
+          "title": "Alias of RootConfig"
         },
         "Global": {
+          "description": "This can be accessed and mutated by any object at any time",
+          "title": "Global object",
           "type": "object"
         }
       },
+      "title": "Root object",
       "type": "object"
     },
     "RootConfig": {
@@ -1230,6 +1261,7 @@
           "type": "string"
         }
       },
+      "title": "Root/base config",
       "type": "object"
     },
     "RootEvalReference": {
@@ -1489,6 +1521,7 @@
       "type": "object"
     },
     "Text": {
+      "description": "Information/context. Most commonly used in label or textboard components",
       "oneOf": [
         {
           "type": "string"
@@ -1517,6 +1550,7 @@
         "centerX",
         "right"
       ],
+      "title": "Enum for the string textAlign type",
       "type": "string"
     },
     "TextAlignObject": {
@@ -1538,6 +1572,7 @@
           "type": "string"
         }
       },
+      "title": "Text align object",
       "type": "object"
     },
     "TextBoard": {
@@ -1564,7 +1599,9 @@
         {
           "$ref": "#/definitions/Reference"
         }
-      ]
+      ],
+      "description": "An event in the form of an ActionChain that triggers from user interactions, like onClick and onFocus",
+      "title": "User event"
     },
     "Value": {
       "description": "A valid value in accordance to the noodl specification",
@@ -1601,7 +1638,8 @@
           },
           "type": "object"
         }
-      ]
+      ],
+      "title": "Noodl value"
     },
     "ViewTag": {
       "description": "An identifier which is used to bind a component and an action together. Actions can define a viewTag that invokes certain behavior towards a component. The component must also contain the same viewTag key/value. If multiple components have the same viewTag, then the action will effect multiple components",

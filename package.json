@@ -291,7 +291,7 @@
     "bootstrap": "lerna bootstrap --hoist",
     "build": "lerna exec --scope noodl-cli \"npm run build\"",
     "clean": "rm -rf dist node_modules package-lock.json && lerna clean",
-    "deploy-schema": "node scripts/uploadSchema.mjs",
+    "deploy:schema": "node scripts/uploadSchema.mjs",
     "dev": "npx ts-node-dev --respawn --transpile-only",
     "postinstall": "node scripts/postinstall.js",
     "pub": "node scripts/publish.js -p",

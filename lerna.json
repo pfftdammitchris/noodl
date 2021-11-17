@@ -1,17 +1,15 @@
 {
-	"command": {
-		"bootstrap": {},
-		"exec": {},
-		"publish": {},
-		"publishChanges": {},
-		"run": {}
-	},
-	"packages": [
-		"packages/metadata",
-		"packages/noodl",
-		"packages/noodl-cli",
-		"packages/noodl-aggregator",
-		"packages/noodl-utils"
-	],
-	"version": "independent"
+    "command": {
+        "bootstrap": {},
+        "exec": {},
+        "publish": {},
+        "publishChanges": {},
+        "run": {}
+    },
+    "packages": [
+        "packages/noodl",
+        "packages/noodl-cli",
+        "packages/noodl-utils"
+    ],
+    "version": "independent"
 }
