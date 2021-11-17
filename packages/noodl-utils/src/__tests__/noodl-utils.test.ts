@@ -1,6 +1,6 @@
 import * as u from '@jsmanifest/utils'
 import { expect } from 'chai'
-import * as n from '..'
+import * as n from '../index.js'
 
 describe(u.yellow('createEmitDataKey'), () => {
 	const dataObject = { key: 'gender', value: 'Female' }

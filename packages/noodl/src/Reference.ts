@@ -3,6 +3,7 @@ import NoodlNode from './Node.js'
 
 class NoodlReference<V = any> extends NoodlNode<V> {
 	rootKey = ''
+	// @ts-expect-error
 	value: V;
 
 	[Symbol.for('nodejs.util.inspect.custom')]() {

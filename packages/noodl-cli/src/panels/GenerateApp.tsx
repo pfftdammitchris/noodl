@@ -188,7 +188,7 @@ function GenerateApp(props: Props) {
 						for (const asset of assets) {
 							if (asset.filename) {
 								if (!localAssetsAsPlainFileNames.includes(asset.filename)) {
-									// @ts-expect-error
+									// @ts-ignore
 									missingAssets.push({ ...asset, status: 'downloading' })
 								}
 							}

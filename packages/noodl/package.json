@@ -25,6 +25,8 @@
 		"health"
 	],
 	"license": "ISC",
+	"main": "./dist/noodl.js",
+	"module": "./dist/noodl.js",
 	"name": "noodl",
 	"publishConfig": {
 		"access": "public"
@@ -51,5 +53,6 @@
 			]
 		}
 	},
+	"typings": "./dist/noodl.d.ts",
 	"version": "0.0.7"
 }

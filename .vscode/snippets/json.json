@@ -1,0 +1,26 @@
+{
+    "$ref": {
+        "body": "\"\\$ref\": \"#/definitions/$1\"",
+        "prefix": "ref"
+    },
+    "array": {
+        "body": "{ \"type\": \"array\" },",
+        "prefix": "array"
+    },
+    "boolean": {
+        "body": "{ \"type\": \"boolean\" },",
+        "prefix": "boolean"
+    },
+    "number": {
+        "body": "{ \"type\": \"number\" },",
+        "prefix": "number"
+    },
+    "object": {
+        "body": "{ \"type\": \"object\" },",
+        "prefix": "object"
+    },
+    "string": {
+        "body": "{ \"type\": \"string\" },",
+        "prefix": "string"
+    }
+}

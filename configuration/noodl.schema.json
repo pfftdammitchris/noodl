@@ -1,0 +1,1499 @@
+{
+  "$id": "https://json.schemastore.org/noodl.schema.json",
+  "$ref": "#/definitions/RootConfig",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Action": {
+      "additionalProperties": {},
+      "properties": {
+        "actionType": {
+          "$ref": "#/definitions/ActionType"
+        },
+        "contentType": {
+          "$ref": "#/definitions/ContentType"
+        },
+        "dataKey": {
+          "$ref": "#/definitions/DataKeyString"
+        },
+        "dataObject": {
+          "$ref": "#/definitions/DataObject"
+        },
+        "dismissOnTouchOutside": {
+          "description": "Signals that a popup should close when a user clicks outside of it. This is used for closing modals/popups",
+          "type": "boolean"
+        },
+        "emit": {
+          "$ref": "#/definitions/Emit"
+        },
+        "funcName": {
+          "description": "A name/identifier for a function. This is used mainly for builtIn actions, where applications implement their own behavior and binds it to some object in the noodl",
+          "examples": [
+            "redraw",
+            "goto",
+            "saveSignature"
+          ],
+          "type": "string"
+        },
+        "goto": {
+          "$ref": "#/definitions/Goto"
+        },
+        "object": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "popUpView": {
+          "description": "A binding between a popUp or popUpDismiss component to a popUp action.",
+          "title": "A popUp component's identifier by popup behavior",
+          "type": "string"
+        },
+        "reload": {
+          "description": "When set to true, this signals that a page should run its \"init\" operation upon visiting from the user. If it is false, a page will not run it, which can be used to  persist values when navigating pages",
+          "title": "Skip or run \"init\"",
+          "type": "boolean"
+        },
+        "timer": {
+          "description": "A timer is useful for situations such as chat rooms where users will have a time limit before being getting out",
+          "title": "Timer",
+          "type": "string"
+        },
+        "timerTag": {
+          "type": "string"
+        },
+        "viewTag": {
+          "$ref": "#/definitions/ViewTag"
+        },
+        "wait": {
+          "description": "Used to prevent further actions from happening. For example, a popUp action with \"wait: true\" will open a pop up in the page and will not run actions that are next in the call stack. This can be used to restrict access to pages when authenticating",
+          "examples": [
+            true,
+            "5000"
+          ],
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "ActionChain": {
+      "description": "A chain of actions in sequential order",
+      "items": {
+        "$ref": "#/definitions/UserEvent"
+      },
+      "title": "Action chain",
+      "type": "array"
+    },
+    "ActionType": {
+      "description": "An identifier/name for an action",
+      "examples": [
+        "openCamera",
+        "openPhotoLibrary",
+        "openDocumentManager",
+        "pageJump",
+        "popUpDismiss",
+        "refresh",
+        "register",
+        "removeSignature",
+        "saveObject",
+        "saveSignature",
+        "updateObject",
+        "popUp",
+        "builtIn",
+        "evalObject"
+      ],
+      "title": "Action type",
+      "type": "string"
+    },
+    "AwaitReference": {
+      "description": "A reference that returns its result after the value at the referenced path is received",
+      "pattern": "^[=.]*[a-zA-Z0-9]+@$",
+      "title": "Await reference",
+      "type": "string"
+    },
+    "Border": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "additionalProperties": true,
+          "properties": {
+            "color": {
+              "$ref": "#/definitions/Color"
+            },
+            "line": {
+              "examples": [
+                "dashed",
+                "solid"
+              ],
+              "type": "string"
+            },
+            "style": {
+              "$ref": "#/definitions/BorderStylePreset"
+            },
+            "width": {
+              "$ref": "#/definitions/NoodlUnit"
+            }
+          },
+          "type": "object"
+        }
+      ],
+      "title": "Border"
+    },
+    "BorderPreset1": {
+      "const": "1",
+      "description": "Removes border including the radius",
+      "title": "Border style preset #1",
+      "type": "string"
+    },
+    "BorderPreset2": {
+      "const": "2",
+      "description": "Removes border from all sides (including radius) except the bottom. This will create an underline effect",
+      "title": "Border style preset #2",
+      "type": "string"
+    },
+    "BorderPreset3": {
+      "const": "3",
+      "description": "Applies a solid border to all sides",
+      "title": "Border style preset #3",
+      "type": "string"
+    },
+    "BorderPreset4": {
+      "const": "4",
+      "description": "Sets the border to be a dashed border",
+      "title": "Border style preset #4",
+      "type": "string"
+    },
+    "BorderPreset5": {
+      "const": "5",
+      "description": "Removes border from all sides",
+      "title": "Border style preset #5",
+      "type": "string"
+    },
+    "BorderPreset6": {
+      "const": "6",
+      "description": "Sets the border to be a solid border. This will also remove border radius from all sides",
+      "title": "Border style preset #1",
+      "type": "string"
+    },
+    "BorderStylePreset": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/BorderPreset1"
+        },
+        {
+          "$ref": "#/definitions/BorderPreset2"
+        },
+        {
+          "$ref": "#/definitions/BorderPreset3"
+        },
+        {
+          "$ref": "#/definitions/BorderPreset4"
+        },
+        {
+          "$ref": "#/definitions/BorderPreset5"
+        },
+        {
+          "$ref": "#/definitions/BorderPreset6"
+        }
+      ],
+      "type": "string"
+    },
+    "BuiltInEval": {
+      "patternProperties": {
+        "^=.builtIn.[a-zA-Z0-9]+$": {
+          "additionalProperties": true,
+          "properties": {
+            "dataIn": {
+              "$ref": "#/definitions/Value"
+            },
+            "dataOut": {
+              "$ref": "#/definitions/Value"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "Color": {
+      "examples": [
+        "\"0x000000\""
+      ],
+      "pattern": "^(0x)[a-zA-Z0-9]+$",
+      "title": "Color",
+      "type": "string"
+    },
+    "Component": {
+      "additionalProperties": true,
+      "description": "Components are the building blocks that construct to user interfaces",
+      "properties": {
+        "audioStream": {
+          "type": "boolean"
+        },
+        "borderRadius": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "children": {
+          "items": {
+            "$ref": "#/definitions/Component"
+          },
+          "type": "array"
+        },
+        "contentType": {
+          "$ref": "#/definitions/ContentType"
+        },
+        "dataKey": {
+          "$ref": "#/definitions/DataKey"
+        },
+        "ecosObj": {
+          "examples": [
+            "..document.ecosObj"
+          ],
+          "type": "string"
+        },
+        "global": {
+          "examples": [
+            "true"
+          ],
+          "type": "boolean"
+        },
+        "height": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "image": {
+          "type": "string"
+        },
+        "imgPath": {
+          "type": "string"
+        },
+        "isEdit": {
+          "type": "boolean"
+        },
+        "isEditable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "itemObject": {
+          "type": "string"
+        },
+        "iteratorVar": {
+          "examples": [
+            "itemObject"
+          ],
+          "type": "string"
+        },
+        "listObject": {
+          "examples": [
+            "..listData"
+          ],
+          "oneOf": [
+            {
+              "$ref": "#/definitions/Empty"
+            },
+            {
+              "type": "array"
+            }
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "message2": {
+          "type": "string"
+        },
+        "onBlur": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onChange": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onClick": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onEvent": {
+          "examples": [
+            "onNewEcosDoc"
+          ],
+          "type": "string"
+        },
+        "onFocus": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onHover": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onInput": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onMouseEnter": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onMouseLeave": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onMouseOut": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "onMouseOver": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ActionChain"
+            },
+            {
+              "$ref": "#/definitions/UserEvent"
+            }
+          ]
+        },
+        "options": {
+          "examples": [
+            "..formData.options"
+          ],
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array"
+            }
+          ]
+        },
+        "overflow": {
+          "examples": [
+            "hidden"
+          ],
+          "type": "string"
+        },
+        "path": {
+          "$ref": "#/definitions/Path"
+        },
+        "placeholder": {
+          "oneOf": [
+            {
+              "examples": [
+                "..myPlaceholder"
+              ],
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/If"
+            },
+            {
+              "properties": {
+                "emit": {
+                  "$ref": "#/definitions/Emit"
+                }
+              },
+              "type": "object"
+            }
+          ]
+        },
+        "popUpView": {
+          "type": "string"
+        },
+        "postMessage": {
+          "type": "array"
+        },
+        "poster": {
+          "description": "A cover image used on video components. When a video has not been interacted with by a user, a cover image is displayed. This value can be used for the cover image",
+          "examples": [
+            "poster.png"
+          ],
+          "title": "Cover image",
+          "type": "string"
+        },
+        "required": {
+          "oneOf": [
+            {
+              "examples": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "resource": {
+          "examples": [
+            "https://google.com/someImage.jpeg"
+          ],
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/definitions/Style"
+        },
+        "text": {
+          "$ref": "#/definitions/Text"
+        },
+        "text=func": {
+          "description": "A function to transform a component's text. A component must have the 'text' property.",
+          "examples": [
+            "=.builtIn.system.configUrl"
+          ],
+          "title": "Text transformer",
+          "type": "string"
+        },
+        "textAlign": {
+          "$ref": "#/definitions/TextAlign"
+        },
+        "textBoard": {
+          "$ref": "#/definitions/TextBoard"
+        },
+        "type": {
+          "$ref": "#/definitions/ComponentType"
+        },
+        "videoFormat": {
+          "examples": [
+            "mp4"
+          ],
+          "type": "string"
+        },
+        "videoStream": {
+          "type": "boolean"
+        },
+        "viewTag": {
+          "$ref": "#/definitions/ViewTag"
+        },
+        "zIndex": {
+          "examples": [
+            "\"1000\""
+          ],
+          "type": "number"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "Component",
+      "type": "object"
+    },
+    "ComponentType": {
+      "examples": [
+        "button",
+        "canvas",
+        "chart",
+        "chatList",
+        "ecosDoc",
+        "divider",
+        "footer",
+        "header",
+        "image",
+        "label",
+        "list",
+        "listItem",
+        "map",
+        "page",
+        "plugin",
+        "pluginHead",
+        "pluginBodyTop",
+        "pluginBodyTail",
+        "popUp",
+        "register",
+        "scrollView",
+        "textField",
+        "textView",
+        "video",
+        "view"
+      ],
+      "title": "Component type",
+      "type": "string"
+    },
+    "ConfigVersionObjectByDevice": {
+      "additionalProperties": false,
+      "properties": {
+        "cadlVersion": {
+          "properties": {
+            "stable": {
+              "examples": [
+                "0.56d"
+              ],
+              "type": "string"
+            },
+            "test": {
+              "examples": [
+                "0.56d"
+              ],
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "ContentType": {
+      "description": "Determines the content type of the component. For example, a textField component may be a date textField if it has contentType: date, or a password textField with contentType: password, etc",
+      "examples": [
+        "countryCode",
+        "email",
+        "date",
+        "file",
+        "formattedDate",
+        "formattedDuration",
+        "hidden",
+        "listObject",
+        "messageHidden",
+        "number",
+        "password",
+        "passwordHidden",
+        "phone",
+        "phoneNumber",
+        "tel",
+        "text",
+        "timer",
+        "videoSubStream"
+      ],
+      "type": "string"
+    },
+    "DataKey": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/DataKeyString"
+        },
+        {
+          "$ref": "#/definitions/DataKeyObject"
+        }
+      ]
+    },
+    "DataKeyObject": {
+      "description": "Data key in the emit object",
+      "patternProperties": {
+        "^[a-zA-Z0-9]+$": {
+          "examples": [
+            "{var:\"\"}"
+          ],
+          "type": "object"
+        }
+      },
+      "title": "Data key",
+      "type": "object"
+    },
+    "DataKeyString": {
+      "description": "The path to a data object or value. It might provide a different behavior depending on where it is placed. For example, a dataKey set on a textField component will bind its value to the path in the dataKey, enabling it to mutate the value while updating textField's value",
+      "examples": [
+        "formData.password",
+        "SignIn.formData.password"
+      ],
+      "title": "Data key",
+      "type": "string"
+    },
+    "DataObject": {
+      "description": "An object that contains data. It is most commonly used in actions such as updateObject as a way to update its data values",
+      "type": "string"
+    },
+    "Emit": {
+      "additionalProperties": false,
+      "description": "An emit is a special type of action that usually contains a dataKey paired with a list of actions that are called in order. Some emits can contain just a list of actions. When paired with a dataKey it is usually mutating the value at the path in the dataKey",
+      "properties": {
+        "actions": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Action"
+              },
+              {
+                "$ref": "#/definitions/BuiltInEval"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        "dataKey": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "actions"
+      ],
+      "type": "object"
+    },
+    "Empty": {
+      "const": "",
+      "type": "string"
+    },
+    "Goto": {
+      "anyOf": [
+        {
+          "examples": [
+            "SignIn"
+          ],
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/GotoObject",
+          "type": "object"
+        },
+        {
+          "$ref": "#/definitions/GotoPageComponentUrl",
+          "type": "string"
+        }
+      ],
+      "description": "The destination the user should navigate to",
+      "not": {
+        "type": "number"
+      }
+    },
+    "GotoObject": {
+      "properties": {
+        "destination": {
+          "examples": [
+            "SignIn"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GotoPage": {
+      "examples": [
+        "SignIn",
+        "SignOut"
+      ],
+      "type": "string"
+    },
+    "GotoPageComponentUrl": {
+      "examples": [
+        "Dashboard@SignIn#someViewTag"
+      ],
+      "pattern": "[a-zA-Z0-9]+@[a-zA-Z0-9]+#[a-zA-Z0-9]+",
+      "type": "string"
+    },
+    "If": {
+      "description": "If objects contain an array with three items used for conditional checks. The first item is used as a test for truthiness which can be in the form of any data type such as a string, number, boolean, object, etc. Either the second or third item is returned depending on the result of the truthiness test",
+      "properties": {
+        "if": {
+          "items": {
+            "$ref": "#/definitions/Value"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": "array"
+        }
+      },
+      "title": "A condition evaluation",
+      "type": "object"
+    },
+    "Init": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/If"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/definitions/Goto"
+          },
+          {
+            "const": [
+              ""
+            ],
+            "type": "string"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "LocalEvalReference": {
+      "description": "Mutates the value at the referenced path after receiving its result",
+      "pattern": "^=[.][.][a-zA-Z0-9]+$",
+      "title": "Local eval reference",
+      "type": "string"
+    },
+    "LocalReference": {
+      "description": "A reference whose scope is within the page object, making them invisible to the objects outside of its scope",
+      "pattern": "^[.][.][a-zA-Z0-9]+$",
+      "title": "Local reference",
+      "type": "string"
+    },
+    "MixedActionChain": {
+      "description": "An ActionChain but also includes the BuiltInEval objects =.builtIn.* as well as await/eval references",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/ActionChain"
+          },
+          {
+            "items": {
+              "$ref": "#/definitions/BuiltInEval"
+            },
+            "type": "array"
+          },
+          {
+            "patternProperties": {
+              "(=.[a-zA_Z0-9])*@$": {
+                "$ref": "#/definitions/Value"
+              }
+            },
+            "type": "object"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "NoodlUnit": {
+      "description": "A measurement adaptive to the size of the viewport",
+      "examples": [
+        "\"0\"",
+        "\"0.1\"",
+        "\"1\""
+      ],
+      "type": "string"
+    },
+    "Page": {
+      "additionalProperties": {},
+      "description": "The page object for a page",
+      "properties": {
+        "check": {
+          "items": {
+            "$ref": "#/definitions/MixedActionChain"
+          },
+          "type": "array"
+        },
+        "components": {
+          "items": {
+            "$ref": "#/definitions/Component"
+          },
+          "type": "array"
+        },
+        "init": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Init"
+              },
+              {
+                "items": {
+                  "$ref": "#/definitions/MixedActionChain"
+                },
+                "type": "array"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        "module": {
+          "$ref": "#/definitions/PageModule"
+        },
+        "pageNumber": {
+          "$ref": "#/definitions/PageNumber"
+        },
+        "save": {
+          "items": {
+            "$ref": "#/definitions/MixedActionChain"
+          },
+          "type": "array"
+        },
+        "title": {
+          "description": "Titles can be used to represent the page",
+          "examples": [
+            "My Title"
+          ],
+          "type": "string"
+        },
+        "update": {
+          "items": {
+            "$ref": "#/definitions/MixedActionChain"
+          },
+          "type": "array"
+        },
+        "viewPort": {
+          "description": "Determines the initial scroll position for the user",
+          "examples": [
+            "top",
+            "center",
+            "bottom"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PageActions": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/If"
+          },
+          {
+            "properties": {
+              "emit": {
+                "$ref": "#/definitions/Emit"
+              }
+            },
+            "type": "object"
+          },
+          {
+            "type": "object"
+          },
+          {
+            "$ref": "#/definitions/BuiltInEval"
+          }
+        ],
+        "type": "array"
+      },
+      "type": "array"
+    },
+    "PageModule": {
+      "examples": [
+        "admin",
+        "business"
+      ],
+      "type": "string"
+    },
+    "PageNumber": {
+      "description": "A page number may help distinguish between pages with similar names",
+      "examples": [
+        "\"219\""
+      ],
+      "type": "string"
+    },
+    "Path": {
+      "anyOf": [
+        {
+          "examples": [
+            "logo.png",
+            "SignIn"
+          ],
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/If"
+        },
+        {
+          "properties": {
+            "emit": {
+              "$ref": "#/definitions/Emit"
+            }
+          },
+          "type": "object"
+        },
+        {
+          "$ref": "#/definitions/GotoPageComponentUrl"
+        },
+        {
+          "$ref": "#/definitions/BuiltInEval"
+        }
+      ],
+      "description": "A path can be in the form of a string, an if object, or an emit object",
+      "title": "Destination pointing to a separate page or url"
+    },
+    "Reference": {
+      "description": "Placeholder values that obtain their real values at a later time",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/LocalReference"
+        },
+        {
+          "$ref": "#/definitions/RootReference"
+        },
+        {
+          "$ref": "#/definitions/LocalEvalReference"
+        },
+        {
+          "$ref": "#/definitions/RootEvalReference"
+        },
+        {
+          "$ref": "#/definitions/AwaitReference"
+        }
+      ],
+      "title": "Reference",
+      "type": "string"
+    },
+    "Root": {
+      "additionalProperties": true,
+      "properties": {
+        "BaseCSS": {
+          "properties": {
+            "Style": {
+              "$ref": "#/definitions/Style"
+            }
+          },
+          "type": "object"
+        },
+        "BaseDataModel": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "object"
+              }
+            ]
+          },
+          "properties": {
+            "Config": {
+              "$ref": "#/definitions/RootConfig"
+            },
+            "Global": {
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "BasePage": {
+          "type": "object"
+        },
+        "Config": {
+          "$ref": "#/definitions/RootConfig"
+        },
+        "Global": {
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "RootConfig": {
+      "additionalProperties": true,
+      "properties": {
+        "android": {
+          "$ref": "#/definitions/ConfigVersionObjectByDevice",
+          "type": "object"
+        },
+        "apiCheck": {
+          "type": "object"
+        },
+        "apiHost": {
+          "type": "string"
+        },
+        "apiPort": {
+          "examples": [
+            "443"
+          ],
+          "type": "string"
+        },
+        "appApiHost": {
+          "type": "string"
+        },
+        "cadlBaseUrl": {
+          "type": "string"
+        },
+        "cadlMain": {
+          "examples": [
+            "cadlEndpoint.yml"
+          ],
+          "type": "string"
+        },
+        "cadlVersion": {
+          "type": "object"
+        },
+        "connectiontimeout": {
+          "examples": [
+            "5"
+          ],
+          "type": "string"
+        },
+        "debug": {
+          "oneOf": [
+            {
+              "examples": [
+                "console_log_api"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "elasticClient": {
+          "type": "object"
+        },
+        "ios": {
+          "$ref": "#/definitions/ConfigVersionObjectByDevice",
+          "type": "object"
+        },
+        "isGetPosition": {
+          "default": false,
+          "type": "boolean"
+        },
+        "keywords": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "loadingLevel": {
+          "examples": [
+            "1"
+          ],
+          "type": "number"
+        },
+        "log": {
+          "type": "string"
+        },
+        "myBaseUrl": {
+          "type": "string"
+        },
+        "searchLink": {
+          "type": "object"
+        },
+        "syncHost": {
+          "type": "string"
+        },
+        "timestamp": {
+          "examples": [
+            5272021
+          ],
+          "type": "number"
+        },
+        "viewWidthHeightRatio": {
+          "properties": {
+            "max": {
+              "examples": [
+                0.56
+              ],
+              "type": "number"
+            },
+            "min": {
+              "examples": [
+                0.7
+              ],
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "web": {
+          "$ref": "#/definitions/ConfigVersionObjectByDevice"
+        },
+        "webApiHost": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "RootEvalReference": {
+      "description": "Mutates the value at the root referenced path after receiving its result",
+      "pattern": "^=[.][a-zA-Z0-9]+$",
+      "title": "Root eval reference",
+      "type": "string"
+    },
+    "RootReference": {
+      "description": "A reference whose scope is at the global level",
+      "pattern": "^[.][a-zA-Z0-9]+$",
+      "title": "Root reference",
+      "type": "string"
+    },
+    "SelectOptions": {
+      "description": "Options for a select component. These are the items that appear in the drop down menu when interacting with a select component",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          }
+        ]
+      },
+      "title": "Select options",
+      "type": "array"
+    },
+    "Style": {
+      "additionalProperties": true,
+      "properties": {
+        "align": {
+          "examples": [
+            "centerX",
+            "centerY"
+          ],
+          "type": "string"
+        },
+        "axis": {
+          "examples": [
+            "horizontal",
+            "vertical"
+          ],
+          "type": "string"
+        },
+        "backgroundColor": {
+          "examples": [
+            "\"0x030303\""
+          ],
+          "type": "string"
+        },
+        "border": {
+          "$ref": "#/definitions/Border"
+        },
+        "borderBottom": {
+          "type": "string"
+        },
+        "borderColor": {
+          "examples": [
+            "\"0x000000\""
+          ],
+          "type": "string"
+        },
+        "borderRadius": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "borderWidth": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "boxShadow": {
+          "type": "string"
+        },
+        "boxSizing": {
+          "examples": [
+            "border-box",
+            "content-box"
+          ],
+          "type": "string"
+        },
+        "color": {
+          "examples": [
+            "\"0x000000\""
+          ],
+          "type": "string"
+        },
+        "fontFamily": {
+          "examples": [
+            "Arial",
+            "Courier New",
+            "Verdana",
+            "Times New Roman",
+            "Consolas",
+            "Helvetica"
+          ],
+          "type": "string"
+        },
+        "fontSize": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "fontStyle": {
+          "type": "string"
+        },
+        "fontWeight": {
+          "examples": [
+            100,
+            200,
+            400,
+            500,
+            700,
+            900,
+            "bold"
+          ],
+          "type": "number"
+        },
+        "height": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "isEditable": {
+          "type": "boolean"
+        },
+        "isHidden": {
+          "type": "boolean"
+        },
+        "justifyContent": {
+          "examples": [
+            "flex-start",
+            "center",
+            "flex-end",
+            "space-around"
+          ],
+          "type": "string"
+        },
+        "left": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "letterSpacing": {
+          "type": "string"
+        },
+        "lineHeight": {
+          "type": "string"
+        },
+        "margin": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "marginTop": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "opacity": {
+          "examples": [
+            "0.5"
+          ],
+          "type": "number"
+        },
+        "overflow": {
+          "examples": [
+            "hidden"
+          ],
+          "type": "string"
+        },
+        "paddingBottom": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "paddingLeft": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "position": {
+          "examples": [
+            "relative",
+            "absolute",
+            "fixed",
+            "static"
+          ],
+          "type": "string"
+        },
+        "required": {
+          "type": "string"
+        },
+        "shadow": {
+          "oneOf": [
+            {
+              "examples": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "textAlign": {
+          "$ref": "#/definitions/TextAlign"
+        },
+        "textColor": {
+          "$ref": "#/definitions/Color"
+        },
+        "textIndent": {
+          "type": "string"
+        },
+        "top": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "width": {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        "zIndex": {
+          "examples": [
+            "\"1000\""
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Text": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/If"
+        }
+      ]
+    },
+    "TextAlign": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/TextAlignEnum"
+        },
+        {
+          "$ref": "#/definitions/TextAlignObject"
+        }
+      ]
+    },
+    "TextAlignEnum": {
+      "examples": [
+        "left",
+        "center",
+        "centerX",
+        "right"
+      ],
+      "type": "string"
+    },
+    "TextAlignObject": {
+      "additionalProperties": true,
+      "properties": {
+        "x": {
+          "examples": [
+            "left",
+            "center",
+            "centerX",
+            "right"
+          ],
+          "type": "string"
+        },
+        "y": {
+          "examples": [
+            "center"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "TextBoard": {
+      "items": {
+        "properties": {
+          "color": {
+            "type": "string"
+          },
+          "text": {
+            "$ref": "#/definitions/Text"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "UserEvent": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Action",
+          "type": "object"
+        },
+        {
+          "$ref": "#/definitions/Reference"
+        }
+      ]
+    },
+    "Value": {
+      "description": "A valid value in accordance to the noodl specification",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/NoodlUnit"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "object"
+        },
+        {
+          "type": "array"
+        },
+        {
+          "$ref": "#/definitions/Reference"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/If"
+        },
+        {
+          "properties": {
+            "emit": {
+              "$ref": "#/definitions/Emit"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "ViewTag": {
+      "description": "An identifier which is used to bind a component and an action together. Actions can define a viewTag that invokes certain behavior towards a component. The component must also contain the same viewTag key/value. If multiple components have the same viewTag, then the action will effect multiple components",
+      "title": "View tag",
+      "type": "string"
+    }
+  },
+  "patternProperties": {
+    "^[a-zA-Z0-9]*$": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Page"
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "title": "Noodl Schema",
+  "type": "object"
+}

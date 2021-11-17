@@ -3,7 +3,7 @@ import * as u from '@jsmanifest/utils'
 import type { OrArray } from '@jsmanifest/typefest'
 import chunk from 'lodash-es/chunk.js'
 import flatten from 'lodash-es/flatten.js'
-import path from 'path'
+import * as path from 'node:path'
 import * as fs from 'fs-extra'
 import type { DeviceType, Env } from 'noodl-types'
 import * as nu from 'noodl-utils'
@@ -11,8 +11,9 @@ import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
+import getLinkStructure from './utils/getLinkStructure'
 import promiseAllSafely from './utils/promiseAllSafely.js'
-import stringifyDoc from './utils/stringifyDoc.js'
+import stringifyDocument from './utils/stringifyDoc.js'
 import shallowMerge from './utils/shallowMerge.js'
 import { getLinkStructure } from './index.js'
 import * as c from './constants.js'
@@ -22,8 +23,8 @@ const { existsSync, readFile } = fs
 const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
 
 class NoodlLoader<
-	Opts extends string = string,
-	DataType extends t.Loader.RootDataType = 'map',
+  Options extends string = string,
+  DataType extends t.Loader.RootDataType = 'map',
 > implements t.IAggregator<DataType>
 {
 	#configKey = ''

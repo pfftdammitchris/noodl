@@ -1,7 +1,7 @@
 import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
 import { expect } from 'chai'
-import Parser from './Parser'
+import Parser from './Parser.js'
 
 const parse = new Parser()
 
