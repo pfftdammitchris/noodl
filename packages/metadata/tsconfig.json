@@ -4,7 +4,10 @@
   },
   "compilerOptions": {
     "baseUrl": "./src",
+    "declarationDir": "./dist",
+    "outDir": "./dist",
     "module": "es2020",
+    "rootDir": "./src",
     "target": "es2020"
   },
   "include": ["./src/**/*"],

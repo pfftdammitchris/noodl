@@ -1,4 +1,4 @@
-import execa from 'execa'
+import { execaCommandSync } from 'execa'
 
 const cmds = [
   `npm run bootstrap`,
@@ -8,5 +8,5 @@ const cmds = [
 ]
 
 for (const cmd of cmds) {
-  execa.commandSync(cmd, { shell: true, stdio: 'inherit' })
+  execaCommandSync(cmd, { shell: true, stdio: 'inherit' })
 }

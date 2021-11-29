@@ -9,7 +9,8 @@
     "packages": [
         "packages/noodl",
         "packages/noodl-cli",
-        "packages/noodl-utils"
+        "packages/noodl-utils",
+        "packages/metadata"
     ],
     "version": "independent"
 }

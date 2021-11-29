@@ -14,17 +14,6 @@ import {
 } from 'yaml'
 import * as t from './Metadata/types.js'
 
-export const createVisitor = function (visitor: t.Visitor<any, any>) {
-  if (u.isFnc(visitor)) {
-    return { Node: visitor }
-  }
-  return u.reduce(
-    u.entries(visitor),
-    (acc, [key, fn]) => u.assign(acc, { [key]: fn }),
-    {} as t.VisitorMapping,
-  )
-}
-
 export function logError(error: unknown) {
   if (error instanceof Error) {
     console.error(
@@ -129,4 +118,33 @@ export function getErrorResponse(
     ),
     ...options,
   }
+}
+
+export const tsm = {
+  /**
+   * @param { InstanceType<Scalar> } node
+   */
+  getLazyTypeAliasType: (node) => {
+    const type = typeof node.value
+    switch (type) {
+      case 'boolean':
+      case 'number':
+      case 'string':
+        return type
+      case 'function':
+        return `(...args: any[]) => any`
+      case 'object':
+        return `Record<string, any>`
+      default:
+        if (u.isArr(node.value)) return `any[]`
+        return 'any'
+    }
+  },
+}
+
+export function pascalCase(str = '') {
+  return str
+    .split(' ')
+    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+    .join('')
 }

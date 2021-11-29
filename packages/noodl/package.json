@@ -4,14 +4,6 @@
     "url": "https://github.com/pfftdammitchris/noodl-cli/issues"
   },
   "description": "NOODL is a language stemmed from the YAML language. This library gives you the tools to build JavaScript applications using Neural Object Oriented Descriptive Language",
-  "exports": {
-    ".": {
-      "import": "./dist/noodl.es.js",
-      "node": "./dist/noodl.cjs.js",
-      "require": "./dist/noodl.cjs.js"
-    },
-    "./package.json": "./package.json"
-  },
   "files": [
     "dist"
   ],
@@ -28,6 +20,8 @@
     "health"
   ],
   "license": "ISC",
+  "main": "dist/noodl.js",
+  "module": "dist/noodl.js",
   "name": "noodl",
   "publishConfig": {
     "access": "public"
@@ -38,21 +32,11 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production concurrently \"rollup -c\" \"npm run types\"",
-    "build:esbuild": "esbuild src/index.ts --banner:js='import { createRequire as topLevelCreateRequire } from \"module\";\n const require = topLevelCreateRequire(import.meta.url);' --bundle --sourcemap --platform=node --target=es2020",
-    "prebuild": "rm -rf dist",
-    "start": "cross-env NODE_ENV=development concurrently \"rollup -c -w\" \"npm run types\"",
+    "start": "cross-env NODE_ENV=development rollup -c -w",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts \"src/**/*.ts\"",
     "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src",
     "types": "tsc --declaration --emitDeclarationOnly"
   },
-  "type": "module",
-  "types": "./dist/noodl.d.ts",
-  "typesVersions": {
-    "*": {
-      "noodl.d.ts": [
-        "./dist/noodl.d.ts"
-      ]
-    }
-  },
-  "version": "0.0.12"
+  "typings": "./dist/noodl.d.ts",
+  "version": "0.0.13"
 }

@@ -22,17 +22,6 @@
 	"engines": {
 		"node": ">=14"
 	},
-	"exports": {
-		".": {
-			"import": "./dist/cli.js",
-			"node": "./dist/cjs/cli.js",
-			"require": "./dist/cjs/cli.js"
-		},
-		"./internal": {
-			"import": "../../node_modules/ws/wrapper.mjs"
-		},
-		"./package.json": "./package.json"
-	},
 	"files": [
 		"bin",
 		"dist",
@@ -44,7 +33,7 @@
 		"noodl.yml"
 	],
 	"license": "MIT",
-	"main": "./dist/cjs/cli.js",
+	"main": "./dist/cli.js",
 	"module": "./dist/cli.js",
 	"name": "noodl-cli",
 	"publishConfig": {
@@ -55,21 +44,10 @@
 		"url": "https://github.com/pfftdammitchris/noodl-cli"
 	},
 	"scripts": {
-		"build": "cross-env NODE_ENV=production concurrently \"npm run build:esm\" \"npm run build:cjs\" \"npm run types\"",
-		"build:cjs": "tsc --module commonjs --target es2018 --outDir ./dist/cjs",
-		"build:esm": "tsc --module es2020 --target es2020 --outDir ./dist",
-		"start": "cross-env NODE_ENV=development npm run build:esm -- --watch",
+		"build": "cross-env NODE_ENV=production tsc",
+		"start": "cross-env NODE_ENV=development tsc -w",
 		"start:cjs": "cross-env NODE_ENV=development npm run build:es -- --watch",
-		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\"",
-		"types": "tsc --emitDeclarationOnly --declarationDir dist"
-	},
-	"type": "module",
-	"typesVersions": {
-		"*": {
-			"cli.d.ts": [
-				"./dist/cli.d.ts"
-			]
-		}
+		"test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files \"src/**/*.ts\""
 	},
 	"typings": "./dist/cli.d.ts",
 	"version": "0.0.117"

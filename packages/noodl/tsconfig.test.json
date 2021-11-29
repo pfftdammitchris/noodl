@@ -3,8 +3,8 @@
     "transpileOnly": true
   },
   "compilerOptions": {
-    "module": "es2020",
-    "target": "es2020"
+    "module": "commonjs",
+    "target": "es2018"
   },
   "extends": "./tsconfig.json",
   "include": ["./src/**/*.test.ts"]

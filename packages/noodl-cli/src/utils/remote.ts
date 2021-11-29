@@ -1,7 +1,9 @@
 import * as u from '@jsmanifest/utils'
 import axios, { AxiosError, AxiosResponse } from 'axios'
-import xmlParser from 'fast-xml-parser'
+import { XMLParser } from 'fast-xml-parser'
 import * as c from '../constants.js'
+
+const xmlParser = new XMLParser()
 
 // Note: this function does not throw. It returns the Error object instead
 export async function configExists(configKey: string) {

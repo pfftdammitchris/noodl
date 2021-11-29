@@ -638,7 +638,10 @@ class NoodlLoader<
           if (yaml.isMap(document___)) {
             for (const pair of document___.items) {
               if (yaml.isScalar(pair.key)) {
-                this.setInRoot(String(pair.key.value), pair.value as any)
+                this.setInRoot(
+                  String(pair.key),
+                  yaml.parseDocument(yaml.stringify(pair.value)),
+                )
               }
             }
           } else if (
@@ -647,7 +650,10 @@ class NoodlLoader<
           ) {
             for (const pair of document___.contents.items) {
               if (yaml.isScalar(pair.key)) {
-                this.setInRoot(String(pair.key.value), pair.value as any)
+                this.setInRoot(
+                  String(pair.key),
+                  yaml.parseDocument(yaml.stringify(pair.value)),
+                )
               }
             }
           }
