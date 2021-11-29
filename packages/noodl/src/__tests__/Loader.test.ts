@@ -14,7 +14,7 @@ const cadlEndpointYml = fs.readFileSync(
 )
 
 const meet4dYml = fs.readFileSync(
-  path.join(__dirname, './fixtures/meet4d.yml'),
+  path.join(__dirname, './fixtures/meetd2.yml'),
   'utf8',
 )
 

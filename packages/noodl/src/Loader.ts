@@ -65,6 +65,7 @@ class NoodlLoader<
     if (u.isStr(options)) {
       this.logger.debug(`Instantiating with config: ${u.cyan(options)}`)
       this.configKey = options
+      this.root = new Map() as t.Loader.Root<DataType>
     } else {
       const defaultKeys = ['Global']
 
