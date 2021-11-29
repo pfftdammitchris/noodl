@@ -1,10 +1,10 @@
 // @ts-nocheck
 import * as u from '@jsmanifest/utils'
-import getFileStructure from '../utils/getFileStructure.js'
-import getLinkStructure from '../utils/getLinkStructure.js'
-import NoodlVisitor from '../Visitor.js'
+import getFileStructure from '../utils/getFileStructure'
+import getLinkStructure from '../utils/getLinkStructure'
+import NoodlVisitor from '../Visitor'
 import { getReferenceNodes } from '../internal/yaml'
-import { getRoot } from './test-utils.js'
+import { getRoot } from './test-utils'
 
 jest.useFakeTimers()
 

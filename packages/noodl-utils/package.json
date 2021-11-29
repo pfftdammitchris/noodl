@@ -28,12 +28,10 @@
     "url": "git+https://github.com/pfftdammitchris/noodl.git"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production concurrently \"rollup -c\" \"npm run types\"",
-    "prebuild": "rm -rf dist",
-    "start": "cross-env NODE_ENV=development concurrently \"rollup -c -w\" \"npm run types\"",
+    "build": "cross-env NODE_ENV=production tsc",
+    "start": "cross-env NODE_ENV=development tsc -w",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha -r jsdom-global/register --file src/__tests__/setup.ts -r source-map-support/register --extensions ts --watch --watch-files src src/**/*.test.ts",
-    "test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src",
-    "types": "tsc --emitDeclarationOnly --outFile dist/index.d.ts"
+    "test:file": "NODE_ENV=test ts-mocha -r jsdom-global/register --extensions ts --watch --watch-files src"
   },
   "typings": "./dist/index.d.ts",
   "version": "0.0.86"

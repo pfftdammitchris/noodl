@@ -1,8 +1,8 @@
-import curry from 'lodash-es/curry.js'
+import curry from 'lodash/curry'
 import type { LiteralUnion } from 'type-fest'
 import * as nt from 'noodl-types'
 import yaml from 'yaml'
-import type { YAMLDocument, visitorFn } from './internal/yaml.js'
+import type { YAMLDocument, visitorFn } from './internal/yaml'
 import * as t from './types'
 
 const is = nt.Identify

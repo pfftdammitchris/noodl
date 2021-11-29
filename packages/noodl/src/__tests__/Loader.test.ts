@@ -5,8 +5,8 @@ import * as fs from 'fs-extra'
 import * as path from 'path'
 import nock from 'nock'
 import yaml from 'yaml'
-import NoodlLoader from '../Loader.js'
-import * as c from '../constants.js'
+import NoodlLoader from '../Loader'
+import * as c from '../constants'
 
 const cadlEndpointYml = fs.readFileSync(
   path.join(__dirname, './fixtures/cadlEndpoint.yml'),

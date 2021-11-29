@@ -1,1 +1,1 @@
-import '../dist/cli.js'
+require('../dist/cli.js')

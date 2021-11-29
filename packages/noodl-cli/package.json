@@ -11,7 +11,7 @@
 		"ink-spinner": "^4.0.3",
 		"ink-text-input": "^4.0.1",
 		"invariant": "^2.2.4",
-		"react": "^16.14.0"
+		"react": "^17.0.2"
 	},
 	"devDependencies": {
 		"@types/ink-select-input": "^3.0.1",

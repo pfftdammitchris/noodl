@@ -1,9 +1,6 @@
 import React from 'react'
 import { Text } from 'ink'
-import InkSelectInput, { ItemProps } from 'ink-select-input'
-
-// @ts-expect-error
-const SelectInput = InkSelectInput.default as typeof InkSelectInput
+import SelectInput, { ItemProps } from 'ink-select-input'
 
 export interface SelectInputProps {
 	indicatorComponent?: (args: {

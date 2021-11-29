@@ -31,11 +31,10 @@
     "url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production concurrently \"rollup -c\" \"npm run types\"",
-    "start": "cross-env NODE_ENV=development rollup -c -w",
+    "build": "cross-env NODE_ENV=production tsc",
+    "start": "cross-env NODE_ENV=development tsc -w",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts \"src/**/*.ts\"",
-    "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src",
-    "types": "tsc --declaration --emitDeclarationOnly"
+    "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src"
   },
   "typings": "./dist/noodl.d.ts",
   "version": "0.0.13"

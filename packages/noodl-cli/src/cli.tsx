@@ -48,7 +48,7 @@ const cli = meow(
 `,
 	{
 		// @ts-ignore
-		importMeta: import.meta,
+		// importMeta: import.meta,
 		flags: {
 			config: {
 				type: 'string',

@@ -1,9 +1,9 @@
 import {
-	basename,
-	isAbsolute as isAbsolutePath,
-	resolve as resolvePath,
+  basename,
+  isAbsolute as isAbsolutePath,
+  resolve as resolvePath,
 } from 'path'
-import normalizePath from './normalizePath.js'
+import normalizePath from './normalizePath'
 
 /**
  * Returns the path as an absolute path
@@ -11,9 +11,9 @@ import normalizePath from './normalizePath.js'
  * @returns { string }
  */
 export function getAbsFilePath(...paths: string[]) {
-	const filepath = normalizePath(...paths)
-	if (isAbsolutePath(filepath)) return filepath
-	return resolvePath(normalizePath(process.cwd(), ...paths))
+  const filepath = normalizePath(...paths)
+  if (isAbsolutePath(filepath)) return filepath
+  return resolvePath(normalizePath(process.cwd(), ...paths))
 }
 
 /**
@@ -24,6 +24,6 @@ export function getAbsFilePath(...paths: string[]) {
  * @returns { string }
  */
 export function getFileName(str: string | undefined = '', ext?: string) {
-	if (!ext) return basename(str)
-	return basename(str, ext.startsWith('.') ? ext : `.${ext}`)
+  if (!ext) return basename(str)
+  return basename(str, ext.startsWith('.') ? ext : `.${ext}`)
 }

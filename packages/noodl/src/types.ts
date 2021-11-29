@@ -2,7 +2,7 @@ import * as nt from 'noodl-types'
 import yaml from 'yaml'
 import type { LiteralUnion } from 'type-fest'
 import type { OrArray } from '@jsmanifest/typefest'
-import type { YAMLNode, visitorFn } from './internal/yaml.js'
+import type { YAMLNode, visitorFn } from './internal/yaml'
 
 export type YAMLVisitArgs<N> = Parameters<visitorFn<N>>
 

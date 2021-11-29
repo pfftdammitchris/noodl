@@ -1,7 +1,7 @@
 import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
 import yaml from 'yaml'
-import curry from 'lodash/curry.js'
+import curry from 'lodash/curry'
 
 export type Store<K extends string = string> = Record<K, any>
 

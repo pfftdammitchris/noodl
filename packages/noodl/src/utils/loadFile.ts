@@ -4,11 +4,11 @@ import type { LiteralUnion } from 'type-fest'
 import { isAbsolute as isAbsolutePath } from 'path'
 import type { YAMLDocument } from '../internal/yaml'
 import {
-	parse as parseYmlToJson,
-	parseDocument as parseYmlToDoc,
+  parse as parseYmlToJson,
+  parseDocument as parseYmlToDoc,
 } from '../internal/yaml'
-import { getAbsFilePath } from './fileSystem.js'
-import * as t from '../types.js'
+import { getAbsFilePath } from './fileSystem'
+import * as t from '../types'
 
 /**
  * Loads a file as a yaml string
@@ -16,8 +16,8 @@ import * as t from '../types.js'
  * @param type
  */
 function loadFile<T extends 'yml'>(
-	filepath: string,
-	type?: LiteralUnion<T, string>,
+  filepath: string,
+  type?: LiteralUnion<T, string>,
 ): string
 
 /**
@@ -36,18 +36,18 @@ function loadFile(filepath: string, type: 'doc'): YAMLDocument
 function loadFile(filepath: string, type: 'json'): Record<string, any>
 
 function loadFile<T extends t.LoadType = t.LoadType>(
-	filepath: string,
-	type?: T,
+  filepath: string,
+  type?: T,
 ) {
-	if (u.isStr(filepath)) {
-		if (!isAbsolutePath(filepath)) filepath = getAbsFilePath(filepath)
-		if (fs.existsSync(filepath)) {
-			const yml = fs.readFileSync(filepath, 'utf8')
-			if (type === 'doc') return parseYmlToDoc(yml)
-			if (type === 'json') return parseYmlToJson(yml)
-			return fs.readFileSync(filepath, 'utf8')
-		}
-	}
+  if (u.isStr(filepath)) {
+    if (!isAbsolutePath(filepath)) filepath = getAbsFilePath(filepath)
+    if (fs.existsSync(filepath)) {
+      const yml = fs.readFileSync(filepath, 'utf8')
+      if (type === 'doc') return parseYmlToDoc(yml)
+      if (type === 'json') return parseYmlToJson(yml)
+      return fs.readFileSync(filepath, 'utf8')
+    }
+  }
 }
 
 export default loadFile

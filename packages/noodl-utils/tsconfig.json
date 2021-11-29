@@ -2,10 +2,10 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"baseUrl": "./src",
-		"module": "esnext",
+		"module": "commonjs",
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"target": "esnext"
+		"target": "es2018"
 	},
 	"include": ["./src/**/*"],
 	"exclude": ["./dist", "./src/**/*.test.ts"]

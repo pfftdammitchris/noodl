@@ -1,4 +1,4 @@
-export * from './noodl-utils.js'
-export * from './constants.js'
-export * from './types.js'
-export { default as Parser } from './Parser.js'
+export * from './noodl-utils'
+export * from './constants'
+export * from './types'
+export { default as Parser } from './Parser'

@@ -40,6 +40,13 @@ const configs = [
       // 	format: 'cjs',
       // 	sourcemap: true,
       // },
+      {
+        dir: 'dist',
+        format: 'umd',
+        name: 'NoodlUtils',
+        sourcemap: true,
+        globals: {},
+      },
     ],
     plugins: [
       nodeResolve({
@@ -48,8 +55,9 @@ const configs = [
       }),
       filesize(),
       progress(),
+
       esbuild({
-        include: /\.ts?$/,
+        include: /\.[jt]s?$/,
         exclude: /node_modules/,
         minify: !_DEV_,
         target: 'es2018',
