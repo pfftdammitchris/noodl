@@ -1,4 +1,5 @@
 import * as u from '@jsmanifest/utils'
+import * as nu from 'noodl-utils'
 import { expect } from 'chai'
 import loadFiles from '../utils/loadFiles'
 import * as fs from 'fs-extra'
@@ -8,80 +9,108 @@ import yaml from 'yaml'
 import NoodlLoader from '../Loader'
 import * as c from '../constants'
 
-const cadlEndpointYml = fs.readFileSync(
-  path.join(__dirname, './fixtures/cadlEndpoint.yml'),
-  'utf8',
-)
-
-const meet4dYml = fs.readFileSync(
+const meetd2yml = fs.readFileSync(
   path.join(__dirname, './fixtures/meetd2.yml'),
   'utf8',
 )
 
+const config = 'meetd2'
 const pathToFixtures = path.join(__dirname, './fixtures')
-const cadlEndpointDoc = yaml.parseDocument(cadlEndpointYml)
-const preloadPages = (
-  cadlEndpointDoc.get('preload') as yaml.YAMLSeq
-).toJSON() as string[]
-const pages = (cadlEndpointDoc.get('page') as yaml.YAMLSeq).toJSON() as string[]
+
+const loadYmlFactory =
+  (filename = '') =>
+  () =>
+    fs.readFileSync(
+      path.join(pathToFixtures, `${filename.replace('.yml', '')}.yml`),
+      'utf8',
+    )
+
+const getRootConfigYml = loadYmlFactory(config)
+const getAppConfigYml = loadYmlFactory(`cadlEndpoint`)
+
+const appConfig = yaml.parse(getAppConfigYml())
+const preloadPages = (appConfig.preload || []) as string[]
+const pages = (appConfig.page || []) as string[]
 const data = loadFiles(pathToFixtures, { as: 'object' })
 
-const mockAllPageRequests = (_aggregator = aggregator) => {
+const mockAllPageRequests = (_loader = loader) => {
   for (let page of [...preloadPages, ...pages] as string[]) {
     page.startsWith('~/') && (page = page.replace('~/', ''))
-    nock(baseUrl).get(`/${page}_en.yml`).reply(200, data[page])
+    nock(baseUrl).get(new RegExp(page, 'i')).reply(200, data[page])
   }
 }
 
-let aggregator: NoodlLoader<any, any>
-let assetsUrl = `https://public.aitmed.com/cadl/meet3_0.45d/assets/`
-let baseConfigUrl = `https://${c.DEFAULT_CONFIG_HOSTNAME}/config`
-let baseUrl = `https://public.aitmed.com/cadl/meet3_0.45d/`
+let loader: NoodlLoader<any, any>
+let assetsUrl = `http://127.0.0.1:3001/assets/`
+let baseConfigUrl = `http://127.0.0.1:3001/config`
+let baseUrl = `http://127.0.0.1:3001/`
 
 beforeEach(() => {
-  aggregator = new NoodlLoader('meet4d')
-  nock(baseConfigUrl).get('/meet4d.yml').reply(200, meet4dYml)
-  nock(baseUrl).get('/cadlEndpoint.yml').reply(200, cadlEndpointYml)
+  loader = new NoodlLoader({ config: 'meetd2' })
+  nock(baseConfigUrl).get('/meetd2.yml').reply(200, meetd2yml)
+  nock(baseUrl).get('/cadlEndpoint.yml').reply(200, getAppConfigYml())
 })
 
 afterEach(() => {
   nock.cleanAll()
 })
 
-const init = async (_aggregator = aggregator) =>
-  _aggregator.init({ loadPages: false, loadPreloadPages: false })
+async function init(
+  _loader = loader as
+    | NoodlLoader
+    | ConstructorParameters<typeof NoodlLoader>[0],
+) {
+  let options: ConstructorParameters<typeof NoodlLoader>[0]
+  if (!(_loader instanceof NoodlLoader)) {
+    options = _loader
+    _loader = new NoodlLoader(options)
+  }
+  return (_loader as NoodlLoader).init({
+    loadPages: false,
+    loadPreloadPages: false,
+    ...(u.isObj(options) ? options : { config: options }),
+  })
+}
 
 describe(u.yellow(`noodl`), () => {
   describe(u.italic(`init`), () => {
-    it(`should initiate both the root config and app config`, async () => {
-      const { doc } = await init()
+    it.only(`[map] should initiate both the root config and app config`, async () => {
+      loader = new NoodlLoader({ config: 'meetd2' })
+      const doc = (await init()).doc
+      expect(loader.root.get(config).has('cadlMain')).to.be.true
+      expect(loader.root.get('cadlEndpoint').has('preload')).to.be.true
+      expect(loader.root.get('cadlEndpoint').has('page')).to.be.true
+    })
+
+    it(`[object] should initiate both the root config and app config`, async () => {
+      const doc = (await init()).doc
       expect(doc.root?.has('cadlMain')).to.be.true
       expect(doc.app?.has('preload')).to.be.true
       expect(doc.app?.has('page')).to.be.true
     })
 
-    it(`should be able to get the assets url`, async () => {
-      expect(aggregator.assetsUrl).not.to.eq(assetsUrl)
+    it(`should return the assets url`, async () => {
+      expect(loader.assetsUrl).not.to.eq(assetsUrl)
       await init()
-      expect(aggregator.assetsUrl).to.eq(assetsUrl)
+      expect(loader.assetsUrl).to.eq(assetsUrl)
     })
 
-    it(`should be able to get the baseUrl`, async () => {
-      expect(aggregator.baseUrl).not.to.eq(baseUrl)
+    it(`should return the baseUrl`, async () => {
+      expect(loader.baseUrl).not.to.eq(baseUrl)
       await init()
-      expect(aggregator.baseUrl).to.eq(baseUrl)
+      expect(loader.baseUrl).to.eq(baseUrl)
     })
 
-    it(`should be able to get the config version (latest)`, async () => {
-      expect(aggregator.configVersion).to.eq('')
+    it(`should return the config version (latest)`, async () => {
+      expect(loader.configVersion).to.eq('')
       await init()
-      expect(aggregator.configVersion).to.eq('0.45d')
+      expect(loader.configVersion).to.eq('0.45d')
     })
 
-    it(`should be able to get the app config url`, async () => {
-      expect(aggregator.appConfigUrl).to.eq('')
+    it(`should return the app config url`, async () => {
+      expect(loader.appConfigUrl).to.eq('')
       await init()
-      expect(aggregator.configVersion).to.eq('0.45d')
+      expect(loader.configVersion).to.eq('0.45d')
     })
 
     it(`should load all the preload pages by default`, async () => {
@@ -98,18 +127,18 @@ describe(u.yellow(`noodl`), () => {
 					`,
           )
       }
-      await aggregator.init({ loadPages: false })
+      await loader.init({ loadPages: false })
       preloadPages.forEach((preloadPage) => {
-        expect(aggregator.root.get(preloadPage as string)).to.exist
+        expect(loader.root.get(preloadPage as string)).to.exist
       })
     })
 
     it(`should load all the pages by default`, async () => {
       mockAllPageRequests()
-      await aggregator.init({ loadPreloadPages: false })
+      await loader.init({ loadPreloadPages: false })
       pages.forEach(
         (page: string) =>
-          expect(aggregator.root.get(page.replace('~/', ''))).to.exist,
+          expect(loader.root.get(page.replace('~/', ''))).to.exist,
       )
     })
   })
@@ -117,9 +146,9 @@ describe(u.yellow(`noodl`), () => {
   describe(u.italic(`extractAssets`), () => {
     it(`should extract the assets`, async () => {
       mockAllPageRequests()
-      await aggregator.init()
-      const assetsUrl = aggregator.assetsUrl
-      const assets = aggregator.extractAssets()
+      await loader.init()
+      const assetsUrl = loader.assetsUrl
+      const assets = loader.extractAssets()
       expect(assets).to.have.length.greaterThan(0)
       for (const asset of assets) {
         expect(asset).to.have.property(

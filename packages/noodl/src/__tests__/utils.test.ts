@@ -6,8 +6,6 @@ import NoodlVisitor from '../Visitor'
 import { getReferenceNodes } from '../internal/yaml'
 import { getRoot } from './test-utils'
 
-jest.useFakeTimers()
-
 describe(`getFileStructure`, () => {
   const filepath =
     '/Users/christ/ecos/aitmed/ecos/v1beta1/EcosAPI/ce-request.json'
@@ -16,30 +14,30 @@ describe(`getFileStructure`, () => {
     const result = getFileStructure(filepath)
 
     it(`should set the ext to .mk4`, () => {
-      expect(result).toHaveProperty('ext', '.json')
+      expect(result).to.have.property('ext', '.json')
     })
 
     it(`should set filename to ce-request`, () => {
-      expect(result).toHaveProperty('filename', 'ce-request')
+      expect(result).to.have.property('filename', 'ce-request')
     })
 
     it(`should set filepath to ${filepath}`, () => {
-      expect(result).toHaveProperty('filepath', filepath)
+      expect(result).to.have.property('filepath', filepath)
     })
 
     it(`should set dir to /Users/christ/ecos/aitmed/ecos/v1beta1/EcosAPI`, () => {
-      expect(result).toHaveProperty(
+      expect(result).to.have.property(
         'dir',
         `/Users/christ/ecos/aitmed/ecos/v1beta1/EcosAPI`,
       )
     })
 
     it(`should set group to document`, () => {
-      expect(result).toHaveProperty('group', 'document')
+      expect(result).to.have.property('group', 'document')
     })
 
     it(`should set the rootDir`, () => {
-      expect(result).toHaveProperty('rootDir', '/')
+      expect(result).to.have.property('rootDir', '/')
     })
   })
 })
@@ -51,24 +49,24 @@ describe(`getLinkStructure`, () => {
     const result = getLinkStructure(theDarkKnightMkv)
 
     it(`should set the ext to .mk4`, () => {
-      expect(result).toHaveProperty('ext', '.mkv')
+      expect(result).to.have.property('ext', '.mkv')
     })
 
     it(`should set filename to TheDarkKnight`, () => {
-      expect(result).toHaveProperty('filename', 'TheDarkKnight')
+      expect(result).to.have.property('filename', 'TheDarkKnight')
     })
 
     it(`should set isRemote to true`, () => {
-      expect(result).toHaveProperty('isRemote')
+      expect(result).to.have.property('isRemote')
       expect(result.isRemote).toBe(true)
     })
 
     it(`should set url to ${theDarkKnightMkv}`, () => {
-      expect(result).toHaveProperty('url', theDarkKnightMkv)
+      expect(result).to.have.property('url', theDarkKnightMkv)
     })
 
     it(`should set group to video`, () => {
-      expect(result).toHaveProperty('group', 'video')
+      expect(result).to.have.property('group', 'video')
     })
   })
 })
@@ -102,7 +100,7 @@ describe(u.yellow(`yaml`), () => {
   describe(`getReferenceNodes`, () => {
     it(`should return an array`, () => {
       const refStr = `Tiger.genders.1.value`
-      expect(getReferenceNodes(root, refStr)).toBeInstanceOf(Array)
+      expect(getReferenceNodes(root, refStr)).to.be.instanceOf(Array)
     })
 
     it(`should have nodes in the result`, () => {
@@ -123,7 +121,7 @@ describe(u.yellow(`yaml`), () => {
       const refStr = `Tiger.genders.1.value`
       const paths = refStr.split('.')
       const nodes = getReferenceNodes(root, refStr)
-      expect(nodes).toHaveLength(paths.length)
+      expect(nodes).to.have.length(paths.length)
     })
 
     it(`should contain the reference nodes in order`, () => {

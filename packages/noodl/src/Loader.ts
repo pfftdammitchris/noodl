@@ -22,7 +22,7 @@ const { existsSync, readFile } = fs
 const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
 
 class NoodlLoader<
-  Options extends string = string,
+  ConfigKey extends string = string,
   DataType extends t.Loader.RootDataType = 'map',
 > implements t.ILoader<DataType>
 {
@@ -41,7 +41,7 @@ class NoodlLoader<
   // @ts-expect-error
   root: t.Loader.Root<DataType>
 
-  constructor(options: Options | t.Loader.Options<Options> = {}) {
+  constructor(opts: ConfigKey | t.Loader.Options<ConfigKey> = {}) {
     this.logger = winston.createLogger({
       level: 'error',
       transports: [
@@ -62,66 +62,61 @@ class NoodlLoader<
       ],
     })
 
-    if (u.isStr(options)) {
-      this.logger.debug(`Instantiating with config: ${u.cyan(options)}`)
-      this.configKey = options
-      this.root = new Map() as t.Loader.Root<DataType>
+    const options = u.isStr(opts) ? { config: opts } : opts
+    const configKey = options.config
+    const dataType = options.dataType === 'object' ? 'object' : 'map'
+    const defaultKeys = ['Global']
+
+    this.configKey = configKey
+    this.options = shallowMerge(this.options, options)
+    this.logger.level = options.loglevel || this.options.loglevel
+    this.logger.debug(`Options`, this.options)
+    this.logger.debug(
+      `Instantiating with config: ${u.yellow(
+        this.configKey || '<no config received>',
+      )}`,
+    )
+
+    this.logger.debug(
+      `Initiating root with with default keys: ${u.yellow(
+        defaultKeys.join(', '),
+      )}`,
+    )
+
+    if (dataType === 'object') {
+      this.logger.debug(
+        `Data type set to ${u.yellow(
+          `object`,
+        )} mode. Root will be a plain object`,
+      )
+      this.root = {} as t.Loader.Root<DataType>
+      u.forEach((key) => (this.root[key] = {}), defaultKeys)
     } else {
-      const defaultKeys = ['Global']
-
-      this.options = shallowMerge(this.options, options)
-      this.#configKey = options.config || ''
-      this.logger.level = options.loglevel || this.options.loglevel
-      this.logger.debug(`Options`, this.options)
       this.logger.debug(
-        `Instantiating with config: ${u.yellow(
-          options.config || '<no config received>',
-        )}`,
+        `Data type set to ${u.yellow(`map`)} mode. Root will be a Map`,
       )
-      if (options.dataType === 'object') {
-        this.logger.debug(
-          `Data type set to ${u.yellow(
-            `object`,
-          )} mode. Root will be a plain object`,
-        )
-        this.root = { Global: {} } as t.Loader.Root<DataType>
-      } else {
-        this.logger.debug(
-          `Data type set to ${u.yellow(`map`)} mode. Root will be a Map`,
-        )
-        this.logger.debug(
-          `Initiating root with a Map with default keys: ${u.yellow(
-            defaultKeys.join(', '),
-          )}`,
-        )
-        ;(this.root as Map<any, any>) = new Map([
-          ['Global', new yaml.Document()],
-        ])
-      }
-
-      this.logger.debug(
-        `Initiated root ${
-          options.dataType === 'object' ? `as an object` : 'with a Map'
-        } with default keys: ${u.yellow(
-          options.dataType === 'object'
-            ? u.keys(this.root).join(', ')
-            : [...this.root.keys()].join(', '),
-        )}`,
-      )
-    }
-
-    Object.defineProperty(this.root, 'toJSON', {
-      value: () => {
-        if (this.root instanceof Map) {
+      ;(this.root as Map<any, any>) = new Map()
+      u.forEach((key) => this.root.set(key, new yaml.Document()), defaultKeys)
+      Object.defineProperty(this.root, 'toJSON', {
+        value: () => {
           const output = {}
-          for (const [name, document_] of this.root) {
+          for (const [name, document_] of this.root as Map<any, any>) {
             yaml.isDocument(document_) && (output[name] = document_?.toJSON?.())
           }
           return output
-        }
-        return this.root
-      },
-    })
+        },
+      })
+    }
+
+    this.logger.debug(
+      `Initiated root ${
+        options.dataType === 'object' ? `as an object` : 'with a map'
+      } with default keys: ${u.yellow(
+        options.dataType === 'object'
+          ? u.keys(this.root).join(', ')
+          : [...this.root.keys()].join(', '),
+      )}`,
+    )
   }
 
   #toRootPageKey = (filepath: string, extension = '.yml') =>
@@ -300,7 +295,7 @@ class NoodlLoader<
     dir?: string
     fallback?: {
       appConfig?: Parameters<
-        NoodlLoader<Options, DataType>['loadAppConfig']
+        NoodlLoader<ConfigKey, DataType>['loadAppConfig']
       >[0]['fallback']
     }
     loadPages?: boolean
