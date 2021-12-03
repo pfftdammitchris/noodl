@@ -1,5 +1,4 @@
 import * as u from '@jsmanifest/utils'
-import * as nu from 'noodl-utils'
 import { expect } from 'chai'
 import loadFiles from '../utils/loadFiles'
 import * as fs from 'fs-extra'
@@ -7,7 +6,6 @@ import * as path from 'path'
 import nock from 'nock'
 import yaml from 'yaml'
 import NoodlLoader from '../Loader'
-import * as c from '../constants'
 
 const meetd2yml = fs.readFileSync(
   path.join(__dirname, './fixtures/meetd2.yml'),
@@ -66,6 +64,7 @@ async function init(
     _loader = new NoodlLoader(options)
   }
   return (_loader as NoodlLoader).init({
+    dir: pathToFixtures,
     loadPages: false,
     loadPreloadPages: false,
     ...(u.isObj(options) ? options : { config: options }),
@@ -74,7 +73,7 @@ async function init(
 
 describe(u.yellow(`noodl`), () => {
   describe(u.italic(`init`), () => {
-    it.only(`[map] should initiate both the root config and app config`, async () => {
+    it(`[map] should initiate both the root config and app config`, async () => {
       loader = new NoodlLoader({ config: 'meetd2' })
       const doc = (await init()).doc
       expect(loader.root.get(config).has('cadlMain')).to.be.true
@@ -104,13 +103,13 @@ describe(u.yellow(`noodl`), () => {
     it(`should return the config version (latest)`, async () => {
       expect(loader.configVersion).to.eq('')
       await init()
-      expect(loader.configVersion).to.eq('0.45d')
+      expect(loader.configVersion).to.eq('0.7d')
     })
 
     it(`should return the app config url`, async () => {
       expect(loader.appConfigUrl).to.eq('')
       await init()
-      expect(loader.configVersion).to.eq('0.45d')
+      expect(loader.configVersion).to.eq('0.7d')
     })
 
     it(`should load all the preload pages by default`, async () => {
@@ -127,34 +126,31 @@ describe(u.yellow(`noodl`), () => {
 					`,
           )
       }
-      await loader.init({ loadPages: false })
+      await loader.init({ dir: pathToFixtures, loadPages: false })
       preloadPages.forEach((preloadPage) => {
         expect(loader.root.get(preloadPage as string)).to.exist
       })
     })
 
     it(`should load all the pages by default`, async () => {
-      mockAllPageRequests()
-      await loader.init({ loadPreloadPages: false })
-      pages.forEach(
-        (page: string) =>
-          expect(loader.root.get(page.replace('~/', ''))).to.exist,
-      )
+      await loader.init({ dir: pathToFixtures, loadPreloadPages: false })
+      const pages = loader.root.get('cadlEndpoint').get('page').toJSON()
+      expect(pages).to.have.length.greaterThan(0)
+      pages.forEach((page: string) => {
+        expect(loader.root.get(page.replace('~/', ''))).to.exist
+      })
     })
   })
 
   describe(u.italic(`extractAssets`), () => {
     it(`should extract the assets`, async () => {
       mockAllPageRequests()
-      await loader.init()
-      const assetsUrl = loader.assetsUrl
+      await loader.init({ dir: pathToFixtures })
       const assets = loader.extractAssets()
       expect(assets).to.have.length.greaterThan(0)
       for (const asset of assets) {
-        expect(asset).to.have.property(
-          'url',
-          `${assetsUrl}${asset.filename}${asset.ext}`,
-        )
+        expect(asset).to.have.property('url').to.be.a('string')
+        expect(asset.url.startsWith('http')).to.be.true
       }
     })
   })

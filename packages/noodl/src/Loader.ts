@@ -130,7 +130,8 @@ class NoodlLoader<
   #getRootConfig = () => this.getInRoot(this.configKey) as yaml.Document
 
   get appConfigUrl() {
-    return `${this.baseUrl}${this.appKey}.yml`
+    const prefix = `${this.baseUrl}${this.appKey}`
+    return prefix ? `${prefix}.yml` : prefix
   }
 
   get appKey() {
@@ -195,6 +196,7 @@ class NoodlLoader<
   }
 
   extractAssets({ remote = true }: { remote?: boolean } = {}) {
+    const urlCache = {}
     const assets = [] as t.LinkStructure[]
     const commonUrlKeys = ['path', 'resource'] as string[]
     const visitedAssets = [] as string[]
@@ -203,6 +205,7 @@ class NoodlLoader<
       if (!visitedAssets.includes(assetPath) && isValidAsset(assetPath)) {
         if (!remote && assetPath.startsWith('http')) return
         visitedAssets.push(assetPath)
+
         assets.push(
           getLinkStructure(assetPath, {
             prefix: this.assetsUrl,
@@ -214,15 +217,29 @@ class NoodlLoader<
 
     for (const visitee of this.root.values()) {
       yaml.visit(visitee, {
+        Scalar: (_, node) => {
+          if (yaml.isScalar(node) && u.isStr(node.value)) {
+            if (
+              /\.(avi|bmp|gif|jpg|jpeg|png|tif|tiff|mp4)$/i.test(node.value) &&
+              !(node.value in urlCache)
+            ) {
+              this.logger.debug(`Found asset: ${u.magenta(node.value)}`)
+              addAsset(node.value)
+            }
+          }
+        },
         Map: (key, node) => {
           for (const key of commonUrlKeys) {
             if (node.has(key)) {
               const value = node.get(key)
               if (u.isStr(value)) {
-                this.logger.debug(
-                  `Found ${u.yellow(key)} asset: ${u.magenta(String(value))}`,
-                )
-                addAsset(value)
+                if (!(value in urlCache)) {
+                  urlCache[value] = value
+                  this.logger.debug(
+                    `Found ${u.yellow(key)} asset: ${u.magenta(String(value))}`,
+                  )
+                  addAsset(value)
+                }
               }
             }
           }
@@ -232,8 +249,10 @@ class NoodlLoader<
             if (
               yaml.isScalar(node.key) &&
               u.isStr(node.key.value) &&
-              node.key.value === key
+              node.key.value === key &&
+              !(key in urlCache)
             ) {
+              urlCache[key] = key
               this.logger.debug(
                 `Found ${u.yellow(key)} asset: ${u.magenta(
                   String(node.value['value']),
@@ -365,11 +384,17 @@ class NoodlLoader<
         configYml = await readFile(configFilePath, 'utf8')
         configDocument = yaml.parseDocument(configYml)
       } else {
-        this.logger.error(
-          `Tried to load root config from ${u.yellow(
-            configFilePath,
-          )} but the location does not exist`,
-        )
+        if (!dir) {
+          this.logger.debug(
+            `Fetching config ${u.yellow(this.configKey)} remotely`,
+          )
+        } else {
+          this.logger.error(
+            `Tried to load root config from ${u.yellow(
+              configFilePath,
+            )} but the location does not exist`,
+          )
+        }
       }
     } else if (u.isStr(options)) {
       this.configKey = options

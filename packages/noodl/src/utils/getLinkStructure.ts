@@ -15,7 +15,9 @@ function getLinkStructure(
     ext: parsed.ext,
     filename: parsed.name,
     isRemote: /^(http|www)/i.test(link),
-    url: opts?.prefix
+    url: link.startsWith('http')
+      ? link
+      : opts?.prefix
       ? `${opts.prefix}${opts.prefix.endsWith('/') ? link : `/${link}`}`
       : link,
   } as LinkStructure

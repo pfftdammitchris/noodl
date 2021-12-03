@@ -10,10 +10,9 @@ preload:
   - BasePage
   - BaseCSS
   - BaseDataModel
-  - BaseMessage
 page:
   - AboutAitmed
   - AddContact
-  - DocumentNote
+  - DocumentNotes
   - EditContact
   - ReferenceTest
