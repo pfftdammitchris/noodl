@@ -3,6 +3,7 @@ import * as u from '@jsmanifest/utils'
 import type { OrArray } from '@jsmanifest/typefest'
 import chunk from 'lodash/chunk'
 import flatten from 'lodash/flatten'
+import get from 'lodash/get'
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import type { DeviceType, Env } from 'noodl-types'
@@ -27,21 +28,20 @@ class NoodlLoader<
 > implements t.ILoader<DataType>
 {
   #configKey = ''
-
   #configVersion = 'latest'
   cbs = {} as Record<string, ((...arguments_: any[]) => any)[]>
   deviceType: DeviceType = 'web'
+  dataType: DataType
   env: Env = 'test'
   logger: winston.Logger
   options = {
-    dataType: 'map' as const,
-    loglevel: 'error' as t.Loader.Options['loglevel'],
+    dataType: 'map' as DataType,
+    loglevel: 'error' as t.Loader.Options<ConfigKey, DataType>['loglevel'],
   }
 
-  // @ts-expect-error
   root: t.Loader.Root<DataType>
 
-  constructor(opts: ConfigKey | t.Loader.Options<ConfigKey> = {}) {
+  constructor(opts: ConfigKey | t.Loader.Options<ConfigKey, DataType> = {}) {
     this.logger = winston.createLogger({
       level: 'error',
       transports: [
@@ -68,6 +68,7 @@ class NoodlLoader<
     const defaultKeys = ['Global']
 
     this.configKey = configKey
+    this.dataType = dataType as DataType
     this.options = shallowMerge(this.options, options)
     this.logger.level = options.loglevel || this.options.loglevel
     this.logger.debug(`Options`, this.options)
@@ -136,24 +137,22 @@ class NoodlLoader<
 
   get appKey() {
     return (
-      ((this.#getRootConfig()?.get?.('cadlMain') || '') as string)?.replace(
-        '.yml',
-        '',
-      ) || ''
+      (
+        (this.getIn(this.#getRootConfig(), 'cadlMain') || '') as string
+      )?.replace('.yml', '') || ''
     )
   }
 
   get assetsUrl() {
     return (
-      `${this.#getRootConfig()?.get?.('cadlBaseUrl') || ''}assets/`.replace(
-        `$\{cadlBaseUrl}`,
-        this.baseUrl,
-      ) || ''
+      `${
+        this.getIn(this.#getRootConfig(), 'cadlBaseUrl') || ''
+      }assets/`.replace(`$\{cadlBaseUrl}`, this.baseUrl) || ''
     )
   }
 
   get baseUrl() {
-    return (this.#getRootConfig()?.get?.('cadlBaseUrl') || '') as string
+    return (this.getIn(this.#getRootConfig(), 'cadlBaseUrl') || '') as string
   }
 
   get configKey() {
@@ -167,7 +166,7 @@ class NoodlLoader<
 
   get configVersion() {
     if (this.#configVersion === 'latest') {
-      return (this.#getRootConfig()?.getIn?.([
+      return (this.getIn?.(this.#getRootConfig(), [
         this.deviceType,
         'cadlVersion',
         this.env,
@@ -182,9 +181,8 @@ class NoodlLoader<
 
   get pageNames() {
     const appConfig = this.getInRoot(this.appKey) as yaml.Document
-    const preloadPages =
-      (appConfig?.get('preload') as yaml.YAMLSeq)?.toJSON?.() || []
-    const pages = (appConfig?.get('page') as yaml.YAMLSeq)?.toJSON?.() || []
+    const preloadPages = this.getIn(appConfig, 'preload') || []
+    const pages = this.getIn(appConfig, 'page') || []
     return [...preloadPages, ...pages] as string[]
   }
 
@@ -268,12 +266,16 @@ class NoodlLoader<
     return assets
   }
 
+  getIn(
+    obj: Record<string, any> | yaml.Document | yaml.Document.Parsed,
+    key: string | string[],
+  ) {
+    if (yaml.isDocument(obj)) return obj.getIn(u.array(key))
+    return get(obj, key)
+  }
+
   getConfigVersion(document_ = this.getInRoot(this.configKey)): string {
-    return (document_ as yaml.Document)?.getIn([
-      this.deviceType,
-      'cadlVersion',
-      this.env,
-    ]) as any
+    return this.getIn(document_, [this.deviceType, 'cadlVersion', this.env])
   }
 
   getPageUrl(pathname: string | undefined) {
@@ -366,7 +368,7 @@ class NoodlLoader<
     options: yaml.Document | { dir: string; config?: string } | string = this
       .configKey,
   ) {
-    let configDocument: yaml.Document | undefined
+    let configDocument: yaml.Document | Record<string, any> | undefined
     let configYml = ''
 
     if (yaml.isDocument(options)) {
@@ -382,7 +384,7 @@ class NoodlLoader<
           `Loading root config from: ${u.yellow(configFilePath)}`,
         )
         configYml = await readFile(configFilePath, 'utf8')
-        configDocument = yaml.parseDocument(configYml)
+        configDocument = this.parseYml(configYml)
       } else {
         if (!dir) {
           this.logger.debug(
@@ -408,10 +410,11 @@ class NoodlLoader<
 
     configDocument &&
       !configYml &&
-      (configYml = stringifyDocument(configDocument))
-    configYml &&
-      !configDocument &&
-      (configDocument = yaml.parseDocument(configYml))
+      (configYml =
+        this.dataType == 'map'
+          ? stringifyDocument(configDocument as yaml.Document)
+          : yaml.stringify(configDocument))
+    configYml && !configDocument && (configDocument = this.parseYml(configYml))
 
     const withYmlExtension = (s = '') => !s.endsWith('.yml') && (s += '.yml')
 
@@ -423,7 +426,7 @@ class NoodlLoader<
       this.emit(c.ON_RETRIEVING_ROOT_CONFIG, { url: configUrl })
       const { data: yml } = await axios.get(configUrl)
       this.logger.debug(`Received config yaml`)
-      configDocument = yaml.parseDocument(yml)
+      configDocument = this.parseYml(yml)
       this.logger.debug(`Saved config in memory as a yaml document`)
       configYml = yml
     }
@@ -445,51 +448,56 @@ class NoodlLoader<
     this.emit(c.ON_CONFIG_VERSION, this.configVersion)
 
     const replacePlaceholders = createNoodlPlaceholderReplacer({
-      cadlBaseUrl: configDocument.get('cadlBaseUrl'),
+      cadlBaseUrl: this.getIn(configDocument, 'cadlBaseUrl'),
       cadlVersion: this.configVersion,
       designSuffix: '',
     })
 
-    yaml.visit(configDocument, {
-      Pair: (key, node) => {
-        if (yaml.isScalar(node.key) && node.key.value === 'cadlBaseUrl') {
-          this.logger.debug(
-            `Encountered base url: ${u.yellow(String(node.value))}`,
-          )
-          if (
-            yaml.isScalar(node.value) &&
-            u.isStr(node.value) &&
-            hasNoodlPlaceholder(node.value)
-          ) {
-            const before = node.value.value as string
-            node.value.value = replacePlaceholders(node.value.value)
+    yaml.visit(
+      this.dataType == 'map'
+        ? (configDocument as yaml.Document)
+        : yaml.parseDocument(yaml.stringify(configDocument)),
+      {
+        Pair: (key, node) => {
+          if (yaml.isScalar(node.key) && node.key.value === 'cadlBaseUrl') {
+            this.logger.debug(
+              `Encountered base url: ${u.yellow(String(node.value))}`,
+            )
+            if (
+              yaml.isScalar(node.value) &&
+              u.isStr(node.value) &&
+              hasNoodlPlaceholder(node.value)
+            ) {
+              const before = node.value.value as string
+              node.value.value = replacePlaceholders(node.value.value)
+              this.logger.info(
+                `Setting base url to ${u.magenta(String(node.value.value))}`,
+              )
+              this.emit(c.ON_PLACEHOLDER_PURGED, {
+                before,
+                after: node.value.value as string,
+              })
+              return yaml.visit.SKIP
+            }
+          }
+        },
+        Scalar: (key, node) => {
+          if (u.isStr(node.value) && hasNoodlPlaceholder(node.value)) {
+            const before = node.value
+            node.value = replacePlaceholders(node.value)
             this.logger.info(
-              `Setting base url to ${u.magenta(String(node.value.value))}`,
+              `Replaced a placeholder from ${u.yellow(before)} to ${u.magenta(
+                String(node.value),
+              )}`,
             )
             this.emit(c.ON_PLACEHOLDER_PURGED, {
               before,
-              after: node.value.value as string,
+              after: node.value as string,
             })
-            return yaml.visit.SKIP
           }
-        }
+        },
       },
-      Scalar: (key, node) => {
-        if (u.isStr(node.value) && hasNoodlPlaceholder(node.value)) {
-          const before = node.value
-          node.value = replacePlaceholders(node.value)
-          this.logger.info(
-            `Replaced a placeholder from ${u.yellow(before)} to ${u.magenta(
-              String(node.value),
-            )}`,
-          )
-          this.emit(c.ON_PLACEHOLDER_PURGED, {
-            before,
-            after: node.value as string,
-          })
-        }
-      },
-    })
+    )
 
     return configDocument
   }
@@ -514,7 +522,7 @@ class NoodlLoader<
 
     // Placeholders should already have been purged by this time
     let appConfigYml = ''
-    let appConfigDocument: yaml.Document | undefined
+    let appConfigDocument: yaml.Document | Record<string, any> | undefined
     let yml = ''
 
     if (dir) {
@@ -527,7 +535,7 @@ class NoodlLoader<
         )
         appConfigYml = await readFile(appConfigFilePath, 'utf8')
         this.logger.debug(`Retrieved app config yaml`)
-        appConfigDocument = yaml.parseDocument(appConfigYml)
+        appConfigDocument = this.parseYml(appConfigYml)
         this.logger.debug(`Loaded app config as a yaml document`)
       } else {
         this.logger.error(
@@ -565,7 +573,7 @@ class NoodlLoader<
       this.logger.debug(
         `Saved app config yaml on root key: ${u.yellow(`${this.appKey}_raw`)}`,
       )
-      appConfigDocument = yaml.parseDocument(appConfigYml)
+      appConfigDocument = this.parseYml(appConfigYml)
       this.setInRoot(this.appKey, appConfigDocument)
       this.logger.debug(
         `Loaded app config as a yaml document on root key: ${u.yellow(
@@ -606,7 +614,7 @@ class NoodlLoader<
         }
       | string
       | undefined = '',
-    document_?: yaml.Document,
+    document_?: yaml.Document | Record<string, any>,
   ) {
     let dir = ''
     let name = ''
@@ -627,16 +635,30 @@ class NoodlLoader<
 
         for (const filename of [`${key}.yml`, `${key}_en.yml`]) {
           filepath = path.join(dir, filename)
+
           if (existsSync(filepath)) {
             const yml = await readFile(filepath, 'utf8')
             if (yml) {
-              this.setInRoot(key, (document_ = yaml.parseDocument(yml)))
+              const pageName = filename.replace(/(_en|\.yml)/i, '')
+              document_ = this.parseYml(yml)
+
+              // Format from { SignIn : { SignIn: {...} } } to { SignIn: {...} }
+              if (
+                !yaml.isDocument(document_) &&
+                !yaml.isNode(document_) &&
+                u.isObj(document_) &&
+                pageName &&
+                pageName in document_
+              ) {
+                document_ = document_[pageName]
+              }
+              this.setInRoot(key, document_)
               this.logger.debug(
                 `Saved a yaml node on root key: ${u.yellow(key)}`,
               )
               this.emit(c.ON_RETRIEVED_APP_PAGE, {
                 name,
-                doc: document_ as yaml.Document,
+                doc: document_,
                 fromDir: true,
               })
               return this.getInRoot(key || '')
@@ -648,20 +670,20 @@ class NoodlLoader<
 
       const spreadKeys = (
         keys: OrArray<string>,
-        document__?: yaml.Document | yaml.Document.Parsed,
+        document__?: yaml.Document | Record<string, any>,
       ) => {
         this.logger.debug(
           `Spreading keys: ${u.yellow(u.array(keys).join(', '))}`,
         )
         const spreadFunction = (
-          document___: yaml.Document | yaml.Document.Parsed,
+          document___: yaml.Document | Record<string, any>,
         ) => {
           if (yaml.isMap(document___)) {
             for (const pair of document___.items) {
               if (yaml.isScalar(pair.key)) {
                 this.setInRoot(
                   String(pair.key),
-                  yaml.parseDocument(yaml.stringify(pair.value)),
+                  this.parseYml(yaml.stringify(pair.value)),
                 )
               }
             }
@@ -673,8 +695,16 @@ class NoodlLoader<
               if (yaml.isScalar(pair.key)) {
                 this.setInRoot(
                   String(pair.key),
-                  yaml.parseDocument(yaml.stringify(pair.value)),
+                  this.parseYml(yaml.stringify(pair.value)),
                 )
+              }
+            }
+          } else if (u.isObj(document___)) {
+            for (const [key, value] of u.entries(document___)) {
+              if (u.isStr(value)) {
+                this.setInRoot(key, this.parseYml(value))
+              } else {
+                this.setInRoot(key, value)
               }
             }
           }
@@ -685,7 +715,7 @@ class NoodlLoader<
         } else {
           for (const key of u.array(keys)) {
             if (this.hasInRoot(key)) {
-              spreadFunction(this.getInRoot(key) as yaml.Document)
+              spreadFunction(this.getInRoot(key))
             }
           }
         }
@@ -694,8 +724,8 @@ class NoodlLoader<
       if (u.isStr(name)) {
         const pageUrl = this.getPageUrl(`${key}_en.yml`)
         const { data: yml } = await axios.get(pageUrl)
-        if (spread.includes(name)) spreadKeys(name, yaml.parseDocument(yml))
-        else this.setInRoot(key, (document_ = yaml.parseDocument(yml)))
+        if (spread.includes(name)) spreadKeys(name, this.parseYml(yml))
+        else this.setInRoot(key, (document_ = this.parseYml(yml)))
       } else if (name && yaml.isDocument(document_)) {
         if (spread.includes(name)) spreadKeys(name, document_)
         else this.setInRoot(key, document_)
@@ -745,7 +775,10 @@ class NoodlLoader<
   }: { dir?: string; spread?: OrArray<string> } = {}) {
     const spreadKeys = u.array(spread)
     const preloadPages = [] as string[]
-    const seq = (this.getInRoot(this.appKey) as yaml.Document)?.get('preload')
+    const seq = this.getIn(
+      this.getInRoot(this.appKey) as yaml.Document,
+      'preload',
+    )
 
     if (yaml.isSeq(seq)) {
       for (const node of seq.items) {
@@ -783,7 +816,7 @@ class NoodlLoader<
     spread?: OrArray<string>
   } = {}) {
     const pages = [] as string[]
-    const nodes = (this.getInRoot(this.appKey) as yaml.Document)?.get('page')
+    const nodes = this.getIn(this.getInRoot(this.appKey), 'page')
 
     if (yaml.isSeq(nodes)) {
       for (const node of nodes.items) {
@@ -791,6 +824,15 @@ class NoodlLoader<
           !pages.includes(node.value) && pages.push(node.value)
           if (!pages.includes(node.value)) {
             this.logger.info(`Loading page: "${u.yellow(node.value)}"`)
+          }
+        }
+      }
+    } else if (u.isArr(nodes)) {
+      for (const node of nodes) {
+        if (u.isStr(node)) {
+          !pages.includes(node) && pages.push(node)
+          if (!pages.includes(node)) {
+            this.logger.info(`Loading page: "${u.yellow(node)}"`)
           }
         }
       }
@@ -819,6 +861,12 @@ class NoodlLoader<
     )
 
     return flatten(allPages)
+  }
+
+  parseYml(
+    yml = '',
+  ): DataType extends 'map' ? yaml.Document.Parsed : Record<string, any> {
+    return this.dataType === 'map' ? yaml.parseDocument(yml) : yaml.parse(yml)
   }
 
   on<Event_ extends keyof t.Loader.Hooks>(

@@ -9,8 +9,8 @@ export type YAMLVisitArgs<N> = Parameters<visitorFn<N>>
 export interface ILoader<
   DataType extends Loader.RootDataType = Loader.RootDataType,
 > {
-  root: Root
-  options: Loader.Options<DataType>
+  root: Loader.Root<DataType>
+  options: Loader.Options<string, DataType>
 }
 
 export interface BaseStructure {
@@ -83,14 +83,25 @@ export namespace Loader {
     ON_RETRIEVING_APP_CONFIG: { args: { url: string } }
     ON_RETRIEVED_APP_CONFIG: { args: string }
     ON_RETRIEVED_APP_PAGE: {
-      args: { name: string; doc: yaml.Document; fromDir?: boolean }
+      args: {
+        name: string
+        doc: yaml.Document | Record<string, any>
+        fromDir?: boolean
+      }
     }
     ON_RETRIEVE_APP_PAGE_FAILED: { args: { name: string; error: Error } }
     ON_RETRIEVING_ROOT_CONFIG: { args: { url: string } }
     ON_RETRIEVED_ROOT_CONFIG: {
-      args: { doc: yaml.Document; name: string; yml: string }
+      args: {
+        doc: yaml.Document | Record<string, any>
+        name: string
+        yml: string
+      }
     }
-  } & Record<CommonEmitEvents, { args: { name: string; doc: yaml.Document } }>
+  } & Record<
+    CommonEmitEvents,
+    { args: { name: string; doc: yaml.Document | Record<string, any> } }
+  >
 
   export type LoadOptions<Type extends 'doc' | 'yml' = 'doc' | 'yml'> =
     | string
@@ -98,13 +109,16 @@ export namespace Loader {
         ? OrArray<{ name: string; doc: yaml.Document }>
         : OrArray<{ name: string; yml: string }>)
 
-  export interface Options<ConfigKey extends string = string> {
+  export interface Options<
+    ConfigKey extends string = string,
+    DataType extends Loader.RootDataType = 'map',
+  > {
     config?: ConfigKey
+    dataType?: DataType
     deviceType?: nt.DeviceType
     env?: nt.Env
-    version?: LiteralUnion<'latest', string>
-    dataType?: RootDataType
     loglevel?: 'error' | 'debug' | 'http' | 'info' | 'verbose' | 'warn'
+    version?: LiteralUnion<'latest', string>
   }
 
   export type BaseRootKey = 'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage'

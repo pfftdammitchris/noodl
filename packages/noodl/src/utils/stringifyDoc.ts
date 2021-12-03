@@ -7,20 +7,20 @@ import type { YAMLDocument } from '../internal/yaml'
  * @param { YAMLDocument } doc
  */
 function stringifyDoc(
-	doc: YAMLDocument | undefined | null,
-	opts?: ToStringOptions,
+  doc: YAMLDocument | undefined | null,
+  opts?: ToStringOptions,
 ) {
-	let result = ''
+  let result = ''
 
-	if (doc) {
-		if (doc.errors.length) {
-			result = stringify(doc.errors)
-		} else {
-			result = doc.toString({ singleQuote: true, ...opts })
-		}
-	}
+  if (doc) {
+    if (doc.errors.length) {
+      result = stringify(doc.errors)
+    } else {
+      result = doc.toString({ singleQuote: true, ...opts })
+    }
+  }
 
-	return result
+  return result
 }
 
 export default stringifyDoc

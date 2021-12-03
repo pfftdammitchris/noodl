@@ -154,4 +154,25 @@ describe(u.yellow(`noodl`), () => {
       }
     })
   })
+
+  it(`should set everything in the root to plain objects if mode is set to "object"`, async () => {
+    const loader = new NoodlLoader({
+      config: 'meetd2',
+      dataType: 'object',
+    })
+    mockAllPageRequests()
+    await loader.init({
+      dir: pathToFixtures,
+      loadPages: true,
+      loadPreloadPages: true,
+    })
+    expect(loader).not.to.be.instanceOf(Map)
+    const rootKeys = u.keys(loader.root)
+    expect(rootKeys).to.have.length.greaterThan(0)
+    rootKeys.forEach((key) => {
+      expect(yaml.isNode(loader.root[key])).to.be.false
+      expect(yaml.isDocument(loader.root[key])).to.be.false
+      expect(loader.root[key]).to.exist
+    })
+  })
 })
