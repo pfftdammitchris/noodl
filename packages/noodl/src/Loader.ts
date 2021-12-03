@@ -180,9 +180,11 @@ class NoodlLoader<
   }
 
   get pageNames() {
-    const appConfig = this.getInRoot(this.appKey) as yaml.Document
-    const preloadPages = this.getIn(appConfig, 'preload') || []
-    const pages = this.getIn(appConfig, 'page') || []
+    let appConfig = this.getInRoot(this.appKey) as yaml.Document
+    let preloadPages = this.getIn(appConfig, 'preload') || []
+    let pages = this.getIn(appConfig, 'page') || []
+    if (yaml.isSeq(preloadPages)) preloadPages = preloadPages.toJSON()
+    if (yaml.isSeq(pages)) pages = pages.toJSON()
     return [...preloadPages, ...pages] as string[]
   }
 
