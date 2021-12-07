@@ -38,7 +38,7 @@ const mockAllPageRequests = (_loader = loader) => {
   }
 }
 
-let loader: NoodlLoader<any, any>
+let loader: NoodlLoader<typeof config, 'map'>
 let assetsUrl = `http://127.0.0.1:3001/assets/`
 let baseConfigUrl = `http://127.0.0.1:3001/config`
 let baseUrl = `http://127.0.0.1:3001/`
@@ -75,17 +75,20 @@ describe(u.yellow(`noodl`), () => {
   describe(u.italic(`init`), () => {
     it(`[map] should initiate both the root config and app config`, async () => {
       loader = new NoodlLoader({ config: 'meetd2' })
-      const doc = (await init()).doc
-      expect(loader.root.get(config).has('cadlMain')).to.be.true
-      expect(loader.root.get('cadlEndpoint').has('preload')).to.be.true
-      expect(loader.root.get('cadlEndpoint').has('page')).to.be.true
+      await init()
+      expect((loader.root.get(config) as yaml.Document).has('cadlMain')).to.be
+        .true
+      expect((loader.root.get('cadlEndpoint') as yaml.Document).has('preload'))
+        .to.be.true
+      expect((loader.root.get('cadlEndpoint') as yaml.Document).has('page')).to
+        .be.true
     })
 
     it(`[object] should initiate both the root config and app config`, async () => {
-      const doc = (await init()).doc
-      expect(doc.root?.has('cadlMain')).to.be.true
-      expect(doc.app?.has('preload')).to.be.true
-      expect(doc.app?.has('page')).to.be.true
+      const [root, app] = await init()
+      expect(root?.has('cadlMain')).to.be.true
+      expect(app?.has('preload')).to.be.true
+      expect(app?.has('page')).to.be.true
     })
 
     it(`should return the assets url`, async () => {
@@ -134,7 +137,11 @@ describe(u.yellow(`noodl`), () => {
 
     it(`should load all the pages by default`, async () => {
       await loader.init({ dir: pathToFixtures, loadPreloadPages: false })
-      const pages = loader.root.get('cadlEndpoint').get('page').toJSON()
+      const pages = (
+        (loader.root.get('cadlEndpoint') as yaml.Document).get(
+          'page',
+        ) as yaml.YAMLSeq
+      ).toJSON()
       expect(pages).to.have.length.greaterThan(0)
       pages.forEach((page: string) => {
         expect(loader.root.get(page.replace('~/', ''))).to.exist
@@ -174,5 +181,12 @@ describe(u.yellow(`noodl`), () => {
       expect(yaml.isDocument(loader.root[key])).to.be.false
       expect(loader.root[key]).to.exist
     })
+  })
+
+  it(`should set values of root properties as yaml nodes`, async () => {
+    await loader.init({ dir: pathToFixtures })
+    for (const [name, node] of loader.root) {
+      expect(yaml.isNode(node) || yaml.isDocument(node)).to.be.true
+    }
   })
 })

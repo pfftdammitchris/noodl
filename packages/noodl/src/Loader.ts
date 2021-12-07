@@ -6,7 +6,7 @@ import flatten from 'lodash/flatten'
 import get from 'lodash/get'
 import * as path from 'path'
 import * as fs from 'fs-extra'
-import type { DeviceType, Env } from 'noodl-types'
+import type { AppConfig, DeviceType, Env, RootConfig } from 'noodl-types'
 import * as nu from 'noodl-utils'
 import invariant from 'invariant'
 import axios from 'axios'
@@ -284,14 +284,6 @@ class NoodlLoader<
     return pathname ? `${this.baseUrl}${pathname}` : ''
   }
 
-  getRawRootConfigYml(): string {
-    return this.getInRoot(`${this.configKey}_raw`) as any
-  }
-
-  getRawAppConfigYml(): string {
-    return this.getInRoot(`${this.appKey}_raw`) as any
-  }
-
   getInRoot(key: string) {
     if (this.root instanceof Map) return this.root.get(key)
     return this.root[key]
@@ -337,21 +329,17 @@ class NoodlLoader<
     this.logger.info(`Using device type ${u.yellow(this.deviceType)}`)
     this.logger.info(`Using eCOS environment: ${u.yellow(this.env)}`)
 
-    const result = {
-      doc: {
-        root: await this.loadRootConfig({ dir }),
-        app: await this.loadAppConfig({ dir, fallback: fallback?.appConfig }),
-      },
-      raw: {
-        root: this.getRawRootConfigYml(),
-        app: this.getRawAppConfigYml(),
-      },
-    }
+    const result = [
+      await this.loadRootConfig({ dir }),
+      await this.loadAppConfig({ dir, fallback: fallback?.appConfig }),
+    ]
 
     shouldLoadPreloadPages && (await this.loadPreloadPages({ dir, spread }))
     shouldLoadPages && (await this.loadPages({ dir, spread }))
 
-    return result
+    return result as DataType extends 'map'
+      ? [yaml.Document<RootConfig>, yaml.Document<AppConfig>]
+      : [RootConfig, AppConfig]
   }
 
   /**
@@ -363,7 +351,6 @@ class NoodlLoader<
     dir: string
     config?: string
   }): Promise<yaml.Document>
-
   async loadRootConfig(config: yaml.Document): Promise<yaml.Document>
   async loadRootConfig(configName?: string): Promise<yaml.Document>
   async loadRootConfig(
@@ -435,8 +422,6 @@ class NoodlLoader<
 
     this.setInRoot(this.configKey, configDocument)
     this.logger.debug(`Root key ${u.yellow(this.configKey)} set`)
-    this.setInRoot(`${this.configKey}_raw`, configYml as any)
-    this.logger.debug(`Root key ${u.yellow(`${this.configKey}_raw`)} set`)
     this.emit(c.ON_RETRIEVED_ROOT_CONFIG, {
       name: this.configKey,
       doc: configDocument,
@@ -571,10 +556,6 @@ class NoodlLoader<
 
     this.emit(c.ON_RETRIEVED_APP_CONFIG, (appConfigYml = yml || appConfigYml))
     if (appConfigYml) {
-      this.setInRoot(`${this.appKey}_raw`, appConfigYml as any)
-      this.logger.debug(
-        `Saved app config yaml on root key: ${u.yellow(`${this.appKey}_raw`)}`,
-      )
       appConfigDocument = this.parseYml(appConfigYml)
       this.setInRoot(this.appKey, appConfigDocument)
       this.logger.debug(
