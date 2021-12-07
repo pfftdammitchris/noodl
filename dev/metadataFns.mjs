@@ -7,7 +7,7 @@ import * as tsm from 'ts-morph'
 import * as nt from 'noodl-types'
 import * as nu from 'noodl-utils'
 import * as u from '@jsmanifest/utils'
-import { getAbsFilePath } from 'noodl'
+import noodl from 'noodl'
 import {
   getJsType,
   getMapProperties,
@@ -17,6 +17,7 @@ import {
 import fs from 'fs-extra'
 import path from 'path'
 
+const { getAbsFilePath } = noodl
 const ts = tsm.ts
 const factory = ts.factory
 
@@ -44,7 +45,7 @@ const { getNodeScalarTypeAliasType } = tsmUtils
 export function extractActions({ tsProject }, root, { onComplete }) {
   const sourceFile = tsProject.createSourceFile(
     getAbsFilePath('data/actions.ts'),
-    ``,
+    '',
     { overwrite: true, scriptKind: tsm.ScriptKind.TS },
   )
 
@@ -126,6 +127,9 @@ export function extractActions({ tsProject }, root, { onComplete }) {
     const actionPropertiesInterface = sourceFile.addInterface({
       name: 'ActionProperties',
       isExported: true,
+      kind: tsm.SyntaxKind.InterfaceDeclaration,
+      methods: [],
+      properties: [],
     })
 
     for (const [key, value] of u.entries(pairPropertyMetadata.properties)) {

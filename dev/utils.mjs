@@ -1,5 +1,4 @@
 import yaml from 'yaml'
-import * as ts from 'ts-morph'
 import * as u from '@jsmanifest/utils'
 
 const {

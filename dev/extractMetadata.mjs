@@ -1,4 +1,4 @@
-import { Loader } from 'noodl'
+import noodl from 'noodl'
 import prettier from 'prettier'
 import flowRight from 'lodash/flowRight.js'
 import yaml from 'yaml'
@@ -6,11 +6,12 @@ import { extract } from 'noodl-metadata'
 import fs from 'fs-extra'
 import path from 'path'
 import * as nt from 'noodl-types'
-import * as ts from 'ts-morph'
+import * as tsm from 'ts-morph'
 import * as u from '@jsmanifest/utils'
 import * as metadataUtils from './utils.mjs'
 import * as metadataFns from './metadataFns.mjs'
 
+const { Loader } = noodl
 const {
   isScalar,
   isPair,

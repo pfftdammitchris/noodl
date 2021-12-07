@@ -1,10 +1,10 @@
-process.stdout.write('\x1Bc')
+// process.stdout.write('\x1Bc')
 import fs from 'fs-extra'
 import path from 'path'
-import * as n from 'noodl'
+import n from 'noodl'
 import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
-import * as nu from 'noodl-utils'
+import nu from 'noodl-utils'
 import y, {
   isCollection,
   isDocument,
@@ -267,7 +267,10 @@ function getInDeepWithMetadata({ node, pageName, key, path = [] }) {
 
 // console.log(getInDeep(root.Cloud, 'Cloud', 'Cloud.authentication')?.toJSON?.())
 
-const loader = new n.Loader({ config: 'meetd2', loglevel: 'debug' })
+const loader = new n.Loader({
+  config: 'meetd2',
+  loglevel: 'debug',
+})
 
 ;(async () => {
   try {
@@ -279,21 +282,23 @@ const loader = new n.Loader({ config: 'meetd2', loglevel: 'debug' })
     })
     const pathToYmlFile = n.getAbsFilePath('generated/meetd2/Abc.yml')
     const yml = fs.readFileSync(pathToYmlFile, 'utf8')
+    const data = new y.Document({}, { logLevel: 'debug', prettyErrors: true })
 
     loader.setInRoot('Abc', y.parseDocument(yml).get('Abc'))
 
     for (const [name, doc] of loader.root) {
-      console.log(`Visiting ${u.cyan(name)}`)
+      const references = new y.YAMLMap()
+
+      if (!data.has(name)) data.set(name, new y.YAMLMap())
+
       visit(doc, {
-        Scalar: (key, node) => {
+        Scalar: (key, node, path) => {
           if (u.isStr(node.value)) {
             if (is.reference(node.value) && node.value.startsWith('.')) {
               let ref = node.value
               let trimmedRef = nu.trimReference(ref)
               let paths = nu.toDataPath(trimmedRef)
               let refNode
-
-              // console.log({ ref, trimmedRef, paths })
 
               if (is.localReference(ref)) {
                 const copyOfPaths = [...paths]
@@ -318,23 +323,56 @@ const loader = new n.Loader({ config: 'meetd2', loglevel: 'debug' })
                 } else {
                   refNode = node
                 }
-                // console.log(`Encountered root reference: ${ref}`, {
-                //   currentPage: name,
-                //   rootKey,
-                //   node: refNode,
-                //   paths: copyOfPaths,
-                // })
               }
 
               if (!u.isNil(refNode)) {
                 if (
-                  y.isNode(refNode) ||
-                  y.isDocument(refNode) ||
-                  y.isMap(refNode)
+                  !y.isSeq(doc) &&
+                  (y.isDocument(refNode) || y.isMap(refNode))
                 ) {
-                  console.log({ refNode })
+                  if (!references.has(ref)) {
+                    references.set(ref, new y.YAMLSeq())
+                  }
+
+                  /** @type { y.YAMLSeq } */
+                  let refValues = references.get(ref)
+                  let refData = new y.YAMLMap()
+                  refData.set('reference', ref)
+                  refData.set(
+                    'path',
+                    u.reduce(
+                      path,
+                      (acc, node, index) => {
+                        if (y.isPair(node)) {
+                          if (y.isScalar(node.key) && u.isStr(node.key.value)) {
+                            if (nt.Identify.reference(node.key.value)) {
+                              return acc.concat(node.key)
+                            }
+
+                            // console.log(node.key.value)
+                          }
+
+                          if (
+                            y.isScalar(node.value) &&
+                            u.isStr(node.value.value)
+                          ) {
+                            if (nt.Identify.reference(node.value.value)) {
+                              return acc.concat(node.value)
+                            }
+                          }
+
+                          return acc.concat(node.key)
+                        }
+
+                        return acc
+                      },
+                      [],
+                    ),
+                  )
+                  refData.set('value', refNode.toJSON())
+                  refValues.add(refData)
                 } else {
-                  refNode = doc.createNode(refNode)
+                  refNode = doc.createNode?.(refNode)
                 }
                 return refNode
               }
@@ -342,12 +380,27 @@ const loader = new n.Loader({ config: 'meetd2', loglevel: 'debug' })
           }
         },
       })
+
+      if (references.items.length) {
+        /** @type { y.YAMLMap } */
+        const pageData = data.get(name)
+
+        if (!pageData.has('references')) {
+          pageData.set('references', references)
+        } else {
+          /** @type { y.YAMLMap } */
+          const currReferences = pageData.get('references')
+          for (const refPair of references.items) {
+            currReferences.set(refPair.key, refPair.value)
+          }
+        }
+      }
     }
 
     await fs.writeJson(
       './abc.json',
       {
-        pageObject: loader.root.get('Abc'),
+        data,
         rootKeys: [...loader.root.keys()],
       },
       {
@@ -355,7 +408,9 @@ const loader = new n.Loader({ config: 'meetd2', loglevel: 'debug' })
       },
     )
 
-    console.log(...loader.root.keys())
+    console.log(
+      `There are ${u.yellow([...loader.root.keys()].length)} keys in root`,
+    )
   } catch (error) {
     if (error instanceof Error) throw error
     throw new Error(String(error))
