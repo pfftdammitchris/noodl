@@ -1,5 +1,6 @@
 *.pem
 .env
+.csv
 node_modules
 dist/
 data
