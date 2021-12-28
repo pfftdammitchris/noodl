@@ -4,7 +4,8 @@
     "url": "https://github.com/pfftdammitchris/noodl/issues"
   },
   "dependencies": {
-    "@netlify/functions": "^0.7.2"
+    "@netlify/functions": "^0.7.2",
+    "gatsby": "^4.3.0"
   },
   "description": "Metadata for noodl applications",
   "directories": {

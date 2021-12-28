@@ -1,0 +1,40 @@
+type ActionTypesQueryItem {
+  actionType: String
+  occurrences: Int
+  properties: [PropertyMetadata]
+}
+
+type PropertyMetadata {
+  isReference: Boolean
+  location: YamlLineLocation
+  trigger: String
+  value: String
+}
+
+type Query {
+  actionTypes(trigger: String): [ActionTypesQueryItem]
+}
+
+type Reference {
+  isRoot: Boolean
+  kind: ReferenceKind
+}
+
+enum ReferenceKind {
+  AWAIT
+  EVAL
+  MERGE
+  TILDE
+  TRAVERSE
+}
+
+type ValueMetadata {
+  isReference: Boolean
+  type: String
+  value: String
+}
+
+type YamlLineLocation {
+  end: Int
+  start: Int
+}

@@ -1,6 +1,6 @@
+import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
 import u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
-import { Handler } from '@netlify/functions'
 import Metadata from '../Metadata'
 import { getSuccessResponse, getErrorResponse } from '../utils'
 import actionsVisitor, {
@@ -31,10 +31,12 @@ interface Params {
   componentsStats?: Record<string, number>
 }
 
-export const handler: Handler = async (event, context) => {
+export default async function metadataFunction(
+  req: GatsbyFunctionRequest,
+  resp: GatsbyFunctionResponse,
+) {
   try {
-    const { queryStringParameters, rawUrl } = event
-    const params = queryStringParameters as Params
+    const { body, method, params, query } = req
 
     console.log({ params })
 
@@ -76,8 +78,12 @@ export const handler: Handler = async (event, context) => {
 
     await metadata.run()
 
-    return getSuccessResponse(metadata.context)
+    resp.json(getSuccessResponse(metadata.context))
   } catch (error) {
-    return getErrorResponse(error)
+    const err = error instanceof Error ? error : new Error(String(error))
+    return resp.json({
+      statusCode: 500,
+      error: { name: err.name, message: err.message },
+    })
   }
 }

@@ -1,22 +1,25 @@
+import { doc } from 'prettier'
+
 // process.stdout.write('\x1Bc')
-import fs from 'fs-extra'
-import path from 'path'
-import n from 'noodl'
-import * as u from '@jsmanifest/utils'
-import * as nt from 'noodl-types'
-import nu from 'noodl-utils'
-import y, {
+const fs = require('fs-extra')
+const path = require('path')
+const n = require('noodl')
+const u = require('@jsmanifest/utils')
+const nt = require('noodl-types')
+const nu = require('noodl-utils')
+const y = require('yaml')
+
+const {
   isCollection,
   isDocument,
   isScalar,
   isPair,
   isMap,
   isSeq,
-  parse as parseYml,
+  parse: parseYml,
   parseDocument,
   stringify,
-  visit,
-} from 'yaml'
+} = y
 
 /**
  * @typedef { import('yaml').Node } YAMLNode
@@ -267,59 +270,95 @@ function getInDeepWithMetadata({ node, pageName, key, path = [] }) {
 
 // console.log(getInDeep(root.Cloud, 'Cloud', 'Cloud.authentication')?.toJSON?.())
 
-const loader = new n.Loader({
-  config: 'meetd2',
-  loglevel: 'debug',
-})
-
 ;(async () => {
   try {
-    await loader.init({
-      // dir: n.getAbsFilePath('generated/meetd2'),
-      loadPages: true,
-      loadPreloadPages: true,
-      spread: ['BaseDataModel', 'BaseCSS', 'BasePage', 'BaseMessage'],
-    })
-    const pathToYmlFile = n.getAbsFilePath('generated/meetd2/Abc.yml')
-    const yml = fs.readFileSync(pathToYmlFile, 'utf8')
-    const data = new y.Document({}, { logLevel: 'debug', prettyErrors: true })
+    await fs.writeJson(
+      './abc.json',
+      { data, rootKeys: [...loader.root.keys()] },
+      { spaces: 2 },
+    )
+    console.log(
+      `There are ${u.yellow([...loader.root.keys()].length)} keys in root`,
+    )
+  } catch (error) {
+    if (error instanceof Error) throw error
+    throw new Error(String(error))
+  }
+})()
 
-    loader.setInRoot('Abc', y.parseDocument(yml).get('Abc'))
+class Visitor {
+  /** @type { Loader } */
+  #loader
 
-    for (const [name, doc] of loader.root) {
-      const references = new y.YAMLMap()
+  get loader() {
+    return this.#loader
+  }
 
-      if (!data.has(name)) data.set(name, new y.YAMLMap())
+  /**
+   * @param { y.Node | y.Document | (y.Node | y.Document)[] } docOrObj
+   * @param { string | y.Node } value
+   * @param { string[] } paths
+   */
+  getNext(docOrObj, value, paths = []) {
+    if (!isGetAble(value)) return value
 
-      visit(doc, {
-        Scalar: (key, node, path) => {
-          if (u.isStr(node.value)) {
-            if (is.reference(node.value) && node.value.startsWith('.')) {
-              let ref = node.value
+    const pathList = [...paths]
+
+    if (u.isStr(value)) {
+      pathList.push(...nu.toDataPath(nu.trimReference(pathList)))
+    } else if (y.isScalar(value)) {
+      if (u.isStr(value.value)) {
+        if (is.reference(value.value)) {
+          pathList.push(...nu.toDataPath(nu.trimReference(value.value)))
+        } else {
+          pathList.push(...nu.toDataPath(value.value))
+        }
+      } else if (u.isNum(value.value)) {
+        pathList.push(value.value)
+      }
+    } else if (u.isNum(value)) {
+      pathList.push(value)
+    }
+
+    return docOrObj.getIn(pathList)
+  }
+
+  /**
+   * @param { string } name
+   * @param { y.Document } doc
+   */
+  visit(name = '', doc) {
+    const references = new y.YAMLMap()
+
+    if (!data.has(name)) data.set(name, new y.YAMLMap())
+
+    y.visit(doc, {
+      Pair: (key, node, path) => {
+        if (y.isScalar(node.key)) {
+          if (u.isStr(node.key.value)) {
+            const keyStr = node.key.value
+            const isRef = is.reference(keyStr)
+
+            if (isRef) {
+              let ref = keyStr
               let trimmedRef = nu.trimReference(ref)
-              let paths = nu.toDataPath(trimmedRef)
+              let pathList = nu.toDataPath(trimmedRef)
               let refNode
 
-              if (is.localReference(ref)) {
-                const copyOfPaths = [...paths]
-                refNode = doc.getIn(paths, true)
-                // console.log(`Encountered local reference: ${ref}`, {
-                //   currentPage: name,
-                //   rootKey: name,
-                //   node: refNode,
-                //   paths: copyOfPaths,
-                // })
-              } else {
-                const copyOfPaths = [...paths]
-                let rootKey = paths.shift()
+              if (is.localReference(keyStr)) {
+                refNode = doc.getIn(pathList, true)
+              } else if (is.rootReference(keyStr)) {
+                let rootKey = pathList.shift()
+
                 if (rootKey) {
-                  refNode = doc.createNode
-                    ? doc.createNode(
-                        loader.root.get(rootKey)?.getIn(paths, true),
-                      )
-                    : new y.YAMLMap(
-                        loader.root.get(rootKey)?.getIn(paths, true),
-                      )
+                  refNode =
+                    'createNode' in doc
+                      ? doc.createNode(
+                          loader.root.get(rootKey)?.getIn(pathList, true),
+                        )
+                      : new y.YAMLMap(
+                          loader.root.get(rootKey)?.getIn(pathList, true),
+                        )
                 } else {
                   refNode = node
                 }
@@ -348,10 +387,7 @@ const loader = new n.Loader({
                             if (nt.Identify.reference(node.key.value)) {
                               return acc.concat(node.key)
                             }
-
-                            // console.log(node.key.value)
                           }
-
                           if (
                             y.isScalar(node.value) &&
                             u.isStr(node.value.value)
@@ -360,10 +396,8 @@ const loader = new n.Loader({
                               return acc.concat(node.value)
                             }
                           }
-
                           return acc.concat(node.key)
                         }
-
                         return acc
                       },
                       [],
@@ -378,41 +412,32 @@ const loader = new n.Loader({
               }
             }
           }
-        },
-      })
+        }
+      },
+    })
 
-      if (references.items.length) {
+    if (references.items.length) {
+      /** @type { y.YAMLMap } */
+      const pageData = data.get(name)
+
+      if (!pageData.has('references')) {
+        pageData.set('references', references)
+      } else {
         /** @type { y.YAMLMap } */
-        const pageData = data.get(name)
-
-        if (!pageData.has('references')) {
-          pageData.set('references', references)
-        } else {
-          /** @type { y.YAMLMap } */
-          const currReferences = pageData.get('references')
-          for (const refPair of references.items) {
-            currReferences.set(refPair.key, refPair.value)
-          }
+        const currReferences = pageData.get('references')
+        for (const refPair of references.items) {
+          currReferences.set(refPair.key, refPair.value)
         }
       }
     }
-
-    await fs.writeJson(
-      './abc.json',
-      {
-        data,
-        rootKeys: [...loader.root.keys()],
-      },
-      {
-        spaces: 2,
-      },
-    )
-
-    console.log(
-      `There are ${u.yellow([...loader.root.keys()].length)} keys in root`,
-    )
-  } catch (error) {
-    if (error instanceof Error) throw error
-    throw new Error(String(error))
   }
-})()
+
+  use(value) {
+    if (value instanceof Loader) {
+      this.#loader = value
+    }
+    return this
+  }
+}
+
+export default Visitor

@@ -1,0 +1,142 @@
+type Query {
+  actionTypes(trigger: String): [ActionTypesQueryItem]
+  # actionObjects: [NoodlActionMeta]
+}
+
+type ActionTypesQueryItem {
+  actionType: String
+  occurrences: Int
+  properties: [PropertyMetadata]
+}
+
+type PropertyMetadata {
+  value: String
+  isReference: Boolean
+  location: YamlLineLocation
+  trigger: String
+}
+
+type YamlLineLocation {
+  start: Int
+  end: Int
+}
+
+type ValueMetadata {
+  value: String
+  isReference: Boolean
+  type: String
+}
+
+type Reference {
+  kind: ReferenceKind
+  isRoot: Boolean
+}
+
+enum ReferenceKind {
+  AWAIT
+  EVAL
+  MERGE
+  TILDE
+  TRAVERSE
+}
+
+# type NoodlString {
+#   value: String
+#   isReference: Boolean
+# }
+
+# type NoodlActionMeta {
+#   actionType: String
+#   properties: [Pair]
+# }
+
+# type Pair {
+#   key: StringOrInt
+#   value: StringOrInt
+# }
+
+# union StringOrInt = NoodlString | Int
+
+# type ActionObject {
+#   actionType: NoodlString
+#   properties: [Property]
+# }
+
+# type ReferenceProperty {
+#   isRootReference: Boolean
+# }
+
+# type ComponentObject {
+#   properties: [Property]
+# }
+
+# type IfObject {
+#   if: [String]
+# }
+
+# type PageObject {
+#   pageNumber: Int
+#   components: [ComponentObject]
+# }
+
+# type EdgeObject {
+#   atime: Int
+#   atimes: Int
+#   besak: String
+#   bvid: String
+#   ctime: Int
+#   ctime: Int
+#   deat: String
+#   eesak: String
+#   etime: Int
+#   evid: String
+#   id: String
+#   mtime: Int
+#   name: NameFieldObject
+#   refid: String
+#   sig: String
+#   stime: Int
+#   subtype: Int
+#   tage: Int
+#   type: Int
+# }
+
+# type DocumentObject {
+#   atime: Int
+#   atimes: Int
+#   bsig: String
+#   ctime: Int
+#   deat: String
+#   eid: String
+#   esig: String
+#   fid: String
+#   id: String
+#   mtime: Int
+#   name: NameFieldObject
+#   size: Int
+#   subtype: String
+#   tage: Int
+#   type: Int
+# }
+
+# type VertexObject {
+#   atime: Int
+#   atimes: Int
+#   ctime: Int
+#   deat: String
+#   esk: String
+#   id: String
+#   mtime: Int
+#   name: NameFieldObject
+#   pk: String
+#   subtype: String
+#   tage: Int
+#   type: Int
+#   uid: String
+# }
+
+# type NameFieldObject {
+#   data: String
+#   tags: [String]
+#   type: String
+# }
