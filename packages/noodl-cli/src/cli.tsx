@@ -35,6 +35,7 @@ const cli = meow(
 	  ${flag(`--host`)}, ${flag(`-h`)} Sets the server hostname (defaults to ${co.yellow('localhost')})
 	  ${flag(`--remote`)}, Sets base url to localhost when disabled. (defaults to true which points remotely to ${co.yellow('public.aitmed.com')})
 	  ${flag(`--port`)}, ${flag(`-p`)} Sets the server port (defaults to ${co.yellow('3001')})
+	  ${flag(`--pwd`)} Print current directory to generated files
 	  ${flag(`--server`)} Use this operation to run the server
 	  ${flag(`--version`)}, ${flag(`-v`)} Retrieves config cersion using ${co.yellow('--device')} (defaults to ${co.yellow('latest')})
 	  ${flag(`--watch`)} Watch for file changes (where yml files are)

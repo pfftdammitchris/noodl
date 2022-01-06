@@ -158,8 +158,12 @@ function Application({ cli }: { cli: t.App.Context['cli'] }) {
 				/>
 			) : (
 				<Box paddingLeft={1} flexDirection="column">
-					<Text color="whiteBright">
-						What would you like to do? (
+					<Text>
+						Path to generated files:{' '}
+						<Text color="yellow">{configuration.getPathToGenerateDir()}</Text>
+					</Text>
+					<Text>
+						<Text color="cyan">What would you like to do?</Text> (
 						<Text dimColor>
 							Use <Text color="yellow">--help</Text> to see all options
 						</Text>

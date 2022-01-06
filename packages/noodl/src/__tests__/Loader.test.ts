@@ -153,7 +153,7 @@ describe(u.yellow(`noodl`), () => {
     it(`should extract the assets`, async () => {
       mockAllPageRequests()
       await loader.init({ dir: pathToFixtures })
-      const assets = loader.extractAssets()
+      const assets = await loader.extractAssets()
       expect(assets).to.have.length.greaterThan(0)
       for (const asset of assets) {
         expect(asset).to.have.property('url').to.be.a('string')

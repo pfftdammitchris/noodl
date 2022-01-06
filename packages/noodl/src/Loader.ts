@@ -12,12 +12,15 @@ import invariant from 'invariant'
 import axios from 'axios'
 import chalk from 'chalk'
 import yaml from 'yaml'
+import { extractAssetsUrlFromConfig } from './utils/extract'
+import fetchYml from './utils/fetchYml'
 import getLinkStructure from './utils/getLinkStructure'
 import promiseAllSafely from './utils/promiseAllSafely'
 import stringifyDocument from './utils/stringifyDoc'
 import shallowMerge from './utils/shallowMerge'
 import * as c from './constants'
 import * as t from './types'
+import { URL } from 'url'
 
 const { existsSync, readFile } = fs
 const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
@@ -195,20 +198,48 @@ class NoodlLoader<
     this.cbs[event]?.forEach?.((function_) => function_(arguments_))
   }
 
-  extractAssets({ remote = true }: { remote?: boolean } = {}) {
+  async extractAssets() {
+    const withYmlExtension = (s = '') => !s.endsWith('.yml') && (s += '.yml')
+    const remoteConfigUrl = `https://${
+      c.DEFAULT_CONFIG_HOSTNAME
+    }/config/${withYmlExtension(this.configKey)}`
+    const remoteAssetsUrl = extractAssetsUrlFromConfig(
+      await fetchYml(remoteConfigUrl),
+    )
     const urlCache = {}
     const assets = [] as t.LinkStructure[]
     const commonUrlKeys = ['path', 'resource'] as string[]
     const visitedAssets = [] as string[]
 
     const addAsset = (assetPath: string) => {
+      // console.log(`[addAsset] assetPath: ${u.cyan(assetPath)}`)
+
       if (!visitedAssets.includes(assetPath) && isValidAsset(assetPath)) {
-        if (!remote && assetPath.startsWith('http')) return
-        visitedAssets.push(assetPath)
+        let newLink: URL | undefined
+        // if (remote === false && assetPath.startsWith('http')) return
+        //public.aitmed.com/cadl/www${cadlVersion}${designSuffix}/
+        // https: visitedAssets.push(assetPath)
+        if (['localhost', '127.0.0.1'].some((s) => assetPath.includes(s))) {
+          newLink = new URL(
+            `https://public.aitmed.com/cadl/${this.configKey}${this.configVersion}/`,
+          )
+          this.logger.info(
+            `Asset URL is set to ${u.white(assetPath)} which is not the ` +
+              `original uri. Switching to ${u.yellow(newLink.toString())}` +
+              ` instead`,
+          )
+          assetPath = newLink.toString()
+        }
+
+        console.log(`[addAsset] assetPath: ${u.cyan(assetPath)}`)
 
         assets.push(
           getLinkStructure(assetPath, {
-            prefix: this.assetsUrl,
+            prefix: newLink
+              ? newLink.toString()
+              : `https://public.aitmed.com/cadl/${
+                  this.configKey === 'admind2' ? 'admindd' : this.configKey
+                }${this.configVersion}/assets/`,
             config: this.configKey,
           }),
         )

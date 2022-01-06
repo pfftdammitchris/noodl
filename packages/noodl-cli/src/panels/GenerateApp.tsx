@@ -139,7 +139,7 @@ function GenerateApp(props: Props) {
 
 					let done = async function () {
 						done = undefined as any
-						const assets = aggregator.extractAssets({ remote: false })
+						const assets = await aggregator.extractAssets()
 						u.newline()
 
 						log(

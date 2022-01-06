@@ -36,6 +36,9 @@ const _panel = {
 	RUN_SERVER: {
 		label: 'Run the server',
 	},
+	PRINT_WORKING_DIRECTORY: {
+		label: 'Print working directory',
+	},
 } as const
 
 export const panel = Object.entries(_panel).reduce((acc, [key, val]) => {
