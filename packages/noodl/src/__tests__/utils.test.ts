@@ -1,13 +1,14 @@
 // @ts-nocheck
 import * as u from '@jsmanifest/utils'
+import { expect } from 'chai'
 import getFileStructure from '../utils/getFileStructure'
 import getLinkStructure from '../utils/getLinkStructure'
 import NoodlVisitor from '../Visitor'
 import { getReferenceNodes } from '../internal/yaml'
 import { getRoot } from './test-utils'
 
-describe.skip(`utils`, () => {
-  describe.skip(`getFileStructure`, () => {
+describe(`utils`, () => {
+  describe(`getFileStructure`, () => {
     const filepath =
       '/Users/christ/ecos/aitmed/ecos/v1beta1/EcosAPI/ce-request.json'
 
@@ -59,7 +60,7 @@ describe.skip(`utils`, () => {
 
       it(`should set isRemote to true`, () => {
         expect(result).to.have.property('isRemote')
-        expect(result.isRemote).toBe(true)
+        expect(result.isRemote).to.be.true
       })
 
       it(`should set url to ${theDarkKnightMkv}`, () => {
@@ -68,71 +69,6 @@ describe.skip(`utils`, () => {
 
       it(`should set group to video`, () => {
         expect(result).to.have.property('group', 'video')
-      })
-    })
-  })
-
-  describe(u.yellow(`Visitor`), () => {
-    let root
-    let visitor
-
-    let ymls = {
-      // AboutAitmed: loadFile(getAbsFilePath('./fixtures/AboutAitmed.yml')),
-    }
-
-    beforeEach(() => {
-      root = getRoot()
-      visitor = new NoodlVisitor()
-      visitor.root = root
-    })
-
-    it(`visit function`, () => {
-      console.log({ ymls })
-    })
-  })
-
-  describe(u.yellow(`yaml`), () => {
-    let root
-
-    beforeEach(() => {
-      root = {}
-    })
-
-    describe(`getReferenceNodes`, () => {
-      it(`should return an array`, () => {
-        const refStr = `Tiger.genders.1.value`
-        expect(getReferenceNodes(root, refStr)).to.be.instanceOf(Array)
-      })
-
-      it(`should have nodes in the result`, () => {
-        expect(getReferenceNodes(root, `Tiger.genders.1.value`).length).toBe(0)
-      })
-
-      it(`should set the rootKey for each node`, () => {
-        const [rootNode, ...rest] = getReferenceNodes(
-          root,
-          `Tiger.genders.1.value`,
-        )
-        for (const node of rest) {
-          expect(node.rootKey).toBe('Tiger')
-        }
-      })
-
-      it(`should contain the exact same amount of nodes as the keys in the reference`, () => {
-        const refStr = `Tiger.genders.1.value`
-        const paths = refStr.split('.')
-        const nodes = getReferenceNodes(root, refStr)
-        expect(nodes).to.have.length(paths.length)
-      })
-
-      it(`should contain the reference nodes in order`, () => {
-        const refStr = `Tiger.genders.1.value`
-        const paths = refStr.split('.')
-        const nodes = getReferenceNodes(root, refStr)
-
-        for (let i = 0; i < nodes.length; i++) {
-          expect(nodes[i].value).toBe(paths[i])
-        }
       })
     })
   })

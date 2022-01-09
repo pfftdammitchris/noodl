@@ -1,13 +1,7 @@
-import yaml from 'yaml'
+import * as u from '@jsmanifest/utils'
 
-	/** @param { yaml.YAMLMap } node */
-  const isAction = (node) =>
-  ['actionType', 'goto'].some((key) => node.has(key))
-
-/** @param { yaml.YAMLMap } node */
-const isComponent = (node) =>
-  node.has('type') && ['children', 'style'].some((key) => node.has(key))
-
-/** @param { yaml.Pair } node */
-const isStyle = (node) =>
-  yaml.isScalar(node.key) && node.key.value === 'style'
+export function typeOf(value: unknown) {
+  if (u.isArr(value)) return 'array'
+  if (value === null) return 'null'
+  return typeof value
+}

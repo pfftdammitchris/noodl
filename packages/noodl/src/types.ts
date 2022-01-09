@@ -33,6 +33,7 @@ export interface FileStructure extends BaseStructure {
 }
 
 export interface LinkStructure extends BaseStructure {
+  raw: string
   isRemote: boolean
   url: string
 }
@@ -121,14 +122,24 @@ export namespace Loader {
     version?: LiteralUnion<'latest', string>
   }
 
-  export type BaseRootKey = 'Global' | 'BaseCSS' | 'BaseDataModel' | 'BasePage'
+  export type BaseRootKey =
+    | 'Config'
+    | 'Global'
+    | 'BaseCSS'
+    | 'BaseDataModel'
+    | 'BasePage'
+
+  export type RootMap = Map<
+    LiteralUnion<BaseRootKey, string>,
+    yaml.Node | yaml.Document
+  > & {
+    toJSON(): Record<string, any>
+  }
+
+  export type RootObject = Record<LiteralUnion<BaseRootKey, string>, any>
 
   export type Root<DataType extends RootDataType = 'map'> =
-    DataType extends 'object'
-      ? Record<LiteralUnion<BaseRootKey, string>, any>
-      : Map<LiteralUnion<BaseRootKey, string>, yaml.Node | yaml.Document> & {
-          toJSON(): Record<string, any>
-        }
+    DataType extends 'object' ? RootObject : RootMap
 
   export type RootDataType = 'object' | 'map'
 }

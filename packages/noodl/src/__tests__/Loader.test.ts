@@ -150,14 +150,48 @@ describe(u.yellow(`noodl`), () => {
   })
 
   describe(u.italic(`extractAssets`), () => {
-    it(`should extract the assets`, async () => {
-      mockAllPageRequests()
+    let remoteBaseUrl = 'https://public.aitmed.com/cadl/meet3_${cadlVersion}/'
+
+    beforeEach(async () => {
+      nock(`https://public.aitmed.com/config`)
+        .get('/meetd2.yml')
+        .reply(
+          200,
+          yaml.stringify({
+            ...yaml.parse(meetd2yml),
+            cadlBaseUrl: remoteBaseUrl,
+          }),
+        )
       await loader.init({ dir: pathToFixtures })
+    })
+
+    it(`should extract the assets`, async () => {
       const assets = await loader.extractAssets()
       expect(assets).to.have.length.greaterThan(0)
       for (const asset of assets) {
         expect(asset).to.have.property('url').to.be.a('string')
         expect(asset.url.startsWith('http')).to.be.true
+      }
+    })
+
+    it(`should set isRemote to false when assets is relative to the app's baseUrl`, async () => {
+      const assets = await loader.extractAssets()
+      for (const asset of assets) {
+        if (!asset.raw.startsWith('http')) {
+          expect(asset.isRemote).to.be.false
+        } else {
+          expect(asset.isRemote).to.be.true
+        }
+      }
+    })
+
+    it(`should set the url to be the remote url if isRemote is false (relative to app's baseUrl)`, async () => {
+      const assets = await loader.extractAssets()
+      for (const asset of assets) {
+        if (!asset.isRemote) {
+          expect(/(127.0.0.1|localhost)/.test(asset.url)).to.be.false
+          expect(/public.aitmed.com/.test(asset.url)).to.be.true
+        }
       }
     })
   })

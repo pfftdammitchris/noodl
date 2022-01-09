@@ -12,6 +12,7 @@ function getLinkStructure(
 ) {
   const parsed = path.parse(link)
   const structure = {
+    raw: link,
     ext: parsed.ext,
     filename: parsed.name,
     isRemote: /^(http|www)/i.test(link),
