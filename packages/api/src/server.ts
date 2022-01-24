@@ -1,13 +1,14 @@
-import express from 'express'
+import express, { json } from 'express'
 import fs from 'fs-extra'
-import { ApolloServer, gql } from 'apollo-server-lambda'
-import { Query, Mutation } from './resolvers/graphqlResolvers'
+import GraphQLJSON from 'graphql-type-json'
+import { ApolloServer } from 'apollo-server-lambda'
+import { Query } from './resolvers/graphqlResolvers'
 
 const typeDefs = fs.readFileSync('./src/schema.graphql', 'utf8')
 
 const resolvers = {
   Query,
-  // Mutation,
+  JSON: GraphQLJSON,
 }
 
 const server = new ApolloServer({
@@ -36,6 +37,11 @@ const server = new ApolloServer({
 exports.handler = server.createHandler({
   expressAppFromMiddleware(middleware) {
     const app = express()
+    app.use(
+      json({
+        limit: 100000000,
+      }),
+    )
     app.use(middleware)
     return app
   },

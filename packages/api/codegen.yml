@@ -1,0 +1,13 @@
+schema: 'src/documents/**/*.graphql'
+overwrite: true
+generates:
+  introspection.json:
+    plugins:
+      - introspection
+  'src/schema.graphql':
+    plugins:
+      - schema-ast
+  'src/types/graphqlTypes.ts':
+    plugins:
+      - typescript
+      - typescript-operations

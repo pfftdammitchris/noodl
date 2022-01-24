@@ -1,23 +1,20 @@
-type ActionTypesQueryItem {
-  actionType: String
-  occurrences: Int
-  properties: [PropertyMetadata]
+type ActionObjectMetadata {
+  actionType: String!
+  isReference: Boolean
+  trigger: String
 }
 
+scalar JSON
+
+scalar JSONObject
+
 type PropertyMetadata {
-  isReference: Boolean
-  location: YamlLineLocation
-  trigger: String
+  isReference: Boolean!
   value: String
 }
 
 type Query {
-  actionTypes(trigger: String): [ActionTypesQueryItem]
-}
-
-type Reference {
-  isRoot: Boolean
-  kind: ReferenceKind
+  metadata: JSON
 }
 
 enum ReferenceKind {
@@ -28,13 +25,24 @@ enum ReferenceKind {
   TRAVERSE
 }
 
-type ValueMetadata {
-  isReference: Boolean
-  type: String
+type ReferenceKindMetadata {
+  kind: ReferenceKind
+}
+
+type ReferenceObjectBuiltIn {
+  group: String
+  kind: ReferenceKind
+  name: String
+}
+
+type ReferencePropertyMetadata {
+  isRoot: Boolean
+  kind: ReferenceKind!
   value: String
 }
 
-type YamlLineLocation {
-  end: Int
-  start: Int
+type ReferenceStringMetadata {
+  isRoot: Boolean
+  kind: ReferenceKind
+  value: String!
 }

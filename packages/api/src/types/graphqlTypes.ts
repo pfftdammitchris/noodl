@@ -10,37 +10,26 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  JSON: any;
+  JSONObject: any;
 };
 
-export type ActionTypesQueryItem = {
-  __typename?: 'ActionTypesQueryItem';
-  actionType?: Maybe<Scalars['String']>;
-  occurrences?: Maybe<Scalars['Int']>;
-  properties?: Maybe<Array<Maybe<PropertyMetadata>>>;
+export type ActionObjectMetadata = {
+  __typename?: 'ActionObjectMetadata';
+  actionType: Scalars['String'];
+  isReference?: Maybe<Scalars['Boolean']>;
+  trigger?: Maybe<Scalars['String']>;
 };
 
 export type PropertyMetadata = {
   __typename?: 'PropertyMetadata';
-  isReference?: Maybe<Scalars['Boolean']>;
-  location?: Maybe<YamlLineLocation>;
-  trigger?: Maybe<Scalars['String']>;
+  isReference: Scalars['Boolean'];
   value?: Maybe<Scalars['String']>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  actionTypes?: Maybe<Array<Maybe<ActionTypesQueryItem>>>;
-};
-
-
-export type QueryActionTypesArgs = {
-  trigger?: InputMaybe<Scalars['String']>;
-};
-
-export type Reference = {
-  __typename?: 'Reference';
-  isRoot?: Maybe<Scalars['Boolean']>;
-  kind?: Maybe<ReferenceKind>;
+  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export enum ReferenceKind {
@@ -51,15 +40,28 @@ export enum ReferenceKind {
   Traverse = 'TRAVERSE'
 }
 
-export type ValueMetadata = {
-  __typename?: 'ValueMetadata';
-  isReference?: Maybe<Scalars['Boolean']>;
-  type?: Maybe<Scalars['String']>;
+export type ReferenceKindMetadata = {
+  __typename?: 'ReferenceKindMetadata';
+  kind?: Maybe<ReferenceKind>;
+};
+
+export type ReferenceObjectBuiltIn = {
+  __typename?: 'ReferenceObjectBuiltIn';
+  group?: Maybe<Scalars['String']>;
+  kind?: Maybe<ReferenceKind>;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type ReferencePropertyMetadata = {
+  __typename?: 'ReferencePropertyMetadata';
+  isRoot?: Maybe<Scalars['Boolean']>;
+  kind: ReferenceKind;
   value?: Maybe<Scalars['String']>;
 };
 
-export type YamlLineLocation = {
-  __typename?: 'YamlLineLocation';
-  end?: Maybe<Scalars['Int']>;
-  start?: Maybe<Scalars['Int']>;
+export type ReferenceStringMetadata = {
+  __typename?: 'ReferenceStringMetadata';
+  isRoot?: Maybe<Scalars['Boolean']>;
+  kind?: Maybe<ReferenceKind>;
+  value: Scalars['String'];
 };
