@@ -10,15 +10,34 @@ require('jsdom-global')('', {
     localStorage = win.localStorage
   },
 })
+const { rxReq } = require('@aitmed/ecos-lvl2-sdk')
 const { CADL, Account, store } = require('@aitmed/cadl')
 const axios = require('axios')
 const nock = require('nock')
 const u = require('@jsmanifest/utils')
 
+process.env.NODE_ENV = 'development'
+
 const sdk = new CADL({
   configUrl: `https://public.aitmed.com/config/admind3.yml`,
   cadlVersion: 'test',
 })
+
+const ecos = {
+  ...store.level2SDK.edgeServices,
+  ...store.level2SDK.documentServices,
+  ...store.level2SDK.vertexServices,
+}
+
+const utils = {
+  ...store.level2SDK.Account,
+  ...store.level2SDK.utilServices,
+  ...store.level2SDK.commonServices,
+}
+
+const b = sdk.root.builtIn
+
+const { decryptAES, skCheck } = b.eccNaCl
 
 ;(async () => {
   try {
@@ -31,9 +50,11 @@ const sdk = new CADL({
 
     const status = await Account.getStatus()
     const vcode = await Account.requestVerificationCode(phoneNumber)
+
     const {
       data: { edge },
     } = await Account.loginByVerificationCode(phoneNumber, vcode)
+
     const {
       deat: { user_id: userId, pk, esk },
     } = edge
@@ -42,24 +63,21 @@ const sdk = new CADL({
       userId,
       pk,
       esk,
+      vcode,
     })
 
-    const { decryptAES, skCheck } = sdk.root.builtIn.eccNaCl
-
-    // await store.level2SDK.vertexServices.retrieveVertex({
-    //   idList: [userId],
-    //   options
-    // })
-
     const sk = await decryptAES({ key: password, message: esk })
+    const isValid = skCheck({ pk, sk })
+
     localStorage.setItem('sk', sk)
     localStorage.setItem('esk', esk)
     localStorage.setItem('user_id', userId)
-    const isValid = skCheck({ pk, sk })
+
     const vertexResp = await store.level2SDK.vertexServices.retrieveVertex({
       idList: [userId],
       options: {},
     })
+
     const vertex = vertexResp.data.vertex[0]
     const nameField = vertex.name
 
@@ -100,13 +118,9 @@ const sdk = new CADL({
       })
     }
 
-    const ecos = {
-      ...store.level2SDK.edgeServices,
-      ...store.level2SDK.documentServices,
-      ...store.level2SDK.vertexServices,
-    }
+    console.dir(nameField, { depth: Infinity })
 
-    console.dir(sdk.root.Global.formData.medicalRecords, { depth: Infinity })
+    // console.dir(sdk.root.Global.formData.medicalRecords, { depth: Infinity })
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
     throw err
