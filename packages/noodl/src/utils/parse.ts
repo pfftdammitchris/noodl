@@ -25,9 +25,8 @@ export function keyPair(value: y.Pair) {
 
 export function noodlKey(value: unknown) {
   if (y.isScalar(value)) {
-    if ()
   }
-//
+  //
 }
 
 export function noodlValue() {
