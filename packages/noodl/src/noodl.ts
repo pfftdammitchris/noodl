@@ -1,4 +1,3 @@
-export { default as fetchAssetMetadata } from './utils/fetchAssetMetadata'
 export { default as getFileStructure } from './utils/getFileStructure'
 export { default as getLinkStructure } from './utils/getLinkStructure'
 export { default as Loader } from './Loader'
