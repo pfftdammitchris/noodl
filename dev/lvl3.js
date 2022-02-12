@@ -16,8 +16,6 @@ const axios = require('axios')
 const nock = require('nock')
 const u = require('@jsmanifest/utils')
 
-process.env.NODE_ENV = 'development'
-
 const sdk = new CADL({
   configUrl: `https://public.aitmed.com/config/admind3.yml`,
   cadlVersion: 'test',
