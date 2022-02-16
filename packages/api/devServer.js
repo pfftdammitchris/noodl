@@ -46,6 +46,41 @@ generate(generateOptions)
       stdio: 'inherit',
     })
 
+    let data = ''
+
+    shell.on('data', (chunk) => {
+      const chunkOfData = Buffer.from(chunk).toString()
+      data += chunkOfData
+      console.log(u.white(chunkOfData))
+    })
+
+    shell.on('error', (err) => {
+      console.error(`[${u.yellow(err.name)}] ${u.red(err.message)}`, err)
+    })
+
+    shell.on('end', () => {
+      console.log(`[${u.green('Ended')}] ${new Date().toLocaleString()}`)
+    })
+
+    shell.on('readable', () => {
+      console.log(`[${u.cyan('Readable')}] ${new Date().toLocaleString()}`)
+    })
+
+    shell.on('pause', () => {
+      console.log(`[${u.blue('Paused')}] ${new Date().toLocaleString()}`)
+    })
+
+    shell.on('resume', () => {
+      console.log(`[${u.magenta('Resumed')}] ${new Date().toLocaleString()}`)
+    })
+
+    shell.on('close', (code, signal) => {
+      console.log(`[${u.cyan('Closed')}] ${new Date().toLocaleString()}`, {
+        code,
+        signal,
+      })
+    })
+
     if (cli.flags.watch) {
       await generate({
         ...generateOptions,

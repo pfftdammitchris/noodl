@@ -1,5 +1,7 @@
 {
   "devDependencies": {
+    "@aitmed/cadl": "^1.0.557",
+    "@aitmed/ecos-lvl2-sdk": "^1.4.178",
     "@aws-sdk/client-s3": "^3.41.0",
     "@babel/core": "^7.16.0",
     "@babel/plugin-transform-runtime": "^7.16.0",
@@ -27,6 +29,7 @@
     "@types/fs-extra": "^9.0.12",
     "@types/globby": "^9.1.0",
     "@types/invariant": "^2.2.35",
+    "@types/jsdom-global": "^3.0.2",
     "@types/lodash": "^4.14.172",
     "@types/lodash-es": "^4.17.5",
     "@types/mocha": "^9.0.0",
@@ -71,9 +74,11 @@
     "globby": "^8.0.2",
     "graphql": "^15.6.1",
     "graphql-request": "^3.7.0",
+    "graphql-type-json": "^0.3.2",
     "immer": "^9.0.7",
     "ink-spinner": "^4.0.3",
     "invariant": "^2.2.4",
+    "jsdom-global": "^3.0.2",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "meow": "^8.1.2",
@@ -274,7 +279,9 @@
   "license": "MIT",
   "name": "noodl-monorepo",
   "nodemonConfig": {
-    "ignore": []
+    "ignore": [
+      "*.json"
+    ]
   },
   "prettier": {
     "arrowParens": "always",

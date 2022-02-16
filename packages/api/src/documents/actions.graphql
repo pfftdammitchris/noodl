@@ -1,35 +1,5 @@
 type Query {
-  actionTypes(trigger: String): [ActionTypesQueryItem]
-  # actionObjects: [NoodlActionMeta]
-}
-
-type ActionTypesQueryItem {
-  actionType: String
-  occurrences: Int
-  properties: [PropertyMetadata]
-}
-
-type PropertyMetadata {
-  value: String
-  isReference: Boolean
-  location: YamlLineLocation
-  trigger: String
-}
-
-type YamlLineLocation {
-  start: Int
-  end: Int
-}
-
-type ValueMetadata {
-  value: String
-  isReference: Boolean
-  type: String
-}
-
-type Reference {
-  kind: ReferenceKind
-  isRoot: Boolean
+  metadata: JSON
 }
 
 enum ReferenceKind {
@@ -38,6 +8,33 @@ enum ReferenceKind {
   MERGE
   TILDE
   TRAVERSE
+}
+
+type ReferenceKindMetadata {
+  kind: ReferenceKind
+}
+
+type ReferenceStringMetadata {
+  kind: ReferenceKind
+  isRoot: Boolean
+  value: String!
+}
+
+type ReferenceObjectBuiltIn {
+  kind: ReferenceKind
+  group: String
+  name: String
+}
+
+type PropertyMetadata {
+  value: String
+  isReference: Boolean!
+}
+
+type ReferencePropertyMetadata {
+  value: String
+  kind: ReferenceKind!
+  isRoot: Boolean
 }
 
 # type NoodlString {

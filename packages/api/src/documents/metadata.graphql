@@ -1,0 +1,5 @@
+type ActionObjectMetadata {
+  actionType: String!
+  isReference: Boolean
+  trigger: String
+}

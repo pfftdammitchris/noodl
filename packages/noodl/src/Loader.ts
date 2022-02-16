@@ -9,7 +9,6 @@ import flatten from 'lodash/flatten'
 import get from 'lodash/get'
 import type { OrArray } from '@jsmanifest/typefest'
 import type { AppConfig, DeviceType, Env, RootConfig } from 'noodl-types'
-import invariant from 'invariant'
 import yaml from 'yaml'
 import winston from 'winston'
 import fetchYml from './utils/fetchYml'
@@ -354,10 +353,11 @@ class NoodlLoader<
       baseUrl?: string
     }
   } = {}) {
-    invariant(
-      !!this.configKey,
-      `Cannot initiate the aggregator without setting a config key first`,
-    )
+    if (!this.configKey) {
+      throw new Error(
+        `Cannot initiate the aggregator without setting a config key first`,
+      )
+    }
 
     this.logger.info(`Using app key ${u.yellow(this.appKey)}`)
     this.logger.info(`Using device type ${u.yellow(this.deviceType)}`)
@@ -442,10 +442,11 @@ class NoodlLoader<
       this.logger.debug(`Fetching config ${u.yellow(options)} remotely`)
     }
 
-    invariant(
-      !!this.configKey,
-      `Cannot retrieve the root config because a config key was not passed in or set`,
-    )
+    if (!this.configKey) {
+      throw new Error(
+        `Cannot retrieve the root config because a config key was not passed in or set`,
+      )
+    }
 
     configDocument &&
       !configYml &&
@@ -554,10 +555,11 @@ class NoodlLoader<
     dir?: string
     fallback?: () => Promise<string> | string
   } = {}) {
-    invariant(
-      !!this.getInRoot(this.configKey),
-      'Cannot initiate app config without retrieving the root config',
-    )
+    if (!this.getInRoot(this.configKey)) {
+      throw new Error(
+        'Cannot initiate app config without retrieving the root config',
+      )
+    }
 
     // Placeholders should already have been purged by this time
     let appConfigYml = ''
