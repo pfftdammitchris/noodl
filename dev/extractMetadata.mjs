@@ -28,19 +28,15 @@ const {
 
 ;(async () => {
   try {
-    const { tsProject } = await extract({
-      config: 'meetd2',
-      logLevel: 'debug',
-      loader: {
-        init: {
-          dir: './generated/meetd2',
-          spread: ['BaseDataModel', 'BaseCSS', 'BasePage'],
-        },
-      },
-      fns: [metadataFns.extractActions],
+    const loader = new Loader()
+    loader.configKey = 'wwv'
+    const r = await loader.init({
+      spread: ['BasePage', 'BaseDataModel', 'BaseCSS', 'Resource'],
+      loadPages: true,
+      loadPreloadPages: true,
     })
 
-    await tsProject.save()
+    console.log(loader)
   } catch (error) {
     if (error instanceof Error) throw error
     throw new Error(String(error))
