@@ -44,10 +44,10 @@ function Server({
 		(...s: string[]) =>
 			path.join(
 				configuration.getPathToGenerateDir(),
-				aggregator.configKey,
+				aggregator.configKey || initialConfigValue || '',
 				...s,
 			),
-		[],
+		[aggregator.configKey],
 	)
 	const getServerUrl = React.useCallback(() => `http://${host}:${port}`, [])
 	const getWatchGlob = React.useCallback(() => path.join(getDir(), '**/*'), [])
@@ -55,7 +55,6 @@ function Server({
 	/* -------------------------------------------------------
 		---- Config Input
 	-------------------------------------------------------- */
-
 	const {
 		config,
 		inputValue: configInput,
@@ -65,11 +64,12 @@ function Server({
 		validate,
 		validating,
 	} = useConfigInput({
+		fallbackDir: getDir(),
 		initialValue: initialConfigValue,
-		onValidated(configKey) {
+		onValidated(configKey, dir) {
 			if (aggregator.configKey !== configKey) {
 				aggregator.configKey = configKey
-				aggregator.init({}).finally(() => listen())
+				aggregator.init({ dir }).finally(() => listen())
 			} else {
 				listen()
 			}
@@ -81,7 +81,7 @@ function Server({
 			toggleSpinner(false)
 		},
 		onNotFound() {},
-		onError: logError,
+		onError: (err) => logError,
 	})
 
 	/* -------------------------------------------------------
