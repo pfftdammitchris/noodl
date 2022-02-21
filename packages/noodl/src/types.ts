@@ -143,3 +143,81 @@ export namespace Loader {
 
   export type RootDataType = 'object' | 'map'
 }
+
+/* -------------------------------------------------------
+  ---- PARSED TYPES
+-------------------------------------------------------- */
+
+export interface ParsedBuiltInEvalFn {
+  key: ParsedNoodlString
+  value: {
+    dataIn?: any
+    dataOut?: any
+  }
+}
+
+export interface ParsedKeyPair {
+  type: 'key-pair'
+  key: ParsedNoodlString
+  value: any
+}
+
+export type ParsedNoodlString<V = string> =
+  | NoodlStringReference
+  | NoodlString<V>
+
+export type NoodlReference = NoodlStringReference
+
+export interface NoodlStringReference {
+  type: 'reference'
+  kind: 'string'
+  operators: (
+    | AwaitOperator
+    | EvalOperator
+    | MergeOperator
+    | TildeOperator
+    | TraverseOperator
+  )[]
+  paths: NoodlStringReferenceItem[]
+}
+
+export interface NoodlObjectReference {
+  type: 'reference'
+  kind: 'object'
+  key: ParsedNoodlString
+  value: any
+}
+
+export interface NoodlStringReferenceItem<V = string> {
+  value: V
+}
+
+export interface NoodlString<V = string> {
+  type: 'string'
+  value: V
+}
+
+export interface Operator {
+  type: 'operator'
+}
+
+export interface AwaitOperator extends Operator {
+  kind: 'await'
+}
+
+export interface EvalOperator extends Operator {
+  kind: 'eval'
+}
+
+export interface MergeOperator extends Operator {
+  kind: 'merge'
+  location: 'local' | 'root'
+}
+
+export interface TildeOperator extends Operator {
+  kind: 'tilde'
+}
+
+export interface TraverseOperator extends Operator {
+  kind: 'traverse'
+}

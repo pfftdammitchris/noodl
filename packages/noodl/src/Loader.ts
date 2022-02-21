@@ -248,7 +248,7 @@ class NoodlLoader<
       }
     }
 
-    for (const visitee of (this.root.values?.() || [])) {
+    for (const visitee of this.root?.values?.() || []) {
       yaml.visit(visitee, {
         Scalar: (_, node) => {
           if (yaml.isScalar(node) && u.isStr(node.value)) {

@@ -1,11 +1,9 @@
-// @ts-nocheck
 import * as u from '@jsmanifest/utils'
 import { expect } from 'chai'
+import nock from 'nock'
+import sinon from 'sinon'
 import getFileStructure from '../utils/getFileStructure'
 import getLinkStructure from '../utils/getLinkStructure'
-import NoodlVisitor from '../Visitor'
-import { getReferenceNodes } from '../internal/yaml'
-import { getRoot } from './test-utils'
 
 describe(`utils`, () => {
   describe(`getFileStructure`, () => {
@@ -70,6 +68,12 @@ describe(`utils`, () => {
       it(`should set group to video`, () => {
         expect(result).to.have.property('group', 'video')
       })
+    })
+  })
+
+  describe(`loadFile`, () => {
+    xit(``, () => {
+      //
     })
   })
 })
