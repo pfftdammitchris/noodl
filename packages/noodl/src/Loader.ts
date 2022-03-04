@@ -215,7 +215,9 @@ class NoodlLoader<
 
   #replaceNoodlPlaceholders = (str = '') => {
     return createNoodlPlaceholderReplacer({
-      cadlBaseUrl: this.getIn(this.#getRootConfig(), 'cadlBaseUrl'),
+      cadlBaseUrl:
+        this.getIn(this.#getRootConfig(), 'cadlBaseUrl') ||
+        this.getIn(this.#getRootConfig(), 'baseUrl'),
       cadlVersion: this.configVersion,
       designSuffix: '',
     })(str)
