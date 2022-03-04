@@ -157,8 +157,7 @@ class NoodlLoader<
   #getRootConfig = () => this.getInRoot(this.configKey) as yaml.Document
 
   get appConfigUrl() {
-    const prefix = `${this.baseUrl}${this.appKey}`
-    return this.#replaceNoodlPlaceholders(prefix ? `${prefix}.yml` : prefix)
+    return this.#replaceNoodlPlaceholders(`${this.baseUrl}${this.appKey}`)
   }
 
   get appKey() {
@@ -515,12 +514,6 @@ class NoodlLoader<
     )
     this.emit(c.ON_CONFIG_VERSION, this.configVersion)
 
-    const replacePlaceholders = createNoodlPlaceholderReplacer({
-      cadlBaseUrl: this.getIn(configDocument, 'cadlBaseUrl'),
-      cadlVersion: this.configVersion,
-      designSuffix: '',
-    })
-
     yaml.visit(
       this.dataType == 'map'
         ? (configDocument as any)
@@ -537,7 +530,9 @@ class NoodlLoader<
               hasNoodlPlaceholder(node.value)
             ) {
               const before = node.value.value as string
-              node.value.value = replacePlaceholders(node.value.value)
+              node.value.value = this.#replaceNoodlPlaceholders(
+                node.value.value as string,
+              )
               this.logger.info(
                 `Setting base url to ${u.magenta(String(node.value.value))}`,
               )
@@ -552,7 +547,7 @@ class NoodlLoader<
         Scalar: (key, node) => {
           if (u.isStr(node.value) && hasNoodlPlaceholder(node.value)) {
             const before = node.value
-            node.value = replacePlaceholders(node.value)
+            node.value = this.#replaceNoodlPlaceholders(node.value)
             this.logger.info(
               `Replaced a placeholder from ${u.yellow(before)} to ${u.magenta(
                 String(node.value),
