@@ -24,7 +24,9 @@ const loadYmlFactory =
 
 const getRootConfigYml = loadYmlFactory(config)
 const getAppConfigYml = loadYmlFactory(`cadlEndpoint`)
+const toYml = (obj: Record<string, any>) => y.stringify(obj)
 
+const rootConfig = y.parse(getRootConfigYml())
 const appConfig = y.parse(getAppConfigYml())
 const preloadPages = (appConfig.preload || []) as string[]
 const pages = (appConfig.page || []) as string[]
@@ -117,6 +119,18 @@ describe(u.yellow(`noodl`), () => {
           expect(y.isAlias(node)).to.be.false
           expect(u.isObj(node)).to.be.true
         }
+      })
+
+      it(`[object] should return the parsed appConfigUrl`, async () => {
+        const loader = new NoodlLoader({ config: 'meetd2', dataType: 'object' })
+        await loader.loadRootConfig({
+          ...rootConfig,
+          cadlBaseUrl:
+            'https://public.aitmed.com/cadl/meet3_${cadlVersion}${designSuffix}/',
+        })
+        expect(loader.appConfigUrl).to.eq(
+          `https://public.aitmed.com/cadl/meet3_${rootConfig?.web?.cadlVersion?.test}/${loader.appKey}.yml`,
+        )
       })
 
       describe(`when loading preload pages`, () => {

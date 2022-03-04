@@ -158,7 +158,7 @@ class NoodlLoader<
 
   get appConfigUrl() {
     const prefix = `${this.baseUrl}${this.appKey}`
-    return prefix ? `${prefix}.yml` : prefix
+    return this.#replaceNoodlPlaceholders(prefix ? `${prefix}.yml` : prefix)
   }
 
   get appKey() {
@@ -212,6 +212,14 @@ class NoodlLoader<
     if (yaml.isSeq(preloadPages)) preloadPages = preloadPages.toJSON()
     if (yaml.isSeq(pages)) pages = pages.toJSON()
     return [...preloadPages, ...pages] as string[]
+  }
+
+  #replaceNoodlPlaceholders = (str = '') => {
+    return createNoodlPlaceholderReplacer({
+      cadlBaseUrl: this.getIn(this.#getRootConfig(), 'cadlBaseUrl'),
+      cadlVersion: this.configVersion,
+      designSuffix: '',
+    })(str)
   }
 
   emit<Event_ extends keyof t.Loader.Hooks>(
@@ -429,27 +437,33 @@ class NoodlLoader<
         }`,
       )
     } else if (u.isObj(options)) {
-      options?.config && (this.configKey = options.config)
-      const dir = options.dir || ''
-      const configFilePath = path.join(dir, `${this.configKey}.yml`)
-      if (existsSync(configFilePath)) {
-        this.logger.debug(
-          `Loading root config from: ${u.yellow(configFilePath)}`,
-        )
-        configYml = await readFile(configFilePath, 'utf8')
-        configDocument = this.parseYml(configYml)
-      } else {
-        if (!dir) {
+      if ('dir' in options || 'config' in options) {
+        options?.config && (this.configKey = options.config)
+        const dir = options.dir || ''
+        const configFilePath = path.join(dir, `${this.configKey}.yml`)
+        if (existsSync(configFilePath)) {
           this.logger.debug(
-            `Fetching config ${u.yellow(this.configKey)} remotely`,
+            `Loading root config from: ${u.yellow(configFilePath)}`,
           )
+          configYml = await readFile(configFilePath, 'utf8')
+          configDocument = this.parseYml(configYml)
         } else {
-          this.logger.error(
-            `Tried to load root config from ${u.yellow(
-              configFilePath,
-            )} but the location does not exist`,
-          )
+          if (!dir) {
+            this.logger.debug(
+              `Fetching config ${u.yellow(this.configKey)} remotely`,
+            )
+          } else {
+            this.logger.error(
+              `Tried to load root config from ${u.yellow(
+                configFilePath,
+              )} but the location does not exist`,
+            )
+          }
         }
+      } else {
+        this.logger.debug(`Loading the root config provided to arguments`)
+        configYml = yaml.stringify(options)
+        configDocument = options as any
       }
     } else if (u.isStr(options)) {
       this.configKey = options
