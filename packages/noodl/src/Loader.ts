@@ -12,6 +12,7 @@ import type { AppConfig, DeviceType, Env, RootConfig } from 'noodl-types'
 import yaml from 'yaml'
 import winston from 'winston'
 import fetchYml from './utils/fetchYml'
+import { ensureExt } from './utils/fileSystem'
 import getLinkStructure from './utils/getLinkStructure'
 import promiseAllSafely from './utils/promiseAllSafely'
 import stringifyDocument from './utils/stringifyDoc'
@@ -157,7 +158,9 @@ class NoodlLoader<
   #getRootConfig = () => this.getInRoot(this.configKey) as yaml.Document
 
   get appConfigUrl() {
-    return this.#replaceNoodlPlaceholders(`${this.baseUrl}${this.appKey}`)
+    return this.#replaceNoodlPlaceholders(
+      `${this.baseUrl}${ensureExt(this.appKey, 'yml')}`,
+    )
   }
 
   get appKey() {
