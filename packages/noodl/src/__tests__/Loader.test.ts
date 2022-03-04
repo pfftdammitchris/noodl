@@ -1,15 +1,17 @@
 import * as u from '@jsmanifest/utils'
 import { expect } from 'chai'
 import loadFiles from '../utils/loadFiles'
-import * as fs from 'fs-extra'
 import * as path from 'path'
 import nock from 'nock'
-import yaml from 'yaml'
+import y from 'yaml'
 import NoodlLoader from '../Loader'
+import { ensureExt, readFileSync, readJsonSync } from '../utils/fileSystem'
+import loadFile from '../utils/loadFile'
 
-const meetd2yml = fs.readFileSync(
-  path.join(__dirname, './fixtures/meetd2.yml'),
-  'utf8',
+const meetd2yml = readFileSync(path.join(__dirname, './fixtures/meetd2.yml'))
+const baseCssObject = loadFile(
+  path.join(__dirname, './fixtures/BaseCSS.yml'),
+  'json',
 )
 
 const config = 'meetd2'
@@ -18,15 +20,12 @@ const pathToFixtures = path.join(__dirname, './fixtures')
 const loadYmlFactory =
   (filename = '') =>
   () =>
-    fs.readFileSync(
-      path.join(pathToFixtures, `${filename.replace('.yml', '')}.yml`),
-      'utf8',
-    )
+    readFileSync(path.join(pathToFixtures, `${ensureExt(filename, 'yml')}`))
 
 const getRootConfigYml = loadYmlFactory(config)
 const getAppConfigYml = loadYmlFactory(`cadlEndpoint`)
 
-const appConfig = yaml.parse(getAppConfigYml())
+const appConfig = y.parse(getAppConfigYml())
 const preloadPages = (appConfig.preload || []) as string[]
 const pages = (appConfig.page || []) as string[]
 const data = loadFiles(pathToFixtures, { as: 'object' })
@@ -73,22 +72,161 @@ async function init(
 
 describe(u.yellow(`noodl`), () => {
   describe(u.italic(`init`), () => {
-    it(`[map] should initiate both the root config and app config`, async () => {
-      loader = new NoodlLoader({ config: 'meetd2' })
-      await init()
-      expect((loader.root.get(config) as yaml.Document).has('cadlMain')).to.be
-        .true
-      expect((loader.root.get('cadlEndpoint') as yaml.Document).has('preload'))
-        .to.be.true
-      expect((loader.root.get('cadlEndpoint') as yaml.Document).has('page')).to
-        .be.true
+    describe(`when dataType is map`, () => {
+      beforeEach(() => {
+        loader = new NoodlLoader({ config: 'meetd2' })
+      })
+
+      it(`[map] should initiate both the root config and app config`, async () => {
+        await init()
+        const cadlEndpoint = loader.root.get('cadlEndpoint') as y.Document
+        const cadlMain = loader.root.get(config) as y.Document
+        expect(cadlMain.has('cadlMain')).to.be.true
+        expect(cadlEndpoint.has('preload')).to.be.true
+        expect(cadlEndpoint.has('page')).to.be.true
+      })
+
+      it(`[map] should set the root value as a yaml node`, async () => {
+        await init()
+        expect(y.isDocument(loader.root.get(config) as y.Document)).to.be.true
+      })
     })
 
-    it(`[object] should initiate both the root config and app config`, async () => {
-      const [root, app] = await init()
-      expect(root?.has('cadlMain')).to.be.true
-      expect(app?.has('preload')).to.be.true
-      expect(app?.has('page')).to.be.true
+    describe(`when dataType is object`, () => {
+      let loader: NoodlLoader<'meetd2', 'object'>
+
+      beforeEach(() => {
+        loader = new NoodlLoader({ config: 'meetd2', dataType: 'object' })
+      })
+
+      it(`[object] should initiate both the root config and app config`, async () => {
+        await init(loader)
+        const cadlEndpoint = loader.root.cadlEndpoint
+        const cadlMain = loader.root.meetd2
+        expect(cadlMain).to.have.property('cadlMain')
+        expect(cadlEndpoint).to.have.property('preload')
+        expect(cadlEndpoint).to.have.property('page')
+      })
+
+      it(`[object] should set root/app config as plain objects`, async () => {
+        await loader.init({ dir: pathToFixtures })
+        for (const node of u.values(loader.root)) {
+          expect(y.isNode(node)).to.be.false
+          expect(y.isDocument(node)).to.be.false
+          expect(y.isPair(node)).to.be.false
+          expect(y.isAlias(node)).to.be.false
+          expect(u.isObj(node)).to.be.true
+        }
+      })
+
+      describe(`when loading preload pages`, () => {
+        it(`[object] should load each key of preload object as plain objects when using spread`, async () => {
+          mockAllPageRequests()
+          await loader.init({
+            dir: pathToFixtures,
+            loadPages: false,
+            loadPreloadPages: true,
+            spread: ['BaseCSS'],
+          })
+          const obj = baseCssObject
+          const keys = u.keys(obj)
+          expect(keys).to.have.length.greaterThan(0)
+          keys.forEach((key) => {
+            const value = obj[key]
+            expect(y.isNode(value)).to.be.false
+            expect(y.isDocument(value)).to.be.false
+            expect(y.isPair(value)).to.be.false
+            expect(y.isAlias(value)).to.be.false
+            expect(u.isObj(obj)).to.be.true
+          })
+        })
+
+        it(`[object] should not spread keys of objects when it is not in "spread"`, async () => {
+          mockAllPageRequests()
+          await loader.init({
+            dir: pathToFixtures,
+            loadPages: false,
+            loadPreloadPages: true,
+            spread: ['BaseCSS'],
+          })
+          for (const [name, obj] of u.entries(
+            u.pick(
+              loader.root,
+              preloadPages.filter((s) => s !== 'BaseCSS'),
+            ),
+          )) {
+            expect(loader.root).to.have.property(name)
+            u.keys(obj).forEach((key) => {
+              if (/global/i.test(key as string)) return
+              expect(loader.root).not.to.have.property(key as any)
+            })
+          }
+        })
+      })
+
+      describe(`when loading app pages`, () => {
+        it(`[object] should load each page as a plain object`, async () => {
+          mockAllPageRequests()
+          await loader.init({
+            dir: pathToFixtures,
+            loadPages: true,
+            loadPreloadPages: true,
+          })
+          for (const [name, obj] of u.entries(u.pick(loader.root, pages))) {
+            const pageObject = loader.root[name]
+            expect(y.isNode(pageObject)).to.be.false
+            expect(y.isDocument(pageObject)).to.be.false
+            expect(y.isPair(pageObject)).to.be.false
+            expect(y.isAlias(pageObject)).to.be.false
+            expect(u.isObj(obj)).to.be.true
+          }
+        })
+
+        it(`[object] should be able to retrieve their objects using getInRoot`, async () => {
+          mockAllPageRequests()
+          await loader.init({
+            dir: pathToFixtures,
+            loadPages: true,
+            loadPreloadPages: false,
+          })
+          pages.forEach((page) => {
+            const value = loader.getInRoot(page)
+            expect(value).to.exist
+            expect(value).to.be.an('object')
+          })
+        })
+      })
+
+      it(`[object] should resolve/return the assetsUrl`, async () => {
+        const loader = new NoodlLoader({
+          config: 'meetd2',
+          dataType: 'object',
+        })
+        mockAllPageRequests()
+        expect(loader.assetsUrl).not.to.eq(assetsUrl)
+        await loader.loadRootConfig({ config: 'meetd2', dir: pathToFixtures })
+        expect(loader.assetsUrl).to.eq(assetsUrl)
+      })
+
+      describe(`when extracting assets`, () => {
+        it(`should be able to extract assets`, async () => {
+          mockAllPageRequests()
+          const loader = new NoodlLoader({
+            config: 'meetd2',
+            dataType: 'object',
+          })
+          await loader.init({
+            dir: pathToFixtures,
+            loadPages: true,
+            loadPreloadPages: true,
+          })
+          const assets = await loader.extractAssets()
+          expect(assets).to.have.length.greaterThan(0)
+          assets.forEach((asset) => {
+            expect(asset).to.have.property('group').to.exist
+          })
+        })
+      })
     })
 
     it(`should return the assets url`, async () => {
@@ -138,9 +276,7 @@ describe(u.yellow(`noodl`), () => {
     it(`should load all the pages by default`, async () => {
       await loader.init({ dir: pathToFixtures, loadPreloadPages: false })
       const pages = (
-        (loader.root.get('cadlEndpoint') as yaml.Document).get(
-          'page',
-        ) as yaml.YAMLSeq
+        (loader.root.get('cadlEndpoint') as y.Document).get('page') as y.YAMLSeq
       ).toJSON()
       expect(pages).to.have.length.greaterThan(0)
       pages.forEach((page: string) => {
@@ -157,8 +293,8 @@ describe(u.yellow(`noodl`), () => {
         .get('/meetd2.yml')
         .reply(
           200,
-          yaml.stringify({
-            ...yaml.parse(meetd2yml),
+          y.stringify({
+            ...y.parse(meetd2yml),
             cadlBaseUrl: remoteBaseUrl,
           }),
         )
@@ -196,31 +332,10 @@ describe(u.yellow(`noodl`), () => {
     })
   })
 
-  it(`should set everything in the root to plain objects if mode is set to "object"`, async () => {
-    const loader = new NoodlLoader({
-      config: 'meetd2',
-      dataType: 'object',
-    })
-    mockAllPageRequests()
-    await loader.init({
-      dir: pathToFixtures,
-      loadPages: true,
-      loadPreloadPages: true,
-    })
-    expect(loader).not.to.be.instanceOf(Map)
-    const rootKeys = u.keys(loader.root)
-    expect(rootKeys).to.have.length.greaterThan(0)
-    rootKeys.forEach((key) => {
-      expect(yaml.isNode(loader.root[key])).to.be.false
-      expect(yaml.isDocument(loader.root[key])).to.be.false
-      expect(loader.root[key]).to.exist
-    })
-  })
-
-  it(`should set values of root properties as yaml nodes`, async () => {
+  it(`[map] should set values of root properties as y nodes`, async () => {
     await loader.init({ dir: pathToFixtures })
-    for (const [name, node] of loader.root) {
-      expect(yaml.isNode(node) || yaml.isDocument(node)).to.be.true
+    for (const node of loader.root.values()) {
+      expect(y.isNode(node) || y.isDocument(node)).to.be.true
     }
   })
 })

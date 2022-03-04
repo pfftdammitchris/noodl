@@ -229,6 +229,7 @@ class NoodlLoader<
       /(127.0.0.1|localhost)/.test(remoteAssetsUrl) ||
       !remoteAssetsUrl.startsWith('http')
     ) {
+      // Converts to the remote url
       const rootConfig = await fetchYml(this.#getRemoteConfigUrl())
       remoteAssetsUrl = extractAssetsUrl(rootConfig)
     }
@@ -248,7 +249,20 @@ class NoodlLoader<
       }
     }
 
-    for (const visitee of this.root?.values?.() || []) {
+    const nodes =
+      this.dataType === 'map'
+        ? this.root?.values?.() || []
+        : u.values(this.root)
+
+    for (let visitee of nodes) {
+      if (this.dataType === 'object') {
+        visitee = new yaml.Document(visitee, {
+          prettyErrors: true,
+        })
+      }
+
+      // TODO - Implement a plain object version of visit
+
       yaml.visit(visitee, {
         Scalar: (_, node) => {
           if (yaml.isScalar(node) && u.isStr(node.value)) {
@@ -743,8 +757,7 @@ class NoodlLoader<
                 doc: documentOrObject,
                 fromDir: true,
               })
-
-              return this.getInRoot(key || '')
+              if (!spread.includes(key)) return this.getInRoot(key || '')
             }
             break
           }
@@ -792,6 +805,7 @@ class NoodlLoader<
 
         if (documentOrObject) {
           spreadFunction(documentOrObject)
+          u.array(keys).forEach((key) => delete this.root[key])
         } else {
           for (const key of u.array(keys)) {
             if (this.hasInRoot(key)) {
@@ -881,6 +895,17 @@ class NoodlLoader<
               `Preload page "${u.yellow(node.value)}" already exists`,
             )
           }
+        }
+      }
+    } else if (u.isArr(seq)) {
+      for (const name of seq) {
+        if (u.isStr(name) && !this.hasInRoot(name)) {
+          let logMessage = `Adding preload page: ${u.yellow(name)}`
+          if (spreadKeys.includes(name)) {
+            logMessage += ` (its keys ${u.white(`will spread`)} on root)`
+          }
+          this.logger.debug(logMessage)
+          preloadPages.push(name)
         }
       }
     }

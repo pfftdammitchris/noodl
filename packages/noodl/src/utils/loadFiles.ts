@@ -2,10 +2,9 @@ import * as u from '@jsmanifest/utils'
 import { join as joinPath } from 'path'
 import fg from 'fast-glob'
 import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
-import { getAbsFilePath, getFileName } from './fileSystem'
+import { getAbsFilePath, getFileName, normalizePath } from './fileSystem'
 import getFileStructure from './getFileStructure'
 import loadFile from './loadFile'
-import normalizePath from './normalizePath'
 import * as t from '../types'
 
 /**
