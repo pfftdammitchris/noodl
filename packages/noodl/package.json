@@ -7,7 +7,7 @@
   "files": [
     "dist"
   ],
-  "gitHead": "c6d5712c14cedf5faf330797187ffff96b9ce6ee",
+  "gitHead": "2bef8a1f90a52a224a4ad380c2dade89b5ecb921",
   "homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
   "keywords": [
     "noodl",
@@ -37,5 +37,5 @@
     "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src"
   },
   "typings": "./dist/noodl.d.ts",
-  "version": "0.0.21"
+  "version": "0.0.22"
 }
