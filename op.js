@@ -1,7 +1,9 @@
-import * as u from '@jsmanifest/utils'
-import meow from 'meow'
-import path from 'path'
-import rimraf from 'rimraf'
+const u = require('@jsmanifest/utils')
+const execa = require('execa')
+const fs = require('fs-extra')
+const meow = require('meow')
+const path = require('path')
+const rimraf = require('rimraf')
 
 const getAbsFilePath = (...s) => path.resolve(path.join(...s))
 
@@ -24,6 +26,7 @@ const lib = {
 const cli = meow(``, {
   flags: {
     cli: { type: 'string' },
+    lerna: { type: 'string', alias: 'l' },
     noodl: { type: 'string' },
     nag: { type: 'string' },
     nac: { type: 'string' },
@@ -31,8 +34,11 @@ const cli = meow(``, {
     nt: { type: 'string' },
     nu: { type: 'string' },
     rmjs: { type: 'string' },
+    watch: { type: 'boolean' },
   },
 })
+
+const { flags, input } = cli
 
 if (cli.flags.rmjs) {
   const { rmjs: name } = cli.flags
@@ -56,6 +62,20 @@ if (cli.flags.rmjs) {
   } else {
     rm(name)
   }
-} else {
-  // execa.commandSync(`lerna exec --scope `)
+} else if (cli.flags.lerna) {
+  const arg = cli.input[0]
+  const cmd = ['lerna', 'exec', '--scope', flags.lerna, '']
+
+  let inputs = `""`
+
+  if (arg === 'test') inputs += `npm run test`
+  else if (arg === 'start') inputs += `npm run start`
+  else if (arg === 'build') inputs += `npm run build`
+
+  inputs += `""`
+
+  execa.commandSync(cmd.join(' ').concat(inputs), {
+    shell: true,
+    stdio: 'inherit',
+  })
 }

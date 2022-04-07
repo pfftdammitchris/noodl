@@ -1,12 +1,15 @@
 import * as u from '@jsmanifest/utils'
 import { expect } from 'chai'
+import chalk from 'chalk'
 import loadFiles from '../utils/loadFiles'
 import * as path from 'path'
 import nock from 'nock'
+import sinon from 'sinon'
 import y from 'yaml'
-import NoodlLoader from '../Loader'
-import { ensureExt, readFileSync, readJsonSync } from '../utils/fileSystem'
+import Loader from '../Loader'
+import { ensureExt, readFileSync } from '../utils/fileSystem'
 import loadFile from '../utils/loadFile'
+import * as c from '../constants'
 
 const meetd2yml = readFileSync(path.join(__dirname, './fixtures/meetd2.yml'))
 const baseCssObject = loadFile(
@@ -24,7 +27,6 @@ const loadYmlFactory =
 
 const getRootConfigYml = loadYmlFactory(config)
 const getAppConfigYml = loadYmlFactory(`cadlEndpoint`)
-const toYml = (obj: Record<string, any>) => y.stringify(obj)
 
 const rootConfig = y.parse(getRootConfigYml())
 const appConfig = y.parse(getAppConfigYml())
@@ -39,13 +41,13 @@ const mockAllPageRequests = (_loader = loader) => {
   }
 }
 
-let loader: NoodlLoader<typeof config, 'map'>
+let loader: Loader<typeof config, 'map'>
 let assetsUrl = `http://127.0.0.1:3001/assets/`
 let baseConfigUrl = `http://127.0.0.1:3001/config`
 let baseUrl = `http://127.0.0.1:3001/`
 
 beforeEach(() => {
-  loader = new NoodlLoader({ config: 'meetd2' })
+  loader = new Loader({ config: 'meetd2', loglevel: 'debug' })
   nock(baseConfigUrl).get('/meetd2.yml').reply(200, meetd2yml)
   nock(baseUrl).get('/cadlEndpoint.yml').reply(200, getAppConfigYml())
 })
@@ -55,16 +57,14 @@ afterEach(() => {
 })
 
 async function init(
-  _loader = loader as
-    | NoodlLoader
-    | ConstructorParameters<typeof NoodlLoader>[0],
+  _loader = loader as Loader | ConstructorParameters<typeof Loader>[0],
 ) {
-  let options: ConstructorParameters<typeof NoodlLoader>[0]
-  if (!(_loader instanceof NoodlLoader)) {
+  let options: ConstructorParameters<typeof Loader>[0]
+  if (!(_loader instanceof Loader)) {
     options = _loader
-    _loader = new NoodlLoader(options)
+    _loader = new Loader(options)
   }
-  return (_loader as NoodlLoader).init({
+  return (_loader as Loader).init({
     dir: pathToFixtures,
     loadPages: false,
     loadPreloadPages: false,
@@ -72,11 +72,17 @@ async function init(
   })
 }
 
-describe(u.yellow(`noodl`), () => {
+describe(chalk.keyword('navajowhite')('noodl'), () => {
+  describe(`constructor`, () => {
+    it(`should construct without errors when given no args`, () => {
+      expect(() => new Loader()).to.not.throw()
+    })
+  })
+
   describe(u.italic(`init`), () => {
     describe(`when dataType is map`, () => {
       beforeEach(() => {
-        loader = new NoodlLoader({ config: 'meetd2' })
+        loader = new Loader({ config: 'meetd2' })
       })
 
       it(`[map] should initiate both the root config and app config`, async () => {
@@ -95,10 +101,10 @@ describe(u.yellow(`noodl`), () => {
     })
 
     describe(`when dataType is object`, () => {
-      let loader: NoodlLoader<'meetd2', 'object'>
+      let loader: Loader<'meetd2', 'object'>
 
       beforeEach(() => {
-        loader = new NoodlLoader({ config: 'meetd2', dataType: 'object' })
+        loader = new Loader({ config: 'meetd2', dataType: 'object' })
       })
 
       it(`[object] should initiate both the root config and app config`, async () => {
@@ -122,7 +128,7 @@ describe(u.yellow(`noodl`), () => {
       })
 
       it(`[object] should return the parsed appConfigUrl`, async () => {
-        const loader = new NoodlLoader({ config: 'meetd2', dataType: 'object' })
+        const loader = new Loader({ config: 'meetd2', dataType: 'object' })
         await loader.loadRootConfig({
           ...rootConfig,
           cadlBaseUrl:
@@ -212,7 +218,7 @@ describe(u.yellow(`noodl`), () => {
       })
 
       it(`[object] should resolve/return the assetsUrl`, async () => {
-        const loader = new NoodlLoader({
+        const loader = new Loader({
           config: 'meetd2',
           dataType: 'object',
         })
@@ -221,26 +227,33 @@ describe(u.yellow(`noodl`), () => {
         await loader.loadRootConfig({ config: 'meetd2', dir: pathToFixtures })
         expect(loader.assetsUrl).to.eq(assetsUrl)
       })
+    })
 
-      describe(`when extracting assets`, () => {
-        it(`should be able to extract assets`, async () => {
-          mockAllPageRequests()
-          const loader = new NoodlLoader({
-            config: 'meetd2',
-            dataType: 'object',
-          })
-          await loader.init({
-            dir: pathToFixtures,
-            loadPages: true,
-            loadPreloadPages: true,
-          })
-          const assets = await loader.extractAssets()
-          expect(assets).to.have.length.greaterThan(0)
-          assets.forEach((asset) => {
-            expect(asset).to.have.property('group').to.exist
-          })
+    xit(`should return the same amount of assets regardless of dataType`, async () => {
+      mockAllPageRequests()
+
+      let mapAssets = []
+      let objectAssets = []
+
+      const getAssets = async (dataType: 'map' | 'object') => {
+        let loader = new Loader({
+          config: 'meetd2',
+          dataType,
         })
-      })
+        await loader.init({
+          dir: pathToFixtures,
+          loadPages: true,
+          loadPreloadPages: true,
+        })
+        return loader.extractAssets()
+      }
+
+      mapAssets.push(...(await getAssets('map')))
+      objectAssets.push(...(await getAssets('object')))
+
+      expect(mapAssets).to.have.length.greaterThan(0)
+      expect(objectAssets).to.have.length.greaterThan(0)
+      expect(mapAssets).to.have.lengthOf(objectAssets.length)
     })
 
     it(`should return the assets url`, async () => {
@@ -293,7 +306,8 @@ describe(u.yellow(`noodl`), () => {
         (loader.root.get('cadlEndpoint') as y.Document).get('page') as y.YAMLSeq
       ).toJSON()
       expect(pages).to.have.length.greaterThan(0)
-      pages.forEach((page: string) => {
+      pages.forEach((page) => {
+        // @ts-expect-error
         expect(loader.root.get(page.replace('~/', ''))).to.exist
       })
     })
@@ -346,10 +360,48 @@ describe(u.yellow(`noodl`), () => {
     })
   })
 
-  it(`[map] should set values of root properties as y nodes`, async () => {
+  it(`[map] should set values of root properties as yaml nodes`, async () => {
     await loader.init({ dir: pathToFixtures })
     for (const node of loader.root.values()) {
       expect(y.isNode(node) || y.isDocument(node)).to.be.true
     }
+  })
+
+  describe(`observers`, () => {
+    beforeEach(() => {
+      nock.cleanAll()
+      nock(`https://${c.defaultConfigHostname}/config`)
+        .get('/meetd2.yml')
+        .reply(200, getRootConfigYml())
+    })
+
+    describe(c.configKeySet, () => {
+      it(`should pass in the config key`, async () => {
+        const spy = sinon.spy()
+        loader.on(c.configKeySet, spy)
+        await loader.loadRootConfig('meetd2')
+        expect(spy).to.be.calledOnce
+        expect(spy.firstCall.args[0][0]).to.eq('meetd2')
+      })
+    })
+
+    describe(c.rootConfigIsBeingRetrieved, () => {
+      it(`should pass in the configKey and configUrl`, async () => {
+        const spy = sinon.spy()
+        loader.on(c.rootConfigIsBeingRetrieved, spy)
+        await loader.loadRootConfig('meetd2')
+        expect(spy).to.be.calledOnce
+        expect(spy.args[0][0]).to.be.an('array')
+        expect(spy.args[0][0][0]).to.have.property('configKey', 'meetd2')
+        expect(spy.args[0][0][0]).to.have.property(
+          'configUrl',
+          `https://${c.defaultConfigHostname}/config/meetd2.yml`,
+        )
+      })
+    })
+
+    describe(c.rootConfigRetrieved, () => {
+      it(`should pass in the rootConfig and the yml`, async () => {})
+    })
   })
 })

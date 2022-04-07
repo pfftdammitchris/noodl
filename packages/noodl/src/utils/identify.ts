@@ -77,30 +77,6 @@ export function hasTwoOrMoreKeys(
  * ```js
  * const map = createMap({ style: { textAlign: 'center' } })
  * const node = map.get('style')
- * if (node.has('textAlign')) {
- *    //
- * }
- * ```
- * @param { y.YAMLMap } node
- * @param { string } key
- * @param { string[] } innerKeys
- * @returns { boolean }
- */
-const isKeyOfObjectContainKeys = <K extends string>(
-  node: y.YAMLMap<K>,
-  key: K,
-  ...innerKeys: string[]
-) => {
-  if (!hasKey(node, key)) return false
-  const innerObject = node.get(key)
-  return y.isMap(innerObject) ? innerKeys.every(hasKey(innerObject)) : false
-}
-
-/**
- * @example
- * ```js
- * const map = createMap({ style: { textAlign: 'center' } })
- * const node = map.get('style')
  * if (node.has('textAlign')) {...}
  * Supports YAML node + regular arrays/object literals
  */

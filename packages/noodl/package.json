@@ -33,9 +33,9 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production tsc",
     "start": "cross-env NODE_ENV=development tsc -w",
-    "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.ts\"",
-    "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src"
+    "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.ts\" --file src/__tests__/setup.ts",
+    "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src --file src/__tests__/setup.ts"
   },
   "typings": "./dist/noodl.d.ts",
-  "version": "0.0.27"
+  "version": "0.0.28"
 }

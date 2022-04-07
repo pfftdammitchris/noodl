@@ -33,6 +33,7 @@ function createNode(arg1: unknown, arg2?: any) {
   } else if (type === 'object') {
     node = createMap(value) as y.YAMLMap
     if (node.items.length) {
+      // @ts-expect-error
       node.items.forEach((pair: y.Pair) => {
         if (
           !y.isNode(pair.value) &&

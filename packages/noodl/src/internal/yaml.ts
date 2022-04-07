@@ -1,6 +1,4 @@
 import * as u from '@jsmanifest/utils'
-import * as nu from 'noodl-utils'
-import * as nt from 'noodl-types'
 import {
   Document as YAMLDocument,
   Pair,
@@ -38,8 +36,6 @@ export {
   visitor,
   visitorFn,
 }
-
-const is = nt.Identify
 
 export function toYAML(value: any, options?: Parameters<typeof parse>[1]) {
   return parse(value, {

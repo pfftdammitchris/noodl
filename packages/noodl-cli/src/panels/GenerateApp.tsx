@@ -3,7 +3,7 @@ import { UncontrolledTextInput } from 'ink-text-input'
 import { consts as noodlAggregatorConstants } from 'noodl'
 import fg from 'fast-glob'
 import type { LinkStructure } from 'noodl'
-import { getFileStructure, normalizePath, stringifyDoc } from 'noodl'
+import { getFileStructure, normalizePath, stringify } from 'noodl'
 import * as u from '@jsmanifest/utils'
 import chalk from 'chalk'
 import React from 'react'
@@ -18,10 +18,10 @@ import * as co from '../utils/color.js'
 import * as r from '../utils/remote.js'
 
 const {
-	ON_RETRIEVED_ROOT_CONFIG,
-	ON_RETRIEVE_APP_PAGE_FAILED,
-	ON_RETRIEVED_APP_PAGE,
-	PARSED_APP_CONFIG,
+	rootConfigRetrieved,
+	appPageRetrieveFailed,
+	appPageRetrieved,
+	appConfigParsed,
 } = noodlAggregatorConstants
 
 export interface Props {
@@ -140,6 +140,7 @@ function GenerateApp(props: Props) {
 					let done = async function () {
 						done = undefined as any
 						const assets = await aggregator.extractAssets()
+
 						u.newline()
 
 						log(
@@ -238,35 +239,36 @@ function GenerateApp(props: Props) {
 
 					function incrementProcessedDocs() {
 						processedDocs++
-						numDocsFetching && processedDocs > numDocsFetching && done?.()
+						numDocsFetching && processedDocs >= numDocsFetching && done?.()
 					}
 
 					function createOnDoc(
 						type: 'root-config' | 'app-config' | 'app-page',
 					) {
-						async function onDoc({
-							name,
-							doc,
-						}: {
-							name: string
-							doc: yaml.Document
-						}) {
+						async function onDoc(opts: any) {
+							if (u.isArr(opts)) opts = opts[0]
+							const isDoc = aggregator.dataType === 'map'
+							const name = opts.name || opts.pageName
 							const filename = withYmlExt(name).replace('_en', '')
 							const filepath = path
 								.join(configDir, filename)
 								.replace('/~/', '/')
-							if (!doc) return u.log(doc)
+							// if (!opts) return u.log(doc)
 
 							if (type === 'root-config') {
-								await fs.writeFile(filepath, stringifyDoc(doc as any))
-								const baseUrl = doc.get('cadlBaseUrl')
-								const appKey = doc.get('cadlMain')
+								const rootConfig = opts.rootConfig
+								const getValue = (key: string) =>
+									isDoc ? rootConfig?.get?.(key) : rootConfig?.[key]
+								await fs.writeFile(filepath, stringify(rootConfig))
+								const baseUrl = getValue('cadlBaseUrl')
+								const appKey = getValue('cadlMain')
 								log(`Base url: ${co.yellow(baseUrl)}`)
 								log(`App config url: ${co.yellow(`${baseUrl}${appKey}`)}`)
 								log(`Saved root config object to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else if (type === 'app-config') {
-								await fs.writeFile(filepath, stringifyDoc(doc as any))
+								const appConfig = opts.appConfig
+								await fs.writeFile(filepath, stringify(appConfig))
 								numDocsFetching = aggregator.pageNames.length
 								log(
 									`\nTotal expected number of yml files we are retrieving is ${co.yellow(
@@ -277,8 +279,9 @@ function GenerateApp(props: Props) {
 								log(`Saved app config to ${co.yellow(filepath)}`)
 								incrementProcessedDocs()
 							} else {
-								await fs.writeFile(filepath, stringifyDoc(doc as any))
-								const pageName = name.replace('_en', '')
+								let { pageName, pageObject } = opts
+								pageName = opts.pageName.replace('_en', '')
+								await fs.writeFile(filepath, stringify(pageObject))
 								log(
 									`Saved page ${co.magenta(pageName)} to ${co.yellow(
 										filepath,
@@ -291,10 +294,10 @@ function GenerateApp(props: Props) {
 					}
 
 					await aggregator
-						.on(ON_RETRIEVED_ROOT_CONFIG, createOnDoc('root-config') as any)
-						.on(PARSED_APP_CONFIG, createOnDoc('app-config') as any)
-						.on(ON_RETRIEVED_APP_PAGE, createOnDoc('app-page') as any)
-						.on(ON_RETRIEVE_APP_PAGE_FAILED, incrementProcessedDocs)
+						.on(rootConfigRetrieved, createOnDoc('root-config') as any)
+						.on(appConfigParsed, createOnDoc('app-config') as any)
+						.on(appPageRetrieved, createOnDoc('app-page') as any)
+						.on(appPageRetrieveFailed, incrementProcessedDocs)
 						.init({
 							fallback: {
 								appConfig: async () => {
@@ -305,7 +308,9 @@ function GenerateApp(props: Props) {
 										`Callback fired for appConfig loader using config file ` +
 											`path: ${chalk.yellow(pathsToFallbackFile)}`,
 									)
-									return fs.readFile(pathsToFallbackFile, 'utf8')
+									if (fs.existsSync(pathsToFallbackFile)) {
+										return fs.readFile(pathsToFallbackFile, 'utf8')
+									}
 								},
 							},
 						})
@@ -335,7 +340,7 @@ function GenerateApp(props: Props) {
 
 						const filename = withYmlExt(aggregator.configKey).replace('_en', '')
 						const filepath = path.join(dir, filename)
-						await fs.writeFile(filepath, stringifyDoc(doc as any))
+						await fs.writeFile(filepath, stringify(doc as any))
 					}
 				}
 			}

@@ -1,50 +1,59 @@
-import curry from 'lodash/curry'
-import type { LiteralUnion } from 'type-fest'
+import * as u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
-import yaml from 'yaml'
-import type { YAMLDocument, visitorFn } from './internal/yaml'
-import * as t from './types'
 
-const is = nt.Identify
-
-export interface VisitArgs<N = any> {
-  key: t.YAMLVisitArgs<N>[0]
-  node: t.YAMLVisitArgs<N>[1]
-  path: t.YAMLVisitArgs<N>[2]
-  name: string
-  doc: N
-  store: Store
-  root: Root
+export interface VisitorFn {
+  (
+    key: string | number | null,
+    value: unknown,
+    parent: null | Record<string, any> | any[],
+  ): any
 }
 
-export interface VisitFn<N = any> {
-  (args: VisitArgs<N>): ReturnType<visitorFn<N>>
-}
+/**
+ * Untested / Not confirmed to be stable
+ */
+const Visitor = (function () {
+  const createVisitor = (fn: VisitorFn) => {
+    function visit(
+      fn: VisitorFn,
+      value: unknown,
+      parent: null | Record<string, any> | any[],
+    ) {
+      let results = []
 
-export interface Store {
-  [key: string]: any
-}
+      if (u.isArr(value)) {
+        results = results.concat(
+          value.reduce((acc, val, index) => {
+            const result = fn(index, val, value)
+            if (!u.isUnd(result)) acc.push(result)
+            acc.push(...visit(fn, val, value))
+            return acc
+          }, []),
+        )
+      } else if (u.isObj(value)) {
+        for (const [key, val] of u.entries(value)) {
+          const result = fn(key, val, value)
+          if (!u.isUnd(result)) results.push(result)
+          results.push(...visit(fn, val, value))
+        }
+      } else {
+        const result = fn(null, value, parent)
+        if (!u.isUnd(result)) results.push(result)
+      }
 
-export type Root<K extends string = string> = Record<
-  LiteralUnion<K, string>,
-  any
->
+      return results
+    }
 
-const Visitor = curry(
-  <K extends string = string>(
-    store: Store,
-    root: Root<K>,
-    fn: VisitFn,
-    name: string,
-    doc: YAMLDocument,
-  ) => {
-    return yaml.visit(
-      doc,
-      (...[key, node, path]: Parameters<visitorFn<any>>) => {
-        return fn({ key, node, path, name, doc, root, store })
-      },
-    )
-  },
-)
+    return (value: unknown) => {
+      return visit(fn, value, null)
+    }
+  }
+
+  const o = {
+    createVisitor,
+  }
+
+  return o
+})()
 
 export default Visitor

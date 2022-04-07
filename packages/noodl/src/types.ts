@@ -3,6 +3,7 @@ import yaml from 'yaml'
 import type { LiteralUnion } from 'type-fest'
 import type { OrArray } from '@jsmanifest/typefest'
 import type { YAMLNode, visitorFn } from './internal/yaml'
+import * as c from './constants'
 
 export type YAMLVisitArgs<N> = Parameters<visitorFn<N>>
 
@@ -68,41 +69,63 @@ export interface Root {
 
 export namespace Loader {
   export type CommonEmitEvents =
-    | 'PARSED_APP_CONFIG'
-    | 'RETRIEVED_ROOT_BASE_URL'
-    | 'ON_RETRIEVED_ROOT_CONFIG'
-    | 'RETRIEVED_APP_ENDPOINT'
-    | 'RETRIEVED_APP_BASE_URL'
-    | 'ON_RETRIEVED_APP_PAGE'
-    | 'RETRIEVED_CONFIG_VERSION'
+    | typeof c.appConfigParsed
+    | typeof c.rootBaseUrlPurged
+    | typeof c.rootConfigRetrieved
+    | typeof c.appEndpointPurged
+    | typeof c.appBaseUrlPurged
+    | typeof c.appPageRetrieved
+    | typeof c.configVersionSet
 
   export type Hooks = {
-    ON_APP_PAGE_DOESNT_EXIST: { args: { name: string; error: Error } }
-    ON_CONFIG_KEY: { args: string }
-    ON_CONFIG_VERSION: { args: string }
-    ON_PLACEHOLDER_PURGED: { args: { before: string; after: string } }
-    ON_RETRIEVING_APP_CONFIG: { args: { url: string } }
-    ON_RETRIEVED_APP_CONFIG: { args: string }
-    ON_RETRIEVED_APP_PAGE: {
-      args: {
-        name: string
-        doc: yaml.Document | Record<string, any>
-        fromDir?: boolean
-      }
-    }
-    ON_RETRIEVE_APP_PAGE_FAILED: { args: { name: string; error: Error } }
-    ON_RETRIEVING_ROOT_CONFIG: { args: { url: string } }
-    ON_RETRIEVED_ROOT_CONFIG: {
-      args: {
-        doc: yaml.Document | Record<string, any>
-        name: string
-        yml: string
-      }
-    }
-  } & Record<
-    CommonEmitEvents,
-    { args: { name: string; doc: yaml.Document | Record<string, any> } }
-  >
+    [c.rootConfigRetrieved](options: {
+      rootConfig: nt.RootConfig
+      yml: string
+    }): void
+    [c.appConfigParsed]<T extends Loader.RootDataType>(args: {
+      name: string
+      appConfig: T extends 'map' ? yaml.Document : nt.AppConfig
+    }): void
+    [c.appPageNotFound](options: {
+      appKey: string
+      error: Error
+      pageName: string
+      url?: string
+    }): void
+    [c.configKeySet](configKey: string): void
+    [c.configVersionSet](
+      configVersion: LiteralUnion<'latest', string | number>,
+    ): void
+    [c.placeholderPurged](args: { before: string; after: string }): void
+    [c.rootConfigIsBeingRetrieved]<T extends Loader.RootDataType>(args: {
+      configKey: string
+      configUrl: string
+    }): void
+    [c.rootConfigRetrieved]<T extends Loader.RootDataType>(args: {
+      rootConfig: T extends 'map' ? yaml.Document : nt.RootConfig
+      url: string
+      yml: string
+    }): void
+    [c.appConfigIsBeingRetrieved]<T extends Loader.RootDataType>(args: {
+      rootConfig: T extends 'map' ? yaml.Document : nt.RootConfig
+      appKey: string
+      url: string
+    }): void
+    [c.appConfigRetrieved]<T extends Loader.RootDataType>(args: {
+      appKey: string
+      appConfig: T extends 'map' ? yaml.Document : nt.AppConfig
+      rootConfig: T extends 'map' ? yaml.Document : nt.RootConfig
+      yml: string
+      url: string
+    }): void
+    [c.appPageRetrieved]<T extends Loader.RootDataType>(args: {
+      fromDir?: boolean
+      pageName: string
+      pageObject: T extends 'map' ? yaml.Document : nt.PageObject
+      url?: string
+    }): void
+    [c.appPageRetrieveFailed](args: { error: Error; pageName: string }): void
+  }
 
   export type LoadOptions<Type extends 'doc' | 'yml' = 'doc' | 'yml'> =
     | string
