@@ -440,7 +440,6 @@ class NoodlLoader<
     if (y.isDocument(options)) {
       configDocument = options as any
       configYml = y.stringify(options, { indent: 2 })
-      this.#remoteBaseUrl = configDocument.get('cadlBaseUrl')
       this.log.debug(
         `Loaded root config with a provided ${
           this.dataType == 'map' ? 'y doc' : 'object'
@@ -462,10 +461,6 @@ class NoodlLoader<
           )
           configYml = await readFile(configFilePath, 'utf8')
           configDocument = parseYml(this.dataType, configYml)
-          this.#remoteBaseUrl =
-            this.dataType === 'map'
-              ? configDocument.get('cadlBaseUrl')
-              : configDocument['cadlBaseUrl']
         } else {
           if (!dir) {
             this.log.debug(
@@ -505,6 +500,17 @@ class NoodlLoader<
       customConfigUrl ||
       `https://${c.defaultConfigHostname}/config/${withYmlExt(this.configKey)}`
 
+    // TODO - Merge this implmenetation (temp. hardcoded here)
+    try {
+      this.#remoteBaseUrl = get(
+        y.parse((await this.#fetch(configUrl))?.data),
+        'cadlBaseUrl',
+      )
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      console.error(err)
+    }
+
     if (!configYml || !configDocument) {
       this.log.info(`Config URL: ${u.yellow(configUrl)}`)
       this.emit(c.rootConfigIsBeingRetrieved, {
@@ -514,12 +520,6 @@ class NoodlLoader<
       const { data: yml } = await this.#fetch(configUrl, requestOptions)
       this.log.debug(`Received config y`)
       configDocument = parseYml(this.dataType, yml)
-      if (!this.#remoteBaseUrl) {
-        this.#remoteBaseUrl =
-          this.dataType === 'map'
-            ? configDocument.get('cadlBaseUrl')
-            : configDocument['cadlBaseUrl']
-      }
       this.log.debug(
         `Saved config in memory as a y ${
           this.dataType == 'map' ? 'doc' : 'object'
