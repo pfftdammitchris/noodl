@@ -2,7 +2,7 @@ import * as u from '@jsmanifest/utils'
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as nu from 'noodl-utils'
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import chalk from 'chalk'
 import chunk from 'lodash/chunk'
 import flatten from 'lodash/flatten'
@@ -145,11 +145,14 @@ class NoodlLoader<
     )
   }
 
+  #fetch = (url: string, opts?: AxiosRequestConfig) => axios.get(url, opts)
+
   async init({
     dir = '',
     fallback,
     loadPages: shouldLoadPages = true,
     loadPreloadPages: shouldLoadPreloadPages = true,
+    requestOptions,
     spread,
   }: {
     dir?: string
@@ -160,6 +163,7 @@ class NoodlLoader<
     }
     loadPages?: boolean
     loadPreloadPages?: boolean
+    requestOptions?: AxiosRequestConfig
     spread?: string | string[]
   } = {}) {
     if (!this.configKey) {
@@ -173,12 +177,17 @@ class NoodlLoader<
     this.log.info(`Using eCOS environment: ${u.yellow(this.env)}`)
 
     const result = [
-      await this.loadRootConfig({ dir }),
-      await this.loadAppConfig({ dir, fallback: fallback?.appConfig }),
+      await this.loadRootConfig({ dir, requestOptions }),
+      await this.loadAppConfig({
+        dir,
+        fallback: fallback?.appConfig,
+        requestOptions,
+      }),
     ] as unknown
 
-    shouldLoadPreloadPages && (await this.loadPreloadPages({ dir, spread }))
-    shouldLoadPages && (await this.loadPages({ dir, spread }))
+    shouldLoadPreloadPages &&
+      (await this.loadPreloadPages({ dir, requestOptions, spread }))
+    shouldLoadPages && (await this.loadPages({ dir, requestOptions, spread }))
 
     return result as DataType extends 'map'
       ? [y.Document<RootConfig>, y.Document<AppConfig>]
@@ -379,6 +388,7 @@ class NoodlLoader<
   async loadRootConfig(options: {
     dir: string
     config?: string
+    requestOptions?: AxiosRequestConfig
   }): Promise<DataType extends 'map' ? y.Document : Record<string, any>>
 
   async loadRootConfig(
@@ -388,20 +398,23 @@ class NoodlLoader<
   async loadRootConfig(
     configName?: string,
     configUrl?: string,
+    requestOptions?: AxiosRequestConfig,
   ): Promise<DataType extends 'map' ? y.Document : Record<string, any>>
 
   async loadRootConfig(
     options:
       | y.Document
       | Record<string, any>
-      | { dir: string; config?: string }
+      | { dir: string; config?: string; requestOptions?: AxiosRequestConfig }
       | string = this.configKey,
     customConfigUrl?: string,
+    requestOptionsProp?: AxiosRequestConfig,
   ) {
     let configDocument:
       | (DataType extends 'map' ? y.Document : Record<string, any>)
       | undefined
     let configYml = ''
+    let requestOptions: AxiosRequestConfig
 
     if (y.isDocument(options)) {
       configDocument = options as any
@@ -412,10 +425,15 @@ class NoodlLoader<
         }`,
       )
     } else if (u.isObj(options)) {
-      if ('dir' in options || 'config' in options) {
+      if (
+        'dir' in options ||
+        'config' in options ||
+        'requestOptions' in options
+      ) {
         options?.config && (this.configKey = options.config)
+        options?.requestOptions && (requestOptions = options.requestOptions)
         const dir = options.dir || ''
-        const configFilePath = path.join(dir, `${this.configKey}.yml`)
+        const configFilePath = path.join(dir, ensureExt(this.configKey, 'yml'))
         if (existsSync(configFilePath)) {
           this.log.debug(
             `Loading root config from: ${u.yellow(configFilePath)}`,
@@ -455,6 +473,7 @@ class NoodlLoader<
     configYml &&
       !configDocument &&
       (configDocument = parseYml(this.dataType, configYml))
+    requestOptionsProp && (requestOptions = requestOptionsProp)
 
     const configUrl =
       customConfigUrl ||
@@ -466,7 +485,7 @@ class NoodlLoader<
         configKey: this.configKey,
         configUrl,
       })
-      const { data: yml } = await axios.get(configUrl)
+      const { data: yml } = await this.#fetch(configUrl, requestOptions)
       this.log.debug(`Received config y`)
       configDocument = parseYml(this.dataType, yml)
       this.log.debug(
@@ -553,9 +572,11 @@ class NoodlLoader<
   async loadAppConfig({
     dir,
     fallback,
+    requestOptions,
   }: {
     dir?: string
     fallback?: () => Promise<string> | string
+    requestOptions?: AxiosRequestConfig
   } = {}) {
     if (!this.getInRoot(this.configKey)) {
       throw new Error(
@@ -572,14 +593,14 @@ class NoodlLoader<
 
     if (dir) {
       const appConfigFilePath = path.resolve(
-        path.join(dir, `${this.appKey}.yml`),
+        path.join(dir, ensureExt(this.appKey, 'yml')),
       )
       if (existsSync(appConfigFilePath)) {
         this.log.debug(
           `Loading app config from: ${u.yellow(appConfigFilePath)}`,
         )
         appConfigYml = await readFile(appConfigFilePath, 'utf8')
-        this.log.debug(`Retrieved app config y`)
+        this.log.debug(`Retrieved app config yml`)
         appConfigDocument = parseYml(this.dataType, appConfigYml)
         this.log.debug(
           `Loaded app config as a y ${
@@ -605,7 +626,7 @@ class NoodlLoader<
         url: this.appConfigUrl,
       })
       try {
-        yml = (await axios.get(this.appConfigUrl)).data
+        yml = (await this.#fetch(this.appConfigUrl, requestOptions)).data
         this.log.info(`Retrieved app config y`)
       } catch (error) {
         this.log.error(
@@ -653,7 +674,7 @@ class NoodlLoader<
   }
 
   async loadPage(
-    options: DataType extends 'map'
+    options: { requestOptions?: AxiosRequestConfig } & (DataType extends 'map'
       ? {
           dir: string
           doc?: y.Document
@@ -665,7 +686,7 @@ class NoodlLoader<
           name: string
           object?: Record<string, any>
           spread?: OrArray<string>
-        },
+        }),
   ): Promise<
     | (DataType extends 'map'
         ? y.Node | y.Document<unknown>
@@ -676,11 +697,12 @@ class NoodlLoader<
   async loadPage(
     name: string | undefined,
     document_?: y.Document,
+    requestOptions?: AxiosRequestConfig,
   ): Promise<y.Node | y.Document<unknown> | undefined>
 
   async loadPage(
     options:
-      | (DataType extends 'map'
+      | ({ requestOptions?: AxiosRequestConfig } & (DataType extends 'map'
           ? {
               dir: string
               doc?: y.Document
@@ -692,26 +714,33 @@ class NoodlLoader<
               name: string
               object?: Record<string, any>
               spread?: OrArray<string>
-            })
+            }))
       | string
       | undefined = '',
     documentOrObject?: y.Document | Record<string, any>,
+    requestOptionsProp?: AxiosRequestConfig,
   ) {
     let dir = ''
     let name = ''
+    let requestOptions: AxiosRequestConfig
     let spread = [] as string[]
 
     if (u.isObj(options)) {
       name = options.name
       dir = options.dir
+      requestOptions = options.requestOptions
       documentOrObject =
         'doc' in options
-          ? options.doc
+          ? // @ts-expect-error
+            options.doc
           : 'object' in options
-          ? options.object
+          ? // @ts-expect-error
+            options.object
           : undefined
       u.forEach((s) => s && spread.push(s), u.array(options.spread))
     }
+
+    if (requestOptionsProp) requestOptions = requestOptionsProp
 
     try {
       const key = this.#toRootPageKey(name)
@@ -818,14 +847,13 @@ class NoodlLoader<
 
       if (u.isStr(name)) {
         const pageUrl = this.getPageUrl(`${key}_en.yml`)
-        const { data: yml } = await axios.get(pageUrl)
-        if (spread.includes(name))
-          spreadKeys(name, parseYml(this.dataType, yml))
-        else
-          this.setInRoot(key, (documentOrObject = parseYml(this.dataType, yml)))
+        const { data: yml } = await this.#fetch(pageUrl, requestOptions)
+        documentOrObject = parseYml(this.dataType, yml)
+        if (spread.includes(name)) spreadKeys(name, documentOrObject as any)
+        this.setInRoot(key, documentOrObject)
       } else if (name && y.isDocument(documentOrObject)) {
         if (spread.includes(name)) spreadKeys(name, documentOrObject as any)
-        else this.setInRoot(key, documentOrObject)
+        this.setInRoot(key, documentOrObject)
       } else {
         this.log.error(
           `Page ${u.yellow(
@@ -874,8 +902,13 @@ class NoodlLoader<
 
   async loadPreloadPages({
     dir = '',
+    requestOptions,
     spread,
-  }: { dir?: string; spread?: OrArray<string> } = {}) {
+  }: {
+    dir?: string
+    requestOptions?: AxiosRequestConfig
+    spread?: OrArray<string>
+  } = {}) {
     const spreadKeys = u.array(spread)
     const preloadPages = [] as string[]
     const seq = this.getIn(this.getInRoot(this.appKey) as y.Document, 'preload')
@@ -918,7 +951,7 @@ class NoodlLoader<
 
     return Promise.all(
       preloadPages.map(async (page) =>
-        this.loadPage({ name: page, dir, spread: spreadKeys }),
+        this.loadPage({ name: page, dir, requestOptions, spread: spreadKeys }),
       ),
     )
   }
@@ -926,10 +959,12 @@ class NoodlLoader<
   async loadPages({
     chunks = 4,
     dir = '',
+    requestOptions,
     spread,
   }: {
     chunks?: number
     dir?: string
+    requestOptions?: AxiosRequestConfig
     spread?: OrArray<string>
   } = {}) {
     const pages = [] as string[]
@@ -970,7 +1005,9 @@ class NoodlLoader<
     const allPages = await Promise.all(
       chunkedPages.map((chunked) =>
         Promise.all(
-          chunked.map(async (c) => this.loadPage({ name: c, dir, spread })),
+          chunked.map(async (c) =>
+            this.loadPage({ name: c, dir, requestOptions, spread }),
+          ),
         ),
       ),
     )

@@ -21,7 +21,7 @@ export async function fetchYml(url = '', as: 'json' | 'yml' = 'yml') {
         'Content-Type': contentType,
       },
     })
-    return isJson ? y.parse(yml) : y.parse(yml)
+    return isJson ? y.parse(yml) : yml
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
     throw err
