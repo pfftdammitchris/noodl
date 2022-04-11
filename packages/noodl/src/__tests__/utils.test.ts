@@ -1,11 +1,27 @@
 import * as u from '@jsmanifest/utils'
+import path from 'path'
 import { expect } from 'chai'
 import nock from 'nock'
 import sinon from 'sinon'
+import { mapFilesToNoodlCollections } from '../utils/fileSystem'
 import getFileStructure from '../utils/getFileStructure'
 import getLinkStructure from '../utils/getLinkStructure'
 
 describe(`utils`, () => {
+  describe(`fileSystem`, () => {
+    describe(`mapFilesToNoodlCollections`, () => {
+      it.skip(`should map filepaths to noodl collections`, () => {
+        const results = mapFilesToNoodlCollections(
+          'admind3',
+          path.join(process.cwd(), '../../generated/admind3'),
+          {
+            includeWithPages: ['MenuBar'],
+          },
+        )
+      })
+    })
+  })
+
   describe(`getFileStructure`, () => {
     const filepath =
       '/Users/christ/ecos/aitmed/ecos/v1beta1/EcosAPI/ce-request.json'

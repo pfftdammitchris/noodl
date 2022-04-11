@@ -1,11 +1,13 @@
 import * as u from '@jsmanifest/utils'
 import {
   basename,
+  extname as getExtname,
   join as joinPath,
   isAbsolute as isAbsolutePath,
   parse as parsePath,
   resolve as resolvePath,
 } from 'path'
+import fg from 'fast-glob'
 import {
   ensureDirSync,
   existsSync,
@@ -14,6 +16,7 @@ import {
   writeFileSync as originalWriteFileSync,
   writeJsonSync,
 } from 'fs-extra'
+import { parse as parseYml } from './yml'
 
 /**
  * @param { string } filepath
@@ -77,6 +80,111 @@ export function getAbsFilePath(...paths: string[]) {
 export function getFileName(str: string | undefined = '', ext?: string) {
   if (!ext) return basename(str)
   return basename(str, ext.startsWith('.') ? ext : `.${ext}`)
+}
+
+/**
+ * Takes in a filepath and returns a new object mapping filepaths to their belonging collection according to the noodl specification
+ *
+ * @example
+ * ```js
+ * const noodlCollections = mapFilesToNoodlCollections('path-to-directory')
+ * console.log(noodlCollection) // Result: { assets, rootConfig, appConfig, preload, pages }
+ * ```
+ *
+ * @param { string } configKey
+ * @param { string } dir
+ */
+export function mapFilesToNoodlCollections(
+  configKey: string,
+  dir: string,
+  {
+    includeWithPages,
+  }: {
+    includeWithPages?: string | string[]
+  } = {},
+) {
+  const results = {
+    assets: {
+      path: '',
+      files: [],
+    },
+    rootConfig: '' as string | Error,
+    appConfig: '' as string | Error,
+    preload: [] as string[],
+    pages: [] as string[],
+  }
+
+  let appKey: string
+  let pathToRootConfigFile = joinPath(dir, ensureExt(configKey, 'yml'))
+  let pathToAppConfigFile: string
+  let preloadPages = [] as string[]
+  let preloadPagesRegex: RegExp
+  let preloadToIncludeWithPagesRegex = includeWithPages
+    ? new RegExp(u.array(includeWithPages).join('|'), 'i')
+    : (false as false)
+
+  if (!existsSync(pathToRootConfigFile)) {
+    results.rootConfig = new Error(`The config "${configKey}" does not exist`)
+  } else {
+    results.rootConfig = pathToRootConfigFile
+    const rootConfigYml = readFileSync(pathToRootConfigFile)
+    const rootConfig = parseYml('object', rootConfigYml)
+    appKey = rootConfig.cadlMain || 'cadlEndpoint.yml'
+    pathToAppConfigFile = joinPath(dir, ensureExt(appKey, 'yml'))
+  }
+
+  if (!existsSync(pathToAppConfigFile)) {
+    results.appConfig = new Error(`The app config "${appKey}" does not exist`)
+  } else {
+    results.appConfig = pathToAppConfigFile
+    const appConfigYml = readFileSync(pathToAppConfigFile)
+    const appConfig = parseYml('object', appConfigYml)
+    if (appConfig.preload) {
+      preloadPages = u.array(appConfig.preload)
+      preloadPagesRegex = new RegExp(preloadPages.join('|'), 'i')
+    }
+  }
+
+  const matchedEntries = fg.sync([joinPath(dir, '**/*')], {
+    objectMode: true,
+    onlyFiles: false,
+  })
+
+  matchedEntries.forEach(({ dirent, name: filename, path: filepath }) => {
+    if (dirent.isDirectory()) {
+      if (filename === 'assets') {
+        results.assets.path = filepath
+      } else {
+        // TODO
+        console.error(
+          `[dirent.isDirectory] encountered non-assets directory: ${filepath}`,
+        )
+      }
+    } else {
+      const extname = getExtname(filepath)
+      const name = filename.replace(extname, '')
+      if (filepath.includes('/assets/')) {
+        results.assets.files.push(filepath)
+      } else {
+        if (/\.?yml$/i.test(extname)) {
+          if (preloadPagesRegex.test(name)) {
+            results.preload.push(filepath)
+            if (
+              preloadToIncludeWithPagesRegex &&
+              preloadToIncludeWithPagesRegex.test(name)
+            ) {
+              results.pages.push(filepath)
+            }
+          } else {
+            results.pages.push(filepath)
+          }
+        } else {
+        }
+      }
+    }
+  })
+
+  return results
 }
 
 /**
