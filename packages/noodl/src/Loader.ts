@@ -285,7 +285,7 @@ class NoodlLoader<
   }
 
   get remoteBaseUrl() {
-    return this.#remoteBaseUrl
+    return this.#replaceNoodlPlaceholders(this.#remoteBaseUrl)
   }
 
   get pageNames() {
@@ -518,10 +518,10 @@ class NoodlLoader<
         configUrl,
       })
       const { data: yml } = await this.#fetch(configUrl, requestOptions)
-      this.log.debug(`Received config y`)
+      this.log.debug(`Received config yml`)
       configDocument = parseYml(this.dataType, yml)
       this.log.debug(
-        `Saved config in memory as a y ${
+        `Saved config in memory as a ${
           this.dataType == 'map' ? 'doc' : 'object'
         }`,
       )
