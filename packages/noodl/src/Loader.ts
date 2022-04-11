@@ -17,6 +17,7 @@ import type {
 } from 'noodl-types'
 import y from 'yaml'
 import winston from 'winston'
+import regex from './internal/regex'
 import { ensureExt } from './utils/fileSystem'
 import getLinkStructure from './utils/getLinkStructure'
 import shallowMerge from './utils/shallowMerge'
@@ -36,6 +37,7 @@ class NoodlLoader<
 {
   #configKey = ''
   #configVersion = 'latest'
+  #remoteBaseUrl = ''
   cbs = {} as Record<string, ((...arguments_: any[]) => any)[]>
   deviceType: DeviceType = 'web'
   dataType: DataType
@@ -282,6 +284,10 @@ class NoodlLoader<
     this.#configVersion = configVersion
   }
 
+  get remoteBaseUrl() {
+    return this.#remoteBaseUrl
+  }
+
   get pageNames() {
     let appConfig = this.getInRoot(this.appKey) as y.Document
     let preloadPages = this.getIn(appConfig, 'preload') || []
@@ -306,7 +312,7 @@ class NoodlLoader<
     let remoteAssetsUrl = this.assetsUrl
 
     if (
-      /(127.0.0.1|localhost)/.test(remoteAssetsUrl) ||
+      regex.localAddress.test(remoteAssetsUrl) ||
       !remoteAssetsUrl.startsWith('http')
     ) {
       // Converts to the remote url
@@ -315,7 +321,6 @@ class NoodlLoader<
     }
 
     const assets = [] as t.LinkStructure[]
-    const regex = /\.(avi|bmp|gif|jpg|jpeg|png|tif|tiff|mp4)$/i
     const visitedAssets = [] as string[]
     const urlCache = [] as string[]
 
@@ -337,7 +342,7 @@ class NoodlLoader<
           Scalar: (_, node) => {
             if (u.isStr(node.value)) {
               const value = node.value
-              if (regex.test(value) && !urlCache.includes(value)) {
+              if (regex.video.test(value) && !urlCache.includes(value)) {
                 urlCache.push(value)
                 this.log.debug(`Found asset: ${u.magenta(value)}`)
                 addAsset(value)
@@ -348,7 +353,11 @@ class NoodlLoader<
       }
     } else {
       Visitor.createVisitor((key, value) => {
-        if (u.isStr(value) && regex.test(value) && !urlCache.includes(value)) {
+        if (
+          u.isStr(value) &&
+          regex.video.test(value) &&
+          !urlCache.includes(value)
+        ) {
           urlCache.push(value)
           this.log.debug(
             `Found ${u.yellow(String(key))} asset: ${u.magenta(value)}`,
@@ -431,6 +440,7 @@ class NoodlLoader<
     if (y.isDocument(options)) {
       configDocument = options as any
       configYml = y.stringify(options, { indent: 2 })
+      this.#remoteBaseUrl = configDocument.get('cadlBaseUrl')
       this.log.debug(
         `Loaded root config with a provided ${
           this.dataType == 'map' ? 'y doc' : 'object'
@@ -452,6 +462,10 @@ class NoodlLoader<
           )
           configYml = await readFile(configFilePath, 'utf8')
           configDocument = parseYml(this.dataType, configYml)
+          this.#remoteBaseUrl =
+            this.dataType === 'map'
+              ? configDocument.get('cadlBaseUrl')
+              : configDocument['cadlBaseUrl']
         } else {
           if (!dir) {
             this.log.debug(
@@ -500,6 +514,12 @@ class NoodlLoader<
       const { data: yml } = await this.#fetch(configUrl, requestOptions)
       this.log.debug(`Received config y`)
       configDocument = parseYml(this.dataType, yml)
+      if (!this.#remoteBaseUrl) {
+        this.#remoteBaseUrl =
+          this.dataType === 'map'
+            ? configDocument.get('cadlBaseUrl')
+            : configDocument['cadlBaseUrl']
+      }
       this.log.debug(
         `Saved config in memory as a y ${
           this.dataType == 'map' ? 'doc' : 'object'

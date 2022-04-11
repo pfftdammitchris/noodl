@@ -73,6 +73,10 @@ async function init(
 }
 
 describe(chalk.keyword('navajowhite')('noodl'), () => {
+  it.only(``, () => {
+    //
+  })
+
   describe(`constructor`, () => {
     it(`should construct without errors when given no args`, () => {
       expect(() => new Loader()).to.not.throw()
