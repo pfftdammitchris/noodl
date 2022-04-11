@@ -208,7 +208,11 @@ class NoodlLoader<
       )
       .replace(/(_en|~\/)/gi, '')
 
-  #getRootConfig = () => this.getInRoot(this.configKey) as y.Document
+  #getRootConfig = () =>
+    (this.getInRoot(this.configKey) ||
+      this.getInRoot(
+        ensureExt(this.configKey, 'yml'),
+      )) as DataType extends 'map' ? y.Document.Parsed : RootConfig
 
   #replaceNoodlPlaceholders = (str = '') => {
     return createNoodlPlaceholderReplacer({
