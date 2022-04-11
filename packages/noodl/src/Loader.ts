@@ -878,7 +878,7 @@ class NoodlLoader<
       }
 
       if (u.isStr(name)) {
-        const pageUrl = this.getPageUrl(`${key}_en.yml`)
+        const pageUrl = `${this.remoteBaseUrl}${`${key}`}_en.yml`
         const { data: yml } = await this.#fetch(pageUrl, requestOptions)
         documentOrObject = parseYml(this.dataType, yml)
         if (spread.includes(name)) spreadKeys(name, documentOrObject as any)
