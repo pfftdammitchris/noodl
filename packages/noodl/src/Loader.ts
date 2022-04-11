@@ -263,6 +263,14 @@ class NoodlLoader<
         this.env,
       ]) || '') as string
     }
+    if (!this.#configVersion) {
+      const rootConfig = this.getInRoot(this.configKey)
+      if (rootConfig) {
+        const path = [this.deviceType, 'cadlVersion', this.env]
+        if (this.dataType === 'map') return rootConfig.getIn(path)
+        return get(rootConfig, path)
+      }
+    }
     return this.#configVersion
   }
 
