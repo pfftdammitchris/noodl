@@ -96,6 +96,7 @@ class NoodlLoader<
 
     this.configKey = configKey
     this.dataType = dataType as DataType
+    this.env = options.env || this.env
     this.options = shallowMerge(this.options, options)
     this.log.level = options.loglevel || this.options.loglevel
     this.log.debug(`Options`, this.options)

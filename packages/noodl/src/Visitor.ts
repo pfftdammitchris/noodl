@@ -1,5 +1,4 @@
 import * as u from '@jsmanifest/utils'
-import * as nt from 'noodl-types'
 
 export interface VisitorFn {
   (
