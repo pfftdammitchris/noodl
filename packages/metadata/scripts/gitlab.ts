@@ -24,7 +24,7 @@ class Gitlab {
       const resp = await this.#req.get(`/projects`)
       return resp.data
     } catch (error) {
-      u.throwError(error)
+      u.logError(error)
     }
   }
 }

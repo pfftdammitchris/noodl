@@ -47,7 +47,7 @@ let baseConfigUrl = `http://127.0.0.1:3001/config`
 let baseUrl = `http://127.0.0.1:3001/`
 
 beforeEach(() => {
-  loader = new Loader({ config: 'meetd2', loglevel: 'debug' })
+  loader = new Loader({ config: 'meetd2', loglevel: 'error' })
   nock(baseConfigUrl).get('/meetd2.yml').reply(200, meetd2yml)
   nock(baseUrl).get('/cadlEndpoint.yml').reply(200, getAppConfigYml())
 })
@@ -73,10 +73,6 @@ async function init(
 }
 
 describe(chalk.keyword('navajowhite')('noodl'), () => {
-  it.only(``, () => {
-    //
-  })
-
   describe(`constructor`, () => {
     it(`should construct without errors when given no args`, () => {
       expect(() => new Loader()).to.not.throw()

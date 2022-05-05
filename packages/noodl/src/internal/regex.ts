@@ -1,5 +1,23 @@
+export const extStrings = {
+  document: ['doc', 'docx', 'json', 'pdf'],
+  image: ['bmp', 'gif', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'webp'],
+  page: ['yml'],
+  video: ['avi', 'flac', 'flav', 'mpg', 'mpeg', 'mkv', 'mp4', 'ogg', 'wmv'],
+} as const
+
+const image = new RegExp(`\\.(${extStrings.image.join('|')})$`)
+const video = new RegExp(`\\.(${extStrings.video.join('|')})$`)
+const file = new RegExp(
+  `\\.(${Object.values(extStrings)
+    .reduce((acc, strs) => acc.concat(strs), [])
+    .join('|')})$`,
+)
+const url = new RegExp(
+  `(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})`,
+)
+
 export default {
-  localAddress: /(127.0.0.1|localhost)/i,
+  localAddress: /(127.0.0.1|localhost)/,
   reference: {
     at: {
       apply: /[a-zA-Z0-9]+@$/,
@@ -21,5 +39,8 @@ export default {
       traverse: /([\.][_]+[a-zA-Z])/,
     },
   },
-  video: /\.(avi|bmp|gif|jpg|jpeg|png|tif|tiff|mp4)$/i,
+  file,
+  image,
+  video,
+  url,
 }

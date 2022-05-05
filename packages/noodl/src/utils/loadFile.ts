@@ -1,6 +1,5 @@
 import * as u from '@jsmanifest/utils'
 import * as fs from 'fs-extra'
-import type { LiteralUnion } from 'type-fest'
 import { isAbsolute as isAbsolutePath } from 'path'
 import type { YAMLDocument } from '../internal/yaml'
 import {
@@ -15,13 +14,10 @@ import * as t from '../types'
  * @param filepath
  * @param type
  */
-function loadFile<T extends 'yml'>(
-  filepath: string,
-  type?: LiteralUnion<T, string>,
-): string
+function loadFile(filepath: string, type?: 'yml'): string
 
 /**
- * Loads a file as a document
+ * Loads a file as a yaml document
  * @link https://eemeli.org/yaml/#documents
  * @param filepath
  * @param type
@@ -40,14 +36,25 @@ function loadFile<T extends t.LoadType = t.LoadType>(
   type?: T,
 ) {
   if (u.isStr(filepath)) {
-    if (!isAbsolutePath(filepath)) filepath = getAbsFilePath(filepath)
+    if (!isAbsolutePath(filepath)) {
+      filepath = getAbsFilePath(filepath)
+    }
+
     if (fs.existsSync(filepath)) {
       const yml = fs.readFileSync(filepath, 'utf8')
-      if (type === 'doc') return parseYmlToDoc(yml)
-      if (type === 'json') return parseYmlToJson(yml)
-      return fs.readFileSync(filepath, 'utf8')
+
+      switch (type) {
+        case 'doc':
+          return parseYmlToDoc(yml)
+        case 'json':
+          return parseYmlToJson(yml)
+        default:
+          return fs.readFileSync(filepath, 'utf8')
+      }
     }
   }
+
+  return ''
 }
 
 export default loadFile

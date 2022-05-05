@@ -34,27 +34,24 @@ const componentsVisitor: VisitorCreation<ComponentsVisitorContext> = (
         { node },
         { componentTypes, componentObjects, componentsStats },
       ) => {
-        if (is.map.component(node)) {
-          const componentType = node.get('type') as string
-          const componentObject = node.toJSON() as nt.ComponentObject
-
-          if (enabledFeatures.componentTypes) {
-            if (!componentTypes.includes(componentType)) {
-              componentTypes.push(componentType)
-            }
-          }
-
-          if (enabledFeatures.componentsStats) {
-            if (!u.isNum(componentsStats[componentType])) {
-              componentsStats[componentType] = 0
-            }
-            componentsStats[componentType]++
-          }
-
-          if (enabledFeatures.componentObjects) {
-            componentObjects.push(componentObject)
-          }
-        }
+        // if (is.map.component(node)) {
+        //   const componentType = node.get('type') as string
+        //   const componentObject = node.toJSON() as nt.ComponentObject
+        //   if (enabledFeatures.componentTypes) {
+        //     if (!componentTypes.includes(componentType)) {
+        //       componentTypes.push(componentType)
+        //     }
+        //   }
+        //   if (enabledFeatures.componentsStats) {
+        //     if (!u.isNum(componentsStats[componentType])) {
+        //       componentsStats[componentType] = 0
+        //     }
+        //     componentsStats[componentType]++
+        //   }
+        //   if (enabledFeatures.componentObjects) {
+        //     componentObjects.push(componentObject)
+        //   }
+        // }
       },
     },
   }

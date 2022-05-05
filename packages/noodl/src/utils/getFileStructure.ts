@@ -1,5 +1,4 @@
 import * as path from 'path'
-import { FileStructure } from '../types'
 
 /**
  * @param { string } filepath
@@ -15,7 +14,7 @@ function getFileStructure(filepath: string, opts?: { config?: string }) {
     filename: parsed.name,
     filepath,
     rootDir: parsed.root,
-  } as FileStructure
+  } as any
 
   if (structure.ext === '.yml') {
     if (

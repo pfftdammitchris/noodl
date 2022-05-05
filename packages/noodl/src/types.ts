@@ -1,11 +1,32 @@
 import * as nt from 'noodl-types'
-import yaml from 'yaml'
+import y from 'yaml'
 import type { LiteralUnion } from 'type-fest'
 import type { OrArray } from '@jsmanifest/typefest'
-import type { YAMLNode, visitorFn } from './internal/yaml'
+import type { visitorFn } from './internal/yaml'
 import * as c from './constants'
 
-export type YAMLVisitArgs<N> = Parameters<visitorFn<N>>
+export abstract class AExtractor<INode = any> {
+  abstract extract(data: Record<string, INode>): any[]
+  abstract use(
+    value: AIterator<any> | Accumulator | AVisitor | AStructure,
+  ): this
+}
+
+export abstract class Accumulator<Acc = any> {
+  abstract init(): Acc
+  abstract reduce(acc: Acc, name: string, result: any): Acc
+}
+
+export interface IAccumulator<V = any> {
+  value: V
+}
+
+export abstract class AIterator<INode, INext = any> {
+  abstract getIterator(
+    data: ReturnType<AIterator<INode>['getItems']>,
+  ): Iterator<[name: string, node: INode], any, INext>
+  abstract getItems(data: Record<string, any>): [name: string, node: INode][]
+}
 
 export interface ILoader<
   DataType extends Loader.RootDataType = Loader.RootDataType,
@@ -14,29 +35,27 @@ export interface ILoader<
   options: Loader.Options<string, DataType>
 }
 
-export interface BaseStructure {
-  ext: string
-  filename: string
-  group:
-    | 'config'
-    | 'document'
-    | 'image'
-    | 'page'
-    | 'script'
-    | 'video'
-    | 'unknown'
+export abstract class AStructure<Struct extends IStructure = IStructure> {
+  abstract name: string
+  abstract is(node: any): boolean
+  abstract createStructure(node: any): Struct
 }
 
-export interface FileStructure extends BaseStructure {
-  dir: string
-  filepath: string
-  rootDir: string
+export interface IStructure<S extends string = string> {
+  raw: any
+  group: S
 }
 
-export interface LinkStructure extends BaseStructure {
-  raw: string
-  isRemote: boolean
-  url: string
+export abstract class AVisitor {
+  abstract visit(name: string, node: any): any
+  abstract use(
+    callback: (args: {
+      name: string
+      key: any
+      value: any
+      path: any[]
+    }) => any,
+  ): this
 }
 
 export type LoadType = 'doc' | 'json' | 'yml'
@@ -84,7 +103,7 @@ export namespace Loader {
     }): void
     [c.appConfigParsed]<T extends Loader.RootDataType>(args: {
       name: string
-      appConfig: T extends 'map' ? yaml.Document : nt.AppConfig
+      appConfig: T extends 'map' ? y.Document : nt.AppConfig
     }): void
     [c.appPageNotFound](options: {
       appKey: string
@@ -102,26 +121,26 @@ export namespace Loader {
       configUrl: string
     }): void
     [c.rootConfigRetrieved]<T extends Loader.RootDataType>(args: {
-      rootConfig: T extends 'map' ? yaml.Document : nt.RootConfig
+      rootConfig: T extends 'map' ? y.Document : nt.RootConfig
       url: string
       yml: string
     }): void
     [c.appConfigIsBeingRetrieved]<T extends Loader.RootDataType>(args: {
-      rootConfig: T extends 'map' ? yaml.Document : nt.RootConfig
+      rootConfig: T extends 'map' ? y.Document : nt.RootConfig
       appKey: string
       url: string
     }): void
     [c.appConfigRetrieved]<T extends Loader.RootDataType>(args: {
       appKey: string
-      appConfig: T extends 'map' ? yaml.Document : nt.AppConfig
-      rootConfig: T extends 'map' ? yaml.Document : nt.RootConfig
+      appConfig: T extends 'map' ? y.Document : nt.AppConfig
+      rootConfig: T extends 'map' ? y.Document : nt.RootConfig
       yml: string
       url: string
     }): void
     [c.appPageRetrieved]<T extends Loader.RootDataType>(args: {
       fromDir?: boolean
       pageName: string
-      pageObject: T extends 'map' ? yaml.Document : nt.PageObject
+      pageObject: T extends 'map' ? y.Document : nt.PageObject
       url?: string
     }): void
     [c.appPageRetrieveFailed](args: { error: Error; pageName: string }): void
@@ -130,7 +149,7 @@ export namespace Loader {
   export type LoadOptions<Type extends 'doc' | 'yml' = 'doc' | 'yml'> =
     | string
     | (Type extends 'doc'
-        ? OrArray<{ name: string; doc: yaml.Document }>
+        ? OrArray<{ name: string; doc: y.Document }>
         : OrArray<{ name: string; yml: string }>)
 
   export interface Options<
@@ -154,7 +173,7 @@ export namespace Loader {
 
   export type RootMap = Map<
     LiteralUnion<BaseRootKey, string>,
-    yaml.Node | yaml.Document
+    y.Node | y.Document
   > & {
     toJSON(): Record<string, any>
   }
@@ -244,3 +263,11 @@ export interface TildeOperator extends Operator {
 export interface TraverseOperator extends Operator {
   kind: 'traverse'
 }
+
+export namespace Ext {
+  export type Image = 'bmp' | 'gif' | 'jpg' | 'jpeg' | 'png' | 'webp'
+  export type Video = 'avi' | 'mkv' | 'mp4' | 'mpg' | 'mpeg' | 'flac'
+}
+
+export type YAMLNode = y.Node | y.Pair | y.Document.Parsed
+export type YAMLVisitArgs<N> = Parameters<visitorFn<N>>

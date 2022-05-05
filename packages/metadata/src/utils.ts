@@ -12,7 +12,6 @@ import {
   isSeq,
   visit as visitFn,
 } from 'yaml'
-import * as t from './Metadata/types.js'
 
 export function logError(error: unknown) {
   if (error instanceof Error) {
@@ -45,40 +44,49 @@ export function purgeRootConfig(
   return rootConfig
 }
 
-function onScalar<RT>(fn: (node: Scalar) => any) {
-  return (node: unknown): node is Scalar<RT> => isScalar(node) && fn(node)
-}
-
-function onPair<K = any, V = any>(fn: (node: Pair) => any) {
-  return (node: unknown): node is Pair<K, V> => isPair(node) && fn(node)
-}
-
-function onMap<K = any, V = any>(fn: (node: YAMLMap) => any) {
-  return (node: unknown): node is YAMLMap<K, V> => isMap(node) && fn(node)
-}
-
-function onSeq(fn: (node: YAMLSeq) => any) {
-  return <V = any>(node: unknown): node is YAMLSeq<V> => isSeq(node) && fn(node)
-}
-
 export const is = {
   scalar: {
-    actionType: onScalar<'actionType'>((node) => node.value === 'actionType'),
+    nboolean: (node: Scalar) =>
+      u.isBool(node.value) || node.value === 'true' || node.value === 'false',
+    value: <V = any>(node: Scalar, value: any): value is V =>
+      node.value === value,
   },
   pair: {
-    actionType: onPair<'actionType'>(
-      (node) => isScalar(node.key) && node.key.value === 'actionType',
-    ),
+    key: {
+      eq: (node: Pair, value: string) =>
+        isScalar(node.key) && node.key.value === value,
+      startsWith: <S extends string, V = unknown>(
+        node: Pair,
+        value: S,
+      ): node is Pair<Scalar<`${S}${string}`>, V> =>
+        isScalar(node.key) &&
+        u.isStr(node.key.value) &&
+        node.key.value.startsWith(value),
+    },
   },
   map: {
-    action: onMap<'actionType'>((node) => node.has('actionType')),
-    component: onMap<'type' | 'style' | 'children'>(
-      (node) => node.has('type') && (node.has('style') || node.has('children')),
-    ),
-    emit: onMap<'emit'>((node) => node.has('emit')),
-    goto: onMap<'goto'>((node) => node.has('goto')),
+    has: {
+      allKeys: (node: YAMLMap, ...keys: string[]) =>
+        keys.every((key) => node.has(key)),
+      anyKey: (node: YAMLMap, ...keys: string[]) =>
+        keys.some((key) => node.has(key)),
+    },
+    empty: (node: YAMLMap) => node.items.length === 0,
+    single: (node: YAMLMap) => node.items.length === 1,
   },
-  seq: {},
+  seq: {
+    has: {
+      valueAt: (node: YAMLSeq, index: number, value: any) =>
+        node.get(index) === value,
+    },
+    empty: (node: YAMLSeq) => node.items.length === 0,
+    single: (node: YAMLSeq) => node.items.length === 1,
+  },
+  noodl: {
+    action: (node: YAMLMap): node is YAMLMap<'actionType'> =>
+      node.has('actionType'),
+    component: (node: YAMLMap): node is YAMLMap<'type'> => node.has('type'),
+  },
 }
 
 export function throwError(err: unknown) {

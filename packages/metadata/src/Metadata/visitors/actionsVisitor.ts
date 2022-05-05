@@ -36,14 +36,14 @@ const actionsVisitor: VisitorCreation<{
     context,
     visit: {
       Pair: ({ node }, { actionTypes }) => {
-        if (enabledFeatures.actionTypes) {
-          if (is.scalar.actionType(node.key) && isScalar(node.value)) {
-            const actionType = node.value.value as string
-            if (!actionTypes.includes(actionType)) {
-              actionTypes.push(actionType)
-            }
-          }
-        }
+        // if (enabledFeatures.actionTypes) {
+        //   if (is.scalar.actionType(node.key) && isScalar(node.value)) {
+        //     const actionType = node.value.value as string
+        //     if (!actionTypes.includes(actionType)) {
+        //       actionTypes.push(actionType)
+        //     }
+        //   }
+        // }
       },
       Map: ({ node }, { actionObjects, actionsStats }) => {
         if (node?.has('actionType')) {

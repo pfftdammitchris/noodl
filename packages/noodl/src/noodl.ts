@@ -1,3 +1,11 @@
+export { default as ObjAccumulator } from './ObjAccumulator'
+export { default as DocIterator } from './DocIterator'
+export { default as ObjIterator } from './ObjIterator'
+export { default as DocVisitor } from './DocVisitor'
+export { default as ObjVisitor } from './ObjVisitor'
+export { default as Extractor } from './Extractor'
+export { default as FileStructure } from './FileStructure'
+export { default as LinkStructure } from './LinkStructure'
 export { default as getFileStructure } from './utils/getFileStructure'
 export { default as getLinkStructure } from './utils/getLinkStructure'
 export { default as Loader } from './Loader'
@@ -9,4 +17,10 @@ export * from './types'
 export * from './utils/extract'
 export * from './utils/fileSystem'
 
-export { fetchYml, parse as parseYml, stringify, withYmlExt } from './utils/yml'
+export {
+  fetchYml,
+  parse as parseYml,
+  stringify,
+  toDocument,
+  withYmlExt,
+} from './utils/yml'

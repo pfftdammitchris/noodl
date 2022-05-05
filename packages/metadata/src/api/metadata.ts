@@ -1,7 +1,6 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
 import u from '@jsmanifest/utils'
 import * as nt from 'noodl-types'
-import Metadata from '../Metadata'
 import { getSuccessResponse, getErrorResponse } from '../utils'
 import actionsVisitor, {
   ActionsVisitorContext,
@@ -44,46 +43,44 @@ export default async function metadataFunction(
 
     if (!configName) throw new Error(`Variable "config" is required`)
 
-    const metadata = new Metadata(configName)
+    //     if (
+    //       [params.actionTypes, params.actionObjects, params.actionsStats].some(
+    //         (cond) => !!cond,
+    //       )
+    //     ) {
+    //       const options = {} as Record<keyof ActionsVisitorContext, boolean>
 
-    if (
-      [params.actionTypes, params.actionObjects, params.actionsStats].some(
-        (cond) => !!cond,
-      )
-    ) {
-      const options = {} as Record<keyof ActionsVisitorContext, boolean>
+    //       params.actionTypes && (options.actionTypes = true)
+    //       params.actionObjects && (options.actionObjects = true)
+    //       params.actionsStats && (options.actionsStats = true)
 
-      params.actionTypes && (options.actionTypes = true)
-      params.actionObjects && (options.actionObjects = true)
-      params.actionsStats && (options.actionsStats = true)
+    //       metadata.createVisitor(actionsVisitor, options)
+    //     }
 
-      metadata.createVisitor(actionsVisitor, options)
-    }
+    //     if (
+    //       [
+    //         params.componentTypes,
+    //         params.componentObjects,
+    //         params.componentsStats,
+    //       ].some((cond) => !!cond)
+    //     ) {
+    //       const options = {} as Record<keyof ComponentsVisitorContext, boolean>
 
-    if (
-      [
-        params.componentTypes,
-        params.componentObjects,
-        params.componentsStats,
-      ].some((cond) => !!cond)
-    ) {
-      const options = {} as Record<keyof ComponentsVisitorContext, boolean>
+    //       params.componentTypes && (options.componentTypes = true)
+    //       params.componentObjects && (options.componentObjects = true)
+    //       params.componentsStats && (options.componentsStats = true)
 
-      params.componentTypes && (options.componentTypes = true)
-      params.componentObjects && (options.componentObjects = true)
-      params.componentsStats && (options.componentsStats = true)
+    //       metadata.createVisitor(componentsVisitor, options)
+    //     }
 
-      metadata.createVisitor(componentsVisitor, options)
-    }
+    //     await metadata.run()
 
-    await metadata.run()
-
-    resp.json(getSuccessResponse(metadata.context))
+    //     resp.json(getSuccessResponse(metadata.context))
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    return resp.json({
-      statusCode: 500,
-      error: { name: err.name, message: err.message },
-    })
+    //     const err = error instanceof Error ? error : new Error(String(error))
+    //     return resp.json({
+    //       statusCode: 500,
+    //       error: { name: err.name, message: err.message },
+    // })
   }
 }

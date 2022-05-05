@@ -28,6 +28,16 @@ export async function fetchYml(url = '', as: 'json' | 'yml' = 'yml') {
   }
 }
 
+export function isNode(
+  value: unknown,
+): value is y.Node | y.Pair | y.Document | y.Document.Parsed {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    (y.isNode(value) || y.isPair(value) || y.isDocument(value))
+  )
+}
+
 export function parse<DataType extends t.Loader.RootDataType>(
   dataType: DataType,
   yml = '',
@@ -59,6 +69,20 @@ export function stringify<O extends y.Document | Record<string, any>>(
   }
 
   return result
+}
+
+/**
+ * Will convert value to a yaml document
+ * @param value The value to convert. Supports yaml string or an object literal
+ * @returns A yaml document
+ */
+export function toDocument(value: string | Record<string, any>) {
+  if (value) {
+    return y.parseDocument(
+      typeof value === 'string' ? value : y.stringify(value),
+    )
+  }
+  return new y.Document(value)
 }
 
 export function withYmlExt(s = '') {

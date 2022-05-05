@@ -14,3 +14,30 @@
 - [Endpoint](https://relaxed-gates-ccf2b7.netlify.app/)
 
 ## Credentials
+
+## Pseudo code
+
+> Action objects
+
+- any object with `actionType` property
+- exclusive objects:
+  - emit
+  - if
+  - goto
+
+> Component objects
+
+- any object with `type` property
+- common keys
+  - style
+  - children
+- uncommon keys
+  - viewTag
+
+> Page objects
+
+- objects with a single key
+- common keys
+  - components
+  - title
+  - viewPort

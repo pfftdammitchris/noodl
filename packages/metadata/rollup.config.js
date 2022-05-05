@@ -51,7 +51,6 @@ const configs = [
         plugins: ['@babel/transform-runtime'],
       }),
       esbuild({
-        experimentalBundling: true,
         include: /\.[jt]s?$/,
         exclude: /node_modules/,
         minify: !_DEV_,
