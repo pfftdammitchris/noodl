@@ -1,85 +1,113 @@
-process.stdout.write('\x1Bc')
-const axios = require('axios')
-const assert = require('assert')
-const curry = require('lodash/curry')
 const u = require('@jsmanifest/utils')
 const fs = require('fs-extra')
 const path = require('path')
 const y = require('yaml')
+const fg = require('fast-glob')
+const n = require('noodl')
+const {
+  createMetadataExtractor,
+  defaultPlugins,
+  getValidatorFactory,
+  Validator,
+  KeyValidator,
+  ValueValidator,
+  is,
+} = require('noodl-metadata')
 
-function isActionObject(value) {
-  return
+const {
+  DocIterator,
+  DocVisitor,
+  Extractor,
+  loadFile,
+  FileStructure,
+  LinkStructure,
+  ObjAccumulator,
+  toDocument,
+} = n
+
+async function loadDir(dir) {
+  const docs = {}
+  await Promise.all(
+    (
+      await fg([dir], { onlyFiles: true, objectMode: true })
+    ).map((entry) => {
+      if (entry.name.endsWith('.yml')) {
+        docs[entry.name] = loadFile(entry.path, 'doc')
+      }
+    }, {}),
+  )
+  return docs
 }
+
+const extractor = new Extractor()
+const docIter = new DocIterator()
+const docVisitor = new DocVisitor()
+const objAccumulator = new ObjAccumulator()
+
+const metadataExtractor = createMetadataExtractor({
+  config: 'admind3',
+  deviceType: 'web',
+  env: 'stable',
+  loglevel: 'debug',
+  plugins: [defaultPlugins.action, defaultPlugins.component],
+  version: 'latest',
+})
+
+const validator = getValidatorFactory()
+
+extractor.use(docIter)
+extractor.use(docVisitor)
+extractor.use(objAccumulator)
+
+docVisitor.use(({ name, key, value, path }) => {
+  if (y.isScalar(value) && u.isStr(value.value)) {
+    console.log(value.value)
+  }
+})
 
 //
 ;(async () => {
   try {
-    // const resp = await axios.get(
-    //   `https://admind.aitmed.io/index.html?SelectOrganization-ScheduleManagement`,
-    // )
-
-    // const resp = await axios.get(
-    //   `https://admind.aitmed.io/main.1554818e01da40369b9b.js`,
-    // )
-    const rootObject = await fs.readJson(
-      path.join(__dirname, '../generated/admind._root.json'),
+    const pages = await loadDir(
+      path.join(process.cwd(), './generated/admind3/*.yml'),
     )
 
-    // const rootAsYml = y.stringify(rootObject, {
-    //   doubleQuotedAsJSON: true,
-    //   logLevel: 'debug',
-    // })
-
-    // const rootDoc = y.parseDocument(rootAsYml, { logLevel: 'debug' })
-
-    const SignInYml = await fs.readFile(
-      path.join(__dirname, '../generated/admind3/SignIn.yml'),
-      'utf8',
-    )
-
-    const signInPageObject = y.parse(SignInYml)
-
-    /**
-     * @typedef VisitFn
-     * @type { (key: string | number, value: any, parent?: null | Record<string, any>) => any }
-     */
-
-    const visitorFactory = curry(
-      /**
-       * @param { VisitFn } cb
-       * @param { any } obj
-       */
-      function visit(cb, obj) {
-        if (u.isArr(obj)) {
-          obj.forEach((item, index) => {
-            cb(index, item, obj)
-            visit(cb, item)
-          })
-        } else if (u.isObj(obj)) {
-          u.entries(obj).forEach(([key, value]) => {
-            cb(key, value, obj)
-            visit(cb, value)
-          })
-        } else {
-          cb(null, obj)
-        }
-      },
-    )
-
-    visitorFactory((key, value, parent) => {
-      if (value === undefined) {
-        // value is not an array/object
-        console.log({ key })
-      } else {
-        if (u.isArr(value)) {
-          //
-        } else if (u.isObj(value)) {
-          //
-        } else {
-          //
+    const actionTypeValidator = new KeyValidator('actionType')
+    // const componentTypeValidator = new KeyValidator('type')
+    actionTypeValidator.use(({ value }) => {
+      if (
+        y.isPair(value) &&
+        y.isScalar(value.key) &&
+        value.key === 'actionType'
+      ) {
+        if (y.isMap(value.value)) {
+          const action = value.value
+          console.log(action)
+          if (action.has('funcName')) {
+            if (action.get('funcName') !== 'hello') {
+              return {
+                type: 'error',
+                key: value.key,
+                message: `funcName can only be "hello"`,
+                value: action.get('funcName'),
+              }
+            }
+          }
         }
       }
-    }, rootObject)
+    })
+
+    // validator.use(actionTypeValidator)
+
+    // u.values(pages).forEach((value) => {
+    //   const results = validator.validate({ value })
+    // })
+
+    u.values(pages).forEach((page) => docVisitor.visit(page))
+
+    // const results = extractor.extract(pages)
+    // const results = await metadataExtractor.extract()
+    // console.log(u.keys(pages))
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
     console.log(err)
@@ -87,11 +115,3 @@ function isActionObject(value) {
     // throw err
   }
 })()
-
-function validatorFactory() {
-  return function createValidator(options) {
-    return {
-      validate() {},
-    }
-  }
-}

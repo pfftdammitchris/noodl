@@ -1,13 +1,15 @@
 import * as u from '@jsmanifest/utils'
+import createMetadataExtractor from './validate'
 import { Value } from './constants'
 
 export interface PluginObject {
   //
 }
 
-const m = createMetadata()
+const m = createMetadataExtractor()
 
-const plugins = {
+export const defaultPlugins = {
+  required: [],
   action: m.register({
     keys: {
       actionType: {

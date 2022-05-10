@@ -1,6 +1,7 @@
 import * as t from './types'
 
 class ObjIterator extends t.AIterator<any> {
+  // @ts-expect-error
   getIterator(items: [name: string, node: any][]) {
     return {
       [Symbol.iterator](): Iterator<[name: string, node: any], any> {

@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as nu from 'noodl-utils'
 import axios, { AxiosRequestConfig } from 'axios'
-import chalk from 'chalk'
+import * as chalk from 'chalk'
 import chunk from 'lodash/chunk'
 import flatten from 'lodash/flatten'
 import get from 'lodash/get'
@@ -16,7 +16,7 @@ import type {
   RootConfig,
 } from 'noodl-types'
 import y from 'yaml'
-import winston from 'winston'
+import * as winston from 'winston'
 import regex from './internal/regex'
 import { ensureExt } from './utils/fileSystem'
 import getLinkStructure from './utils/getLinkStructure'
@@ -24,11 +24,14 @@ import shallowMerge from './utils/shallowMerge'
 import { extractAssetsUrl } from './utils/extract'
 import { fetchYml, parse as parseYml, stringify, withYmlExt } from './utils/yml'
 import Visitor from './Visitor'
+import type { ILinkStructure } from './LinkStructure'
 import * as c from './constants'
 import * as t from './types'
 
 const { existsSync, readFile } = fs
 const { createNoodlPlaceholderReplacer, hasNoodlPlaceholder, isValidAsset } = nu
+const { createLogger, format: winstonFormat, transports } = winston
+const { red, yellow } = chalk
 
 class NoodlLoader<
   ConfigKey extends string = string,
@@ -69,12 +72,12 @@ class NoodlLoader<
   }
 
   constructor(opts: ConfigKey | t.Loader.Options<ConfigKey, DataType> = {}) {
-    this.log = winston.createLogger({
+    this.log = createLogger({
       level: 'error',
       transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.colorize({
+        new transports.Console({
+          format: winstonFormat.combine(
+            winstonFormat.colorize({
               colors: {
                 info: 'cyan',
                 http: 'grey',
@@ -83,7 +86,7 @@ class NoodlLoader<
                 debug: 'gray',
               },
             }),
-            winston.format.simple(),
+            winstonFormat.simple(),
           ),
         }),
       ],
@@ -321,7 +324,7 @@ class NoodlLoader<
       remoteAssetsUrl = extractAssetsUrl(rootConfig)
     }
 
-    const assets = [] as t.LinkStructure[]
+    const assets = [] as ILinkStructure[]
     const visitedAssets = [] as string[]
     const urlCache = [] as string[]
 
@@ -663,7 +666,7 @@ class NoodlLoader<
         this.log.info(`Retrieved app config y`)
       } catch (error) {
         this.log.error(
-          `[${chalk.red('Error')}] ${chalk.yellow('loadAppConfig')}: ${
+          `[${red('Error')}] ${yellow('loadAppConfig')}: ${
             (error as Error).message
           }. ` +
             `If a fallback loader was provided, it will be used. ` +
@@ -909,9 +912,7 @@ class NoodlLoader<
       if (error instanceof Error) {
         if ((error as any).response?.status === 404) {
           this.log.error(
-            `[${chalk.red(error.name)}]: Could not find page ${u.red(
-              name || '',
-            )}`,
+            `[${red(error.name)}]: Could not find page ${u.red(name || '')}`,
           )
           this.emit(c.appPageNotFound, {
             appKey: this.appKey,
@@ -920,7 +921,7 @@ class NoodlLoader<
           })
         } else {
           this.log.error(
-            `[${chalk.yellow(error.name)}] on page ${u.red(name || '')}: ${
+            `[${yellow(error.name)}] on page ${u.red(name || '')}: ${
               error.message
             }`,
           )

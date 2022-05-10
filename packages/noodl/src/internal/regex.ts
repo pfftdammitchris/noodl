@@ -2,11 +2,14 @@ export const extStrings = {
   document: ['doc', 'docx', 'json', 'pdf'],
   image: ['bmp', 'gif', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'webp'],
   page: ['yml'],
+  script: ['js'],
   video: ['avi', 'flac', 'flav', 'mpg', 'mpeg', 'mkv', 'mp4', 'ogg', 'wmv'],
 } as const
 
 const image = new RegExp(`\\.(${extStrings.image.join('|')})$`)
 const video = new RegExp(`\\.(${extStrings.video.join('|')})$`)
+const script = new RegExp(`\\.(js)$`)
+const text = new RegExp(`\\.(css|html|txt)$`)
 const file = new RegExp(
   `\\.(${Object.values(extStrings)
     .reduce((acc, strs) => acc.concat(strs), [])
@@ -41,6 +44,8 @@ export default {
   },
   file,
   image,
+  script,
+  text,
   video,
   url,
 }

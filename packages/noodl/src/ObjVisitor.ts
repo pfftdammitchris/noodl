@@ -1,7 +1,13 @@
 import { AVisitor } from './types'
 
 class ObjVisitor extends AVisitor {
-  #callback: (args: { name: string; key: any; value: any; path: any }) => any
+  #callback: (args: {
+    name?: string
+    key: any
+    value: any
+    path?: any
+    parent?: any
+  }) => any
 
   visit(name: string, value: any) {
     let results = []

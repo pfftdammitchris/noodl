@@ -1,11 +1,20 @@
 import y from 'yaml'
-import { isAbsolute as isAbsPath, parse as parsePath } from 'path'
+import path from 'path'
 import type { ParsedPath } from 'path'
 import * as t from './types'
 import * as is from './utils/is'
 
 export interface ILinkStructure
-  extends t.IStructure<'image' | 'page' | 'script' | 'video' | 'unknown'> {
+  extends t.IStructure<
+    | 'config'
+    | 'document'
+    | 'image'
+    | 'page'
+    | 'script'
+    | 'text'
+    | 'video'
+    | 'unknown'
+  > {
   ext: string | null
   isRemote: boolean | null
   url: string | null
@@ -13,6 +22,7 @@ export interface ILinkStructure
 
 class LinkStructure extends t.AStructure<ILinkStructure> {
   #transform?: (node: any) => any
+  configKey = ''
   name = 'link'
 
   constructor(transform?: (node: any) => any) {
@@ -41,20 +51,31 @@ class LinkStructure extends t.AStructure<ILinkStructure> {
       ? node
       : String(node)
 
-    const parsed = parsePath(url || '')
+    const parsed = path.parse(url || '')
     const basename = parsed.base
 
-    const ext = parsed.ext
+    try {
+      url = new URL(url).href
+    } catch (error) {
+      url = null
+    }
+
+    let ext = parsed.ext
       ? parsed.ext.replace(/\./g, '')
       : is.file(basename)
       ? basename.substring(basename.lastIndexOf('.') + 1)
       : null
 
-    console.log({ parsed, ext, raw, isAbsPath: isAbsPath(raw) })
+    if (ext) {
+      if (['com', 'net', 'org'].includes(ext)) ext = null
+      group = group || this.getGroup(parsed)
+    } else {
+      group = 'unknown'
+    }
 
     return {
       ext,
-      group: (group as ILinkStructure['group']) || this.getGroup(parsed),
+      group: group as ILinkStructure['group'],
       raw,
       isRemote:
         String(node).startsWith('http') || String(node).startsWith('www'),
@@ -63,11 +84,13 @@ class LinkStructure extends t.AStructure<ILinkStructure> {
   }
 
   getGroup(str: ParsedPath | string) {
-    const parsed = typeof str === 'object' ? str : parsePath(str)
+    const parsed = typeof str === 'object' ? str : path.parse(str)
+    if (is.image(parsed.base)) return 'image'
+    if (is.script(parsed.base)) return 'script'
+    if (is.text(parsed.base)) return 'text'
+    if (is.video(parsed.base)) return 'video'
     if (parsed.ext === '') return 'script'
     if (parsed.base.endsWith('.yml')) return 'page'
-    if (is.image(parsed.base)) return 'image'
-    if (is.video(parsed.base)) return 'video'
     return 'unknown'
   }
 }

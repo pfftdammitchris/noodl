@@ -56,3 +56,7 @@ const Visitor = (function () {
 })()
 
 export default Visitor
+
+function _visit(obj, callback) {
+  //
+}

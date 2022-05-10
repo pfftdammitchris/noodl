@@ -1,12 +1,5 @@
 import * as u from '@jsmanifest/utils'
-import {
-  basename,
-  extname as getExtname,
-  join as joinPath,
-  isAbsolute as isAbsolutePath,
-  parse as parsePath,
-  resolve as resolvePath,
-} from 'path'
+import path from 'path'
 import fg from 'fast-glob'
 import {
   ensureDirSync,
@@ -28,7 +21,7 @@ export function ensureFile(
   filepath = '',
   { defaultValue = '', type = 'json' } = {},
 ) {
-  ensureDirSync(parsePath(filepath).dir)
+  ensureDirSync(path.parse(filepath).dir)
   if (!existsSync(filepath)) {
     if (typeof defaultValue === 'string' || defaultValue == null) {
       writeFileSync(filepath, defaultValue, 'utf8')
@@ -66,8 +59,8 @@ export function ensureExt(str: string, ext: string) {
  */
 export function getAbsFilePath(...paths: string[]) {
   const filepath = normalizePath(...paths)
-  if (isAbsolutePath(filepath)) return filepath
-  return resolvePath(normalizePath(process.cwd(), ...paths))
+  if (path.isAbsolute(filepath)) return filepath
+  return path.resolve(normalizePath(process.cwd(), ...paths))
 }
 
 /**
@@ -78,8 +71,8 @@ export function getAbsFilePath(...paths: string[]) {
  * @returns { string }
  */
 export function getFileName(str: string | undefined = '', ext?: string) {
-  if (!ext) return basename(str)
-  return basename(str, ext.startsWith('.') ? ext : `.${ext}`)
+  if (!ext) return path.basename(str)
+  return path.basename(str, ext.startsWith('.') ? ext : `.${ext}`)
 }
 
 /**
@@ -115,7 +108,7 @@ export function mapFilesToNoodlCollections(
   }
 
   let appKey: string
-  let pathToRootConfigFile = joinPath(dir, ensureExt(configKey, 'yml'))
+  let pathToRootConfigFile = path.join(dir, ensureExt(configKey, 'yml'))
   let pathToAppConfigFile: string
   let preloadPages = [] as string[]
   let preloadPagesRegex: RegExp
@@ -130,7 +123,7 @@ export function mapFilesToNoodlCollections(
     const rootConfigYml = readFileSync(pathToRootConfigFile)
     const rootConfig = parseYml('object', rootConfigYml)
     appKey = rootConfig.cadlMain || 'cadlEndpoint.yml'
-    pathToAppConfigFile = joinPath(dir, ensureExt(appKey, 'yml'))
+    pathToAppConfigFile = path.join(dir, ensureExt(appKey, 'yml'))
   }
 
   if (!existsSync(pathToAppConfigFile)) {
@@ -145,7 +138,7 @@ export function mapFilesToNoodlCollections(
     }
   }
 
-  const matchedEntries = fg.sync([joinPath(dir, '**/*')], {
+  const matchedEntries = fg.sync([path.join(dir, '**/*')], {
     objectMode: true,
     onlyFiles: false,
   })
@@ -161,7 +154,7 @@ export function mapFilesToNoodlCollections(
         )
       }
     } else {
-      const extname = getExtname(filepath)
+      const extname = path.extname(filepath)
       const name = filename.replace(extname, '')
       if (filepath.includes('/assets/')) {
         results.assets.files.push(filepath)
@@ -194,7 +187,7 @@ export function mapFilesToNoodlCollections(
  * @returns { string }
  */
 export function normalizePath(...s: string[]) {
-  let result = (s.length > 1 ? joinPath(...s) : s[0]).replace(/\\/g, '/')
+  let result = (s.length > 1 ? path.join(...s) : s[0]).replace(/\\/g, '/')
   if (result.includes('/~/')) result = result.replace('~/', '')
   return result
 }

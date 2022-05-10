@@ -4,6 +4,7 @@ import fg from 'fast-glob'
 import { Document as YAMLDocument, isDocument, isMap, Scalar } from 'yaml'
 import { getAbsFilePath, getFileName, normalizePath } from './fileSystem'
 import getFileStructure from './getFileStructure'
+import type { IFileStructure } from '../FileStructure'
 import loadFile from './loadFile'
 import * as t from '../types'
 
@@ -134,24 +135,25 @@ function loadFiles<
       type = opts === 'json' ? 'json' : opts === 'doc' ? 'doc' : type
       return fg
         .sync(_path, { onlyFiles: true })
-        .map((filepath) => loadFile(filepath as string, type))
+        .map((filepath) => loadFile(filepath as string, type as any))
     } else if (u.isObj(opts)) {
       type = opts.type || type
       const includeExt = opts?.includeExt
       const keysToSpread = opts.spread ? u.array(opts.spread) : []
 
-      function getKey(metadata: t.FileStructure) {
+      function getKey(metadata: IFileStructure) {
+        // @ts-expect-error
         return includeExt ? getFileName(metadata.filepath) : metadata.filename
       }
 
       function listReducer(acc: any[] = [], filepath: string) {
-        return acc.concat(loadFile(filepath, type))
+        return acc.concat(loadFile(filepath, type as any))
       }
 
       function mapReducer(acc: Map<string, any>, filepath: string) {
         const metadata = getFileStructure(filepath)
         const key = getKey(metadata)
-        const data = loadFile(filepath, type)
+        const data = loadFile(filepath, type as any)
         isDocument(data) && data.has(key) && (data.contents = data.get(key))
         if (keysToSpread.includes(key)) {
           if (isDocument(data) && isMap(data.contents)) {
@@ -171,8 +173,8 @@ function loadFiles<
       function objectReducer(acc: Record<string, any>, filepath: string) {
         const metadata = getFileStructure(filepath)
         const key = getKey(metadata)
-        let data = loadFile(filepath, type)
-        u.isObj(data) && key in data && (data = data[key])
+        let data = loadFile(filepath, type as any)
+        u.isObj(data) && key in data && (data = data[key] as any)
         if (keysToSpread.includes(key) && u.isObj(data)) {
           if (isDocument(data) && isMap(data.contents)) {
             data.contents.items.forEach((pair) => {

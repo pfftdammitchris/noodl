@@ -1,12 +1,8 @@
 import * as u from '@jsmanifest/utils'
-import path from 'path'
 import { expect } from 'chai'
-import * as nu from 'noodl-utils'
 import y from 'yaml'
-import nock from 'nock'
 import sinon from 'sinon'
-import { loadFile } from '../noodl'
-import { parse as parseYml, toDocument } from '../utils/yml'
+import { toDocument } from '../utils/yml'
 import Extractor from '../Extractor'
 import ObjAccumulator from '../ObjAccumulator'
 import DocIterator from '../DocIterator'
@@ -63,9 +59,6 @@ const getRoot = () => ({
   },
 })
 
-// import getFileStructure from '../utils/getFileStructure'
-// import getLinkStructure from '../utils/getLinkStructure'
-
 describe.only(`Extractor`, () => {
   describe(`doc`, () => {
     it(
@@ -102,38 +95,6 @@ describe.only(`Extractor`, () => {
         ])
       },
     )
-
-    xit(`should only collect links if only LinkStructure is used`, () => {
-      const extractor = new Extractor<any, t.YAMLNode>()
-
-      extractor.use(new DocIterator())
-      extractor.use(new DocVisitor())
-      extractor.use(new LinkStructure())
-
-      const root = getRoot()
-      const data = u
-        .entries(root)
-        .reduce(
-          (acc, [name, obj]) => u.assign(acc, { [name]: toDocument(obj) }),
-          {} as Record<string, any>,
-        )
-
-      const assetChunks = extractor.extract(data)
-      const filepaths = assetChunks.reduce(
-        (acc: string[], chunk: any[]) =>
-          acc.concat(chunk.map((asset) => asset.filepath)),
-        [],
-      )
-      console.log(filepaths)
-
-      // expect(filepaths).to.have.all.members([
-      //   'backpack.mp4',
-      //   'reindeer.mkv',
-      //   'event.gif',
-      //   'abc.png',
-      //   'movie.mkv',
-      // ])
-    })
   })
 
   describe(`accumulators`, () => {
@@ -267,27 +228,28 @@ describe.only(`Extractor`, () => {
       }
     })
 
-    describe.only(`LinkStructure`, () => {
-      const commonNullProps = { isRemote: null, url: null }
-
+    describe(`LinkStructure`, () => {
       const tests = {
         'hello.mp4': {
           raw: 'hello.mp4',
           ext: 'mp4',
           group: 'video',
-          ...commonNullProps,
+          isRemote: false,
+          url: null,
         },
         hello: {
           raw: 'hello',
           ext: null,
           group: 'unknown',
-          ...commonNullProps,
+          isRemote: false,
+          url: null,
         },
         '.mp4': {
           raw: '.mp4',
           ext: 'mp4',
           group: 'video',
-          ...commonNullProps,
+          isRemote: false,
+          url: null,
         },
         '/Users/christ/aitmed/config/myvideo.avi': {
           raw: '/Users/christ/aitmed/config/myvideo.avi',
@@ -317,16 +279,76 @@ describe.only(`Extractor`, () => {
           isRemote: false,
           url: null,
         },
-        // 'http': {},
-        // 'https': {},
-        // 'https://': {},
-        // 'www': {},
-        // 'https://google.com/': {},
-        // 'https://google.com/bob': {},
-        // 'https://google.com/bob.jpg': {},
-        // 'https://google.com/bob.png': {},
-        // 'https://google.com/bob/bob.js': {},
-        // 'https://google.com/bob/abc.js.html': {},
+        http: {
+          raw: 'http',
+          ext: null,
+          group: 'unknown',
+          isRemote: true,
+          url: null,
+        },
+        https: {
+          raw: 'https',
+          ext: null,
+          group: 'unknown',
+          isRemote: true,
+          url: null,
+        },
+        'https://': {
+          raw: 'https://',
+          ext: null,
+          group: 'unknown',
+          isRemote: true,
+          url: null,
+        },
+        www: {
+          raw: 'www',
+          ext: null,
+          group: 'unknown',
+          isRemote: true,
+          url: null,
+        },
+        'https://google.com/': {
+          raw: 'https://google.com/',
+          ext: null,
+          group: 'unknown',
+          isRemote: true,
+          url: 'https://google.com/',
+        },
+        'https://google.com/bob': {
+          raw: 'https://google.com/bob',
+          ext: null,
+          group: 'unknown',
+          isRemote: true,
+          url: 'https://google.com/bob',
+        },
+        'https://google.com/bob.jpg': {
+          raw: 'https://google.com/bob.jpg',
+          ext: 'jpg',
+          group: 'image',
+          isRemote: true,
+          url: 'https://google.com/bob.jpg',
+        },
+        'https://google.com/bob.png': {
+          raw: 'https://google.com/bob.png',
+          ext: 'png',
+          group: 'image',
+          isRemote: true,
+          url: 'https://google.com/bob.png',
+        },
+        'https://google.com/bob/bob.js': {
+          raw: 'https://google.com/bob/bob.js',
+          ext: 'js',
+          group: 'script',
+          isRemote: true,
+          url: 'https://google.com/bob/bob.js',
+        },
+        'https://google.com/bob/abc.js.html': {
+          raw: 'https://google.com/bob/abc.js.html',
+          ext: 'html',
+          group: 'text',
+          isRemote: true,
+          url: 'https://google.com/bob/abc.js.html',
+        },
       }
 
       for (const [value, result] of u.entries(tests)) {
@@ -338,17 +360,18 @@ describe.only(`Extractor`, () => {
           )
         })
       }
-
-      xit(`should return the link structure for ""`, () => {
-        //
-      })
     })
   })
 
   describe(`visitors`, () => {
     describe(`DocVisitor`, () => {
-      xit(``, () => {
-        //
+      it(`[visit] should use the callback to gather results on each visited node`, () => {
+        const spy = sinon.spy(() => 'hello')
+        const visitor = new DocVisitor()
+        const doc = y.parseDocument(y.stringify(getRoot()))
+        const results = visitor.use(spy).visit('root', doc)
+        expect(results).to.have.length.greaterThan(0)
+        results.forEach((result) => expect(result).to.eq('hello'))
       })
     })
   })

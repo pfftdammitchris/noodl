@@ -1,11 +1,20 @@
 import y from 'yaml'
-import { join as joinPath, parse as parsePath } from 'path'
+import path from 'path'
 import type { ParsedPath } from 'path'
 import * as is from './utils/is'
 import * as t from './types'
 
 export interface IFileStructure
-  extends t.IStructure<'image' | 'page' | 'script' | 'video' | 'unknown'> {
+  extends t.IStructure<
+    | 'config'
+    | 'document'
+    | 'image'
+    | 'page'
+    | 'script'
+    | 'text'
+    | 'video'
+    | 'unknown'
+  > {
   ext: string
   dir: string | null
   filepath: string | null
@@ -14,6 +23,7 @@ export interface IFileStructure
 
 class FileStructure extends t.AStructure<IFileStructure> {
   #transform?: (node: any) => any
+  configKey = ''
   name = 'file'
 
   constructor(transform?: (node: any) => any) {
@@ -43,7 +53,7 @@ class FileStructure extends t.AStructure<IFileStructure> {
       ? node
       : String(node)
 
-    const parsed = parsePath(str)
+    const parsed = path.parse(str)
     const basename = parsed.base
     const ext = parsed.ext
       ? parsed.ext.replace(/\./g, '')
@@ -58,18 +68,20 @@ class FileStructure extends t.AStructure<IFileStructure> {
         (group as IFileStructure['group']) || this.getGroup({ ...parsed, ext }),
       raw,
       dir: parsed.dir || null,
-      filepath: parsed.dir ? joinPath(parsed.dir, basename) : null,
+      filepath: parsed.dir ? path.join(parsed.dir, basename) : null,
       rootDir: parsed.root || null,
     }
   }
 
-  getGroup(str: ParsedPath | string) {
-    const parsed = typeof str === 'object' ? str : parsePath(str)
+  getGroup(str: ParsedPath | string): IFileStructure['group'] {
+    const parsed = typeof str === 'object' ? str : path.parse(str)
     if (parsed.ext === '') {
       return parsed.base === parsed.name ? 'unknown' : 'script'
     }
     if (parsed.base.endsWith('.yml')) return 'page'
     if (is.image(parsed.base)) return 'image'
+    if (is.script(parsed.base)) return 'script'
+    if (is.text(parsed.base)) return 'text'
     if (is.video(parsed.base)) return 'video'
     return 'unknown'
   }

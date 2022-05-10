@@ -5,7 +5,7 @@
   },
   "description": "NOODL is a language stemmed from the YAML language. This library gives you the tools to build JavaScript applications using Neural Object Oriented Descriptive Language",
   "files": [
-    "dist"
+    "./dist"
   ],
   "gitHead": "2bef8a1f90a52a224a4ad380c2dade89b5ecb921",
   "homepage": "https://github.com/pfftdammitchris/noodl-cli#readme",
@@ -20,8 +20,8 @@
     "health"
   ],
   "license": "ISC",
-  "main": "dist/noodl.js",
-  "module": "dist/noodl.js",
+  "main": "./dist/noodl.js",
+  "module": "./dist/noodl.js",
   "name": "noodl",
   "publishConfig": {
     "access": "public"
@@ -31,8 +31,9 @@
     "url": "git+https://github.com/pfftdammitchris/noodl-cli.git"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production tsc",
-    "start": "cross-env NODE_ENV=development tsc -w",
+    "build": "cross-env NODE_ENV=production rollup -c",
+    "postbuild": "tsc --declaration --declarationDir dist --emitDeclarationOnly --module commonjs --target es2018 --esModuleInterop",
+    "start": "cross-env NODE_ENV=development rollup -c -w",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src \"src/**/*.ts\" --file src/__tests__/setup.ts",
     "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src --file src/__tests__/setup.ts"
   },

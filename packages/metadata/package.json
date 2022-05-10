@@ -14,15 +14,6 @@
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
-  "exports": {
-    ".": {
-      "default": "./dist/noodl-metadata.cjs",
-      "import": "./dist/noodl-metadata.esm",
-      "node": "./dist/noodl-metadata.cjs",
-      "require": "./dist/noodl-metadata.cjs"
-    },
-    "./package.json": "./package.json"
-  },
   "files": [
     "dist"
   ],
@@ -34,8 +25,8 @@
     "telemedicine"
   ],
   "license": "ISC",
-  "main": "./dist/noodl-metadata.cjs",
-  "module": "./dist/noodl-metadata.esm",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "name": "metadata",
   "repository": {
     "type": "git",
@@ -51,14 +42,6 @@
     "start:js": "concurrently cross-env NODE_ENV=development \"rollup -c -w\" \"tsc --emitDeclarationOnly\"",
     "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json --extensions ts --watch --watch-files src \"src/**/*.test.ts\"",
     "types": "tsc --emitDeclarationOnly --outFile \"./functions/types.d.ts\""
-  },
-  "type": "module",
-  "typesVersions": {
-    "*": {
-      "index.d.ts": [
-        "./dist/index.d.ts"
-      ]
-    }
   },
   "typings": "./dist/index.d.ts",
   "version": "0.0.1"

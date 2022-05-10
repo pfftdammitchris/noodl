@@ -6,9 +6,9 @@
     "baseUrl": "./src",
     "declarationDir": "./dist",
     "outDir": "./dist",
-    "module": "es2020",
+    "module": "commonjs",
     "rootDir": "./src",
-    "target": "es2020"
+    "target": "es2015"
   },
   "include": ["./src/**/*"],
   "extends": "../../tsconfig.json"

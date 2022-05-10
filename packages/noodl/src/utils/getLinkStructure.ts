@@ -1,10 +1,10 @@
-import * as path from 'path'
-import { LinkStructure } from '../types'
+import path from 'path'
+import { ILinkStructure } from '../LinkStructure'
 
 /**
  * @param { string } link
  * @param { object } opts
- * @returns { LinkStructure }
+ * @returns { ILinkStructure }
  */
 function getLinkStructure(
   link: string,
@@ -12,18 +12,20 @@ function getLinkStructure(
 ) {
   const parsed = path.parse(link)
   const structure = {
+    name: '',
     raw: link,
     ext: parsed.ext,
     filename: parsed.name,
+    group: 'unknown',
     isRemote: /^(http|www)/i.test(link),
     url: link.startsWith('http')
       ? link
       : opts?.prefix
       ? `${opts.prefix}${opts.prefix.endsWith('/') ? link : `/${link}`}`
       : link,
-  } as LinkStructure
+  } as ILinkStructure
 
-  if (opts?.config === structure.filename) {
+  if (opts?.config === structure['configKey']) {
     structure.group = 'config'
   } else if (structure.ext.endsWith('.yml')) {
     structure.group = 'page'

@@ -9,7 +9,7 @@ import { fetchYml, withYmlExt } from './yml'
 import { typeOf } from './is'
 import { defaultConfigHostname } from '../constants'
 import Visitor from '../Visitor'
-import type { LinkStructure } from '../types'
+import type { ILinkStructure } from '../LinkStructure'
 
 export function extractAssetsUrl(
   configObjectOrYml: AppConfig | string | RootConfig,
@@ -89,7 +89,7 @@ export async function extractAssets({
   pages?: Record<string, PageObject & Record<string, any>>
   additionalObjects?: Record<string, any>
 }) {
-  const assets = [] as LinkStructure[]
+  const assets = [] as ILinkStructure[]
   const visitedAssets = [] as string[]
   const urlCache = [] as string[]
 

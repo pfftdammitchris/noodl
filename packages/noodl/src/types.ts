@@ -50,7 +50,7 @@ export abstract class AVisitor {
   abstract visit(name: string, node: any): any
   abstract use(
     callback: (args: {
-      name: string
+      name?: string
       key: any
       value: any
       path: any[]
@@ -266,8 +266,27 @@ export interface TraverseOperator extends Operator {
 
 export namespace Ext {
   export type Image = 'bmp' | 'gif' | 'jpg' | 'jpeg' | 'png' | 'webp'
+  export type Script = 'js'
+  export type Text = 'html' | 'css' | 'txt'
   export type Video = 'avi' | 'mkv' | 'mp4' | 'mpg' | 'mpeg' | 'flac'
 }
 
-export type YAMLNode = y.Node | y.Pair | y.Document.Parsed
+export type YAMLNode = y.Node | y.Pair | y.Document
 export type YAMLVisitArgs<N> = Parameters<visitorFn<N>>
+
+export interface YAMLVisitorCallback<N = any> {
+  (args: {
+    data: Record<string, any>
+    name?: string
+    key: null | string | number
+    value: N
+    path: YAMLNode[]
+  }):
+    | number
+    | y.Node
+    | typeof y.visit.BREAK
+    | typeof y.visit.REMOVE
+    | typeof y.visit.SKIP
+    | undefined
+    | void
+}
