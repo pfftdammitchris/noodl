@@ -38,5 +38,5 @@
     "test:file": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test ts-mocha --extensions ts --watch --watch-files src --file src/__tests__/setup.ts"
   },
   "typings": "./dist/noodl.d.ts",
-  "version": "0.0.45"
+  "version": "0.0.46"
 }
