@@ -15,7 +15,7 @@ const configs = [
       {
         name: 'noodl',
         dir: './dist',
-        format: 'cjs',
+        format: 'umd',
         sourcemap: true,
       },
     ],
@@ -28,12 +28,12 @@ const configs = [
         target: 'es2015',
         loaders: { '.ts': 'ts' },
         sourceMap: false,
-        optimizeDeps: {
-          esbuildOptions: {
-            bundle: true,
-          },
-          include: [],
-        },
+        // optimizeDeps: {
+        //   esbuildOptions: {
+        //     bundle: true,
+        //   },
+        //   include: [],
+        // },
       }),
     ],
   },

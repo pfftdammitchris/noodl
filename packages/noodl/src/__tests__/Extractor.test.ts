@@ -4,10 +4,6 @@ import y from 'yaml'
 import sinon from 'sinon'
 import { toDocument } from '../utils/yml'
 import Extractor from '../Extractor'
-import ObjAccumulator from '../ObjAccumulator'
-import DocIterator from '../DocIterator'
-import DocVisitor from '../DocVisitor'
-import ObjVisitor from '../ObjVisitor'
 import FileStructure from '../FileStructure'
 import LinkStructure from '../LinkStructure'
 import { ui } from './test-utils'
@@ -59,7 +55,7 @@ const getRoot = () => ({
   },
 })
 
-describe.only(`Extractor`, () => {
+describe.skip(`Extractor`, () => {
   describe(`doc`, () => {
     it(
       `should be able to collect all assets using the DocIterator, ` +

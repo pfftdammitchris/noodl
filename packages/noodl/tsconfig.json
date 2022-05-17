@@ -6,6 +6,6 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "exclude": ["node_modules"],
-  "files": ["./src/noodl.ts"]
+  "exclude": [ "./src/**/*.test.ts"],
+  "include": ["src/**/*"]
 }

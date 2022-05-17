@@ -1,8 +1,3 @@
-export { default as ObjAccumulator } from './ObjAccumulator'
-export { default as DocIterator } from './DocIterator'
-export { default as ObjIterator } from './ObjIterator'
-export { default as DocVisitor } from './DocVisitor'
-export { default as ObjVisitor } from './ObjVisitor'
 export { default as Extractor } from './Extractor'
 export { default as FileStructure } from './FileStructure'
 export { default as LinkStructure } from './LinkStructure'

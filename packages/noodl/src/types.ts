@@ -21,13 +21,6 @@ export interface IAccumulator<V = any> {
   value: V
 }
 
-export abstract class AIterator<INode, INext = any> {
-  abstract getIterator(
-    data: ReturnType<AIterator<INode>['getItems']>,
-  ): Iterator<[name: string, node: INode], any, INext>
-  abstract getItems(data: Record<string, any>): [name: string, node: INode][]
-}
-
 export interface ILoader<
   DataType extends Loader.RootDataType = Loader.RootDataType,
 > {
