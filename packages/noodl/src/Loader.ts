@@ -155,6 +155,7 @@ class NoodlLoader<
 
   async init({
     dir = '',
+    docOptions,
     fallback,
     loadPages: shouldLoadPages = true,
     loadPreloadPages: shouldLoadPreloadPages = true,
@@ -162,6 +163,7 @@ class NoodlLoader<
     spread,
   }: {
     dir?: string
+    docOptions?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions
     fallback?: {
       appConfig?: Parameters<
         NoodlLoader<ConfigKey, DataType>['loadAppConfig']
@@ -183,17 +185,19 @@ class NoodlLoader<
     this.log.info(`Using eCOS environment: ${u.yellow(this.env)}`)
 
     const result = [
-      await this.loadRootConfig({ dir, requestOptions }),
+      await this.loadRootConfig({ dir, docOptions, requestOptions }),
       await this.loadAppConfig({
         dir,
+        docOptions,
         fallback: fallback?.appConfig,
         requestOptions,
       }),
     ] as unknown
 
     shouldLoadPreloadPages &&
-      (await this.loadPreloadPages({ dir, requestOptions, spread }))
-    shouldLoadPages && (await this.loadPages({ dir, requestOptions, spread }))
+      (await this.loadPreloadPages({ dir, docOptions, requestOptions, spread }))
+    shouldLoadPages &&
+      (await this.loadPages({ dir, docOptions, requestOptions, spread }))
 
     return result as DataType extends 'map'
       ? [y.Document<RootConfig>, y.Document<AppConfig>]
@@ -412,6 +416,7 @@ class NoodlLoader<
    */
   async loadRootConfig(options: {
     dir: string
+    docOptions?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions
     config?: string
     requestOptions?: AxiosRequestConfig
   }): Promise<DataType extends 'map' ? y.Document : Record<string, any>>
@@ -430,7 +435,12 @@ class NoodlLoader<
     options:
       | y.Document
       | Record<string, any>
-      | { dir: string; config?: string; requestOptions?: AxiosRequestConfig }
+      | {
+          dir: string
+          docOptions?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions
+          config?: string
+          requestOptions?: AxiosRequestConfig
+        }
       | string = this.configKey,
     customConfigUrl?: string,
     requestOptionsProp?: AxiosRequestConfig,
@@ -439,6 +449,9 @@ class NoodlLoader<
       | (DataType extends 'map' ? y.Document : Record<string, any>)
       | undefined
     let configYml = ''
+    let docOptions:
+      | (y.ParseOptions & y.DocumentOptions & y.SchemaOptions)
+      | undefined
     let requestOptions: AxiosRequestConfig
 
     if (y.isDocument(options)) {
@@ -452,11 +465,13 @@ class NoodlLoader<
     } else if (u.isObj(options)) {
       if (
         'dir' in options ||
+        'docOptions' in options ||
         'config' in options ||
         'requestOptions' in options
       ) {
         options?.config && (this.configKey = options.config)
         options?.requestOptions && (requestOptions = options.requestOptions)
+        docOptions = options.docOptions
         const dir = options.dir || ''
         const configFilePath = path.join(dir, ensureExt(this.configKey, 'yml'))
         if (existsSync(configFilePath)) {
@@ -464,7 +479,7 @@ class NoodlLoader<
             `Loading root config from: ${u.yellow(configFilePath)}`,
           )
           configYml = await readFile(configFilePath, 'utf8')
-          configDocument = parseYml(this.dataType, configYml)
+          configDocument = parseYml(this.dataType, configYml, docOptions)
         } else {
           if (!dir) {
             this.log.debug(
@@ -497,7 +512,7 @@ class NoodlLoader<
     configDocument && !configYml && (configYml = stringify(configDocument))
     configYml &&
       !configDocument &&
-      (configDocument = parseYml(this.dataType, configYml))
+      (configDocument = parseYml(this.dataType, configYml, docOptions))
     requestOptionsProp && (requestOptions = requestOptionsProp)
 
     const configUrl =
@@ -523,7 +538,7 @@ class NoodlLoader<
       })
       const { data: yml } = await this.#fetch(configUrl, requestOptions)
       this.log.debug(`Received config yml`)
-      configDocument = parseYml(this.dataType, yml)
+      configDocument = parseYml(this.dataType, yml, docOptions)
       this.log.debug(
         `Saved config in memory as a ${
           this.dataType == 'map' ? 'doc' : 'object'
@@ -551,7 +566,7 @@ class NoodlLoader<
     y.visit(
       this.dataType == 'map'
         ? (configDocument as any)
-        : y.parseDocument(y.stringify(configDocument)),
+        : y.parseDocument(y.stringify(configDocument), docOptions),
       {
         Pair: (key, node) => {
           if (y.isScalar(node.key) && node.key.value === 'cadlBaseUrl') {
@@ -607,10 +622,12 @@ class NoodlLoader<
    */
   async loadAppConfig({
     dir,
+    docOptions,
     fallback,
     requestOptions,
   }: {
     dir?: string
+    docOptions?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions
     fallback?: () => Promise<string> | string
     requestOptions?: AxiosRequestConfig
   } = {}) {
@@ -637,7 +654,7 @@ class NoodlLoader<
         )
         appConfigYml = await readFile(appConfigFilePath, 'utf8')
         this.log.debug(`Retrieved app config yml`)
-        appConfigDocument = parseYml(this.dataType, appConfigYml)
+        appConfigDocument = parseYml(this.dataType, appConfigYml, docOptions)
         this.log.debug(
           `Loaded app config as a y ${
             this.dataType === 'map' ? 'doc' : 'object'
@@ -678,7 +695,7 @@ class NoodlLoader<
     }
 
     appConfigYml = yml || appConfigYml
-    appConfigDocument = parseYml(this.dataType, appConfigYml)
+    appConfigDocument = parseYml(this.dataType, appConfigYml, docOptions)
 
     this.emit(c.appConfigRetrieved, {
       appKey: this.appKey,
@@ -714,6 +731,7 @@ class NoodlLoader<
       ? {
           dir: string
           doc?: y.Document
+          docOptions?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions
           name: string
           spread?: OrArray<string>
         }
@@ -742,6 +760,7 @@ class NoodlLoader<
           ? {
               dir: string
               doc?: y.Document
+              docOptions?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions
               name: string
               spread?: OrArray<string>
             }
@@ -757,6 +776,9 @@ class NoodlLoader<
     requestOptionsProp?: AxiosRequestConfig,
   ) {
     let dir = ''
+    let docOptions:
+      | (y.ParseOptions & y.DocumentOptions & y.SchemaOptions)
+      | undefined
     let name = ''
     let requestOptions: AxiosRequestConfig
     let spread = [] as string[]
@@ -764,7 +786,6 @@ class NoodlLoader<
     if (u.isObj(options)) {
       name = options.name
       dir = options.dir
-      requestOptions = options.requestOptions
       documentOrObject =
         'doc' in options
           ? // @ts-expect-error
@@ -777,6 +798,9 @@ class NoodlLoader<
     }
 
     if (requestOptionsProp) requestOptions = requestOptionsProp
+    if (u.isObj(options) && 'docOptions' in options) {
+      docOptions = options['docOptions']
+    }
 
     try {
       const key = this.#toRootPageKey(name)
@@ -791,7 +815,7 @@ class NoodlLoader<
             const pageName = filename.replace(/(_en|\.yml)/i, '')
             const yml = await readFile(filepath, 'utf8')
             if (yml) {
-              documentOrObject = parseYml(this.dataType, yml)
+              documentOrObject = parseYml(this.dataType, yml, docOptions)
 
               // Format from { SignIn : { SignIn: {...} } } to { SignIn: {...} }
               {
@@ -845,7 +869,7 @@ class NoodlLoader<
               if (y.isScalar(pair.key)) {
                 this.setInRoot(
                   String(pair.key),
-                  parseYml(this.dataType, y.stringify(pair.value)),
+                  parseYml(this.dataType, y.stringify(pair.value), docOptions),
                 )
               }
             }
@@ -854,14 +878,14 @@ class NoodlLoader<
               if (y.isScalar(pair.key)) {
                 this.setInRoot(
                   String(pair.key),
-                  parseYml(this.dataType, y.stringify(pair.value)),
+                  parseYml(this.dataType, y.stringify(pair.value), docOptions),
                 )
               }
             }
           } else if (u.isObj(value)) {
             for (const [key, val] of u.entries(value)) {
               if (u.isStr(val)) {
-                this.setInRoot(key, parseYml(this.dataType, val))
+                this.setInRoot(key, parseYml(this.dataType, val, docOptions))
               } else {
                 this.setInRoot(key, val)
               }
@@ -884,7 +908,7 @@ class NoodlLoader<
       if (u.isStr(name)) {
         const pageUrl = `${this.remoteBaseUrl}${`${key}`}_en.yml`
         const { data: yml } = await this.#fetch(pageUrl, requestOptions)
-        documentOrObject = parseYml(this.dataType, yml)
+        documentOrObject = parseYml(this.dataType, yml, docOptions)
         if (spread.includes(name)) spreadKeys(name, documentOrObject as any)
         this.setInRoot(key, documentOrObject)
       } else if (name && y.isDocument(documentOrObject)) {
@@ -936,10 +960,12 @@ class NoodlLoader<
 
   async loadPreloadPages({
     dir = '',
+    docOptions,
     requestOptions,
     spread,
   }: {
     dir?: string
+    docOptions?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions
     requestOptions?: AxiosRequestConfig
     spread?: OrArray<string>
   } = {}) {
@@ -985,7 +1011,13 @@ class NoodlLoader<
 
     return Promise.all(
       preloadPages.map(async (page) =>
-        this.loadPage({ name: page, dir, requestOptions, spread: spreadKeys }),
+        this.loadPage({
+          name: page,
+          dir,
+          docOptions,
+          requestOptions,
+          spread: spreadKeys,
+        }),
       ),
     )
   }
@@ -993,11 +1025,13 @@ class NoodlLoader<
   async loadPages({
     chunks = 4,
     dir = '',
+    docOptions,
     requestOptions,
     spread,
   }: {
     chunks?: number
     dir?: string
+    docOptions?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions
     requestOptions?: AxiosRequestConfig
     spread?: OrArray<string>
   } = {}) {
@@ -1040,7 +1074,7 @@ class NoodlLoader<
       chunkedPages.map((chunked) =>
         Promise.all(
           chunked.map(async (c) =>
-            this.loadPage({ name: c, dir, requestOptions, spread }),
+            this.loadPage({ name: c, dir, docOptions, requestOptions, spread }),
           ),
         ),
       ),

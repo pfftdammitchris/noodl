@@ -41,8 +41,9 @@ export function isNode(
 export function parse<DataType extends t.Loader.RootDataType>(
   dataType: DataType,
   yml = '',
+  opts?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions,
 ): DataType extends 'map' ? y.Document.Parsed : Record<string, any> {
-  return dataType === 'map' ? y.parseDocument(yml) : y.parse(yml)
+  return dataType === 'map' ? y.parseDocument(yml, opts) : y.parse(yml, opts)
 }
 
 /**
@@ -76,13 +77,17 @@ export function stringify<O extends y.Document | Record<string, any>>(
  * @param value The value to convert. Supports yaml string or an object literal
  * @returns A yaml document
  */
-export function toDocument(value: string | Record<string, any>) {
+export function toDocument(
+  value: string | Record<string, any>,
+  opts?: y.ParseOptions & y.DocumentOptions & y.SchemaOptions,
+) {
   if (value) {
     return y.parseDocument(
       typeof value === 'string' ? value : y.stringify(value),
+      opts,
     )
   }
-  return new y.Document(value)
+  return new y.Document(value, opts)
 }
 
 export function withYmlExt(s = '') {
